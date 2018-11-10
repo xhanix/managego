@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage 
+    xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core" 
+             ios:Page.UseSafeArea="true"
+    xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="ManageGo.MasterMenuPage">
+    <ContentPage.Resources>
+         <ResourceDictionary>
+            <Style TargetType="BoxView">
+                <Setter Property="HeightRequest" Value="0.5" />
+                <Setter Property="HorizontalOptions" Value="FillAndExpand" />
+                <Setter Property="BackgroundColor" Value="#808285" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <StackLayout Spacing="0">
+         <Button BackgroundColor="Transparent"
+                    Command="{Binding OnMasterMenuTapped}"
+                    HorizontalOptions="Start"
+                    IsVisible="{Binding HamburgerIsVisible}"
+                    VerticalOptions="Start"
+                    Padding="8"
+                    Margin="0"
+                    Image="nav_menu_icon.png" />
+        <StackLayout Orientation="Horizontal" Padding="8">
+            <Image Source="logo.png" HorizontalOptions="StartAndExpand"/>
+        </StackLayout>
+        <BoxView HeightRequest="1" Margin="0,8,0,0" BackgroundColor="#77b0f4" />
+
+        <ScrollView>
+            <StackLayout Padding="24,8,0,0" Spacing="0">
+                <Button Text="Home" Command="{Binding OnHomeTapped}" FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
+                <BoxView />
+                <Button Text="Payments" FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
+                <BoxView />
+                <Button Text="Bank transactions" FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
+                <BoxView />
+                <Button Text="Maintenance" Command="{Binding OnMaintenanceTapped}" FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
+                <BoxView />
+                <Button Text="Calendar" FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
+                <BoxView />
+                <Button Text="Buildings" FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
+                <BoxView />
+                <Button Text="Tenants" FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
+                <BoxView />
+                <Button Text="Notifications" FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
+                <BoxView />
+                <Button Text="Settings" FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
+                <BoxView />
+                <Button Text="Feedback" FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
+                <BoxView />
+                <Button Text="Logout" FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
+                <BoxView />
+                <Label Text="Contact us" FontAttributes="Bold" FontSize="Small" Margin="0,8,0,0" />
+                <StackLayout Orientation="Horizontal" Margin="0,8,0,0">
+                    <Label Text="Email: " TextColor="Gray" FontSize="Micro"/>
+                    <Label Text="support@managego.com" TextColor="Blue" FontSize="Micro">
+                         <Label.GestureRecognizers>
+                            <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Handle_Tapped" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                </StackLayout>
+                <StackLayout Orientation="Horizontal" Margin="0,8,0,0">
+                    <Label Text="Phone: " TextColor="Gray" FontSize="Micro">
+                       
+                    </Label>
+                    <Label Text="212-300-7950" TextColor="Blue" FontSize="Micro">
+                         <Label.GestureRecognizers>
+                            <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Handle_Tapped_1" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                </StackLayout>
+            </StackLayout>
+        </ScrollView>
+        </StackLayout>
+</ContentPage>

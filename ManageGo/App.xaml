@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Application xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="ManageGo.App">
+    <Application.Resources>
+        <ResourceDictionary>
+             <!-- Colors -->
+            <Color x:Key="Primary">#3E90F4</Color>
+            <Color x:Key="Secondary">#60A6F5</Color>
+            <Color x:Key="Tertiary">#FFFFFF</Color>
+            <Color x:Key="Grey-Mid-1">#58595B</Color>
+            <Color x:Key="Grey-Light-1">#A7A9AC</Color>
+            <Color x:Key="Grey-Mid-2">#949494</Color>
+            <Color x:Key="Grey-Dark-1">#323232</Color>
+            <Color x:Key="Off-White">#F9FAFB</Color>
+
+            <Color x:Key="Green">#55C433</Color>
+            <Color x:Key="Red">#E13D40</Color>
+             <Style x:Key="Regular-Text" TargetType="Label">
+                
+            </Style>
+            <Style x:Key="Small-Text" TargetType="Label" BasedOn="{StaticResource Regular-Text}">
+                <Setter Property="FontSize" Value="Small" />
+            </Style> 
+            <Style x:Key="Primary-Small" TargetType="Label" BasedOn="{StaticResource Small-Text}">
+                <Setter Property="TextColor" Value="{StaticResource Primary}" />
+            </Style>
+           
+           
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

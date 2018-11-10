@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" 
+              xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core" 
+             ios:Page.UseSafeArea="true" 
+             x:Name="ThisPage"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="ManageGo.WelcomePage">
+    <StackLayout Spacing="0">
+        
+        <StackLayout Orientation="Horizontal" Padding="8" HeightRequest="42">
+            <Button BackgroundColor="Transparent"
+                    Command="{Binding OnMasterMenuTapped}"
+                    HorizontalOptions="Start"
+                    IsVisible="{Binding HamburgerIsVisible}"
+                    VerticalOptions="CenterAndExpand"
+                    Image="nav_menu_icon.png" />
+            <Image Source="logo.png" Margin="-32,0,0,0" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"/>
+        </StackLayout>
+        <ScrollView BackgroundColor="#f9fafb" VerticalOptions="FillAndExpand">
+            <StackLayout Spacing="0">
+                <Label Text="Welcome" FontAttributes="Bold" Margin="0,8,0,7" FontSize="Small" HorizontalTextAlignment="Center"/>
+                <Image Source="dashboard_1.jpg" HorizontalOptions="Center" VerticalOptions="Start"/>
+                <Frame IsVisible="{Binding UserCanViewPayments}" Margin="12" Padding="0,8,0,12" HasShadow="false">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <BoxView Grid.Row="0" Grid.ColumnSpan="2" Margin="0,9,0,0" HeightRequest="3" BackgroundColor="#4bc800" />
+                        <Label Text="Payments" Grid.ColumnSpan="2" FontSize="Medium" TextColor="#323232" Grid.Row="1" Margin="21,0,0,14"/>
+                        <StackLayout Grid.Row="2" Margin="21,0,0,0" Grid.Column="0" HorizontalOptions="StartAndExpand">
+                            <Label  FontSize="Small" TextColor="#a7a9ac" Text="Total this week" />
+                            <Label  FontSize="Small" TextColor="#4bc800" Text="{Binding TotalPaymentsThisWeek}" HorizontalTextAlignment="Start"/>
+                        </StackLayout>
+                        <StackLayout Margin="21,0,0,0"  Grid.Row="2" Grid.Column="1" HorizontalOptions="StartAndExpand">
+                            <Label FontSize="Small" TextColor="#a7a9ac" Text="Total this month" />
+                            <Label  FontSize="Small" TextColor="#58595b" Text="{Binding TotalPaymentsThisMonth}" HorizontalTextAlignment="Start"/>
+                        </StackLayout>
+                    </Grid>
+                </Frame>
+                <Frame IsVisible="{Binding UserCanViewTickets}" Margin="12" Padding="0,8,0,12" HasShadow="false">
+                    <Grid >
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                           
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <BoxView Grid.Row="0" Grid.ColumnSpan="2" HeightRequest="3" BackgroundColor="#318bfa" Margin="0,9,0,0"/>
+                        <Label Text="Maintenance tickets" TextColor="#323232" FontSize="Medium" Grid.Row="1" Grid.ColumnSpan="2" Margin="21,0,0,14"/>
+                        <StackLayout Margin="21,0,0,0" Grid.Row="2" Grid.Column="0" HorizontalOptions="StartAndExpand">
+                            <Label  FontSize="Small" TextColor="#a7a9ac" Text="Total open tickets" />
+                            <Label  FontSize="Small" TextColor="#e53935" Text="{Binding TotalOpenTickets}" HorizontalTextAlignment="Start"/>
+                        </StackLayout>
+                         <StackLayout Margin="21,0,0,0" Grid.Row="2" Grid.Column="1" HorizontalOptions="Start">
+                            <Label  FontSize="Small" TextColor="#a7a9ac" Text="Unread tickets" />
+                            <Label  FontSize="Small" TextColor="#58595b" Text="{Binding TotalUnreadTickets}" HorizontalTextAlignment="Start"/>
+                        </StackLayout>
+                       
+                    </Grid>
+                </Frame>
+                    <StackLayout VerticalOptions="CenterAndExpand" IsVisible="{Binding HasLoaded}">
+                       <Label Text="{Binding Path=UserName}" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalOptions="Center"/>
+                       <Label Text="Open the menu to get started" FontSize="Micro" TextColor="#58595b" HorizontalTextAlignment="Center" >
+                       <Label.GestureRecognizers>
+                            <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnMasterMenuTapped}" />
+                        </Label.GestureRecognizers>
+                        </Label> 
+                    </StackLayout>   
+                    <StackLayout VerticalOptions="CenterAndExpand" IsVisible="{Binding APIhasFailed}">
+                       <Label Text="{Binding ErrorText}" FontSize="Large" TextColor="#58595b" HorizontalTextAlignment="Center" />
+                    </StackLayout>  
+                 <StackLayout x:Name="LoaderView" VerticalOptions="CenterAndExpand" IsVisible="{Binding IsLoading}">
+                    <ActivityIndicator IsRunning="{Binding Path=IsVisible,Source={x:Reference LoaderView}}" />  
+                    <Label Text="Loading..." FontSize="Micro" TextColor="#58595b" HorizontalTextAlignment="Center" />
+                  </StackLayout> 
+            </StackLayout>
+        </ScrollView>
+    </StackLayout>
+</ContentPage>
