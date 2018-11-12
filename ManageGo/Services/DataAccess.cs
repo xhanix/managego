@@ -64,13 +64,19 @@ namespace ManageGo.Services
             return responseString;
         }
 
-
-
         public static async Task<Dictionary<string, string>> GetDashboardAsync()
         {
             await Login();
             var response = await client.PostAsync(BaseUrl + APIpaths.dashboard.ToString(), null);
             return await GetResultDictionaryFromResponse(response);
+        }
+
+        public static async Task<List<MaintenanceTicket>> GetTicketsAsync(Dictionary<string, string> filters)
+        {
+
+            var content = new FormUrlEncodedContent(filters);
+            var response = await client.PostAsync(BaseUrl + APIpaths.tickets.ToString(), content);
+            return await GetTicketsFromResponse(response);
         }
 
         static async Task<Dictionary<string, string>> GetResultDictionaryFromResponse(HttpResponseMessage response)
@@ -79,14 +85,48 @@ namespace ManageGo.Services
             var responseObject = JObject.Parse(responseString);
             if (responseObject.TryGetValue("Result", out JToken token))
             {
-                var dic = token.ToObject<Dictionary<string, string>>();
-                return dic;
+                try
+                {
+                    var dic = token.ToObject<Dictionary<string, string>>();
+                    return dic;
+                }
+                catch //result property types have changed in the backend
+                {
+                    return new Dictionary<string, string>();
+                }
+
             }
             else
             {
                 throw new Exception("Unable to get the Result token from the HTTP response content");
             }
         }
+
+
+        static async Task<List<MaintenanceTicket>> GetTicketsFromResponse(HttpResponseMessage response)
+        {
+            var responseString = await response.Content.ReadAsStringAsync();
+            var responseObject = JObject.Parse(responseString);
+            if (responseObject.TryGetValue("Result", out JToken token))
+            {
+                try
+                {
+                    var dic = token.ToObject<List<MaintenanceTicket>>();
+                    return dic;
+                }
+                catch //result property types have changed in the backend
+                {
+                    return new List<MaintenanceTicket>();
+                }
+
+            }
+            else
+            {
+                throw new Exception("Unable to get the Result token from the HTTP response content");
+            }
+        }
+
+
     }
 }
 

@@ -3,7 +3,8 @@
     public enum APIpaths
     {
         dashboard,
-        authorize
+        authorize,
+        tickets
     }
 }
 
