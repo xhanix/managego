@@ -39,7 +39,7 @@ namespace ManageGo
         {
             get
             {
-                return TicketStatus != "Open" ? "chat_green.png" : "chat_red.png";
+                return NumberOfReplies > 0 ? "chat_green.png" : "chat_red.png";
             }
         }
         [JsonIgnore]

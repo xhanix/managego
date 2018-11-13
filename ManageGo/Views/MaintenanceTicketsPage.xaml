@@ -32,23 +32,20 @@
                     <ColumnDefinition Width="1" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Button Grid.Row="0" VerticalOptions="CenterAndExpand" Command="{Binding OnCalendarButtonTapped}" Grid.Column="0" TextColor="Black" Image="calendar_blue.png" Text="Calendar"  />
+                <Button Grid.Row="0" VerticalOptions="CenterAndExpand" Command="{Binding OnCalendarButtonTapped}" Clicked="Handle_Clicked" Grid.Column="0" TextColor="Black" Image="calendar_blue.png" Text="Calendar"  />
                 <BoxView Grid.Row="0" VerticalOptions="CenterAndExpand" Grid.Column="1" BackgroundColor="#ebebeb" WidthRequest="1" HorizontalOptions="FillAndExpand" />
-                <Button Grid.Row="0" VerticalOptions="CenterAndExpand" Grid.Column="2" TextColor="Black" Image="filter_blue.png" Text="Filter"  />
-
+                <Button Grid.Row="0" VerticalOptions="CenterAndExpand" Command="{Binding OnFilterTapped}" Clicked="Handle_Clicked" Grid.Column="2" TextColor="Black" Image="filter_blue.png" Text="Filter"  />
             </Grid>
             <BoxView BackgroundColor="#ebebeb" HeightRequest="1"/>
             <BoxView BackgroundColor="#f7f9fa" HeightRequest="2"/>
             <ContentView BackgroundColor="White" Content="{Binding PopContentView}" VerticalOptions="StartAndExpand"/>
-        
         </StackLayout>
        
-            
         <ListView x:Name="MyListView" Margin="0" IsPullToRefreshEnabled="false" CachingStrategy="RecycleElement" SelectionMode="None" IsEnabled="{Binding ListIsEnabled}" Grid.Row="2" HasUnevenRows="true" VerticalOptions="Fill" BackgroundColor="#f9fafb" SeparatorVisibility="None" ItemsSource="{Binding FetchedTickets}">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
-                        <Frame HasShadow="false" Margin="17,4,17,4" Padding="8,17,4,17" BackgroundColor="White">
+                        <Frame HasShadow="false" Margin="17,8,17,4" Padding="8,17,4,17" BackgroundColor="White">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -86,7 +83,7 @@
                                         <Image Source="chat_grey.png" Margin="0,5,0,0" VerticalOptions="Start" HorizontalOptions="Start" />
                                         <Label Text="{Binding FirstComment}" LineBreakMode="WordWrap"  FontSize="Small" TextColor="Gray" />
                                     </StackLayout>
-                                    <Button Text="View text" InputTransparent="true" HorizontalOptions="StartAndExpand" FontSize="Small" TextColor="#318bfa" BackgroundColor="Transparent"/>
+                                    <Button Text="View ticket" IsVisible="{Binding FirstCommentShown}" InputTransparent="true" HorizontalOptions="StartAndExpand" FontSize="Small" TextColor="#318bfa" BackgroundColor="Transparent"/>
                                 </StackLayout>
                                 <StackLayout Grid.Column="2" Padding="8,8,4,8">
                                     <Image  Source="chevron_down.png" VerticalOptions="Start" HorizontalOptions="End"/>
@@ -94,7 +91,7 @@
                                             <TapGestureRecognizer NumberOfTapsRequired="1"  CommandParameter="{Binding .}" Tapped="Handle_Tapped" />
                                     </StackLayout.GestureRecognizers>
                                 </StackLayout>
-                            </Grid>    
+                            </Grid>  
                         </Frame>
                     </ViewCell>
                 </DataTemplate>

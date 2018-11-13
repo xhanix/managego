@@ -1,4 +1,5 @@
-﻿using FreshMvvm;
+﻿using System.Collections.Generic;
+using FreshMvvm;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -13,6 +14,7 @@ namespace ManageGo
         internal static UserPermissions UserPermissions { get; set; }
         internal static string UserName { get; set; }
         internal static string PMCName { get; set; }
+        internal static List<Building> Buildings { get; set; }
         public static bool MenuIsPresented
         {
             get

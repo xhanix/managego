@@ -104,6 +104,7 @@
     <Compile Include="InfiniteScrollViewLayout.cs" />
     <Compile Include="InfiniteScrollViewSource.cs" />
     <Compile Include="CalendarRenderer.cs" />
+    <Compile Include="CustomEntry.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Resources\LaunchScreen.storyboard" />

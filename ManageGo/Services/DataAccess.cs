@@ -83,6 +83,17 @@ namespace ManageGo.Services
         }
         #endregion
 
+        #region BUILDINGS
+        public static async Task<List<Building>> GetBuildings()
+        {
+            var param = new Dictionary<string, string> { { "page", "0" } };
+            var response = await client.PostAsync(BaseUrl + APIpaths.buildings.ToString(), new FormUrlEncodedContent(param));
+            var responseString = await response.Content.ReadAsStringAsync();
+            var dic = JObject.Parse(responseString);
+            return dic.TryGetValue("Result", out JToken list) ? list.ToObject<List<Building>>() : new List<Building>();
+        }
+        #endregion
+
         #region TICKETS
 
         public static async Task<List<MaintenanceTicket>> GetTicketsAsync(Dictionary<string, string> filters)

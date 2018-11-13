@@ -70,6 +70,7 @@
     <Compile Include="CalendarPageAdapter.cs" />
     <Compile Include="CalendarViewPager.cs" />
     <Compile Include="DrawableControlView.cs" />
+    <Compile Include="CustomEntry.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

@@ -11,24 +11,28 @@ namespace ManageGo
         {
             InitializeComponent();
             NavigationPage.SetHasNavigationBar(this, false);
+
         }
 
-        void Handle_Tapped(object sender, System.EventArgs e)
+        void Handle_Tapped(object sender, EventArgs e)
         {
-            Device.BeginInvokeOnMainThread(() =>
-            {
-                var st = (StackLayout)sender;
-                var im = st.Children[0];
-                im.Rotation = im.Rotation + 180;
-                var item = ((TappedEventArgs)e).Parameter as MaintenanceTicket;
-                item.FirstCommentShown = !item.FirstCommentShown;
-                var container = st.Parent;
-                var row = container.Parent.Parent as ViewCell;
-                row.ForceUpdateSize();
-            });
+            var st = (StackLayout)sender;
+            var im = st.Children[0];
+            im.Rotation = im.Rotation + 180;
+            var item = ((TappedEventArgs)e).Parameter as MaintenanceTicket;
+            item.FirstCommentShown = !item.FirstCommentShown;
+            var container = st.Parent;
+            var row = container.Parent.Parent as ViewCell;
+            row.ForceUpdateSize();
         }
 
 
 
+        void Handle_Clicked(object sender, System.EventArgs e)
+        {
+            if (((MaintenanceTicketsPageModel)BindingContext).FetchedTickets != null
+                && ((MaintenanceTicketsPageModel)BindingContext).FetchedTickets.Count > 0)
+                MyListView.ScrollTo(((MaintenanceTicketsPageModel)BindingContext).FetchedTickets[0], ScrollToPosition.Start, false);
+        }
     }
 }

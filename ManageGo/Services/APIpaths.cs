@@ -4,7 +4,8 @@
     {
         dashboard,
         authorize,
-        tickets
+        tickets,
+        buildings
     }
 }
 

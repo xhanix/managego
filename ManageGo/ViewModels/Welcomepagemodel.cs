@@ -76,8 +76,9 @@ namespace ManageGo
                      PMCName = App.PMCName;
                  }
 
-
              });
+            if (App.Buildings is null)
+                App.Buildings = await Services.DataAccess.GetBuildings();
         }
     }
 }

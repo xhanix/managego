@@ -12,8 +12,11 @@ namespace ManageGo
         DateRange dateRange;
         public View PopContentView { get; private set; }
         bool CalendarIsShown { get; set; }
+        bool FilterSelectViewIsShown { get; set; }
         public List<MaintenanceTicket> FetchedTickets { get; private set; }
         public bool ListIsEnabled { get; set; } = false;
+        public List<Building> Buildings { get; private set; }
+
 
         DateRange DateRange
         {
@@ -40,6 +43,68 @@ namespace ManageGo
                 };
                 FetchedTickets = await Services.DataAccess.GetTicketsAsync(filters);
                 Console.WriteLine($"Tickets Fetched: {FetchedTickets.Count}");
+                Buildings = App.Buildings;
+            }
+        }
+
+        public FreshAwaitCommand OnFilterTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((tcs) =>
+                {
+                    if (FilterSelectViewIsShown)
+                    {
+                        PopContentView = null;
+                    }
+                    else
+                    {
+                        var _view = new TicketFilterSelectView(bindingContext: this);
+                        PopContentView = _view.Content;
+                    }
+                    FilterSelectViewIsShown = !FilterSelectViewIsShown;
+                    tcs?.SetResult(true);
+                }, () => !CalendarIsShown);
+            }
+        }
+
+        public FreshAwaitCommand OnBuildingTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((parameter, tcs) =>
+                {
+                    var building = parameter as Building;
+                    building.IsSelected = !building.IsSelected;
+                    tcs?.SetResult(true);
+                });
+            }
+        }
+
+        public FreshAwaitCommand OnCloseFliterViewTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((tcs) =>
+                {
+                    PopContentView = null;
+                    FilterSelectViewIsShown = false;
+                    tcs?.SetResult(true);
+                });
+            }
+        }
+
+        public FreshAwaitCommand OnApplyFiltersTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((tcs) =>
+                {
+
+                    PopContentView = null;
+                    FilterSelectViewIsShown = false;
+                    tcs?.SetResult(true);
+                });
             }
         }
 
@@ -87,22 +152,6 @@ namespace ManageGo
                         buttonContainer.Children.Add(applyButton);
                         container.Children.Add(cal);
                         container.Children.Add(buttonContainer);
-                        container.Children.Add(
-                            new BoxView
-                            {
-                                HorizontalOptions = LayoutOptions.FillAndExpand,
-                                HeightRequest = 1,
-                                BackgroundColor = Color.Gray
-                            }
-                        );
-                        container.Children.Add(
-                            new BoxView
-                            {
-                                HorizontalOptions = LayoutOptions.FillAndExpand,
-                                HeightRequest = 1,
-                                BackgroundColor = Color.Silver
-                            }
-                        );
                         PopContentView = container;
                         ListIsEnabled = false;
                     }
@@ -113,7 +162,7 @@ namespace ManageGo
                     }
                     CalendarIsShown = !CalendarIsShown;
                     tcs?.SetResult(true);
-                });
+                }, () => !FilterSelectViewIsShown);
             }
         }
     }
