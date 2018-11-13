@@ -16,7 +16,9 @@
         UserInfo,
         Permissions,
         UserFirstName,
-        UserLastName
+        UserLastName,
+        PMCInfo,
+        PMCName
     }
 }
 

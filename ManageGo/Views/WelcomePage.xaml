@@ -69,11 +69,11 @@
                     </Grid>
                 </Frame>
                     <StackLayout VerticalOptions="CenterAndExpand" IsVisible="{Binding HasLoaded}">
-                       <Label Text="{Binding Path=UserName}" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalOptions="Center"/>
+                       <Label Text="{Binding Path=PMCName}" FontAttributes="Bold" HorizontalTextAlignment="Center" VerticalOptions="Center"/>
                        <Label Text="Open the menu to get started" FontSize="Micro" TextColor="#58595b" HorizontalTextAlignment="Center" >
-                       <Label.GestureRecognizers>
-                            <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnMasterMenuTapped}" />
-                        </Label.GestureRecognizers>
+                           <Label.GestureRecognizers>
+                                <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnMasterMenuTapped}" />
+                            </Label.GestureRecognizers>
                         </Label> 
                     </StackLayout>   
                     <StackLayout VerticalOptions="CenterAndExpand" IsVisible="{Binding APIhasFailed}">

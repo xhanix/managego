@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using PropertyChanged;
 using System.Linq;
 using Newtonsoft.Json;
 
 namespace ManageGo
 {
+    [AddINotifyPropertyChangedInterface]
     public class MaintenanceTicket
     {
         public int TicketId { get; set; }
@@ -45,7 +47,7 @@ namespace ManageGo
         {
             get
             {
-                return DueDate ?? DateTimeOffset.Now.ToLocalTime().LocalDateTime.ToShortDateString();
+                return TicketCreateTime.ToString("MMM dd - h:mm tt");
             }
         }
         [JsonIgnore]
@@ -66,5 +68,7 @@ namespace ManageGo
         }
         [JsonIgnore]
         public bool FirstCommentShown { get; set; }
+
+
     }
 }

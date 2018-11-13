@@ -34,8 +34,10 @@ namespace ManageGo.Services
                 var jResult = result.ToObject<Dictionary<string, JObject>>();
                 //get user-info
                 jResult.TryGetValue(APIkeys.UserInfo.ToString(), out JObject userInfo);
+                jResult.TryGetValue(APIkeys.PMCInfo.ToString(), out JObject pmcInfo);
                 //user info is a dictionary
                 var dic = userInfo.ToObject<Dictionary<string, string>>();
+                var pmcDic = pmcInfo.ToObject<Dictionary<string, string>>();
                 //get access token
                 if (dic.TryGetValue(APIkeys.AccessToken.ToString(), out string token))
                 {
@@ -48,6 +50,10 @@ namespace ManageGo.Services
                     && dic.TryGetValue(APIkeys.UserLastName.ToString(), out string lastName))
                 {
                     App.UserName = firstName + " " + lastName;
+                }
+                if (pmcDic.TryGetValue(APIkeys.PMCName.ToString(), out string pmcName))
+                {
+                    App.PMCName = pmcName;
                 }
                 //get Permissions
                 jResult.TryGetValue(APIkeys.Permissions.ToString(), out JObject permisions);

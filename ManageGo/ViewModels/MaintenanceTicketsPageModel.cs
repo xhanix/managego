@@ -51,7 +51,7 @@ namespace ManageGo
                 {
                     if (!CalendarIsShown)
                     {
-                        StackLayout container = new StackLayout();
+                        StackLayout container = new StackLayout { Spacing = 0 };
                         Grid buttonContainer = new Grid { Padding = new Thickness(8, 8, 8, 12) };
                         var cancelButton = new Button
                         {
@@ -87,6 +87,22 @@ namespace ManageGo
                         buttonContainer.Children.Add(applyButton);
                         container.Children.Add(cal);
                         container.Children.Add(buttonContainer);
+                        container.Children.Add(
+                            new BoxView
+                            {
+                                HorizontalOptions = LayoutOptions.FillAndExpand,
+                                HeightRequest = 1,
+                                BackgroundColor = Color.Gray
+                            }
+                        );
+                        container.Children.Add(
+                            new BoxView
+                            {
+                                HorizontalOptions = LayoutOptions.FillAndExpand,
+                                HeightRequest = 1,
+                                BackgroundColor = Color.Silver
+                            }
+                        );
                         PopContentView = container;
                         ListIsEnabled = false;
                     }

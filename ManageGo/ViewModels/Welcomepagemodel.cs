@@ -16,6 +16,7 @@ namespace ManageGo
         public bool UserCanViewPayments { get; private set; }
         public bool UserCanViewTickets { get; private set; }
         public string UserName { get; private set; }
+        public string PMCName { get; private set; }
 
         override internal async Task LoadData(bool refreshData = false)
         {
@@ -23,7 +24,7 @@ namespace ManageGo
                 return;
             await Services.DataAccess.GetDashboardAsync().ContinueWith(async (arg) =>
              {
-                 if (arg.Status == System.Threading.Tasks.TaskStatus.Faulted)
+                 if (arg.Status == TaskStatus.Faulted)
                  {
                      APIhasFailed = true;
                      HasLoaded = false;
@@ -72,6 +73,7 @@ namespace ManageGo
                            UserPermissions.CanAccessTickets) == UserPermissions.CanAccessTickets;
 
                      UserName = App.UserName;
+                     PMCName = App.PMCName;
                  }
 
 

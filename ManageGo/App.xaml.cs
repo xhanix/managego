@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using FreshMvvm;
+﻿using FreshMvvm;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -14,7 +12,7 @@ namespace ManageGo
         //set on login. See returned UserInfo.
         internal static UserPermissions UserPermissions { get; set; }
         internal static string UserName { get; set; }
-
+        internal static string PMCName { get; set; }
         public static bool MenuIsPresented
         {
             get
