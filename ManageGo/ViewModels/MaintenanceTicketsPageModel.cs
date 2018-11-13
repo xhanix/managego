@@ -13,6 +13,7 @@ namespace ManageGo
         public View PopContentView { get; private set; }
         bool CalendarIsShown { get; set; }
         public List<MaintenanceTicket> FetchedTickets { get; private set; }
+        public bool ListIsEnabled { get; set; } = false;
 
         DateRange DateRange
         {
@@ -26,18 +27,20 @@ namespace ManageGo
             }
         }
 
-        internal override async Task LoadData()
+        internal override async Task LoadData(bool refreshData = false)
         {
             //throw new NotImplementedException();
-            Dictionary<string, string> filters = new Dictionary<string, string>
+            if (FetchedTickets is null || refreshData)
             {
-                { "DateFrom", this.DateRange.StartDate.ToLongDateString() },
-                { "DateTo", this.DateRange.EndDate.Value.ToLongDateString() },
+                Dictionary<string, string> filters = new Dictionary<string, string>
+                {
+                    { "DateFrom", this.DateRange.StartDate.ToLongDateString() },
+                    { "DateTo", this.DateRange.EndDate.Value.ToLongDateString() },
 
-            };
-            FetchedTickets = await Services.DataAccess.GetTicketsAsync(filters);
-            Console.WriteLine($"Tickets Fetched: {FetchedTickets.Count}");
-
+                };
+                FetchedTickets = await Services.DataAccess.GetTicketsAsync(filters);
+                Console.WriteLine($"Tickets Fetched: {FetchedTickets.Count}");
+            }
         }
 
         public FreshAwaitCommand OnCalendarButtonTapped
@@ -78,17 +81,19 @@ namespace ManageGo
                         {
                             this.DateRange = cal.SelectedDates;
                             OnCalendarButtonTapped.Execute(null);
-                            await LoadData();
+                            await LoadData(true);
                         };
                         buttonContainer.Children.Add(cancelButton);
                         buttonContainer.Children.Add(applyButton);
                         container.Children.Add(cal);
                         container.Children.Add(buttonContainer);
                         PopContentView = container;
+                        ListIsEnabled = false;
                     }
                     else
                     {
                         PopContentView = null;
+                        ListIsEnabled = true;
                     }
                     CalendarIsShown = !CalendarIsShown;
                     tcs?.SetResult(true);

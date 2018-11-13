@@ -11,7 +11,8 @@ namespace ManageGo.Services
     {
         public static string BaseUrl = "https://ploop.dynamo-ny.com/api/pmc_v2/";
         static readonly HttpClient client = new HttpClient();
-        static string AccessToken { get; set; }
+        internal static string AccessToken { get; private set; }
+        private static DateTimeOffset TokenExpiry { get; set; } = DateTimeOffset.FromUnixTimeSeconds(0);
 
         public static async Task<object> Login()
         {
@@ -39,6 +40,8 @@ namespace ManageGo.Services
                 if (dic.TryGetValue(APIkeys.AccessToken.ToString(), out string token))
                 {
                     AccessToken = token;
+                    TokenExpiry = DateTimeOffset.Now.AddMinutes(60);
+                    client.DefaultRequestHeaders.Remove(APIkeys.AccessToken.ToString());
                     client.DefaultRequestHeaders.Add(APIkeys.AccessToken.ToString(), AccessToken);
                 }
                 if (dic.TryGetValue(APIkeys.UserFirstName.ToString(), out string firstName)
@@ -64,20 +67,27 @@ namespace ManageGo.Services
             return responseString;
         }
 
+        #region DASHBOARD
         public static async Task<Dictionary<string, string>> GetDashboardAsync()
         {
-            await Login();
+            if (TokenExpiry < DateTimeOffset.Now)
+                await Login();
             var response = await client.PostAsync(BaseUrl + APIpaths.dashboard.ToString(), null);
             return await GetResultDictionaryFromResponse(response);
         }
+        #endregion
+
+        #region TICKETS
 
         public static async Task<List<MaintenanceTicket>> GetTicketsAsync(Dictionary<string, string> filters)
         {
-
+            if (TokenExpiry < DateTimeOffset.Now)
+                await Login();
             var content = new FormUrlEncodedContent(filters);
             var response = await client.PostAsync(BaseUrl + APIpaths.tickets.ToString(), content);
             return await GetTicketsFromResponse(response);
         }
+        #endregion
 
         static async Task<Dictionary<string, string>> GetResultDictionaryFromResponse(HttpResponseMessage response)
         {

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Newtonsoft.Json;
 
 namespace ManageGo
 {
@@ -22,5 +24,47 @@ namespace ManageGo
         public bool HasPet { get; set; }
         public bool HasAccess { get; set; }
         public List<MaintenanceTicketComment> Comments { get; set; }
+        [JsonIgnore]
+        public string NumberOfRepliesString
+        {
+            get
+            {
+                return $"{NumberOfReplies}";
+            }
+        }
+        [JsonIgnore]
+        public string CommentImage
+        {
+            get
+            {
+                return TicketStatus != "Open" ? "chat_green.png" : "chat_red.png";
+            }
+        }
+        [JsonIgnore]
+        public string FormattedDate
+        {
+            get
+            {
+                return DueDate ?? DateTimeOffset.Now.ToLocalTime().LocalDateTime.ToShortDateString();
+            }
+        }
+        [JsonIgnore]
+        public string Category
+        {
+            get
+            {
+                return Categories.Count > 0 ? Categories.First().CategoryName : "";
+            }
+        }
+        [JsonIgnore]
+        public string TenantDetails
+        {
+            get
+            {
+                return Tenant == null ? "" : $"{Tenant.TenantFirstName} {Tenant.TenantLastName}, {Building.BuildingName} #{Unit.UnitName}";
+            }
+        }
+        [JsonIgnore]
+        public bool FirstCommentShown { get; set; }
     }
 }

@@ -53,7 +53,7 @@
                 <Label Text="Contact us" FontAttributes="Bold" FontSize="Small" Margin="0,8,0,0" />
                 <StackLayout Orientation="Horizontal" Margin="0,8,0,0">
                     <Label Text="Email: " TextColor="Gray" FontSize="Micro"/>
-                    <Label Text="support@managego.com" TextColor="Blue" FontSize="Micro">
+                    <Label Text="support@managego.com" TextColor="#318bfa" FontSize="Micro">
                          <Label.GestureRecognizers>
                             <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Handle_Tapped" />
                         </Label.GestureRecognizers>
@@ -63,7 +63,7 @@
                     <Label Text="Phone: " TextColor="Gray" FontSize="Micro">
                        
                     </Label>
-                    <Label Text="212-300-7950" TextColor="Blue" FontSize="Micro">
+                    <Label Text="212-300-7950" TextColor="#318bfa" FontSize="Micro">
                          <Label.GestureRecognizers>
                             <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Handle_Tapped_1" />
                         </Label.GestureRecognizers>

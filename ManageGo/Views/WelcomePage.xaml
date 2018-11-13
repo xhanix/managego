@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms" 
               xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core" 
              ios:Page.UseSafeArea="true" 
+              BackgroundColor="#f9fafb"
              x:Name="ThisPage"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="ManageGo.WelcomePage">
     <StackLayout Spacing="0">

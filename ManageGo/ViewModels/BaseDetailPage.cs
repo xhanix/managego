@@ -31,7 +31,7 @@ namespace ManageGo
             await LoadData();
         }
 
-        internal abstract Task LoadData();
+        internal abstract Task LoadData(bool refreshData = false);
 
         protected override void ViewIsDisappearing(object sender, EventArgs e)
         {

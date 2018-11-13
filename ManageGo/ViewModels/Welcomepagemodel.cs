@@ -17,7 +17,7 @@ namespace ManageGo
         public bool UserCanViewTickets { get; private set; }
         public string UserName { get; private set; }
 
-        override internal async Task LoadData()
+        override internal async Task LoadData(bool refreshData = false)
         {
             if (cancellationTokenSource.IsCancellationRequested)
                 return;

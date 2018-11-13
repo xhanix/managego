@@ -44,13 +44,55 @@
         </StackLayout>
        
             
-        <ListView Grid.Row="2" HasUnevenRows="true" VerticalOptions="StartAndExpand" BackgroundColor="#f9fafb" SeparatorVisibility="None" ItemsSource="{Binding FetchedTickets}">
+        <ListView SelectionMode="None" IsEnabled="{Binding ListIsEnabled}" Grid.Row="2" HasUnevenRows="true" VerticalOptions="StartAndExpand" BackgroundColor="#f9fafb" SeparatorVisibility="None" ItemsSource="{Binding FetchedTickets}">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
-                        <Frame HasShadow="false" Margin="8" Padding="2" BackgroundColor="White">
+                        <Frame HasShadow="false" Margin="17,4,17,4" Padding="8,17,4,17" BackgroundColor="White">
                             <Grid>
-                                <Label Text="{Binding TicketSubject}" FontAttributes="Bold" LineBreakMode="TailTruncation" />
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="7*" />
+                                     <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <StackLayout Grid.Column="0" Margin="0,5,0,0" HorizontalOptions="Start" VerticalOptions="StartAndExpand">
+                                    <Grid VerticalOptions="StartAndExpand" HorizontalOptions="Start">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="auto" />
+                                             <RowDefinition Height="auto" />
+                                             <RowDefinition Height="auto" />
+                                             <RowDefinition Height="auto" />
+                                        </Grid.RowDefinitions>
+                                        <Image HorizontalOptions="CenterAndExpand" Grid.Row="0" Source="{Binding CommentImage}" />
+                                        <Label Text="{Binding NumberOfRepliesString}" FontSize="Micro" HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center" Grid.Row="0" TextColor="White"  />
+                                        <Image HorizontalOptions="CenterAndExpand" IsVisible="{Binding HasAccess}" Grid.Row="1" Source="key_blue.png" />
+                                        <Image HorizontalOptions="CenterAndExpand" IsVisible="{Binding HasEvent}" Grid.Row="2" Source="calendar_blue_sm.png" />
+                                        <Image HorizontalOptions="CenterAndExpand" IsVisible="{Binding HasWorkorder}" Grid.Row="3" Source="wrench_blue.png" />
+                                    </Grid>
+                                </StackLayout>
+                                <StackLayout Grid.Column="1" HorizontalOptions="FillAndExpand" VerticalOptions="StartAndExpand">
+                                    <Label VerticalOptions="StartAndExpand" Text="{Binding TicketSubject}" FontAttributes="Bold" LineBreakMode="TailTruncation" />
+                                    <StackLayout Orientation="Horizontal">
+                                        <Label Text="{Binding FormattedDate}" TextColor="#58595b" VerticalTextAlignment="Center" VerticalOptions="Center" />
+                                        <Label Text="•" TextColor="#58595b" FontSize="Small" VerticalTextAlignment="Center" VerticalOptions="Center"/>
+                                        <Label Text="{Binding Category}" FontSize="Small" VerticalTextAlignment="Center" TextColor="#58595b" VerticalOptions="Center"/>
+                                    </StackLayout>
+                                    <BoxView BackgroundColor="#808285" HeightRequest="1" HorizontalOptions="FillAndExpand" />
+                                    <StackLayout Orientation="Horizontal">
+                                        <Image Source="profile_grey.png" Margin="0,5,0,0" VerticalOptions="Start" HorizontalOptions="Start"/>
+                                        <Label Text="{Binding TenantDetails}" LineBreakMode="MiddleTruncation" VerticalTextAlignment="Start" FontSize="Small" TextColor="Gray" />
+                                    </StackLayout>
+                                    <StackLayout Orientation="Horizontal" IsVisible="{Binding FirstCommentShown}">
+                                        <Image Source="chat_grey.png" Margin="0,5,0,0" VerticalOptions="Start" HorizontalOptions="Start"/>
+                                        <Label Text="{Binding FirstComment}" VerticalTextAlignment="Start" FontSize="Small" TextColor="Gray" />
+                                    </StackLayout>
+                                    <Button Text="View text" HorizontalOptions="StartAndExpand" FontSize="Small" TextColor="#318bfa" BackgroundColor="Transparent"/>
+                                </StackLayout>
+                                <Image Grid.Column="2" Source="chevron_down.png" VerticalOptions="Start" HorizontalOptions="End">
+                                    <Image.GestureRecognizers>
+                                        <TapGestureRecognizer NumberOfTapsRequired="1"  CommandParameter="{Binding .}" Tapped="Handle_Tapped" />
+                                    </Image.GestureRecognizers>
+                                </Image>
                             </Grid>    
                         </Frame>
                     </ViewCell>
