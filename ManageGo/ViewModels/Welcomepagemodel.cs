@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using FreshMvvm;
@@ -26,19 +28,7 @@ namespace ManageGo
              {
                  if (arg.Status == TaskStatus.Faulted)
                  {
-                     APIhasFailed = true;
-                     HasLoaded = false;
-                     ErrorText = Connectivity.NetworkAccess != NetworkAccess.Internet ?
-                                             "No Internet Connection" : "Host Unreachable";
-                     await Task.Run(() =>
-                     {
-                         while (Connectivity.NetworkAccess != NetworkAccess.Internet
-                                && !cancellationTokenSource.IsCancellationRequested)
-                         {
-                             Thread.Sleep(1000);
-                         }
-                     });
-                     await LoadData();
+                     await ShowNoInternetView();
                  }
                  else if (arg.Status == TaskStatus.RanToCompletion)
                  {
@@ -77,8 +67,40 @@ namespace ManageGo
                  }
 
              });
-            if (App.Buildings is null)
-                App.Buildings = await Services.DataAccess.GetBuildings();
+            try
+            {
+                List<Task> tasks = new List<Task>();
+                if (App.Buildings is null)
+                    tasks.Add(Services.DataAccess.GetBuildings());
+                if (App.Categories is null)
+                {
+                    tasks.Add(Services.DataAccess.GetAllCategoriesAndTags());
+                    tasks.Add(Services.DataAccess.GetAllUsers());
+                }
+                await Task.WhenAll(tasks);
+            }
+            catch
+            {
+                await ShowNoInternetView();
+            }
+
+        }
+
+        private async Task ShowNoInternetView()
+        {
+            APIhasFailed = true;
+            HasLoaded = false;
+            ErrorText = Connectivity.NetworkAccess != NetworkAccess.Internet ?
+                                    "No Internet Connection" : "Host Unreachable";
+            await Task.Run(() =>
+            {
+                while (Connectivity.NetworkAccess != NetworkAccess.Internet
+                       && !cancellationTokenSource.IsCancellationRequested)
+                {
+                    Thread.Sleep(1000);
+                }
+            });
+            await LoadData();
         }
     }
 }

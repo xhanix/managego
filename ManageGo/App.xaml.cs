@@ -15,6 +15,9 @@ namespace ManageGo
         internal static string UserName { get; set; }
         internal static string PMCName { get; set; }
         internal static List<Building> Buildings { get; set; }
+        internal static List<Categories> Categories { get; set; }
+        internal static List<Tags> Tags { get; set; }
+        internal static List<User> Users { get; set; }
         public static bool MenuIsPresented
         {
             get

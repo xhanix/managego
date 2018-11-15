@@ -5,7 +5,9 @@
         dashboard,
         authorize,
         tickets,
-        buildings
+        buildings,
+        MaintenanceObjects, //provides list of Categories,Tags
+        Users
     }
 }
 

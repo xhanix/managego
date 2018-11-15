@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -18,8 +19,8 @@ namespace ManageGo.Services
         {
             Dictionary<string, string> credentials = new Dictionary<string, string>
             {
-                { "login", "xhanix@me.com" },
-                { "password", "123123" }
+                { "login", "pmc@mobile.test" },
+                { "password", "111111" }
             };
             var content = new FormUrlEncodedContent(credentials);
             var response = await client.PostAsync(BaseUrl + APIpaths.authorize.ToString(), content);
@@ -73,6 +74,24 @@ namespace ManageGo.Services
             return responseString;
         }
 
+        #region MAINTENANCE OBJECT - CATEGORIES
+        public static async Task GetAllCategoriesAndTags()
+        {
+            var response = await client.PostAsync(BaseUrl + APIpaths.MaintenanceObjects.ToString(), null);
+            var responseString = await response.Content.ReadAsStringAsync();
+            var obj = JObject.Parse(responseString);
+            var result = obj.GetValue("Result");
+
+            if (result.ToObject<Dictionary<string, object>>().TryGetValue("Categories", out object list)
+                && list is JContainer && result.ToObject<Dictionary<string, object>>().TryGetValue("Tags", out object tagsList))
+            {
+                App.Categories = ((JContainer)list).ToObject<List<Categories>>();
+                App.Tags = ((JContainer)tagsList).ToObject<List<Tags>>();
+            }
+        }
+
+        #endregion
+
         #region DASHBOARD
         public static async Task<Dictionary<string, string>> GetDashboardAsync()
         {
@@ -84,13 +103,27 @@ namespace ManageGo.Services
         #endregion
 
         #region BUILDINGS
-        public static async Task<List<Building>> GetBuildings()
+        public static async Task GetBuildings()
         {
             var param = new Dictionary<string, string> { { "page", "0" } };
             var response = await client.PostAsync(BaseUrl + APIpaths.buildings.ToString(), new FormUrlEncodedContent(param));
             var responseString = await response.Content.ReadAsStringAsync();
             var dic = JObject.Parse(responseString);
-            return dic.TryGetValue("Result", out JToken list) ? list.ToObject<List<Building>>() : new List<Building>();
+            if (dic.TryGetValue("Result", out JToken list))
+            {
+                App.Buildings = list.ToObject<List<Building>>();
+            }
+        }
+        #endregion
+
+        #region USERS
+        public static async Task GetAllUsers()
+        {
+            var response = await client.PostAsync(BaseUrl + APIpaths.Users.ToString(), null);
+            var responseString = await response.Content.ReadAsStringAsync();
+            var obj = JObject.Parse(responseString);
+            var result = obj.GetValue("Result");
+            App.Users = result.ToObject<List<User>>();
         }
         #endregion
 
@@ -145,7 +178,6 @@ namespace ManageGo.Services
                 {
                     return new List<MaintenanceTicket>();
                 }
-
             }
             else
             {

@@ -37,7 +37,7 @@ namespace ManageGo
         {
             get
             {
-                return IsSelected ? "checked" : "unchecked.png";
+                return IsSelected ? "checked.png" : "unchecked.png";
             }
         }
     }
