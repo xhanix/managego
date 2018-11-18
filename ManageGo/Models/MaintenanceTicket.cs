@@ -63,7 +63,7 @@ namespace ManageGo
         {
             get
             {
-                return Tenant == null ? "" : $"{Tenant.TenantFirstName} {Tenant.TenantLastName}, {Building.BuildingName} #{Unit.UnitName}";
+                return Tenant == null ? "" : $"{Tenant.TenantFirstName} {Tenant.TenantLastName}, {Building?.BuildingName} #{Unit?.UnitName}";
             }
         }
         [JsonIgnore]

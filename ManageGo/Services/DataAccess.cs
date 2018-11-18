@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -129,12 +130,18 @@ namespace ManageGo.Services
 
         #region TICKETS
 
-        public static async Task<List<MaintenanceTicket>> GetTicketsAsync(Dictionary<string, string> filters)
+        public static async Task<List<MaintenanceTicket>> GetTicketsAsync(Dictionary<string, object> filters)
         {
             if (TokenExpiry < DateTimeOffset.Now)
                 await Login();
-            var content = new FormUrlEncodedContent(filters);
-            var response = await client.PostAsync(BaseUrl + APIpaths.tickets.ToString(), content);
+            var jsonString = JsonConvert.SerializeObject(filters);
+            var content = new StringContent(jsonString, Encoding.UTF8, "application/json");//new FormUrlEncodedContent(filters);
+            var msg = new HttpRequestMessage(HttpMethod.Post, BaseUrl + APIpaths.tickets.ToString())
+            {
+                Content = content
+            };
+            var response = await client.SendAsync(msg);
+
             return await GetTicketsFromResponse(response);
         }
         #endregion

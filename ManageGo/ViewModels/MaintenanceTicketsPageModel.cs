@@ -6,6 +6,7 @@ using FreshMvvm;
 using Xamarin.Forms;
 using PropertyChanged;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace ManageGo
 {
@@ -190,7 +191,7 @@ namespace ManageGo
                 return SelectedPriorityString == "All" ? filterDefaultColor : filterSelectedColor;
             }
         }
-        Dictionary<string, string> FiltersDictionary { get; set; }
+        Dictionary<string, object> FiltersDictionary { get; set; }
         [AlsoNotifyFor("FilterDueDateString", "FilterDueDateColor")]
         public DateRange FilterDueDate { get; set; }
 
@@ -230,12 +231,12 @@ namespace ManageGo
             //throw new NotImplementedException();
             if (FetchedTickets is null || refreshData)
             {
-                if (FiltersDictionary is null)
+                if (FiltersDictionary is null || refreshData)
                 {
-                    FiltersDictionary = new Dictionary<string, string>
+                    FiltersDictionary = new Dictionary<string, object>
                     {
-                        { "DateFrom", this.DateRange.StartDate.ToLongDateString() },
-                        { "DateTo", this.DateRange.EndDate.Value.ToLongDateString() },
+                        { "DateFrom", this.DateRange.StartDate },
+                        { "DateTo", this.DateRange.EndDate ?? this.DateRange.StartDate },
                     };
                 }
 
@@ -245,6 +246,7 @@ namespace ManageGo
                 Categories = App.Categories;
                 Tags = App.Tags;
                 Users = App.Users;
+                ListIsEnabled = true;
             }
         }
 
@@ -402,67 +404,66 @@ namespace ManageGo
                     PopContentView = null;
                     var numberOfFilters = 0;
                     FilterSelectViewIsShown = false;
-                    Dictionary<string, string> paramDic = new Dictionary<string, string>
-                    {
-                        { "DateFrom", this.DateRange.StartDate.ToLongDateString() },
-                        { "DateTo", this.DateRange.EndDate.Value.ToLongDateString() }
-                    };
-                    if (FilterDueDate != null)
-                    {
-                        paramDic.Add("DueDateFrom", FilterDueDate.StartDate.ToLongDateString());
-                        paramDic.Add("DueDateTo", FilterDueDate.EndDate.HasValue ? FilterDueDate.EndDate.Value.ToLongDateString() :
-                                    FilterDueDate.StartDate.ToLongDateString());
-                        numberOfFilters++;
-                    }
+                    Dictionary<string, object> paramDic = new Dictionary<string, object>();
+
                     if (Buildings != null && Buildings.Any(f => f.IsSelected))
                     {
-                        paramDic.Add("Buildings", Buildings.Where(t => t.IsSelected).Select(t => $"{t.BuildingId}").ToString());
+                        paramDic.Add("Buildings", Buildings.Where(f => f.IsSelected).Select(f => f.BuildingId));
                         numberOfFilters++;
                     }
                     if (Tags != null && Tags.Any(f => f.IsSelectedForFiltering))
                     {
-                        paramDic.Add("Tags", string.Join(",", Tags.Where(t => t.IsSelectedForFiltering).Select(t => $"{t.TagID}")));
+                        paramDic.Add("Tags", Tags.Where(t => t.IsSelectedForFiltering).Select(t => t.TagID));
                         numberOfFilters++;
                     }
 
                     if (SelectedOpenTicketsFilter && SelectedClosedTicketsFilter)
                     {
-                        paramDic.Add("TicketStatus", "-1");
+                        paramDic.Add("TicketStatus", -1);
                     }
                     else if (SelectedOpenTicketsFilter)
                     {
-                        paramDic.Add("TicketStatus", "0");
+                        paramDic.Add("TicketStatus", 0);
                         numberOfFilters++;
                     }
                     else if (SelectedClosedTicketsFilter)
                     {
-                        paramDic.Add("TicketStatus", "1");
+                        paramDic.Add("TicketStatus", 1);
                         numberOfFilters++;
                     }
                     else
                     {
-                        paramDic.Add("TicketStatus", "-1");
+                        paramDic.Add("TicketStatus", -1);
                     }
                     if (IsLowPriorityFilterSelected || IsMediumPriorityFilterSelected || IsHighPriorityFilterSelected)
                     {
-                        List<string> priorities = new List<string>();
+                        List<int> priorities = new List<int>();
                         if (IsLowPriorityFilterSelected)
-                            priorities.Add("0");
+                            priorities.Add(0);
                         if (IsMediumPriorityFilterSelected)
-                            priorities.Add("1");
+                            priorities.Add(1);
                         if (IsHighPriorityFilterSelected)
-                            priorities.Add("2");
+                            priorities.Add(2);
                         numberOfFilters++;
-                        paramDic.Add("Priorities", string.Join(",", priorities));
+                        paramDic.Add("Priorities", priorities);
                     }
                     if (Users != null && Users.Any(t => t.IsSelected))
                     {
-                        paramDic.Add("Assigned", string.Join(",", Users.Where(t => t.IsSelected).Select(t => $"{t.UserID}")));
+                        paramDic.Add("Assigned", Users.Where(t => t.IsSelected).Select(t => t.UserID));
                         numberOfFilters++;
                     }
                     if (!string.IsNullOrWhiteSpace(FilterKeywords))
                     {
                         paramDic.Add("Search", FilterKeywords);
+                        numberOfFilters++;
+                    }
+                    paramDic.Add("DateFrom", this.DateRange.StartDate);
+                    if (this.DateRange.EndDate.HasValue)
+                        paramDic.Add("DateTo", this.DateRange.EndDate.Value);
+                    if (FilterDueDate != null)
+                    {
+                        paramDic.Add("DueDateFrom", FilterDueDate.StartDate);
+                        paramDic.Add("DueDateTo", FilterDueDate.EndDate ?? FilterDueDate.StartDate);
                         numberOfFilters++;
                     }
                     NumberOfAppliedFilters = numberOfFilters > 0 ? $"{numberOfFilters}" : " ";
