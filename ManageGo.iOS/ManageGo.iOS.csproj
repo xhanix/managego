@@ -270,5 +270,15 @@
     <BundleResource Include="Resources\welcome_page_image.jpg" />
     <BundleResource Include="Resources\wrench_blue%402x.png" />
     <BundleResource Include="Resources\wrench_blue%403x.png" />
+    <BundleResource Include="Resources\chat_lg.png" />
+    <BundleResource Include="Resources\chat_lg%402x.png" />
+    <BundleResource Include="Resources\chat_lg%403x.png" />
+    <BundleResource Include="Resources\plus_1.png" />
+    <BundleResource Include="Resources\plus_1%402x.png" />
+    <BundleResource Include="Resources\plus_1%403x.png" />
+    <BundleResource Include="Resources\plus_1_1.png" />
+    <BundleResource Include="Resources\plus_1_1%402x.png" />
+    <BundleResource Include="Resources\plus_1_1%403x.png" />
+    <BundleResource Include="Resources\gradient.png" />
   </ItemGroup>
 </Project>

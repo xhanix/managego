@@ -20,7 +20,7 @@ namespace ManageGo
         public string UserName { get; private set; }
         public string PMCName { get; private set; }
 
-        override internal async Task LoadData(bool refreshData = false)
+        override internal async Task LoadData(bool refreshData = false, bool applyNewFilter = false)
         {
             if (cancellationTokenSource.IsCancellationRequested)
                 return;

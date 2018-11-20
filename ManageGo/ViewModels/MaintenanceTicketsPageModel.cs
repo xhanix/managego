@@ -7,6 +7,7 @@ using Xamarin.Forms;
 using PropertyChanged;
 using System.Linq;
 using Newtonsoft.Json;
+using System.Collections.ObjectModel;
 
 namespace ManageGo
 {
@@ -18,7 +19,7 @@ namespace ManageGo
         public View PopContentView { get; private set; }
         bool CalendarIsShown { get; set; }
         bool FilterSelectViewIsShown { get; set; }
-        public List<MaintenanceTicket> FetchedTickets { get; private set; }
+        public ObservableCollection<MaintenanceTicket> FetchedTickets { get; private set; }
         public bool ListIsEnabled { get; set; } = false;
         public List<Building> Buildings { get; private set; }
         [AlsoNotifyFor("SelectedCategoriesString")]
@@ -38,6 +39,10 @@ namespace ManageGo
         public bool SelectedClosedTicketsFilter { get; private set; }
         public string FilterKeywords { get; set; }
         public string NumberOfAppliedFilters { get; private set; } = " ";
+        int LastLoadedItemId { get; set; }
+        int CurrentListPage { get; set; } = 1;
+        bool CanGetMorePages { get; set; }
+        readonly int pageSize = 30;
         public string ClosedTicketFilterCheckBoxImage
         {
             get
@@ -191,6 +196,7 @@ namespace ManageGo
                 return SelectedPriorityString == "All" ? filterDefaultColor : filterSelectedColor;
             }
         }
+        bool HasCalendarFilter { get; set; }
         Dictionary<string, object> FiltersDictionary { get; set; }
         [AlsoNotifyFor("FilterDueDateString", "FilterDueDateColor")]
         public DateRange FilterDueDate { get; set; }
@@ -218,7 +224,7 @@ namespace ManageGo
         {
             get
             {
-                return dateRange is null ? new DateRange(DateTime.Today, DateTime.Today.AddDays(-7)) : dateRange;
+                return dateRange is null ? new DateRange(DateTime.Today, DateTime.Today.AddDays(-30)) : dateRange;
             }
             set
             {
@@ -226,7 +232,7 @@ namespace ManageGo
             }
         }
 
-        internal override async Task LoadData(bool refreshData = false)
+        internal override async Task LoadData(bool refreshData = false, bool applyNewFilter = false)
         {
             //throw new NotImplementedException();
             if (FetchedTickets is null || refreshData)
@@ -235,18 +241,54 @@ namespace ManageGo
                 {
                     FiltersDictionary = new Dictionary<string, object>
                     {
-                        { "DateFrom", this.DateRange.StartDate },
-                        { "DateTo", this.DateRange.EndDate ?? this.DateRange.StartDate },
+                         { "PageSize", pageSize },
+                         { "Page",  1},
                     };
+                    if (HasCalendarFilter)
+                    {
+                        FiltersDictionary.Add("DateFrom", DateRange.StartDate);
+                        FiltersDictionary.Add("DateTo", DateRange.EndDate ?? DateRange.StartDate);
+                    }
                 }
 
-                FetchedTickets = await Services.DataAccess.GetTicketsAsync(FiltersDictionary);
-                Console.WriteLine($"Tickets Fetched: {FetchedTickets.Count}");
+                if (FetchedTickets is null || applyNewFilter)
+                    FetchedTickets = new ObservableCollection<MaintenanceTicket>(
+                        await Services.DataAccess.GetTicketsAsync(FiltersDictionary));
+                else
+                {
+                    var list = FetchedTickets.ToList();
+                    var nextPage = await Services.DataAccess.GetTicketsAsync(FiltersDictionary);
+                    CanGetMorePages = nextPage.Count == pageSize;
+                    list.AddRange(nextPage);
+                    FetchedTickets = new ObservableCollection<MaintenanceTicket>(list);
+                }
+
+                //RaisePropertyChanged("FetchedTickets");
+                if (FetchedTickets.Count > 0 && CanGetMorePages)
+                {
+                    var lastIdx = FetchedTickets.IndexOf(FetchedTickets.Last());
+                    var index = Math.Floor(lastIdx / 2d);
+                    var markedItem = FetchedTickets.ElementAt((int)index);
+                    LastLoadedItemId = markedItem.TicketId;
+
+                }
                 Buildings = App.Buildings;
                 Categories = App.Categories;
                 Tags = App.Tags;
                 Users = App.Users;
                 ListIsEnabled = true;
+                Console.WriteLine($"Tickets Fetched: {FetchedTickets.Count}");
+            }
+        }
+
+        public async void OnItemAppeared(MaintenanceTicket ticket)
+        {
+            var id = ticket.TicketId;
+            if (id == LastLoadedItemId)
+            {
+                //load more items
+                CurrentListPage++;
+                await LoadData(refreshData: true);
             }
         }
 
@@ -268,6 +310,19 @@ namespace ManageGo
                         default:
                             break;
                     }
+                    tcs?.SetResult(true);
+                });
+            }
+        }
+
+
+        public FreshAwaitCommand OnAddButtonTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((tcs) =>
+                {
+
                     tcs?.SetResult(true);
                 });
             }
@@ -470,9 +525,39 @@ namespace ManageGo
                     FiltersDictionary = paramDic;
                     IsSearching = true;
                     var results = await Services.DataAccess.GetTicketsAsync(paramDic);
-                    FetchedTickets = results;
+                    FetchedTickets = new ObservableCollection<MaintenanceTicket>(results);
                     ListIsEnabled = true;
                     IsSearching = false;
+                    tcs?.SetResult(true);
+                });
+            }
+        }
+
+        public FreshAwaitCommand OnItemTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand(async (item, tcs) =>
+                {
+                    var ticket = (MaintenanceTicket)item;
+                    //get ticket details
+                    try
+                    {
+                        var ticketDetails = await Services.DataAccess.GetTicketDetails(ticket.TicketId);
+                        var dic = new Dictionary<string, object>
+                        {
+                            {"TicketDetails", ticketDetails},
+                            {"TicketNumber", ticket.TicketNumber},
+                            {"Address", ticket.Building?.BuildingName + " #" + ticket.Unit?.UnitName},
+                            {"TicketTitleText", ticket.TicketSubject},
+                            {"Ticket", ticket}
+                        };
+                        await CoreMethods.PushPageModel<TicketDetailsPageModel>(dic, false, false);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw ex;
+                    }
                     tcs?.SetResult(true);
                 });
             }
@@ -516,8 +601,9 @@ namespace ManageGo
                         {
                             this.DateRange = cal.SelectedDates;
                             OnCalendarButtonTapped.Execute(null);
+                            HasCalendarFilter = true;
                             IsSearching = true;
-                            await LoadData(true);
+                            await LoadData(refreshData: true, applyNewFilter: true);
                             IsSearching = false;
                         };
                         buttonContainer.Children.Add(cancelButton);

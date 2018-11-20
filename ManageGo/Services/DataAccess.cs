@@ -169,6 +169,24 @@ namespace ManageGo.Services
             }
         }
 
+        internal static async Task<TicketDetails> GetTicketDetails(int ticketId)
+        {
+            var content = new StringContent($"{{TicketID: {ticketId}}}", Encoding.UTF8, "application/json");//new FormUrlEncodedContent(filters);
+            var msg = new HttpRequestMessage(HttpMethod.Post, BaseUrl + APIpaths.TicketsDetails.ToString())
+            {
+                Content = content
+            };
+            var response = await client.SendAsync(msg);
+            var responseString = await response.Content.ReadAsStringAsync();
+            var responseObject = JObject.Parse(responseString);
+            if (responseObject.TryGetValue("Result", out JToken token))
+            {
+                Console.WriteLine(token);
+                var ticketDetails = token.ToObject<TicketDetails>();
+                return ticketDetails;
+            }
+            throw new Exception("Unable to get the Result token from the HTTP response content");
+        }
 
         static async Task<List<MaintenanceTicket>> GetTicketsFromResponse(HttpResponseMessage response)
         {

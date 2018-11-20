@@ -14,7 +14,7 @@
 
             <Color x:Key="Green">#55C433</Color>
             <Color x:Key="Red">#E13D40</Color>
-             <Style x:Key="Regular-Text" TargetType="Label">
+            <Style x:Key="Regular-Text" TargetType="Label">
                 
             </Style>
             <Style x:Key="Small-Text" TargetType="Label" BasedOn="{StaticResource Regular-Text}">
@@ -23,8 +23,15 @@
             <Style x:Key="Primary-Small" TargetType="Label" BasedOn="{StaticResource Small-Text}">
                 <Setter Property="TextColor" Value="{StaticResource Primary}" />
             </Style>
-           
-           
+            <Style x:Key="My-TitleFirstPart-Style" TargetType="Span">
+                <Setter Property="FontSize" Value="Medium" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="TextColor" Value="#58595b" />
+            </Style>
+            <Style x:Key="My-TitleSecondPart-Style" TargetType="Span">
+                <Setter Property="FontSize" Value="Small" />
+                <Setter Property="TextColor" Value="#a7a9ac" />
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

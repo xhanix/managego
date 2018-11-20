@@ -94,6 +94,13 @@
     <AndroidResource Include="Resources\mipmap-xxhdpi\launcher_foreground.png" />
     <AndroidResource Include="Resources\mipmap-xxxhdpi\Icon.png" />
     <AndroidResource Include="Resources\mipmap-xxxhdpi\launcher_foreground.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\chat_lg.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\chat_lg.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\chat_lg.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\plus_1_1.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\plus_1_1.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\plus_1_1.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\gradient.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\drawable\" />

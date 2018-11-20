@@ -7,7 +7,8 @@
         tickets,
         buildings,
         MaintenanceObjects, //provides list of Categories,Tags
-        Users
+        Users,
+        TicketsDetails
     }
 }
 

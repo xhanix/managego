@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core" 
+             ios:Page.UseSafeArea="true"
+             xmlns:local="clr-namespace:ManageGo"
+             BackgroundColor="White"
+             xmlns:controls="clr-namespace:ManageGo.Controls"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="ManageGo.TicketDetailsPage">
+     <ContentPage.Resources>
+        <local:InverseBoolConverter x:Key="InverseBoolConverter" />
+    </ContentPage.Resources>
+    
+     <Grid RowSpacing="0" >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <StackLayout Grid.Row="0" Orientation="Horizontal" Padding="8" HeightRequest="42">
+            <Button BackgroundColor="Transparent"
+                    Command="{Binding OnBackButtonTapped}"
+                    HorizontalOptions="Start"
+                    IsVisible="{Binding HamburgerIsVisible}"
+                    VerticalOptions="CenterAndExpand"
+                    Image="nav_back_icon.png" />
+            <Image Source="logo.png" Margin="-32,0,0,0" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"/>
+        </StackLayout>
+        <StackLayout Spacing="0" Grid.Row="1" >
+            <Label  Text="{Binding TicketTitle}" FontAttributes="Bold" Margin="0,8,0,7" FontSize="Large" HorizontalTextAlignment="Center"/>
+             <BoxView HeightRequest="1" BackgroundColor="#85bafa"/>
+            <Grid VerticalOptions="FillAndExpand" BackgroundColor="#f8f9fa" MinimumHeightRequest="50" HeightRequest="50">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="1" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                 <StackLayout Grid.Row="0" Grid.Column="0" Padding="12,0,12,0" HorizontalOptions="CenterAndExpand" Spacing="0" Orientation="Horizontal">
+                    <Image VerticalOptions="CenterAndExpand" Source="building_blue.png"   />
+                    <Label Text="{Binding TicketAddress}" HorizontalOptions="StartAndExpand" LineBreakMode="MiddleTruncation" FontSize="Small" Margin="3,0,0,0" VerticalTextAlignment="Center" VerticalOptions="CenterAndExpand" TextColor="Black"/>
+                </StackLayout>
+                <BoxView Grid.Row="0" VerticalOptions="CenterAndExpand" Grid.Column="1" BackgroundColor="#ebebeb" WidthRequest="1" HorizontalOptions="FillAndExpand" />
+                <StackLayout Grid.Row="0" Grid.Column="2" HorizontalOptions="CenterAndExpand" Spacing="0" Orientation="Horizontal">
+                    <Button VerticalOptions="CenterAndExpand" TextColor="Black" FontSize="Small" Image="star_blue.png" Text="Ticket details"  />
+                    <Label Text="{Binding NumberOfAppliedFilters}" HorizontalOptions="StartAndExpand" FontSize="Small" Margin="-3,8,0,0" TextColor="#318bfa"/>
+                </StackLayout>
+            </Grid>
+            <BoxView BackgroundColor="#ebebeb" HeightRequest="1"/>
+            <ContentView BackgroundColor="White" Content="{Binding PopContentView}" VerticalOptions="StartAndExpand"/>
+            <StackLayout Orientation="Horizontal" Padding="18" BackgroundColor="White">
+                <Image Source="chat_lg.png" VerticalOptions="Center"/>
+                <Label Text="{Binding TicketTitleText}" HorizontalOptions="FillAndExpand" FontAttributes="Bold" Margin="8,0,0,0" LineBreakMode="TailTruncation" VerticalOptions="CenterAndExpand" />
+                <Image Source="key_blue.png" IsVisible="{Binding HasAccess}" HorizontalOptions="EndAndExpand"/>
+                <Image Source="pet_blue.png" IsVisible="{Binding HasPet}" HorizontalOptions="End"/>
+                <Image Source="wrench_blue.png" IsVisible="{Binding HasWorkOrder}" HorizontalOptions="End"/>
+                <Image Source="calendar_blue_sm.png" IsVisible="{Binding HasEvent}" HorizontalOptions="End"/>
+            </StackLayout>
+        </StackLayout>
+        <ScrollView Grid.Row="2">
+            <StackLayout Spacing="0" >
+            <StackLayout  Spacing="0" Padding="16" BackgroundColor="#f8f9fa">
+                <ListView x:Name="MyListView" IsPullToRefreshEnabled="false" CachingStrategy="RecycleElement" SelectionMode="None" IsEnabled="{Binding ListIsEnabled}" HasUnevenRows="true" VerticalOptions="Fill" BackgroundColor="White" SeparatorVisibility="None" ItemsSource="{Binding Comments}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                               <StackLayout Orientation="Horizontal">
+                                    <StackLayout VerticalOptions="FillAndExpand" Margin="18,0,0,0">
+                                        <BoxView VerticalOptions="Start" HeightRequest="27.5" HorizontalOptions="Center"  BackgroundColor="{Binding SideLineColor}" Opacity="0.25" WidthRequest="2" />    
+                                        <Frame Padding="2" MinimumWidthRequest="6" WidthRequest="6" MinimumHeightRequest="6" HeightRequest="6" Margin="0,-8,0,0" CornerRadius="5" HasShadow="false" BorderColor="{Binding SideLineColor}" BackgroundColor="{Binding SideLineColor}" >
+                                            
+                                        </Frame>
+                                        <BoxView VerticalOptions="FillAndExpand" HorizontalOptions="Center" Margin="0,-16,0,0" BackgroundColor="{Binding SideLineColor}" Opacity="0.25" WidthRequest="2" />    
+                                    </StackLayout>
+                                    <StackLayout HorizontalOptions="FillAndExpand" Spacing="0">
+                                <Frame HorizontalOptions="FillAndExpand"  Padding="{Binding BubblePadding}" Margin="9,0,18,0" BackgroundColor="{Binding BubbleBackgroundColor}" HasShadow="false">
+                                    <StackLayout HorizontalOptions="FillAndExpand"  Margin="6,14,0,14">
+                                            <Label Margin="0,0,0,8" FormattedText="{Binding FirstLineText}" VerticalTextAlignment="Center" LineBreakMode="MiddleTruncation" />
+                                            <Label Text="{Binding SecondLineText}" TextColor="#58595b" FontSize="Medium" />
+                                            <StackLayout Margin="0,0,0,16" Orientation="Horizontal">
+                                                <Image Source="pet_blue.png" IsVisible="{Binding HasPet}" VerticalOptions="StartAndExpand" Margin="0,2,12,0" />
+                                                <Label Text="{Binding AccessNote}" TextColor="#58595b" FontSize="Medium" />
+                                            </StackLayout>
+                                    </StackLayout>
+                                    </Frame>
+                                        <Label Text="Internal" IsVisible="{Binding InternalLabelIsVisible}" FontSize="Small" Margin="9,9,0,0" TextColor="{Binding SideLineColor}" />
+                                        <BoxView HeightRequest="1" Opacity="0.25"  Margin="9,9,18,18" HorizontalOptions="FillAndExpand" BackgroundColor="#808285" />
+                                    </StackLayout>
+                                </StackLayout>
+                           
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            </StackLayout>
+            <StackLayout BackgroundColor="White" Padding="22,18,18,18">
+                <StackLayout Margin="0,20,0,8">
+                    <StackLayout Orientation="Horizontal" Spacing="0">
+                        <StackLayout Spacing="0">
+                            <Frame Padding="2" MinimumWidthRequest="6" WidthRequest="6" MinimumHeightRequest="6" HeightRequest="6" Margin="0,-8,0,0" CornerRadius="5" HasShadow="false" BorderColor="#318bfa" BackgroundColor="#318bfa" />
+                            <BoxView HeightRequest="222" HorizontalOptions="Center" BackgroundColor="#318bfa" Opacity="0.25" WidthRequest="2" />    
+                        </StackLayout>
+                        <StackLayout HorizontalOptions="FillAndExpand">
+                            <Label Text="Reply:" Margin="19,-12,0,8" TextColor="#5d5e60" FontAttributes="Bold" VerticalOptions="Start" VerticalTextAlignment="Start" />
+                            <Editor Margin="16,-12,0,0" Placeholder="Type your reply..." VerticalOptions="Start" HeightRequest="100"/>
+                        </StackLayout>
+                    </StackLayout>
+                </StackLayout>
+                <StackLayout Orientation="Horizontal">    
+                        <Label Text="Type your reply..." HorizontalOptions="FillAndExpand" TextColor="#a7a9ac">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnReplyLabelTapped}" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                        <Image Source="calendar_blue_sm.png" HorizontalOptions="End" Margin="16,0,0,0"/>
+                        <Image Source="wrench_blue.png" HorizontalOptions="End" Margin="16,0,8,0"/>
+                </StackLayout>
+            </StackLayout>
+        </StackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

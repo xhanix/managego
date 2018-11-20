@@ -9,7 +9,12 @@
     <ContentPage.Resources>
         <local:InverseBoolConverter x:Key="InverseBoolConverter" />
     </ContentPage.Resources>
-    <Grid RowSpacing="0">
+    <RelativeLayout>
+        <Grid RowSpacing="0"
+              RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent,
+                             Property=Height, Factor=1, Constant=0}"
+              RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent,
+                             Property=Width, Factor=1, Constant=0}" >
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
@@ -48,7 +53,7 @@
             <ContentView BackgroundColor="White" Content="{Binding PopContentView}" VerticalOptions="StartAndExpand"/>
         </StackLayout>
        
-        <ListView x:Name="MyListView" Margin="0" IsPullToRefreshEnabled="false" CachingStrategy="RecycleElement" SelectionMode="None" IsEnabled="{Binding ListIsEnabled}" Grid.Row="2" HasUnevenRows="true" VerticalOptions="Fill" BackgroundColor="#f9fafb" SeparatorVisibility="None" ItemsSource="{Binding FetchedTickets}">
+        <ListView x:Name="MyListView" ItemAppearing="Handle_ItemAppearing" ItemTapped="Handle_ItemTapped" Margin="0" IsPullToRefreshEnabled="false" CachingStrategy="RecycleElement" SelectionMode="None" IsEnabled="{Binding ListIsEnabled}" Grid.Row="2" HasUnevenRows="true" VerticalOptions="Fill" BackgroundColor="#f9fafb" SeparatorVisibility="None" ItemsSource="{Binding FetchedTickets}">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
@@ -113,4 +118,13 @@
             </StackLayout>
         </Frame>
     </Grid>
+        <Image Source="plus_1_1.png" RelativeLayout.XConstraint="{ConstraintExpression Type=RelativeToParent,
+                             Property=Width, Factor=1, Constant=-90}" 
+               RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent,
+                             Property=Height, Factor=1, Constant=-90}">
+            <Image.GestureRecognizers>
+                <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnAddButtonTapped}" />
+            </Image.GestureRecognizers>
+            </Image>
+    </RelativeLayout>
 </ContentPage>
