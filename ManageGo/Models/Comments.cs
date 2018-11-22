@@ -18,6 +18,7 @@ namespace ManageGo
         public string Text { get; set; }
         [AlsoNotifyFor("SideLineColor", "Name", "BottomSeparatorIsVisible", "BubbleBackgroundColor")]
         public CommentTypes CommentType { get; set; }
+
         public string AccessNote { get; set; }
         [AlsoNotifyFor("FirstLineText")]
         public string Name

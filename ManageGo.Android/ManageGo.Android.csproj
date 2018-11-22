@@ -49,7 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Xamarin.Forms" Version="3.3.0.967583" />
+    <PackageReference Include="Xamarin.Forms" Version="3.4.0.1008975" />
     <PackageReference Include="Xamarin.Android.Support.Design" Version="27.0.2.1" />
     <PackageReference Include="Xamarin.Android.Support.v7.AppCompat" Version="27.0.2.1" />
     <PackageReference Include="Xamarin.Android.Support.v4" Version="27.0.2.1" />
@@ -61,6 +61,9 @@
     <PackageReference Include="SkiaSharp.Views">
       <Version>1.60.3</Version>
     </PackageReference>
+    <PackageReference Include="Plugin.CurrentActivity">
+      <Version>2.1.0.4</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainActivity.cs" />
@@ -71,6 +74,7 @@
     <Compile Include="CalendarViewPager.cs" />
     <Compile Include="DrawableControlView.cs" />
     <Compile Include="CustomEntry.cs" />
+    <Compile Include="SelectableLabelRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -101,6 +105,78 @@
     <AndroidResource Include="Resources\drawable-xhdpi\plus_1_1.png" />
     <AndroidResource Include="Resources\drawable-xxhdpi\plus_1_1.png" />
     <AndroidResource Include="Resources\drawable-xxhdpi\gradient.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\camera_1.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\camera_2.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\camera_3.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\close_red.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\internal_active.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\internal_inactive.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\upload_blue.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\upload_white.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\camera_1.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\camera_2.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\camera_3.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\close_red.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\internal_active.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\internal_inactive.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\upload_blue.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\upload_white.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\camera_1.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\camera_2.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\camera_3.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\close_red.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\internal_active.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\internal_inactive.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\upload_blue.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\upload_white.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\camera_1.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\camera_2.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\camera_3.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\close_red.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\internal_active.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\internal_inactive.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\upload_blue.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\upload_white.png" />
+    <AndroidResource Include="Resources\xml\file_paths.xml" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\bank_blue.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\calendar_blue.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\chat_green.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\chat_grey.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\chat_red.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\chevron_down.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\close_grey.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\dashboard_1.jpg" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\dot_red.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\filter_blue.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\icon.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\lock_white.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\logo_simple.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\logo.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\nav_back_icon.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\nav_menu_icon.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\profile_blue.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\profile_grey.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\search_grey.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\welcome_page_image.jpg" />
+    <AndroidResource Include="Resources\drawable-xhdpi\nav_menu_icon.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\bank_grey.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\building_blue.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\building_grey.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\building_red.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\calendar_blue_sm.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\chat_grey_lg.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\chat_grey_sm.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\checked.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\chevron_left.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\chevron_right.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\key_blue.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\pencil_grey.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\pet_blue.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\profile_red.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\search_blue.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\star_blue.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\unchecked.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\wrench_blue.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\drawable\" />
@@ -108,6 +184,7 @@
     <Folder Include="Resources\drawable-xhdpi\" />
     <Folder Include="Resources\drawable-xxhdpi\" />
     <Folder Include="Resources\drawable-xxxhdpi\" />
+    <Folder Include="Resources\xml\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ManageGo\ManageGo.csproj">
