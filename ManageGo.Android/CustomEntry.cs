@@ -1,4 +1,5 @@
 ﻿using Android.Content;
+using Android.Graphics.Drawables;
 using ManageGo;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
@@ -10,6 +11,7 @@ namespace ManageGo
     {
         public CustomEntryRenderer(Context context) : base(context)
         {
+
         }
 
         protected override void OnElementChanged(ElementChangedEventArgs<Entry> e)
@@ -19,6 +21,9 @@ namespace ManageGo
             {
                 Control.Background = null;
             }
+
+            Control?.SetBackground(new ColorDrawable(Android.Graphics.Color.Transparent));
+            Control?.SetBackgroundColor(Android.Graphics.Color.Transparent);
         }
     }
 }

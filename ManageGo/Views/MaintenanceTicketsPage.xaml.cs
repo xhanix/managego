@@ -33,11 +33,7 @@ namespace ManageGo
         }
 
 
-        void Handle_ItemTapped(object sender, ItemTappedEventArgs e)
-        {
-            //show ticket details
-            ((MaintenanceTicketsPageModel)this.BindingContext).OnItemTapped.Execute(e.Item);
-        }
+
 
         void Handle_ItemAppearing(object sender, ItemVisibilityEventArgs e)
         {

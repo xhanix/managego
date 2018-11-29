@@ -144,6 +144,82 @@ namespace ManageGo.Services
 
             return await GetTicketsFromResponse(response);
         }
+
+
+        public static async Task<int> SendNewCommentAsync(Dictionary<string, object> parametes)
+        {
+            if (TokenExpiry < DateTimeOffset.Now)
+                await Login();
+            var jsonString = JsonConvert.SerializeObject(parametes);
+            var content = new StringContent(jsonString, Encoding.UTF8, "application/json");//new FormUrlEncodedContent(filters);
+            var msg = new HttpRequestMessage(HttpMethod.Post, BaseUrl + APIpaths.TicketNewComment.ToString())
+            {
+                Content = content
+            };
+            var response = await client.SendAsync(msg);
+            var responseString = await response.Content.ReadAsStringAsync();
+            var responseObject = JObject.Parse(responseString);
+            return responseObject.TryGetValue("Result", out JToken result) ? (int)result["CommentID"] : 0;
+        }
+
+        public static async Task<byte[]> GetCommentFile(Dictionary<string, object> parametes)
+        {
+            if (TokenExpiry < DateTimeOffset.Now)
+                await Login();
+            var jsonString = JsonConvert.SerializeObject(parametes);
+            var content = new StringContent(jsonString, Encoding.UTF8, "application/json");//new FormUrlEncodedContent(filters);
+            var msg = new HttpRequestMessage(HttpMethod.Post, BaseUrl + APIpaths.GetTicketFile.ToString())
+            {
+                Content = content
+            };
+            var response = await client.SendAsync(msg);
+            var responseString = await response.Content.ReadAsStringAsync();
+            var responseObject = JObject.Parse(responseString);
+            if (responseObject.TryGetValue("Result", out JToken result))
+            {
+                var array = result.ToObject<byte[]>();
+                return array;
+            }
+            throw new Exception("Downloaded data not valid");
+        }
+
+
+        public static async Task UploadFile(File file)
+        {
+            if (TokenExpiry < DateTimeOffset.Now)
+                await Login();
+            var parameters = new Dictionary<string, object> {
+                {"CommentID",file.ParentComment},
+                {"FileName", file.Name},
+                {"File", file.Content},
+                {"IsCompleted", false}
+            };
+            var jsonString = JsonConvert.SerializeObject(parameters);
+            var content = new StringContent(jsonString, Encoding.UTF8, "application/json");//new FormUrlEncodedContent(filters);
+            var msg = new HttpRequestMessage(HttpMethod.Post, BaseUrl + APIpaths.CommentNewFile.ToString())
+            {
+                Content = content
+            };
+            var response = await client.SendAsync(msg);
+            var responseString = await response.Content.ReadAsStringAsync();
+        }
+
+        public static async Task UploadCompleted(int commentId)
+        {
+
+            if (TokenExpiry < DateTimeOffset.Now)
+                await Login();
+            var parameters = new Dictionary<string, object> {
+                {"CommentID",commentId},
+            };
+            var jsonString = JsonConvert.SerializeObject(parameters);
+            var content = new StringContent(jsonString, Encoding.UTF8, "application/json");//new FormUrlEncodedContent(filters);
+            var msg = new HttpRequestMessage(HttpMethod.Post, BaseUrl + APIpaths.CommentFilesCompleted.ToString())
+            {
+                Content = content
+            };
+            var response = await client.SendAsync(msg);
+        }
         #endregion
 
         static async Task<Dictionary<string, string>> GetResultDictionaryFromResponse(HttpResponseMessage response)

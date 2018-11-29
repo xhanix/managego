@@ -1,9 +1,14 @@
 ﻿using System;
 using Android.Content;
+using Android.Graphics.Drawables;
 using Android.Views;
+using ManageGo.Controls;
+using ManageGo.Droid;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
 
+
+[assembly: ExportRenderer(typeof(SelectableLabel), typeof(SelectableLabelRenderer))]
 namespace ManageGo.Droid
 {
     public class SelectableLabelRenderer : EditorRenderer
@@ -24,6 +29,9 @@ namespace ManageGo.Droid
             Control.InputType = Android.Text.InputTypes.TextFlagMultiLine;
             Control.ShowSoftInputOnFocus = false;
             Control.SetTextIsSelectable(true);
+            Control.KeyListener = null;
+            Control.SetSingleLine(false);
+            Control.SetBackground(new ColorDrawable(Android.Graphics.Color.Transparent));
             Control.CustomSelectionActionModeCallback = new CustomSelectionActionModeCallback();
             Control.CustomInsertionActionModeCallback = new CustomInsertionActionModeCallback();
         }

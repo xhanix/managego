@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:local="clr-namespace:ManageGo"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+             BackgroundColor="Black"
+             x:Class="ManageGo.MGWebViewPage">
+    
+   <Grid>
+        <local:CustomWebView BackgroundColor="Black" Navigating="Handle_Navigating" Navigated="Handle_Navigated"  Data="{Binding HtmlString}" Uri="{Binding FilePath}" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" />
+        <ActivityIndicator VerticalOptions="CenterAndExpand" 
+                           x:Name="MyLoader"
+                           HorizontalOptions="CenterAndExpand" />
+    </Grid>
+</ContentPage>

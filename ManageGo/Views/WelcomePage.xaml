@@ -13,8 +13,9 @@
                     HorizontalOptions="Start"
                     IsVisible="{Binding HamburgerIsVisible}"
                     VerticalOptions="CenterAndExpand"
+                    WidthRequest="42"
                     Image="nav_menu_icon.png" />
-            <Image Source="logo.png" Margin="-32,0,0,0" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"/>
+            <Image Source="logo.png" Margin="-42,0,0,0" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"/>
         </StackLayout>
         <ScrollView BackgroundColor="#f9fafb" VerticalOptions="FillAndExpand">
             <StackLayout Spacing="0">

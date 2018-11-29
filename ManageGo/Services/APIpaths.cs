@@ -8,7 +8,11 @@
         buildings,
         MaintenanceObjects, //provides list of Categories,Tags
         Users,
-        TicketsDetails
+        TicketsDetails,
+        TicketNewComment,
+        CommentNewFile,
+        CommentFilesCompleted,
+        GetTicketFile
     }
 }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 using Xamarin.Forms;
 using PropertyChanged;
+using System.Linq;
 
 namespace ManageGo
 {
@@ -11,7 +12,8 @@ namespace ManageGo
     {
         double pageHeight;
         public double pageWidth { get; set; }
-        readonly double ReplyBoxHeigh = 150;
+        bool WasFocused { get; set; }
+        readonly double ReplyBoxHeigh = 250;
         public TicketDetailsPage()
         {
             InitializeComponent();
@@ -29,13 +31,36 @@ namespace ManageGo
 
 
 
-        async void Handle_Focused(object sender, Xamarin.Forms.FocusEventArgs e)
+
+        void Handle_Focused(object sender, Xamarin.Forms.FocusEventArgs e)
         {
-            ReplyBox.HeightRequest = pageHeight * 0.5;
+            ReplyBox.HeightRequest = pageHeight * 0.65;
             MyScrollView.VerticalScrollBarVisibility = ScrollBarVisibility.Always;
-            await MyScrollView.ScrollToAsync(0, 0, false);
+            WasFocused = true;
+
             //MyNavBar.IsVisible = false;
             //TopDetailsView.IsVisible = false;
+        }
+
+
+
+        async void Handle_Scrolled(object sender, Xamarin.Forms.ScrolledEventArgs e)
+        {
+            if ((WasFocused && e.ScrollY > 12) || (string.IsNullOrWhiteSpace(ReplyEditor.Text) && e.ScrollY > 12))
+            {
+                await MyScrollView.ScrollToAsync(0, 0, true);
+                WasFocused = false;
+            }
+        }
+
+        void Handle_ItemAppearing(object sender, Xamarin.Forms.ItemVisibilityEventArgs e)
+        {
+            var c = (Comments)e.Item;
+            if (c.Files != null)
+            {
+                var f = c.Files.ToList();
+                c.Files = new System.Collections.ObjectModel.ObservableCollection<File>(f);
+            }
         }
 
         void Handle_Unfocused(object sender, FocusEventArgs e)

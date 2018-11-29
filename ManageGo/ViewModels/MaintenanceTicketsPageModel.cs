@@ -6,11 +6,13 @@ using FreshMvvm;
 using Xamarin.Forms;
 using PropertyChanged;
 using System.Linq;
-using Newtonsoft.Json;
 using System.Collections.ObjectModel;
+
+
 
 namespace ManageGo
 {
+
     internal class MaintenanceTicketsPageModel : BaseDetailPage
     {
         DateRange dateRange;
@@ -235,6 +237,7 @@ namespace ManageGo
         internal override async Task LoadData(bool refreshData = false, bool applyNewFilter = false)
         {
             //throw new NotImplementedException();
+
             if (FetchedTickets is null || refreshData)
             {
                 if (FiltersDictionary is null || refreshData)
@@ -250,34 +253,47 @@ namespace ManageGo
                         FiltersDictionary.Add("DateTo", DateRange.EndDate ?? DateRange.StartDate);
                     }
                 }
-
-                if (FetchedTickets is null || applyNewFilter)
-                    FetchedTickets = new ObservableCollection<MaintenanceTicket>(
-                        await Services.DataAccess.GetTicketsAsync(FiltersDictionary));
-                else
+                try
                 {
-                    var list = FetchedTickets.ToList();
-                    var nextPage = await Services.DataAccess.GetTicketsAsync(FiltersDictionary);
-                    CanGetMorePages = nextPage.Count == pageSize;
-                    list.AddRange(nextPage);
-                    FetchedTickets = new ObservableCollection<MaintenanceTicket>(list);
-                }
+                    if (FetchedTickets is null || applyNewFilter)
+                        FetchedTickets = new ObservableCollection<MaintenanceTicket>(
+                            await Services.DataAccess.GetTicketsAsync(FiltersDictionary));
+                    else
+                    {
+                        var list = FetchedTickets.ToList();
+                        var nextPage = await Services.DataAccess.GetTicketsAsync(FiltersDictionary);
+                        CanGetMorePages = nextPage.Count == pageSize;
+                        list.AddRange(nextPage);
+                        FetchedTickets = new ObservableCollection<MaintenanceTicket>(list);
+                    }
 
-                //RaisePropertyChanged("FetchedTickets");
-                if (FetchedTickets.Count > 0 && CanGetMorePages)
+                    //RaisePropertyChanged("FetchedTickets");
+                    if (FetchedTickets.Count > 0 && CanGetMorePages)
+                    {
+                        var lastIdx = FetchedTickets.IndexOf(FetchedTickets.Last());
+                        var index = Math.Floor(lastIdx / 2d);
+                        var markedItem = FetchedTickets.ElementAt((int)index);
+                        LastLoadedItemId = markedItem.TicketId;
+
+                    }
+                    Buildings = App.Buildings;
+                    Categories = App.Categories;
+                    Tags = App.Tags;
+                    Users = App.Users;
+                    ListIsEnabled = true;
+                    Console.WriteLine($"Tickets Fetched: {FetchedTickets.Count}");
+                    HasLoaded = true;
+                }
+                catch
                 {
-                    var lastIdx = FetchedTickets.IndexOf(FetchedTickets.Last());
-                    var index = Math.Floor(lastIdx / 2d);
-                    var markedItem = FetchedTickets.ElementAt((int)index);
-                    LastLoadedItemId = markedItem.TicketId;
-
+                    APIhasFailed = true;
+                    FetchedTickets = null;
+                    if (await CoreMethods.DisplayAlert("Something went wrong", "Unable to get tickets. Connect to network and try again", "Try again", "Dismiss"))
+                    {
+                        if (!this.IsLoading)
+                            await this.LoadData();
+                    }
                 }
-                Buildings = App.Buildings;
-                Categories = App.Categories;
-                Tags = App.Tags;
-                Users = App.Users;
-                ListIsEnabled = true;
-                Console.WriteLine($"Tickets Fetched: {FetchedTickets.Count}");
             }
         }
 
@@ -553,12 +569,16 @@ namespace ManageGo
                             {"Ticket", ticket}
                         };
                         await CoreMethods.PushPageModel<TicketDetailsPageModel>(dic, false, false);
+
                     }
                     catch (Exception ex)
                     {
                         throw ex;
                     }
-                    tcs?.SetResult(true);
+                    finally
+                    {
+                        tcs?.SetResult(true);
+                    }
                 });
             }
         }

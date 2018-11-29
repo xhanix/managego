@@ -75,6 +75,8 @@
     <Compile Include="DrawableControlView.cs" />
     <Compile Include="CustomEntry.cs" />
     <Compile Include="SelectableLabelRenderer.cs" />
+    <Compile Include="CustomWebViewRenderer.cs" />
+    <Compile Include="ShareFileImplementation.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -177,6 +179,18 @@
     <AndroidResource Include="Resources\drawable-xxhdpi\star_blue.png" />
     <AndroidResource Include="Resources\drawable-xxhdpi\unchecked.png" />
     <AndroidResource Include="Resources\drawable-xxhdpi\wrench_blue.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\clip_iso.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\clip_iso.png" />
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\clip.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\clip.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\clip.png" />
+    <AndroidResource Include="Resources\mipmap-mdpi\clip.png" />
+    <AndroidResource Include="Resources\mipmap-hdpi\clip.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\clip.png" />
+    <AndroidResource Include="Resources\drawable\clip.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\clip.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\clip.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\clip.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\drawable\" />
@@ -191,6 +205,9 @@
       <Project>{53167476-5227-407E-B52C-E2F569F04033}</Project>
       <Name>ManageGo</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="Assets\pdf.js" />
   </ItemGroup>
  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
 </Project>

@@ -27,7 +27,7 @@ namespace ManageGo.Services
 
 
 
-        public async static Task<string> AddNewPhoto(bool fromAlbum = true)
+        public async static Task<(byte[], string)> AddNewPhoto(bool fromAlbum = true)
         {
 
             var compression = 50;
@@ -63,19 +63,21 @@ namespace ManageGo.Services
                 using (MemoryStream ms = new MemoryStream())
                 {
                     photo.GetStream().CopyTo(ms);
-
+                    var fileName = Path.GetFileName(photo.Path);
                     var array = ms.ToArray();
                     //var removeOrientation = DependencyService.Resolve<App.IMediaService>()
                     //    .SetOrientationUp(array);
 
-                    return Convert.ToBase64String(array);
+                    return (array, fileName);//Convert.ToBase64String(array);
 
                     // var thumbnail = DependencyService.Resolve<App.IMediaService>()
                     //  .ResizeImage(removeOrientation, 100, 100);
 
                 }
             }
-            return null;
+            return (null, "");
+            
+
         }
 
 

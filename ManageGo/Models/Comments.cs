@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Newtonsoft.Json;
 using PropertyChanged;
 using Xamarin.Forms;
@@ -18,7 +19,7 @@ namespace ManageGo
         public string Text { get; set; }
         [AlsoNotifyFor("SideLineColor", "Name", "BottomSeparatorIsVisible", "BubbleBackgroundColor")]
         public CommentTypes CommentType { get; set; }
-
+        public bool IsCompleted { get; set; }
         public string AccessNote { get; set; }
         [AlsoNotifyFor("FirstLineText")]
         public string Name
@@ -36,7 +37,8 @@ namespace ManageGo
         }
         [AlsoNotifyFor("FirstLineText")]
         public string CommentCreateTime { get; set; }
-        public List<File> Files { get; set; }
+        [AlsoNotifyFor("HasFiles")]
+        public ObservableCollection<File> Files { get; set; }
         public List<int> WorkOrders { get; set; }
         public List<int> Events { get; set; }
         public bool HasAccess { get; set; }
@@ -116,7 +118,8 @@ namespace ManageGo
                                                       : "#fff2e0";
             }
         }
-
+        [JsonIgnore]
+        public bool HasFiles { get { return Files != null && Files.Count > 0; } }
         [JsonIgnore]
         public string SideLineColor
         {
