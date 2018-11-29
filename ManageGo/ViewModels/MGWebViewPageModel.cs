@@ -25,8 +25,16 @@ namespace ManageGo
                 var extension = Path.GetExtension(path).Replace(".", "").ToLower();
                 if (extension == "mp4" || extension == "mov" || extension == "wmv" || extension == "avi")
                 {
-                    var lines = Convert.ToBase64String(System.IO.File.ReadAllBytes(initData as string));
-                    HtmlString = $"<video width=\"100%\" playsinline autoplay controls muted src=\"data:video/mp4;base64,{lines}\" type=\"video/*\" />";
+                    if (Device.RuntimePlatform == Device.iOS)
+                    {
+                        var lines = Convert.ToBase64String(System.IO.File.ReadAllBytes(initData as string));
+                        HtmlString = $"<video width=\"100%\" playsinline autoplay controls muted src=\"data:video/mp4;base64,{lines}\" type=\"video/*\" />";
+                    }
+                    else if (Device.RuntimePlatform == Device.Android)
+                    {
+                        HtmlString = $"<video width=\"100%\" playsinline autoplay controls muted src=\"{path}\" type=\"video/*\" />";
+
+                    }
                 }
                 else
                 {
@@ -43,12 +51,21 @@ namespace ManageGo
                 MediaIsForAttachment = tup.Item2;
                 if (extension == "mp4" || extension == "mov" || extension == "wmv" || extension == "avi")
                 {
-                    var lines = Convert.ToBase64String(System.IO.File.ReadAllBytes(path));
-                    HtmlString = $"<video width=\"100%\" playsinline autoplay controls muted src=\"data:video/mp4;base64,{lines}\" type=\"video/*\" />";
+                    if (Device.RuntimePlatform == Device.iOS)
+                    {
+                        var lines = Convert.ToBase64String(System.IO.File.ReadAllBytes(path));
+                        HtmlString = $"<video width=\"100%\" playsinline autoplay controls muted src=\"data:video/mp4;base64,{lines}\" type=\"video/*\" />";
+                    }
+                    else if (Device.RuntimePlatform == Device.Android)
+                    {
+                        var folder = Path.GetDirectoryName(path);
+                        var lines = Convert.ToBase64String(System.IO.File.ReadAllBytes(folder + "/Video_181129-041459.mp4"));//(System.IO.File.ReadAllBytes(path));
+                        HtmlString = $"<video width=\"100%\" playsinline autoplay controls muted src=\"data:video/mp4;base64,{lines}\" type=\"video/*\" />";
+                    }
                 }
                 else
                 {
-                    FilePath = initData as string;
+                    FilePath = ((Tuple<string, bool>)initData).Item1 as string;
                 }
 
             }

@@ -23,8 +23,14 @@ namespace ManageGo
 
         public string Uri
         {
-            get { return (string)GetValue(UriProperty); }
-            set { SetValue(UriProperty, value); }
+            get
+            {
+                return (string)GetValue(UriProperty);
+            }
+            set
+            {
+                SetValue(UriProperty, value);
+            }
         }
 
         public string Mime

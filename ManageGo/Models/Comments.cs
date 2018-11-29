@@ -81,8 +81,7 @@ namespace ManageGo
         {
             get
             {
-                return Text;
-
+                return Text ?? string.Empty;
             }
         }
 

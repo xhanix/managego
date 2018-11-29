@@ -15,7 +15,6 @@
     <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
     <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
     <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
-    <AndroidUseLatestPlatformSdk>false</AndroidUseLatestPlatformSdk>
     <TargetFrameworkVersion>v8.1</TargetFrameworkVersion>
     <AndroidHttpClientHandlerType>Xamarin.Android.Net.AndroidClientHandler</AndroidHttpClientHandlerType>
     <NuGetPackageImportStamp>
@@ -77,6 +76,9 @@
     <Compile Include="SelectableLabelRenderer.cs" />
     <Compile Include="CustomWebViewRenderer.cs" />
     <Compile Include="ShareFileImplementation.cs" />
+    <Compile Include="CameraPageRenderer.cs" />
+    <Compile Include="UICameraPreview.cs" />
+    <Compile Include="VideoPlayerRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -191,6 +193,7 @@
     <AndroidResource Include="Resources\drawable-xhdpi\clip.png" />
     <AndroidResource Include="Resources\drawable-xxhdpi\clip.png" />
     <AndroidResource Include="Resources\drawable-xxxhdpi\clip.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\photocamera.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\drawable\" />
