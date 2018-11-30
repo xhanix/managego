@@ -8,9 +8,11 @@ using ARelativeLayout = Android.Widget.RelativeLayout;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
-[assembly: ExportRenderer(typeof(VideoPlayer),
-                          typeof(ManageGo.Droid.VideoPlayerRenderer))]
-namespace ManageGo.Droid
+
+[assembly: ExportRenderer(typeof(FormsVideoLibrary.VideoPlayer),
+                          typeof(FormsVideoLibrary.Droid.VideoPlayerRenderer))]
+
+namespace FormsVideoLibrary.Droid
 {
     public class VideoPlayerRenderer : ViewRenderer<VideoPlayer, ARelativeLayout>
     {
@@ -166,7 +168,7 @@ namespace ManageGo.Droid
                     hasSetSource = true;
                 }
             }
-
+              
             if (hasSetSource && Element.AutoPlay)
             {
                 videoView.Start();

@@ -78,7 +78,9 @@
     <Compile Include="ShareFileImplementation.cs" />
     <Compile Include="CameraPageRenderer.cs" />
     <Compile Include="UICameraPreview.cs" />
+    <Compile Include="VideoPicker.cs" />
     <Compile Include="VideoPlayerRenderer.cs" />
+    <Compile Include="Jpeg.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

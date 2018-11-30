@@ -23,39 +23,6 @@ using Android.Media;
 [assembly: ExportRenderer(typeof(CameraPreview), typeof(CameraPageRenderer))]
 namespace ManageGo.Droid
 {
-    public class jpeg : Java.Lang.Object, Android.Hardware.Camera.IPictureCallback
-    {
-        Context _context;
-        public event EventHandler<ListEventArgs> SavedMovie;
-
-        public jpeg(Context cont)
-        {
-            _context = cont;
-        }
-
-        public void OnPictureTaken(byte[] data, Android.Hardware.Camera camera)
-        {
-            camera.StopPreview();
-            //write data to file
-            string localFolder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
-            var localPath = System.IO.Path.Combine(localFolder, $"Photo_{DateTime.Now.ToString("yyMMdd-hhmmss")}.jpg");
-            string errMsg = null;
-            try
-            {
-                System.IO.File.WriteAllBytes(localPath, data); // write to local storage
-            }
-            catch (Exception ex)
-            {
-                errMsg = ex.Message;
-            }
-            finally
-            {
-                SavedMovie?.Invoke(this, new ListEventArgs(localPath, errMsg));
-            }
-        }
-
-
-    }
 
 
 
@@ -158,6 +125,8 @@ namespace ManageGo.Droid
         }
 
 
+
+
         void OnCameraPreviewClicked(object sender, EventArgs e)
         {
             // string localFolder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
@@ -168,7 +137,7 @@ namespace ManageGo.Droid
             {
                 if (Element.Mode == CameraModes.Snapshot)
                 {
-                    var _delegate = new jpeg(Context);
+                    var _delegate = new Jpeg(Context);
                     _delegate.SavedMovie += _delegate_SavedMovie;
                     cameraPreview.Preview.TakePicture(null, null, null, jpeg: _delegate);
                     cameraPreview.IsPreviewing = false;
@@ -176,19 +145,22 @@ namespace ManageGo.Droid
                 else if (Element.Mode == CameraModes.Video && !VideoIsRecording)
                 {
                     cameraPreview.Preview.StopPreview();
-                    cameraPreview.Preview.Unlock();
+
                     if (recorder is null)
                     {
+                        cameraPreview.Preview.Unlock();
                         recorder = new MediaRecorder();
+                        recorder.SetCamera(cameraPreview.Preview);
                         recorder.SetVideoSource(VideoSource.Camera);
                         recorder.SetAudioSource(AudioSource.Mic);
-                        recorder.SetOutputFormat(OutputFormat.Default);
-                        recorder.SetVideoEncoder(VideoEncoder.Default);
+                        recorder.SetOutputFormat(OutputFormat.Mpeg4);
+                        recorder.SetVideoEncoder(VideoEncoder.H264);
                         recorder.SetAudioEncoder(AudioEncoder.Default);
-                        //recorder.SetProfile(CamcorderProfile.Get(CamcorderQuality.High));
                         recorder.SetPreviewDisplay(Control.Holder.Surface);
 
                     }
+
+                    recorder.SetOrientationHint(cameraPreview.CamRotation);
                     LocalPath = Android.OS.Environment.ExternalStorageDirectory + $"/Video_{DateTime.Now.ToString("yyMMdd-hhmmss")}.mp4";
                     recorder.SetOutputFile(LocalPath);
                     recorder.Prepare();
@@ -201,7 +173,6 @@ namespace ManageGo.Droid
                     VideoIsRecording = false;
                     recorder.Release();
                     Element.SavedMoview(LocalPath, string.Empty);
-                    VideoIsRecording = false;
                 }
             }
             else

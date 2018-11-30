@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using FreshMvvm;
 using Xamarin.Forms;
 
@@ -22,10 +23,23 @@ namespace ManageGo
             ToggleButtonText = "VIDEO";
             CameraPreviewContent.SavedMovie += async (object sender, ListEventArgs e) =>
             {
+                //this can be a movie ".mp4" or a photo
                 FileUrl = e.MovieUrl;
+                if (Path.GetExtension(FileUrl).Equals(".mp4", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    //need to pop the current(cam preview) page for Android to playback the video (old android phone/memory issue)
+                    await CoreMethods.PopPageModel(modal: true, animate: false);
+                    if (CameraPreviewContent.Mode == CameraModes.Video)
+                        await CoreMethods.PushPageModel<VideoPlayerPageModel>(data: FileUrl, modal: false, animate: false);
 
-                await CoreMethods.PushPageModel<MGWebViewPageModel>(data: new Tuple<string, bool>(FileUrl, true),
-                                                                    modal: true);
+                }
+                else
+                {
+                    //show the webview for photos, preview page remains on top of current page
+                    await CoreMethods.PushPageModel<MGWebViewPageModel>(data: new Tuple<string, bool>(FileUrl, true),
+                                                                  modal: true);
+                }
+
             };
         }
 
@@ -35,6 +49,7 @@ namespace ManageGo
             {
                 return new FreshAwaitCommand(async (tcs) =>
                 {
+                    //user does not want to take photo, close cam preview page
                     await CoreMethods.PopPageModel(modal: true, animate: false);
                     tcs?.SetResult(true);
                 });
@@ -46,7 +61,7 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand(async (tcs) =>
+                return new FreshAwaitCommand((tcs) =>
                 {
                     if (CameraPreviewContent is null)
                         return;
@@ -71,7 +86,7 @@ namespace ManageGo
             base.ReverseInit(returnedData);
             if (returnedData is bool)
             {
-                //if webview returned true we should close this page & use the file for attachment
+                //if webview/video view returned true we should close current page & use the file for attachment
                 if ((bool)returnedData)
                     await CoreMethods.PopPageModel(data: FileUrl, modal: true);
 

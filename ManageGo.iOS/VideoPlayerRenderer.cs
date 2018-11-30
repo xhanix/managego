@@ -1,18 +1,20 @@
 ﻿using System;
 using System.ComponentModel;
 using System.IO;
+
 using AVFoundation;
 using AVKit;
 using CoreMedia;
 using Foundation;
-using ManageGo;
 using UIKit;
+
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.iOS;
 
-[assembly: ExportRenderer(typeof(VideoPlayer),
-                          typeof(ManageGo.iOS.VideoPlayerRenderer))]
-namespace ManageGo.iOS
+[assembly: ExportRenderer(typeof(FormsVideoLibrary.VideoPlayer), 
+                          typeof(FormsVideoLibrary.iOS.VideoPlayerRenderer))]
+
+namespace FormsVideoLibrary.iOS
 {
     public class VideoPlayerRenderer : ViewRenderer<VideoPlayer, UIView>
     {
@@ -20,15 +22,13 @@ namespace ManageGo.iOS
         AVPlayerItem playerItem;
         AVPlayerViewController _playerViewController;       // solely for ViewController property
 
-        int? NaturalTimeScale;
-
         public override UIViewController ViewController => _playerViewController;
 
-        protected override void OnElementChanged(ElementChangedEventArgs<VideoPlayer> e)
+        protected override void OnElementChanged(ElementChangedEventArgs<VideoPlayer> args)
         {
-            base.OnElementChanged(e);
+            base.OnElementChanged(args);
 
-            if (e.NewElement != null)
+            if (args.NewElement != null)
             {
                 if (Control == null)
                 {
@@ -37,7 +37,6 @@ namespace ManageGo.iOS
 
                     // Set Player property to AVPlayer
                     player = new AVPlayer();
-
                     _playerViewController.Player = player;
 
                     var x = _playerViewController.View;
@@ -49,18 +48,18 @@ namespace ManageGo.iOS
                 SetAreTransportControlsEnabled();
                 SetSource();
 
-                e.NewElement.UpdateStatus += OnUpdateStatus;
-                e.NewElement.PlayRequested += OnPlayRequested;
-                e.NewElement.PauseRequested += OnPauseRequested;
-                e.NewElement.StopRequested += OnStopRequested;
+                args.NewElement.UpdateStatus += OnUpdateStatus;
+                args.NewElement.PlayRequested += OnPlayRequested;
+                args.NewElement.PauseRequested += OnPauseRequested;
+                args.NewElement.StopRequested += OnStopRequested;
             }
 
-            if (e.OldElement != null)
+            if (args.OldElement != null)
             {
-                e.OldElement.UpdateStatus -= OnUpdateStatus;
-                e.OldElement.PlayRequested -= OnPlayRequested;
-                e.OldElement.PauseRequested -= OnPauseRequested;
-                e.OldElement.StopRequested -= OnStopRequested;
+                args.OldElement.UpdateStatus -= OnUpdateStatus;
+                args.OldElement.PlayRequested -= OnPlayRequested;
+                args.OldElement.PauseRequested -= OnPauseRequested;
+                args.OldElement.StopRequested -= OnStopRequested;
             }
         }
 
@@ -74,28 +73,25 @@ namespace ManageGo.iOS
             }
         }
 
-        protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+        protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs args)
         {
-            base.OnElementPropertyChanged(sender, e);
+            base.OnElementPropertyChanged(sender, args);
 
-            if (e.PropertyName == VideoPlayer.AreTransportControlsEnabledProperty.PropertyName)
+            if (args.PropertyName == VideoPlayer.AreTransportControlsEnabledProperty.PropertyName)
             {
                 SetAreTransportControlsEnabled();
             }
-            else if (e.PropertyName == VideoPlayer.SourceProperty.PropertyName)
+            else if (args.PropertyName == VideoPlayer.SourceProperty.PropertyName)
             {
                 SetSource();
             }
-            else if (e.PropertyName == VideoPlayer.PositionProperty.PropertyName)
+            else if (args.PropertyName == VideoPlayer.PositionProperty.PropertyName)
             {
                 TimeSpan controlPosition = ConvertTime(player.CurrentTime);
 
-                if (Math.Abs((controlPosition - Element.Position).TotalMilliseconds) > 100)
+                if (Math.Abs((controlPosition - Element.Position).TotalSeconds) > 1)
                 {
-                    var scale = NaturalTimeScale ?? 1000;
-                    var time = CMTime.FromSeconds(Element.Position.TotalSeconds, scale);
-
-                    player.Seek(time, CMTime.Zero, CMTime.Zero);
+                    player.Seek(CMTime.FromSeconds(Element.Position.TotalSeconds, 1));
                 }
             }
         }
@@ -113,10 +109,6 @@ namespace ManageGo.iOS
             {
                 string uri = (Element.Source as UriVideoSource).Uri;
 
-                var documents = "file://" + Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-
-                uri = Path.Combine(documents, uri);
-
                 if (!String.IsNullOrWhiteSpace(uri))
                 {
                     asset = AVAsset.FromUrl(new NSUrl(uri));
@@ -124,16 +116,11 @@ namespace ManageGo.iOS
             }
             else if (Element.Source is FileVideoSource)
             {
-                string uri = (Element.Source as UriVideoSource).Uri;
-
-                var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-
-                uri = Path.Combine(documents, uri);
+                string uri = (Element.Source as FileVideoSource).File;
 
                 if (!String.IsNullOrWhiteSpace(uri))
                 {
-                    var a = AVAsset.FromUrl(new NSUrl(uri));
-                    asset = a;
+                    asset = AVAsset.FromUrl(new NSUrl(uri));
                 }
             }
             else if (Element.Source is ResourceVideoSource)
@@ -146,20 +133,13 @@ namespace ManageGo.iOS
                     string filename = Path.GetFileNameWithoutExtension(path);
                     string extension = Path.GetExtension(path).Substring(1);
                     NSUrl url = NSBundle.MainBundle.GetUrlForResource(filename, extension, directory);
-
                     asset = AVAsset.FromUrl(url);
                 }
             }
 
-
             if (asset != null)
             {
-                var t = asset.TracksWithMediaType("vide");
-                if (t != null && t.Length > 0)
-                    NaturalTimeScale = t[0]?.NaturalTimeScale;
-                else
-                    NaturalTimeScale = null;
-                playerItem = new AVPlayerItem(asset, new NSString[] { (NSString)"preferredRate" });
+                playerItem = new AVPlayerItem(asset);
             }
             else
             {
@@ -213,13 +193,6 @@ namespace ManageGo.iOS
         void OnPlayRequested(object sender, EventArgs args)
         {
             player.Play();
-
-            if (NaturalTimeScale == 2400)
-            {
-                player.CurrentItem.AudioTimePitchAlgorithm = AVAudioTimePitchAlgorithm.Varispeed;
-                player.Rate = 0.1f;
-
-            }
         }
 
         void OnPauseRequested(object sender, EventArgs args)
@@ -232,6 +205,5 @@ namespace ManageGo.iOS
             player.Pause();
             player.Seek(new CMTime(0, 1));
         }
-
     }
 }

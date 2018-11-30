@@ -111,6 +111,8 @@
     <Compile Include="UICameraPreview.cs" />
     <Compile Include="CameraPageRenderer.cs" />
     <Compile Include="OutputRecorder.cs" />
+    <Compile Include="VideoPicker.cs" />
+    <Compile Include="VideoPlayerRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Resources\LaunchScreen.storyboard" />

@@ -35,7 +35,7 @@ namespace ManageGo
 
         public void SavedMoview(String url, String errorMessage)
         {
-            SavedMovie(this, new ListEventArgs(url, errorMessage));
+            SavedMovie?.Invoke(this, new ListEventArgs(url, errorMessage));
         }
 
         public SpeedOptions Speed

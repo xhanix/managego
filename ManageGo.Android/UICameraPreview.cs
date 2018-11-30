@@ -48,7 +48,9 @@ namespace ManageGo.Droid
             IsPreviewing = false;
             Holder = SurfaceView.Holder;
             Holder.AddCallback(this);
+
         }
+
 
         protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
         {
@@ -72,10 +74,13 @@ namespace ManageGo.Droid
                 if (camera != null)
                 {
                     supportedPreviewSizes = Preview.GetParameters().SupportedPreviewSizes;
+
                     RequestLayout();
                 }
             }
         }
+
+        public int CamRotation { get; internal set; }
 
         public void SurfaceChanged(ISurfaceHolder holder, [GeneratedEnum] Format format, int width, int height)
         {
@@ -87,12 +92,18 @@ namespace ManageGo.Droid
             {
                 case SurfaceOrientation.Rotation0:
                     camera.SetDisplayOrientation(90);
+                    parameters.SetRotation(90);
+                    CamRotation = 90;
                     break;
                 case SurfaceOrientation.Rotation90:
                     camera.SetDisplayOrientation(0);
+                    parameters.SetRotation(0);
+                    CamRotation = 0;
                     break;
                 case SurfaceOrientation.Rotation270:
                     camera.SetDisplayOrientation(180);
+                    parameters.SetRotation(180);
+                    CamRotation = 180;
                     break;
             }
 
