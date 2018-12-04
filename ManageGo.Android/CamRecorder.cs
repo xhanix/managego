@@ -15,6 +15,7 @@ using Java.Lang;
 using Java.Util;
 using Java.Util.Concurrent;
 using Xamarin.Forms;
+using static ManageGo.Droid.CameraCaptureStateListener;
 using Size = Android.Util.Size;
 
 namespace ManageGo.Droid
@@ -27,8 +28,11 @@ namespace ManageGo.Droid
         private SurfaceTexture _viewSurface;
         private Android.Util.Size _previewSize;
         private AutoFitTextureView _cameraTexture;
+        public bool IsTakingPhoto { get; set; }
         public event EventHandler<bool> Busy;
         public event EventHandler<byte[]> Photo;
+        public event EventHandler<string> Video;
+        string videoFilePath;
         /// <summary>
         /// The CameraCaptureSession for camera preview.
         /// </summary>
@@ -38,8 +42,15 @@ namespace ManageGo.Droid
         private Context _context;
         // AutoFitTextureView for camera preview
         //public AutoFitTextureView textureView;
-
-        public CameraDevice cameraDevice;
+        CameraDevice cameraDevice;
+        public CameraDevice CameraDevice
+        {
+            get { return cameraDevice; }
+            set
+            {
+                cameraDevice = value;
+            }
+        }
         public CameraCaptureSession previewSession;
         public MediaRecorder mediaRecorder;
 
@@ -119,7 +130,105 @@ namespace ManageGo.Droid
             return true;
         }
 
-        public void openCamera()
+
+        public void NotifyAvailable(bool isAvailable)
+        {
+            if (_context != null && CameraDevice != null)
+            {
+                //take photo
+                try
+                {
+                    // Pick the best JPEG size that can be captured with this CameraDevice
+                    var characteristics = _manager.GetCameraCharacteristics(CameraDevice.Id);
+                    Size[] jpegSizes = null;
+                    if (characteristics != null)
+                    {
+                        jpegSizes = ((StreamConfigurationMap)characteristics.Get(CameraCharacteristics.ScalerStreamConfigurationMap)).GetOutputSizes((int)ImageFormatType.Jpeg);
+                    }
+                    int width = 640;
+                    int height = 480;
+
+                    if (jpegSizes != null && jpegSizes.Length > 0)
+                    {
+                        width = jpegSizes[0].Width;
+                        height = jpegSizes[0].Height;
+                    }
+
+                    // We use an ImageReader to get a JPEG from CameraDevice
+                    // Here, we create a new ImageReader and prepare its Surface as an output from the camera
+                    var reader = ImageReader.NewInstance(width, height, ImageFormatType.Jpeg, 1);
+                    var outputSurfaces = new List<Surface>(2);
+                    outputSurfaces.Add(reader.Surface);
+                    outputSurfaces.Add(new Surface(_viewSurface));
+
+                    CaptureRequest.Builder captureBuilder = CameraDevice.CreateCaptureRequest(CameraTemplate.StillCapture);
+                    captureBuilder.AddTarget(reader.Surface);
+                    captureBuilder.Set(CaptureRequest.ControlMode, new Integer((int)ControlMode.Auto));
+
+                    // Orientation
+                    var windowManager = _context.GetSystemService(Context.WindowService).JavaCast<IWindowManager>();
+                    SurfaceOrientation rotation = windowManager.DefaultDisplay.Rotation;
+
+                    captureBuilder.Set(CaptureRequest.JpegOrientation, new Integer(ORIENTATIONS.Get((int)rotation)));
+
+                    // This listener is called when an image is ready in ImageReader 
+                    ImageAvailableListener readerListener = new ImageAvailableListener();
+
+                    readerListener.Photo += (sender, e) =>
+                    {
+                        Device.BeginInvokeOnMainThread(() =>
+                        {
+                            Photo?.Invoke(this, e);
+                            IsTakingPhoto = false;
+                            OpeningCamera = false;
+                            CloseCamera();
+                            openCamera(forVideo: true);
+                        });
+                    };
+
+                    // We create a Handler since we want to handle the resulting JPEG in a background thread
+                    HandlerThread thread = new HandlerThread("CameraPicture");
+                    thread.Start();
+                    backgroundHandler = new Handler(thread.Looper);
+                    reader.SetOnImageAvailableListener(readerListener, backgroundHandler);
+
+                    var captureListener = new CameraCaptureListener();
+
+                    captureListener.PhotoComplete += (sender, e) =>
+                    {
+                        Busy?.Invoke(this, false);
+
+                    };
+
+                    CameraDevice.CreateCaptureSession(outputSurfaces, new CameraCaptureStateListener()
+                    {
+                        OnConfiguredAction = (CameraCaptureSession session) =>
+                        {
+                            try
+                            {
+                                _previewSession = session;
+                                session.Capture(captureBuilder.Build(), captureListener, backgroundHandler);
+                            }
+                            catch (CameraAccessException ex)
+                            {
+                                Log.WriteLine(LogPriority.Info, "Capture Session error: ", ex.ToString());
+                            }
+                        }
+                    }, backgroundHandler);
+                }
+                catch (CameraAccessException error)
+                {
+
+                }
+                catch (Java.Lang.Exception error)
+                {
+
+                }
+
+            }
+        }
+
+        public void openCamera(bool forVideo)
         {
             if (null == _context || OpeningCamera)
                 return;
@@ -131,23 +240,33 @@ namespace ManageGo.Droid
                 if (!cameraOpenCloseLock.TryAcquire(2500, TimeUnit.Milliseconds))
                     throw new RuntimeException("Time out waiting to lock camera opening.");
                 string cameraId = _manager.GetCameraIdList()[0];
-                CameraCharacteristics characteristics = _manager.GetCameraCharacteristics(cameraId);
-                StreamConfigurationMap map = (StreamConfigurationMap)characteristics.Get(CameraCharacteristics.ScalerStreamConfigurationMap);
-                videoSize = ChooseVideoSize(map.GetOutputSizes(Class.FromType(typeof(MediaRecorder))));
-                _previewSize = map.GetOutputSizes(Java.Lang.Class.FromType(typeof(SurfaceTexture)))[0];
-                ///_previewSize  = ChooseOptimalSize(map.GetOutputSizes(Class.FromType(typeof(MediaRecorder))), _previewSize  .Width, _previewSize  .Height, videoSize);
-                int orientation = (int)Resources.Configuration.Orientation;
-                if (orientation == (int)Android.Content.Res.Orientation.Landscape)
+                if (forVideo)
                 {
-                    _cameraTexture.SetAspectRatio(_previewSize.Width, _previewSize.Height);
+
+
+                    CameraCharacteristics characteristics = _manager.GetCameraCharacteristics(cameraId);
+                    StreamConfigurationMap map = (StreamConfigurationMap)characteristics.Get(CameraCharacteristics.ScalerStreamConfigurationMap);
+                    videoSize = ChooseVideoSize(map.GetOutputSizes(Class.FromType(typeof(MediaRecorder))));
+                    _previewSize = map.GetOutputSizes(Java.Lang.Class.FromType(typeof(SurfaceTexture)))[0];
+                    ///_previewSize  = ChooseOptimalSize(map.GetOutputSizes(Class.FromType(typeof(MediaRecorder))), _previewSize  .Width, _previewSize  .Height, videoSize);
+                    int orientation = (int)Resources.Configuration.Orientation;
+                    if (orientation == (int)Android.Content.Res.Orientation.Landscape)
+                    {
+                        _cameraTexture.SetAspectRatio(_previewSize.Width, _previewSize.Height);
+                    }
+                    else
+                    {
+                        _cameraTexture.SetAspectRatio(_previewSize.Height, _previewSize.Width);
+                    }
+                    ///configureTransform(width, height);
+                    mediaRecorder = new MediaRecorder();
+                    _manager.OpenCamera(cameraId, stateListener, null);
                 }
                 else
                 {
-                    _cameraTexture.SetAspectRatio(_previewSize.Height, _previewSize.Width);
+                    OpenCameraForPhoto();
                 }
-                ///configureTransform(width, height);
-                mediaRecorder = new MediaRecorder();
-                _manager.OpenCamera(cameraId, stateListener, null);
+
 
             }
             catch (CameraAccessException)
@@ -162,6 +281,50 @@ namespace ManageGo.Droid
             catch (InterruptedException)
             {
                 throw new RuntimeException("Interrupted while trying to lock camera opening.");
+            }
+        }
+
+        public void OpenCameraForPhoto()
+        {
+            // _manager = (CameraManager)_context.GetSystemService(Context.CameraService);
+
+            try
+            {
+                string cameraId = _manager.GetCameraIdList()[0];
+
+                // To get a list of available sizes of camera preview, we retrieve an instance of
+                // StreamConfigurationMap from CameraCharacteristics
+                CameraCharacteristics characteristics = _manager.GetCameraCharacteristics(cameraId);
+                StreamConfigurationMap map = (StreamConfigurationMap)characteristics.Get(CameraCharacteristics.ScalerStreamConfigurationMap);
+                _previewSize = map.GetOutputSizes(Java.Lang.Class.FromType(typeof(SurfaceTexture)))[0];
+                Android.Content.Res.Orientation orientation = Resources.Configuration.Orientation;
+                if (orientation == Android.Content.Res.Orientation.Landscape)
+                {
+                    _cameraTexture.SetAspectRatio(_previewSize.Width, _previewSize.Height);
+                }
+                else
+                {
+                    _cameraTexture.SetAspectRatio(_previewSize.Height, _previewSize.Width);
+                }
+
+                HandlerThread thread = new HandlerThread("CameraPreview");
+                thread.Start();
+                backgroundHandler = new Handler(thread.Looper);
+                stateListener = new MyCameraStateCallback(this);
+                // We are opening the camera with a listener. When it is ready, OnOpened of mStateListener is called.
+                _manager.OpenCamera(cameraId, stateListener, null);
+            }
+            catch (Java.Lang.Exception)
+            {
+
+
+                // Available?.Invoke(this, false);
+            }
+            catch (System.Exception)
+            {
+
+
+                // Available?.Invoke(this, false);
             }
         }
 
@@ -198,9 +361,9 @@ namespace ManageGo.Droid
         }
 
         //Start the camera preview
-        public void startPreview()
+        internal void StartPreview()
         {
-            if (null == cameraDevice || !_cameraTexture.IsAvailable || null == _previewSize)
+            if (null == CameraDevice || !_cameraTexture.IsAvailable || null == _previewSize)
                 return;
 
             try
@@ -210,7 +373,7 @@ namespace ManageGo.Droid
                 SurfaceTexture texture = _cameraTexture.SurfaceTexture;
                 //Assert.IsNotNull(texture);
                 texture.SetDefaultBufferSize(_previewSize.Width, _previewSize.Height);
-                previewBuilder = cameraDevice.CreateCaptureRequest(CameraTemplate.Record);
+                previewBuilder = CameraDevice.CreateCaptureRequest(CameraTemplate.Record);
                 var surfaces = new List<Surface>();
                 var previewSurface = new Surface(texture);
                 surfaces.Add(previewSurface);
@@ -220,7 +383,7 @@ namespace ManageGo.Droid
                 surfaces.Add(recorderSurface);
                 previewBuilder.AddTarget(recorderSurface);
 
-                cameraDevice.CreateCaptureSession(surfaces, new PreviewCaptureStateCallback(this), backgroundHandler);
+                CameraDevice.CreateCaptureSession(surfaces, new PreviewCaptureStateCallback(this), backgroundHandler);
 
             }
             catch (CameraAccessException e)
@@ -234,16 +397,16 @@ namespace ManageGo.Droid
         }
 
 
-        private void CloseCamera()
+        public void CloseCamera()
         {
             try
             {
                 cameraOpenCloseLock.Acquire();
-                if (null != cameraDevice)
+                if (null != CameraDevice)
                 {
 
-                    cameraDevice.Close();
-                    cameraDevice = null;
+                    CameraDevice.Close();
+                    CameraDevice = null;
                 }
                 if (null != mediaRecorder)
                 {
@@ -251,7 +414,7 @@ namespace ManageGo.Droid
                     mediaRecorder = null;
                 }
             }
-            catch (InterruptedException e)
+            catch (InterruptedException)
             {
                 throw new RuntimeException("Interrupted while trying to lock camera closing.");
             }
@@ -263,100 +426,21 @@ namespace ManageGo.Droid
 
         internal void TakePhoto()
         {
-            if (_context != null && cameraDevice != null)
+            if (_context != null && CameraDevice != null)
             {
-                try
-                {
-                    Busy?.Invoke(this, true);
+                IsTakingPhoto = true;
 
-
-                    // Pick the best JPEG size that can be captures with this CameraDevice
-                    var characteristics = _manager.GetCameraCharacteristics(cameraDevice.Id);
-                    Android.Util.Size[] jpegSizes = null;
-                    if (characteristics != null)
-                    {
-                        jpegSizes = ((StreamConfigurationMap)characteristics.Get(CameraCharacteristics.ScalerStreamConfigurationMap)).GetOutputSizes((int)ImageFormatType.Jpeg);
-                    }
-                    int width = 640;
-                    int height = 480;
-
-                    if (jpegSizes != null && jpegSizes.Length > 0)
-                    {
-                        width = jpegSizes[0].Width;
-                        height = jpegSizes[0].Height;
-                    }
-
-                    // We use an ImageReader to get a JPEG from CameraDevice
-                    // Here, we create a new ImageReader and prepare its Surface as an output from the camera
-                    var reader = ImageReader.NewInstance(width, height, ImageFormatType.Jpeg, 1);
-                    var outputSurfaces = new List<Surface>(2);
-                    outputSurfaces.Add(reader.Surface);
-                    outputSurfaces.Add(new Surface(_viewSurface));
-
-                    previewBuilder = cameraDevice.CreateCaptureRequest(CameraTemplate.StillCapture);
-
-                    previewBuilder.AddTarget(reader.Surface);
-                    previewBuilder.Set(CaptureRequest.ControlMode, new Integer((int)ControlMode.Auto));
-
-                    // Orientation
-                    var windowManager = _context.GetSystemService(Context.WindowService).JavaCast<IWindowManager>();
-                    SurfaceOrientation rotation = windowManager.DefaultDisplay.Rotation;
-
-                    previewBuilder.Set(CaptureRequest.JpegOrientation, new Integer(ORIENTATIONS.Get((int)rotation)));
-
-                    // This listener is called when an image is ready in ImageReader 
-                    ImageAvailableListener readerListener = new ImageAvailableListener();
-
-                    readerListener.Photo += (sender, e) =>
-                    {
-
-                        Photo?.Invoke(this, e);
-                    };
-
-                    // We create a Handler since we want to handle the resulting JPEG in a background thread
-                    HandlerThread thread = new HandlerThread("CameraPicture");
-                    thread.Start();
-                    backgroundHandler = new Handler(thread.Looper);
-                    reader.SetOnImageAvailableListener(readerListener, backgroundHandler);
-
-                    var captureListener = new CameraCaptureListener();
-
-                    captureListener.PhotoComplete += (sender, e) =>
-                    {
-                        Busy?.Invoke(this, false);
-                    };
-
-                    cameraDevice.CreateCaptureSession(outputSurfaces, new CameraCaptureStateListener()
-                    {
-                        OnConfiguredAction = (CameraCaptureSession session) =>
-                        {
-                            try
-                            {
-                                _previewSession = session;
-                                session.Capture(previewBuilder.Build(), captureListener, backgroundHandler);
-                            }
-                            catch (CameraAccessException ex)
-                            {
-                                Log.WriteLine(LogPriority.Info, "Capture Session error: ", ex.ToString());
-                            }
-                        }
-                    }, backgroundHandler);
-                }
-                catch (CameraAccessException error)
-                {
-
-                }
-                catch (Java.Lang.Exception error)
-                {
-
-                }
+                Busy?.Invoke(this, true);
+                CloseCamera();
+                OpeningCamera = false;
+                openCamera(forVideo: false);
             }
         }
 
         //Update the preview
         public void updatePreview()
         {
-            if (null == cameraDevice)
+            if (null == CameraDevice)
                 return;
 
             try
@@ -411,12 +495,11 @@ namespace ManageGo.Droid
             mediaRecorder.SetOutputFormat(OutputFormat.Mpeg4);
 
             string localFolder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
-            var localPath = System.IO.Path.Combine(localFolder, "video.mp4");
+            videoFilePath = System.IO.Path.Combine(localFolder, $"video_{DateTime.Now.ToString("yyMMdd_hhmmss")}.mp4");
 
 
-            // var localPath = Android.OS.Environment.ExternalStorageDirectory + "video.mp4";
-
-            mediaRecorder.SetOutputFile(localPath);
+            // var localPath = Android.OS.Environment.ExternalStorageDirectory + "/video1.mp4";
+            mediaRecorder.SetOutputFile(videoFilePath);
             mediaRecorder.SetVideoEncodingBitRate(10000000);
             mediaRecorder.SetVideoFrameRate(30);
             mediaRecorder.SetVideoSize(videoSize.Width, videoSize.Height);
@@ -436,10 +519,10 @@ namespace ManageGo.Droid
             try
             {
                 //UI
-
                 isRecordingVideo = true;
-
                 //Start recording
+                if (mediaRecorder is null)
+                    SetUpMediaRecorder();
                 mediaRecorder.Start();
             }
             catch (IllegalStateException e)
@@ -462,7 +545,12 @@ namespace ManageGo.Droid
 
             // Workaround for https://github.com/googlesamples/android-Camera2Video/issues/2
             CloseCamera();
-            openCamera();
+            openCamera(forVideo: true);
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                Video?.Invoke(this, videoFilePath);
+            });
+
         }
 
         public void ConfigureTransform(int viewWidth, int viewHeight)
@@ -507,7 +595,7 @@ namespace ManageGo.Droid
         {
             _viewSurface = surface;
             ConfigureTransform(w, h);
-            startPreview();
+            StartPreview();
         }
 
 
@@ -515,7 +603,7 @@ namespace ManageGo.Droid
         public void OnSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height)
         {
             ConfigureTransform(width, height);
-            startPreview();
+            StartPreview();
         }
 
         public void OnSurfaceTextureUpdated(SurfaceTexture surface)
@@ -548,17 +636,20 @@ namespace ManageGo.Droid
 
     public class MyCameraStateCallback : CameraDevice.StateCallback
     {
-        CamRecorder fragment;
+        public CamRecorder fragment;
         public MyCameraStateCallback(CamRecorder frag)
         {
             fragment = frag;
         }
         public override void OnOpened(CameraDevice camera)
         {
-            fragment.cameraDevice = camera;
-            fragment.startPreview();
+            fragment.CameraDevice = camera;
+            if (!fragment.IsTakingPhoto)
+                fragment.StartPreview();
             fragment.cameraOpenCloseLock.Release();
-
+            //fragment.OpeningCamera = false;
+            if (fragment.IsTakingPhoto)
+                fragment?.NotifyAvailable(true);
             // if (null != fragment._cam)
             //     fragment.configureTransform(fragment.textureView.Width, fragment.textureView.Height);
         }
@@ -567,7 +658,7 @@ namespace ManageGo.Droid
         {
             fragment.cameraOpenCloseLock.Release();
             camera.Close();
-            fragment.cameraDevice = null;
+            fragment.CameraDevice = null;
         }
 
 
@@ -575,7 +666,7 @@ namespace ManageGo.Droid
         {
             fragment.cameraOpenCloseLock.Release();
             camera.Close();
-            fragment.cameraDevice = null;
+            fragment.CameraDevice = null;
 
         }
     }

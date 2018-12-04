@@ -175,7 +175,7 @@ namespace ManageGo.Droid
                 _cameraTexture = view.FindViewById<AutoFitTextureView>(Resource.Id.CameraTexture);
                 _cameraTexture.SurfaceTextureListener = this;
 
-                _stateListener = new CameraStateListener() { Camera = this };
+                //_stateListener = new CameraStateListener() { Camera = this };
 
                 ORIENTATIONS.Append((int)SurfaceOrientation.Rotation0, 90);
                 ORIENTATIONS.Append((int)SurfaceOrientation.Rotation90, 0);
@@ -318,7 +318,7 @@ namespace ManageGo.Droid
                         _mediaSound.Play(MediaActionSoundType.ShutterClick);
                     }
 
-                    // Pick the best JPEG size that can be captures with this CameraDevice
+                    // Pick the best JPEG size that can be captured with this CameraDevice
                     var characteristics = _manager.GetCameraCharacteristics(_cameraDevice.Id);
                     Android.Util.Size[] jpegSizes = null;
                     if (characteristics != null)

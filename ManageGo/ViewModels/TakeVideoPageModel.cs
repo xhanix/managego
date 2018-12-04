@@ -18,14 +18,16 @@ namespace ManageGo
         public event EventHandler<bool> Torch;
         public event EventHandler<bool> Loading;
         public event EventHandler<byte[]> Photo;
+        public event EventHandler<string> Video;
         public event EventHandler<float> Widths;
         public event EventHandler Shutter;
+        private CameraModes CurrentCameraMode { get; set; } = CameraModes.Snapshot;
         #endregion
 
         public CameraPreview CameraPreviewContent { get; set; }
 
         string FileUrl { get; set; }
-        public string ToggleButtonText { get; private set; }
+        public string ToggleButtonText { get; private set; } = "VIDEO";
 
         #region Public Methods
         public void NotifyShutter()
@@ -58,6 +60,10 @@ namespace ManageGo
         {
             Photo?.Invoke(this, imageData);
         }
+        public void NotifyVideo(object sender, string videoFilePath)
+        {
+            Video?.Invoke(this, videoFilePath);
+        }
         public void NotifyFlash(bool flashOn)
         {
             Flash?.Invoke(this, flashOn);
@@ -79,21 +85,26 @@ namespace ManageGo
 
         public TakeVideoPageModel()
         {
+            SetupCamView();
+        }
+
+        private void SetupCamView()
+        {
             CameraPreviewContent = new CameraPreview
             {
                 Camera = CameraOptions.Rear,
                 Speed = SpeedOptions.Normal,
-                Mode = CameraModes.Snapshot,
+                Mode = CurrentCameraMode,
                 HorizontalOptions = LayoutOptions.FillAndExpand,
                 VerticalOptions = LayoutOptions.FillAndExpand
             };
-            ToggleButtonText = "VIDEO";
-            CameraPreviewContent.Photo += (object sender, byte[] e) =>
+            //ToggleButtonText = "VIDEO";
+            CameraPreviewContent.Photo += async (object sender, byte[] e) =>
             {
                 //photo is ready from Android
-                //show the webview for photos, preview page remains on top of current page
+                //show the webview for photos, preview page remains on top of current page and behind the photo view page
                 string localFolder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
-                var localPath = System.IO.Path.Combine(localFolder, $"Photo_{DateTime.Now.ToString("yyMMdd-hhmmss")}.jpg");
+                var localPath = System.IO.Path.Combine(localFolder, $"Photo_{DateTime.Now.ToString("yyMMdd_hhmmss")}.jpg");
                 string errMsg = null;
                 try
                 {
@@ -104,10 +115,18 @@ namespace ManageGo
                     errMsg = ex.Message;
                 }
                 FileUrl = localPath;
-                Device.BeginInvokeOnMainThread(async () =>
-                    await CoreMethods.PushPageModel<MGWebViewPageModel>
-                        (data: new Tuple<string, bool>(localPath, true),
-                                                              modal: true, animate: false));
+
+                await CoreMethods.PushPageModel<MGWebViewPageModel>
+                    (data: new Tuple<string, bool>(localPath, true),
+                                                          modal: true, animate: false);
+            };
+
+            CameraPreviewContent.Video += async (object sender, string e) =>
+            {
+                //video from Android is ready
+                //show the videoview for the video, preview page remains on top of current page and behind the photo view page
+                var videoPath = e;
+                await CoreMethods.PushPageModel<VideoPlayerPageModel>(data: videoPath, modal: true, animate: false);
             };
 
 
@@ -159,12 +178,14 @@ namespace ManageGo
                     else if (CameraPreviewContent.Mode == CameraModes.Snapshot)
                     {
                         CameraPreviewContent.Mode = CameraModes.Video;
+                        CurrentCameraMode = CameraModes.Video;
                         ToggleButtonText = "PHOTO";
                     }
                     else
                     {
                         CameraPreviewContent.Mode = CameraModes.Snapshot;
                         ToggleButtonText = "VIDEO";
+                        CurrentCameraMode = CameraModes.Snapshot;
                     }
 
                     tcs?.SetResult(true);
@@ -183,6 +204,10 @@ namespace ManageGo
                 //if webview/video view returned true we should close current page & use the file for attachment
                 if ((bool)returnedData)
                     await CoreMethods.PopPageModel(data: FileUrl, modal: true);
+                else
+                {
+                    SetupCamView();
+                }
 
             }
         }

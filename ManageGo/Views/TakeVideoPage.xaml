@@ -10,6 +10,8 @@
         <ToolbarItem Text="CANCEL" Command="{Binding OnCancelTapped}"/>
         <ToolbarItem Text="{Binding ToggleButtonText}" Command="{Binding OnModeToggleTapped}"/>
     </ContentPage.ToolbarItems>
+    
+    
     <ContentPage.Content>
          <ContentView Grid.Row="0" Content="{Binding CameraPreviewContent}" HorizontalOptions="FillAndExpand" 
                                  VerticalOptions="FillAndExpand" BackgroundColor="Black" />

@@ -24,6 +24,7 @@ namespace ManageGo
         {
             if (cancellationTokenSource.IsCancellationRequested)
                 return;
+
             await Services.DataAccess.GetDashboardAsync().ContinueWith(async (arg) =>
              {
                  if (arg.Status == TaskStatus.Faulted)

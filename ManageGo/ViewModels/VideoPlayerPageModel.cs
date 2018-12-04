@@ -27,9 +27,9 @@ namespace ManageGo
             {
                 return new FreshAwaitCommand(async (tcs) =>
                 {
-                    //popcurrent page, show cam preview page
-                    await CoreMethods.PopPageModel(data: false, modal: false, animate: false);
-                    await CoreMethods.PushPageModel<TakeVideoPageModel>(data: null, modal: true, animate: false);
+                    //popcurrent page
+                    await CoreMethods.PopPageModel(data: false, modal: true, animate: false);
+                    // await CoreMethods.PushPageModel<TakeVideoPageModel>(data: null, modal: true, animate: false);
                     tcs?.SetResult(true);
                 });
             }
@@ -40,7 +40,7 @@ namespace ManageGo
             {
                 return new FreshAwaitCommand(async (tcs) =>
                 {
-                    await CoreMethods.PopPageModel(data: Source.File, modal: false, animate: false);
+                    await CoreMethods.PopPageModel(data: Source.File, modal: true, animate: false);
                     tcs?.SetResult(true);
                 });
             }

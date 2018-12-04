@@ -55,6 +55,8 @@ namespace ManageGo
         /// </summary>
         public event EventHandler<byte[]> Photo;
 
+        public event EventHandler<string> Video;
+
         /// <summary>
         /// Occurs when widths.
         /// </summary>
@@ -155,6 +157,10 @@ namespace ManageGo
         public void NotifyPhoto(object sender, byte[] imageData)
         {
             Photo?.Invoke(this, imageData);
+        }
+        public void NotifyVideo(object sender, string videoFilePath)
+        {
+            Video?.Invoke(this, videoFilePath);
         }
         /// <summary>
         /// Notifies the flash.

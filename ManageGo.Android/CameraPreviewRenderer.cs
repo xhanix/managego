@@ -103,7 +103,7 @@ namespace ManageGo.Droid
                     //Camera = new CameraDroid(_context);
                     Camera = new CamRecorder(_context);
                     SetNativeControl(Camera);
-                    Camera.openCamera();
+                    Camera.openCamera(forVideo: true);
                     //Camera.startPreview();
                     //Camera.IsPreviewing = true;
 
@@ -113,6 +113,7 @@ namespace ManageGo.Droid
                     {
                         // Camera.Available += e.NewElement.NotifyAvailability;
                         Camera.Photo += e.NewElement.NotifyPhoto;
+                        Camera.Video += e.NewElement.NotifyVideo;
                         Camera.Busy += e.NewElement.NotifyBusy;
                         Camera.Click += OnCameraPreviewClicked;
                         e.NewElement.Flash += HandleFlashChange;
@@ -158,52 +159,28 @@ namespace ManageGo.Droid
 
         void OnCameraPreviewClicked(object sender, EventArgs e)
         {
-            string localFolder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
-            var localPath = System.IO.Path.Combine(localFolder, "video.mp4");
-
-
             if (Camera.IsPreviewing)
             {
+                //Camera.IsTakingPhoto = false;
                 if (Element.Mode == CameraModes.Snapshot)
                 {
-                    //var _delegate = new Jpeg(Context);
-                    //_delegate.SavedMovie += _delegate_SavedMovie;
                     Camera.TakePhoto();
                     VideoIsRecording = false;
-                    Camera.stopRecordingVideo();
-
-                    // cameraPreview.Preview.TakePicture(null, null, null, jpeg: _delegate);
-                    // cameraPreview.IsPreviewing = false;
                 }
                 else if (Element.Mode == CameraModes.Video && !VideoIsRecording)
                 {
-                    LocalPath = localPath;//Android.OS.Environment.ExternalStorageDirectory + $"/Video_{DateTime.Now.ToString("yyMMdd-hhmmss")}.mp4";
-                    // Camera.SetUpMediaRecorder(LocalPath);
-                    //  Camera.StartRecorderPreview();
-                    // Camera.RecordVideo();
                     Camera.StartRecordingVideo();
                     VideoIsRecording = true;
-
                 }
-                else if (Element.Mode == CameraModes.Video && VideoIsRecording && !string.IsNullOrWhiteSpace(LocalPath))
+                else if (Element.Mode == CameraModes.Video && VideoIsRecording)
                 {
-                    // recorder.Stop();
-                    // recorder.SetPreviewDisplay(null);
                     VideoIsRecording = false;
-                    // Camera.CloseCamera();
-                    // recorder.Release();
-                    // recorder = null;
                     Camera.stopRecordingVideo();
-                    Element.SavedMoview(LocalPath, string.Empty);
+                    // Element.SavedMoview(LocalPath, string.Empty);
                 }
-            }
-            else
-            {
-
-                Camera.startPreview();
-                Camera.IsPreviewing = true;
             }
         }
+
 
         void _delegate_SavedMovie(object sender, ListEventArgs e)
         {
@@ -221,13 +198,13 @@ namespace ManageGo.Droid
             Camera.Click -= OnCameraPreviewClicked;
             //Camera.Available -= Element.NotifyAvailability;
             Camera.Photo -= Element.NotifyPhoto;
+            Camera.Video -= Element.NotifyVideo;
             ///Camera.Busy -= Element.NotifyBusy;
             base.Dispose(disposing);
         }
 
 
         #region Private Methods
-
         /// <summary>
         /// Handles the camera initialisation.
         /// </summary>

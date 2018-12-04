@@ -3,20 +3,19 @@ using Android.Hardware.Camera2;
 using Android.Media;
 using Android.Runtime;
 using Java.Nio;
+using Xamarin.Forms;
 
 namespace ManageGo.Droid
 {
     public class CameraCaptureListener : CameraCaptureSession.CaptureCallback
     {
         public event EventHandler PhotoComplete;
-
         public override void OnCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result)
         {
             base.OnCaptureCompleted(session, request, result);
             PhotoComplete?.Invoke(this, EventArgs.Empty);
-        }
-        public CameraCaptureListener()
-        {
+
+
         }
     }
 
@@ -39,15 +38,15 @@ namespace ManageGo.Droid
 
         public class CameraStateListener : CameraDevice.StateCallback
         {
-            public CameraDroid Camera;
+            public CamRecorder Camera;
             public override void OnDisconnected(CameraDevice camera)
             {
                 camera.Close();
                 if (Camera != null)
                 {
-                    Camera._cameraDevice = null;
+                    Camera.CameraDevice = null;
                     Camera.OpeningCamera = false;
-                    Camera?.NotifyAvailable(false);
+                    // Camera?.NotifyAvailable(false);
                 }
             }
 
@@ -56,9 +55,9 @@ namespace ManageGo.Droid
                 camera.Close();
                 if (Camera != null)
                 {
-                    Camera._cameraDevice = null;
+                    Camera.CameraDevice = null;
                     Camera.OpeningCamera = false;
-                    Camera?.NotifyAvailable(false);
+                    //Camera?.NotifyAvailable(false);
                 }
             }
 
@@ -66,10 +65,10 @@ namespace ManageGo.Droid
             {
                 if (Camera != null)
                 {
-                    Camera._cameraDevice = camera;
-                    Camera.StartPreview();
+                    Camera.CameraDevice = camera;
+                    //Camera.StartPreview();
                     Camera.OpeningCamera = false;
-                    Camera?.NotifyAvailable(true);
+                    //Camera?.NotifyAvailable(true);
                 }
             }
         }
@@ -80,7 +79,7 @@ namespace ManageGo.Droid
             public event EventHandler<byte[]> Photo;
             public void OnImageAvailable(ImageReader reader)
             {
-                Image image = null;
+                Android.Media.Image image = null;
                 try
                 {
                     image = reader.AcquireLatestImage();
@@ -89,7 +88,7 @@ namespace ManageGo.Droid
                     buffer.Get(imageData);
                     Photo?.Invoke(this, imageData);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
 
                 }
