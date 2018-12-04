@@ -19,25 +19,31 @@ using System.Linq;
 using Plugin.Permissions;
 using Android.Hardware;
 using Android.Media;
+using Android.Util;
+using Android.Runtime;
 
-[assembly: ExportRenderer(typeof(CameraPreview), typeof(CameraPageRenderer))]
+[assembly: ExportRenderer(typeof(CameraPreview), typeof(CameraPreviewRenderer))]
 namespace ManageGo.Droid
 {
 
-
-
-    public class CameraPageRenderer : ViewRenderer<CameraPreview, UICameraPreview>
+    public class CameraPreviewRenderer : ViewRenderer<CameraPreview, CamRecorder>//ViewRenderer<CameraPreview, CameraDroid>
     {
 
-        UICameraPreview cameraPreview;
-        private MediaRecorder recorder;
+
+        //CameraDroid Camera;
+        CamRecorder Camera;
+        readonly Context _context;
         string LocalPath { get; set; }
         public bool VideoIsRecording { get; private set; }
-
-        public CameraPageRenderer(Context context) : base(context)
+        private SparseIntArray ORIENTATIONS = new SparseIntArray();
+        public CameraPreviewRenderer(Context context) : base(context)
         {
 
-
+            _context = context;
+            ORIENTATIONS.Append((int)SurfaceOrientation.Rotation0, 90);
+            ORIENTATIONS.Append((int)SurfaceOrientation.Rotation90, 0);
+            ORIENTATIONS.Append((int)SurfaceOrientation.Rotation180, 270);
+            ORIENTATIONS.Append((int)SurfaceOrientation.Rotation270, 180);
         }
 
         protected override async void OnElementChanged(ElementChangedEventArgs<CameraPreview> e)
@@ -93,8 +99,27 @@ namespace ManageGo.Droid
                         && storageStatus == Plugin.Permissions.Abstractions.PermissionStatus.Granted
                         && audioStatus == Plugin.Permissions.Abstractions.PermissionStatus.Granted)
                 {
-                    cameraPreview = new UICameraPreview(Context);
-                    SetNativeControl(cameraPreview);
+
+                    //Camera = new CameraDroid(_context);
+                    Camera = new CamRecorder(_context);
+                    SetNativeControl(Camera);
+                    Camera.openCamera();
+                    //Camera.startPreview();
+                    //Camera.IsPreviewing = true;
+
+                    //cameraPreview = new UICameraPreview(Context);
+                    //SetNativeControl(cameraPreview);
+                    if (e.NewElement != null)
+                    {
+                        // Camera.Available += e.NewElement.NotifyAvailability;
+                        Camera.Photo += e.NewElement.NotifyPhoto;
+                        Camera.Busy += e.NewElement.NotifyBusy;
+                        Camera.Click += OnCameraPreviewClicked;
+                        e.NewElement.Flash += HandleFlashChange;
+                        e.NewElement.OpenCamera += HandleCameraInitialisation;
+                        e.NewElement.CamFocus += HandleFocus;
+                        e.NewElement.Shutter += HandleShutter;
+                    }
                 }
                 else
                 {
@@ -113,72 +138,70 @@ namespace ManageGo.Droid
             if (e.OldElement != null)
             {
                 // Unsubscribe
-                cameraPreview.Click -= OnCameraPreviewClicked;
+                //cameraPreview.Click -= OnCameraPreviewClicked;
             }
             if (e.NewElement != null)
             {
-                Control.Preview = Android.Hardware.Camera.Open((int)e.NewElement.Camera);
+                // Control.Preview = Android.Hardware.Camera.Open((int)e.NewElement.Camera);
 
                 // Subscribe
-                cameraPreview.Click += OnCameraPreviewClicked;
+                // cameraPreview.Click += OnCameraPreviewClicked;
             }
         }
 
 
-
+        protected override void OnLayout(bool changed, int l, int t, int r, int b)
+        {
+            base.OnLayout(changed, l, t, r, b);
+            Camera?.OnLayout(l, t, r, b);
+        }
 
         void OnCameraPreviewClicked(object sender, EventArgs e)
         {
-            // string localFolder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
-            //  var localPath = System.IO.Path.Combine(localFolder, $"Video_{DateTime.Now.ToString("yyMMdd-hhmmss")}.mp4");
+            string localFolder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
+            var localPath = System.IO.Path.Combine(localFolder, "video.mp4");
 
 
-            if (cameraPreview.IsPreviewing)
+            if (Camera.IsPreviewing)
             {
                 if (Element.Mode == CameraModes.Snapshot)
                 {
-                    var _delegate = new Jpeg(Context);
-                    _delegate.SavedMovie += _delegate_SavedMovie;
-                    cameraPreview.Preview.TakePicture(null, null, null, jpeg: _delegate);
-                    cameraPreview.IsPreviewing = false;
+                    //var _delegate = new Jpeg(Context);
+                    //_delegate.SavedMovie += _delegate_SavedMovie;
+                    Camera.TakePhoto();
+                    VideoIsRecording = false;
+                    Camera.stopRecordingVideo();
+
+                    // cameraPreview.Preview.TakePicture(null, null, null, jpeg: _delegate);
+                    // cameraPreview.IsPreviewing = false;
                 }
                 else if (Element.Mode == CameraModes.Video && !VideoIsRecording)
                 {
-                    cameraPreview.Preview.StopPreview();
-
-                    if (recorder is null)
-                    {
-                        cameraPreview.Preview.Unlock();
-                        recorder = new MediaRecorder();
-                        recorder.SetCamera(cameraPreview.Preview);
-                        recorder.SetVideoSource(VideoSource.Camera);
-                        recorder.SetAudioSource(AudioSource.Mic);
-                        recorder.SetOutputFormat(OutputFormat.Mpeg4);
-                        recorder.SetVideoEncoder(VideoEncoder.H264);
-                        recorder.SetAudioEncoder(AudioEncoder.Default);
-                        recorder.SetPreviewDisplay(Control.Holder.Surface);
-
-                    }
-
-                    recorder.SetOrientationHint(cameraPreview.CamRotation);
-                    LocalPath = Android.OS.Environment.ExternalStorageDirectory + $"/Video_{DateTime.Now.ToString("yyMMdd-hhmmss")}.mp4";
-                    recorder.SetOutputFile(LocalPath);
-                    recorder.Prepare();
-                    recorder.Start();
+                    LocalPath = localPath;//Android.OS.Environment.ExternalStorageDirectory + $"/Video_{DateTime.Now.ToString("yyMMdd-hhmmss")}.mp4";
+                    // Camera.SetUpMediaRecorder(LocalPath);
+                    //  Camera.StartRecorderPreview();
+                    // Camera.RecordVideo();
+                    Camera.StartRecordingVideo();
                     VideoIsRecording = true;
+
                 }
                 else if (Element.Mode == CameraModes.Video && VideoIsRecording && !string.IsNullOrWhiteSpace(LocalPath))
                 {
-                    recorder.Stop();
+                    // recorder.Stop();
+                    // recorder.SetPreviewDisplay(null);
                     VideoIsRecording = false;
-                    recorder.Release();
+                    // Camera.CloseCamera();
+                    // recorder.Release();
+                    // recorder = null;
+                    Camera.stopRecordingVideo();
                     Element.SavedMoview(LocalPath, string.Empty);
                 }
             }
             else
             {
-                cameraPreview.Preview.StartPreview();
-                cameraPreview.IsPreviewing = true;
+
+                Camera.startPreview();
+                Camera.IsPreviewing = true;
             }
         }
 
@@ -191,12 +214,61 @@ namespace ManageGo.Droid
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                Control.Preview.Release();
-            }
+            Element.Flash -= HandleFlashChange;
+            Element.OpenCamera -= HandleCameraInitialisation;
+            Element.CamFocus -= HandleFocus;
+            Element.Shutter -= HandleShutter;
+            Camera.Click -= OnCameraPreviewClicked;
+            //Camera.Available -= Element.NotifyAvailability;
+            Camera.Photo -= Element.NotifyPhoto;
+            ///Camera.Busy -= Element.NotifyBusy;
             base.Dispose(disposing);
         }
+
+
+        #region Private Methods
+
+        /// <summary>
+        /// Handles the camera initialisation.
+        /// </summary>
+        /// <param name="sender">Sender.</param>
+        /// <param name="args">If set to <c>true</c> arguments.</param>
+        private void HandleCameraInitialisation(object sender, bool args)
+        {
+            ///Camera.OpenCamera();
+        }
+
+        /// <summary>
+        /// Handles the flash change.
+        /// </summary>
+        /// <param name="sender">Sender.</param>
+        /// <param name="args">If set to <c>true</c> arguments.</param>
+        private void HandleFlashChange(object sender, bool args)
+        {
+            ///  Camera.SwitchFlash(args);
+        }
+
+        /// <summary>
+        /// Handles the shutter.
+        /// </summary>
+        /// <param name="sender">Sender.</param>
+        /// <param name="e">E.</param>
+        private void HandleShutter(object sender, EventArgs e)
+        {
+            Camera.TakePhoto();
+        }
+
+        /// <summary>
+        /// Handles the focus.
+        /// </summary>
+        /// <param name="sender">Sender.</param>
+        /// <param name="e">E.</param>
+        private void HandleFocus(object sender, Xamarin.Forms.Point e)
+        {
+            ///  Camera.ChangeFocusPoint(e);
+        }
+
+        #endregion
 
     }
 }

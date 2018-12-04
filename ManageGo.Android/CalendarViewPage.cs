@@ -5,12 +5,12 @@ using System.Collections.Generic;
 
 namespace CustomCalendar.Droid
 {
-	public class CalendarViewPager : Android.Support.V4.View.ViewPager
-	{
-		public event CurrentMonthYearHandler OnCurrentMonthYearChange;      
+    public class CalendarViewPage : Android.Support.V4.View.ViewPager
+    {
+        public event CurrentMonthYearHandler OnCurrentMonthYearChange;
         public event DateRangeHandler OnSelectedDatesChange;
 
-		public bool AllowMultipleSelection { get; set; }
+        public bool AllowMultipleSelection { get; set; }
 
         DateRange _selectedDates;
         public DateRange SelectedDates
@@ -29,27 +29,27 @@ namespace CustomCalendar.Droid
 
         bool IsDragging { get; set; }
 
-		DateTime NextMonth { get; set; }
-		DateTime CurrentMonth { get; set; }
-		DateTime PreviousMonth { get; set; }
+        DateTime NextMonth { get; set; }
+        DateTime CurrentMonth { get; set; }
+        DateTime PreviousMonth { get; set; }
 
-		public DrawableControlView<CalendarMonthControl> Item0 { get; set; }
+        public DrawableControlView<CalendarMonthControl> Item0 { get; set; }
         public DrawableControlView<CalendarMonthControl> Item1 { get; set; }
         public DrawableControlView<CalendarMonthControl> Item2 { get; set; }
 
-		public CalendarViewPager(Android.Content.Context context, bool allowMultipleSelection, DateRange selectedDates, List<DateTime> highlightedDates) : base(context)
-		{
-			AllowMultipleSelection = allowMultipleSelection;
-            
-			Adapter = new CalendarPageAdapter(this);
+        public CalendarViewPage(Android.Content.Context context, bool allowMultipleSelection, DateRange selectedDates, List<DateTime> highlightedDates) : base(context)
+        {
+            AllowMultipleSelection = allowMultipleSelection;
 
-			AddOnPageChangeListener(new OnPageChangeListener(this));
+            Adapter = new CalendarPageAdapter(this);
 
-			Item0 = new DrawableControlView<CalendarMonthControl>(context, new CalendarMonthControl());
-			Item1 = new DrawableControlView<CalendarMonthControl>(context, new CalendarMonthControl());
-			Item2 = new DrawableControlView<CalendarMonthControl>(context, new CalendarMonthControl());
+            AddOnPageChangeListener(new OnPageChangeListener(this));
 
-			Item1.ControlDelegate.DatesInteracted += UpdateSelectedDate;
+            Item0 = new DrawableControlView<CalendarMonthControl>(context, new CalendarMonthControl());
+            Item1 = new DrawableControlView<CalendarMonthControl>(context, new CalendarMonthControl());
+            Item2 = new DrawableControlView<CalendarMonthControl>(context, new CalendarMonthControl());
+
+            Item1.ControlDelegate.DatesInteracted += UpdateSelectedDate;
 
             if (SelectedDates.EndDate.HasValue)
             {
@@ -64,7 +64,7 @@ namespace CustomCalendar.Droid
             HighlightedDates = highlightedDates;
 
             UpdateCalendars();
-		}
+        }
 
         void UpdateCalendars()
         {
@@ -88,8 +88,8 @@ namespace CustomCalendar.Droid
             Invalidate();
         }
 
-		public override bool DispatchTouchEvent(MotionEvent e)
-		{
+        public override bool DispatchTouchEvent(MotionEvent e)
+        {
             if (e == null)
             {
                 throw new ArgumentNullException(nameof(e));
@@ -97,36 +97,36 @@ namespace CustomCalendar.Droid
 
             // We need to reset the current item when the user is about to start dragging.
             if (e.Action == MotionEventActions.Down)
-			{
-				var pager = this;
+            {
+                var pager = this;
 
-				if (pager.CurrentItem == 0)
-				{
-					pager.SetCurrentItem(1, false);
-					pager.SetMonth(pager.PreviousMonth);
+                if (pager.CurrentItem == 0)
+                {
+                    pager.SetCurrentItem(1, false);
+                    pager.SetMonth(pager.PreviousMonth);
 
-					Invalidate();
-				}
-				else if (pager.CurrentItem == 2)
-				{
-					pager.SetCurrentItem(1, false);
-					pager.SetMonth(pager.NextMonth);
+                    Invalidate();
+                }
+                else if (pager.CurrentItem == 2)
+                {
+                    pager.SetCurrentItem(1, false);
+                    pager.SetMonth(pager.NextMonth);
 
-					Invalidate();
-				}
-			}
+                    Invalidate();
+                }
+            }
 
-			if (e.Action == MotionEventActions.Up && !IsDragging)
-			{
-				var x = e.GetX();
-				var y = e.GetY();
-				var points = new SKPoint[] { new SKPoint(x, y) };
+            if (e.Action == MotionEventActions.Up && !IsDragging)
+            {
+                var x = e.GetX();
+                var y = e.GetY();
+                var points = new SKPoint[] { new SKPoint(x, y) };
 
-				Item1.ControlDelegate.EndInteractions(points);
-			}
+                Item1.ControlDelegate.EndInteractions(points);
+            }
 
-			return base.DispatchTouchEvent(e);
-		}
+            return base.DispatchTouchEvent(e);
+        }
 
         void UpdateSelectedDate(DateTime selectedDate)
         {
@@ -141,8 +141,8 @@ namespace CustomCalendar.Droid
 
             UpdateSelectedDates();
         }
-              
-		void UpdateSelectedDates()
+
+        void UpdateSelectedDates()
         {
             UpdateCalendars();
 
@@ -161,24 +161,24 @@ namespace CustomCalendar.Droid
             Item1.ControlDelegate.Date = CurrentMonth;
             Item2.ControlDelegate.Date = NextMonth;
 
-			OnCurrentMonthYearChange?.Invoke(new DateTime(monthDate.Year, monthDate.Month, 1));
+            OnCurrentMonthYearChange?.Invoke(new DateTime(monthDate.Year, monthDate.Month, 1));
         }
 
-		class OnPageChangeListener : Java.Lang.Object, Android.Support.V4.View.ViewPager.IOnPageChangeListener
+        class OnPageChangeListener : Java.Lang.Object, Android.Support.V4.View.ViewPager.IOnPageChangeListener
         {
-            WeakReference<CalendarViewPager> _weakPager;
+            WeakReference<CalendarViewPage> _weakPager;
 
             bool _isInitialized;
             float _previousScrollX;
 
-            public OnPageChangeListener(CalendarViewPager pager)
+            public OnPageChangeListener(CalendarViewPage pager)
             {
-                _weakPager = new WeakReference<CalendarViewPager>(pager);
+                _weakPager = new WeakReference<CalendarViewPage>(pager);
             }
 
             public void OnPageScrolled(int position, float positionOffset, int positionOffsetPixels)
             {
-                if (_weakPager.TryGetTarget(out CalendarViewPager pager))
+                if (_weakPager.TryGetTarget(out CalendarViewPage pager))
                 {
                     var shouldUpdate = false;
 
@@ -223,14 +223,14 @@ namespace CustomCalendar.Droid
 
             public void OnPageScrollStateChanged(int state)
             {
-                if (_weakPager.TryGetTarget(out CalendarViewPager pager))
+                if (_weakPager.TryGetTarget(out CalendarViewPage pager))
                 {
                     pager.IsDragging = state == 1;
                 }
             }
 
             public void OnPageSelected(int position)
-            {  }
+            { }
         }
-	}
+    }
 }

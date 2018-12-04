@@ -15,9 +15,9 @@ using CustomCalendar;
 namespace ManageGo.UI.Droid.Renderers
 {
     [Preserve(AllMembers = true)]
-    public class CalendarRenderer : ViewRenderer<Calendar, CalendarViewPager>
+    public class CalendarRenderer : ViewRenderer<Calendar, CalendarViewPage>
     {
-        CalendarViewPager _calendarView;
+        CalendarViewPage _calendarView;
 
         int elementWidth;
         int elementHeight;
@@ -89,7 +89,7 @@ namespace ManageGo.UI.Droid.Renderers
             
             ResetNativeView();
 
-            _calendarView = new CalendarViewPager(Context, Element.AllowMultipleSelection, Element.SelectedDates, Element.HighlightedDates);
+            _calendarView = new CalendarViewPage(Context, Element.AllowMultipleSelection, Element.SelectedDates, Element.HighlightedDates);
 
 			_calendarView.OnCurrentMonthYearChange += Element.OnCurrentMonthYearChanged;
             _calendarView.OnSelectedDatesChange += Element.OnDatesChanged;

@@ -321,6 +321,8 @@ namespace ManageGo
                 TicketTitleText = (string)subject;
         }
 
+
+
         public FreshAwaitCommand OnTakePhotoTapped
         {
             get
@@ -328,7 +330,8 @@ namespace ManageGo
                 return new FreshAwaitCommand(async (tcs) =>
                 {
                     AttachActionSheetIsVisible = false;
-                    await CoreMethods.PushPageModel<TakeVideoPageModel>(null, true, false);
+
+                    await CoreMethods.PushPageModel<TakeVideoPageModel>(true, true, false);
                     tcs?.SetResult(true);
                 });
             }

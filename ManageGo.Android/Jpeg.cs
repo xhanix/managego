@@ -4,7 +4,7 @@ using ManageGo;
 using ManageGo.Droid;
 using Xamarin.Forms;
 
-[assembly: ExportRenderer(typeof(CameraPreview), typeof(CameraPageRenderer))]
+[assembly: ExportRenderer(typeof(CameraPreview), typeof(CameraPreviewRenderer))]
 namespace ManageGo.Droid
 {
     public class Jpeg : Java.Lang.Object, Android.Hardware.Camera.IPictureCallback

@@ -6,11 +6,11 @@ namespace CustomCalendar.Droid
 
 	public class CalendarPageAdapter : Android.Support.V4.View.PagerAdapter
 	{
-		WeakReference<CalendarViewPager> _weakPager;
+		WeakReference<CalendarViewPage> _weakPager;
 
-		public CalendarPageAdapter(CalendarViewPager pager)
+		public CalendarPageAdapter(CalendarViewPage pager)
 		{
-			_weakPager = new WeakReference<CalendarViewPager>(pager);
+			_weakPager = new WeakReference<CalendarViewPage>(pager);
 		}
 
 		public override int Count
@@ -23,7 +23,7 @@ namespace CustomCalendar.Droid
 
 		public override Java.Lang.Object InstantiateItem(ViewGroup container, int position)
 		{
-            if (_weakPager.TryGetTarget(out CalendarViewPager pager))
+            if (_weakPager.TryGetTarget(out CalendarViewPage pager))
             {
                 var color = Android.Graphics.Color.Red;
 
