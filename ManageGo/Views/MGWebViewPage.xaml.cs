@@ -10,15 +10,16 @@ namespace ManageGo
         public MGWebViewPage()
         {
             InitializeComponent();
+            NavigationPage.SetHasNavigationBar(this, false);
         }
 
-        void Handle_Navigating(object sender, Xamarin.Forms.WebNavigatingEventArgs e)
+        void Handle_Navigating(object sender, WebNavigatingEventArgs e)
         {
             MyLoader.IsVisible = true;
             MyLoader.IsRunning = true;
         }
 
-        void Handle_Navigated(object sender, Xamarin.Forms.WebNavigatedEventArgs e)
+        void Handle_Navigated(object sender, WebNavigatedEventArgs e)
         {
             MyLoader.IsVisible = false;
             MyLoader.IsRunning = false;

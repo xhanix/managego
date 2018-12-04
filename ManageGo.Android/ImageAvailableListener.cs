@@ -39,7 +39,7 @@ namespace ManageGo.Droid
 
                 Photo?.Invoke(this, imageData);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
             }
             finally

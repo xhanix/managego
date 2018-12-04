@@ -77,12 +77,9 @@
     <Compile Include="CustomWebViewRenderer.cs" />
     <Compile Include="ShareFileImplementation.cs" />
     <Compile Include="CameraPreviewRenderer.cs" />
-    <Compile Include="UICameraPreview.cs" />
     <Compile Include="VideoPicker.cs" />
     <Compile Include="VideoPlayerRenderer.cs" />
-    <Compile Include="Jpeg.cs" />
     <Compile Include="CameraCaptureListener.cs" />
-    <Compile Include="CameraDroid.cs" />
     <Compile Include="AutoFitTextureView.cs" />
     <Compile Include="ImageAvailableListener.cs" />
     <Compile Include="CamRecorder.cs" />

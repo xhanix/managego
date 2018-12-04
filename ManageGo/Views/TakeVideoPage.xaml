@@ -6,16 +6,12 @@
              BackgroundColor="#231f20"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
              x:Class="ManageGo.TakeVideoPage">
-    
-   
-    
-   
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-             <Grid Grid.Row="0" Padding="12" BackgroundColor="#231f20">
+            <Grid Grid.Row="0" Padding="12" BackgroundColor="#231f20">
                 <StackLayout Orientation="Horizontal" HorizontalOptions="StartAndExpand">
                     <Image Source="arrow_left_white.png" WidthRequest="24" VerticalOptions="CenterAndExpand" />
                     <Label Text="Cancel" TextColor="White" VerticalOptions="CenterAndExpand" FontSize="Large" />

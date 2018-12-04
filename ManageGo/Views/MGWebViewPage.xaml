@@ -2,12 +2,50 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms" 
              xmlns:local="clr-namespace:ManageGo"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
-             BackgroundColor="Black"
+             BackgroundColor="#231f20"
              x:Class="ManageGo.MGWebViewPage">
-    
-   <Grid>
-        <local:CustomWebView BackgroundColor="Black" Navigating="Handle_Navigating" Navigated="Handle_Navigated"  Data="{Binding HtmlString}" Uri="{Binding FilePath}" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" />
-        <ActivityIndicator VerticalOptions="CenterAndExpand" 
+    <ContentPage.Resources>
+        <local:InverseBoolConverter x:Key="InverseBoolConverter" />
+    </ContentPage.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Padding="12" BackgroundColor="#231f20">
+                <StackLayout IsVisible="{Binding MediaIsForAttachment,Converter={StaticResource InverseBoolConverter}}" Orientation="Horizontal" HorizontalOptions="StartAndExpand">
+                    <Image Source="arrow_left_white.png" WidthRequest="24" VerticalOptions="CenterAndExpand" />
+                    <Label  TextColor="White" VerticalOptions="CenterAndExpand" FontSize="Large" />
+                     <StackLayout.GestureRecognizers>
+                            <TapGestureRecognizer NumberOfTapsRequired="1" 
+                                                  Command="{Binding OnCancelButtonTapped}"
+                                                  />
+                        </StackLayout.GestureRecognizers>
+                </StackLayout>
+                <StackLayout HorizontalOptions="EndAndExpand" Spacing="18" Orientation="Horizontal">
+                    <Label Text="  Share  " IsVisible="{Binding MediaIsForAttachment,Converter={StaticResource InverseBoolConverter}}" TextColor="White" HorizontalOptions="EndAndExpand"  VerticalTextAlignment="Center" VerticalOptions="FillAndExpand"  >
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnShareTapped}" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                    <Label Text="  Retake  " IsVisible="{Binding MediaIsForAttachment}" TextColor="White" HorizontalOptions="EndAndExpand"  VerticalTextAlignment="Center" VerticalOptions="FillAndExpand"  >
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnCancelButtonTapped}" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                    <Frame HasShadow="false" IsVisible="{Binding MediaIsForAttachment}" Padding="8" BackgroundColor="#378ef7" CornerRadius="18">
+                        <StackLayout Spacing="12" Orientation="Horizontal">
+                            <Label Text="Attach" TextColor="White" VerticalOptions="CenterAndExpand"  />
+                            <Image Source="arrow_right_white.png" />
+                            <StackLayout.GestureRecognizers>
+                                <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnUseButtonTapped}" />
+                            </StackLayout.GestureRecognizers>
+                        </StackLayout>
+                    </Frame>  
+                </StackLayout>
+            </Grid>
+        <local:CustomWebView Grid.Row="1" BackgroundColor="Black" Navigating="Handle_Navigating" Navigated="Handle_Navigated"  Data="{Binding HtmlString}" Uri="{Binding FilePath}" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" />
+        <ActivityIndicator Grid.Row="1" VerticalOptions="CenterAndExpand" 
                            x:Name="MyLoader"
                            HorizontalOptions="CenterAndExpand" />
     </Grid>

@@ -16,14 +16,14 @@
                             <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnRetakeTapped}" />
                         </Label.GestureRecognizers>
                     </Label>
-                <Frame HasShadow="false" Padding="8" BackgroundColor="#378ef7" CornerRadius="18">
-                    <StackLayout Spacing="12" Orientation="Horizontal">
-                        <Label Text="Attach" TextColor="White" VerticalOptions="CenterAndExpand"  />
-                        <Image Source="arrow_right_white.png" />
-                        <StackLayout.GestureRecognizers>
-                            <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnUseTapped}" />
-                        </StackLayout.GestureRecognizers>
-                    </StackLayout>
+                    <Frame HasShadow="false" Padding="8" BackgroundColor="#378ef7" CornerRadius="18">
+                        <StackLayout Spacing="12" Orientation="Horizontal">
+                            <Label Text="Attach" TextColor="White" VerticalOptions="CenterAndExpand"  />
+                            <Image Source="arrow_right_white.png" />
+                            <StackLayout.GestureRecognizers>
+                                <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnUseTapped}" />
+                            </StackLayout.GestureRecognizers>
+                        </StackLayout>
                     </Frame>
                 </StackLayout>
             </Grid>

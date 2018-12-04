@@ -18,6 +18,8 @@ using Xamarin.Forms;
 using static ManageGo.Droid.CameraCaptureStateListener;
 using Size = Android.Util.Size;
 
+//todo: log errors in this file
+
 namespace ManageGo.Droid
 {
 
@@ -76,7 +78,7 @@ namespace ManageGo.Droid
         public bool IsPreviewing { get; internal set; }
 
         private CameraManager _manager;
-        private bool isRecordingVideo;
+        //private bool isRecordingVideo;
 
         public CamRecorder(Context context) : base(context)
         {
@@ -216,11 +218,11 @@ namespace ManageGo.Droid
                         }
                     }, backgroundHandler);
                 }
-                catch (CameraAccessException error)
+                catch (CameraAccessException)
                 {
 
                 }
-                catch (Java.Lang.Exception error)
+                catch (Java.Lang.Exception)
                 {
 
                 }
@@ -519,7 +521,7 @@ namespace ManageGo.Droid
             try
             {
                 //UI
-                isRecordingVideo = true;
+                //isRecordingVideo = true;
                 //Start recording
                 if (mediaRecorder is null)
                     SetUpMediaRecorder();
@@ -534,7 +536,7 @@ namespace ManageGo.Droid
         public void stopRecordingVideo()
         {
             //UI
-            isRecordingVideo = false;
+            //isRecordingVideo = false;
 
             //Stop recording
             /*
