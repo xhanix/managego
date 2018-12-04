@@ -202,6 +202,36 @@
     <AndroidResource Include="Resources\drawable-xxxhdpi\clip.png" />
     <AndroidResource Include="Resources\drawable-xxxhdpi\photocamera.png" />
     <AndroidResource Include="Resources\layout\CameraLayout.xml" />
+    <AndroidResource Include="Resources\drawable-hdpi\arrow_left_white.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\arrow_right_white.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\photo_active.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\photo_inactive.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\video_active.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\video_inactive.png" />
+    <AndroidResource Include="Resources\drawable\arrow_left_white.png" />
+    <AndroidResource Include="Resources\drawable\arrow_right_white.png" />
+    <AndroidResource Include="Resources\drawable\photo_active.png" />
+    <AndroidResource Include="Resources\drawable\photo_inactive.png" />
+    <AndroidResource Include="Resources\drawable\video_active.png" />
+    <AndroidResource Include="Resources\drawable\video_inactive.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\arrow_left_white.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\arrow_right_white.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\photo_active.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\photo_inactive.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\video_active.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\video_inactive.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\arrow_left_white.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\arrow_right_white.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\photo_active.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\photo_inactive.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\video_active.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\video_inactive.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\arrow_left_white.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\arrow_right_white.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\photo_active.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\photo_inactive.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\video_active.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\video_inactive.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\drawable\" />

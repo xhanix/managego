@@ -1,10 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms" 
               xmlns:video="clr-namespace:FormsVideoLibrary"
+              BackgroundColor="#231f20"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="ManageGo.VideoPlayerPage">
+    
     <Grid>
-            <video:VideoPlayer x:Name="videoPlayer"
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+            <Grid Grid.Row="0" Padding="12" BackgroundColor="#231f20">
+                <StackLayout HorizontalOptions="EndAndExpand" Spacing="18" Orientation="Horizontal">
+                    <Label Text="  Retake  " TextColor="White" HorizontalOptions="EndAndExpand"  VerticalTextAlignment="Center" VerticalOptions="FillAndExpand"  >
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnRetakeTapped}" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                <Frame HasShadow="false" Padding="8" BackgroundColor="#378ef7" CornerRadius="18">
+                    <StackLayout Spacing="12" Orientation="Horizontal">
+                        <Label Text="Attach" TextColor="White" VerticalOptions="CenterAndExpand"  />
+                        <Image Source="arrow_right_white.png" />
+                        <StackLayout.GestureRecognizers>
+                            <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnUseTapped}" />
+                        </StackLayout.GestureRecognizers>
+                    </StackLayout>
+                    </Frame>
+                </StackLayout>
+            </Grid>
+            <video:VideoPlayer Grid.Row="1" x:Name="videoPlayer"
                                Source="{Binding Source}"
                                VerticalOptions="FillAndExpand" />
+    
     </Grid>
+    
 </ContentPage>

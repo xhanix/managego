@@ -3,17 +3,45 @@
              xmlns:local="clr-namespace:ManageGo"
               xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core" 
              ios:Page.UseSafeArea="true"
-             BackgroundColor="Black"
+             BackgroundColor="#231f20"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
              x:Class="ManageGo.TakeVideoPage">
-    <ContentPage.ToolbarItems>
-        <ToolbarItem Text="CANCEL" Command="{Binding OnCancelTapped}"/>
-        <ToolbarItem Text="{Binding ToggleButtonText}" Command="{Binding OnModeToggleTapped}"/>
-    </ContentPage.ToolbarItems>
     
+   
     
-    <ContentPage.Content>
-         <ContentView Grid.Row="0" Content="{Binding CameraPreviewContent}" HorizontalOptions="FillAndExpand" 
+   
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+             <Grid Grid.Row="0" Padding="12" BackgroundColor="#231f20">
+                <StackLayout Orientation="Horizontal" HorizontalOptions="StartAndExpand">
+                    <Image Source="arrow_left_white.png" WidthRequest="24" VerticalOptions="CenterAndExpand" />
+                    <Label Text="Cancel" TextColor="White" VerticalOptions="CenterAndExpand" FontSize="Large" />
+                     <StackLayout.GestureRecognizers>
+                            <TapGestureRecognizer NumberOfTapsRequired="1" 
+                                                  Command="{Binding OnCancelTapped}"
+                                                  />
+                        </StackLayout.GestureRecognizers>
+                </StackLayout>
+                <StackLayout HorizontalOptions="EndAndExpand" Spacing="18" Orientation="Horizontal">
+                    <Image Source="{Binding VideoIcon}" BackgroundColor="Transparent" VerticalOptions="CenterAndExpand"  >
+                        <Image.GestureRecognizers>
+                            <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding SwitchMode}"
+                                                  CommandParameter="Video" />
+                        </Image.GestureRecognizers>
+                    </Image>
+                    <Image Source="{Binding PhotoIcon}" BackgroundColor="Transparent" VerticalOptions="CenterAndExpand"  >
+                          <Image.GestureRecognizers>
+                            <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding SwitchMode}"
+                                                  CommandParameter="Photo" />
+                        </Image.GestureRecognizers>
+                    </Image>
+                </StackLayout>
+            </Grid>
+             <ContentView Grid.Row="1" Content="{Binding CameraPreviewContent}" HorizontalOptions="FillAndExpand" 
                                  VerticalOptions="FillAndExpand" BackgroundColor="Black" />
-    </ContentPage.Content>
+        </Grid>
+   
 </ContentPage>

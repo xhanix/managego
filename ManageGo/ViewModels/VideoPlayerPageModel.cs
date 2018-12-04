@@ -15,13 +15,9 @@ namespace ManageGo
             {
                 File = (string)initData
             };
-
-
-            CurrentPage.ToolbarItems.Add(new Xamarin.Forms.ToolbarItem { Text = "USE", Command = OnUseTapped });
-            CurrentPage.ToolbarItems.Add(new Xamarin.Forms.ToolbarItem { Text = "RETAKE", Command = OnRetakeTapped });
         }
 
-        FreshAwaitCommand OnRetakeTapped
+        public FreshAwaitCommand OnRetakeTapped
         {
             get
             {
@@ -29,12 +25,12 @@ namespace ManageGo
                 {
                     //popcurrent page
                     await CoreMethods.PopPageModel(data: false, modal: true, animate: false);
-                    // await CoreMethods.PushPageModel<TakeVideoPageModel>(data: null, modal: true, animate: false);
                     tcs?.SetResult(true);
                 });
             }
         }
-        FreshAwaitCommand OnUseTapped
+
+        public FreshAwaitCommand OnUseTapped
         {
             get
             {

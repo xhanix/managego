@@ -3,6 +3,7 @@ using System.IO;
 using Android.Media;
 using FreshMvvm;
 using Xamarin.Forms;
+using PropertyChanged;
 
 namespace ManageGo
 {
@@ -21,13 +22,37 @@ namespace ManageGo
         public event EventHandler<string> Video;
         public event EventHandler<float> Widths;
         public event EventHandler Shutter;
-        private CameraModes CurrentCameraMode { get; set; } = CameraModes.Snapshot;
+        CameraModes currentCameraMode;
+
+        [AlsoNotifyFor("VideoIcon", "PhotoIcon")]
+        public CameraModes CurrentCameraMode
+        {
+            get { return currentCameraMode; }
+            private set
+            {
+                currentCameraMode = value;
+                if (currentCameraMode == CameraModes.Snapshot)
+                {
+                    PhotoIcon = "photo_active.png";
+                    VideoIcon = "video_inactive.png";
+
+                }
+                else
+                {
+                    PhotoIcon = "photo_inactive.png";
+                    VideoIcon = "video_active.png";
+                }
+                if (CameraPreviewContent != null)
+                    CameraPreviewContent.Mode = CurrentCameraMode;
+            }
+        }
         #endregion
 
         public CameraPreview CameraPreviewContent { get; set; }
 
         string FileUrl { get; set; }
-        public string ToggleButtonText { get; private set; } = "VIDEO";
+        public string VideoIcon { get; private set; }
+        public string PhotoIcon { get; private set; }
 
         #region Public Methods
         public void NotifyShutter()
@@ -86,6 +111,9 @@ namespace ManageGo
         public TakeVideoPageModel()
         {
             SetupCamView();
+            CurrentCameraMode = CameraModes.Snapshot;
+            PhotoIcon = "photo_active.png";
+            VideoIcon = "video_inactive.png";
         }
 
         private void SetupCamView()
@@ -179,12 +207,10 @@ namespace ManageGo
                     {
                         CameraPreviewContent.Mode = CameraModes.Video;
                         CurrentCameraMode = CameraModes.Video;
-                        ToggleButtonText = "PHOTO";
                     }
                     else
                     {
                         CameraPreviewContent.Mode = CameraModes.Snapshot;
-                        ToggleButtonText = "VIDEO";
                         CurrentCameraMode = CameraModes.Snapshot;
                     }
 
@@ -195,6 +221,24 @@ namespace ManageGo
 
         public bool CameraAvailibility { get; private set; }
         public float CameraButtonContainerWidth { get; private set; }
+
+        public FreshAwaitCommand SwitchMode
+        {
+            get
+            {
+                return new FreshAwaitCommand((param, tcs) =>
+                {
+                    var mode = (string)param;
+                    if (mode == "Photo")
+                        CurrentCameraMode = CameraModes.Snapshot;
+                    else
+                        CurrentCameraMode = CameraModes.Video;
+                    tcs?.SetResult(true);
+                });
+            }
+        }
+
+
 
         public override async void ReverseInit(object returnedData)
         {
@@ -208,7 +252,10 @@ namespace ManageGo
                 {
                     SetupCamView();
                 }
-
+            }
+            else if (returnedData is string)
+            {
+                await CoreMethods.PopPageModel(data: (string)returnedData, modal: true);
             }
         }
     }

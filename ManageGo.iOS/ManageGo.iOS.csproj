@@ -324,5 +324,23 @@
     <BundleResource Include="Resources\internal_open.png" />
     <BundleResource Include="Resources\internal_open%402x.png" />
     <BundleResource Include="Resources\internal_open%403x.png" />
+    <BundleResource Include="Resources\arrow_left_white.png" />
+    <BundleResource Include="Resources\arrow_left_white%402x.png" />
+    <BundleResource Include="Resources\arrow_left_white%403x.png" />
+    <BundleResource Include="Resources\arrow_right_white.png" />
+    <BundleResource Include="Resources\arrow_right_white%402x.png" />
+    <BundleResource Include="Resources\arrow_right_white%403x.png" />
+    <BundleResource Include="Resources\photo_active.png" />
+    <BundleResource Include="Resources\photo_active%402x.png" />
+    <BundleResource Include="Resources\photo_active%403x.png" />
+    <BundleResource Include="Resources\photo_inactive.png" />
+    <BundleResource Include="Resources\photo_inactive%402x.png" />
+    <BundleResource Include="Resources\photo_inactive%403x.png" />
+    <BundleResource Include="Resources\video_active.png" />
+    <BundleResource Include="Resources\video_active%402x.png" />
+    <BundleResource Include="Resources\video_active%403x.png" />
+    <BundleResource Include="Resources\video_inactive.png" />
+    <BundleResource Include="Resources\video_inactive%402x.png" />
+    <BundleResource Include="Resources\video_inactive%403x.png" />
   </ItemGroup>
 </Project>

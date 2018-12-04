@@ -10,6 +10,7 @@ namespace ManageGo
         public VideoPlayerPage()
         {
             InitializeComponent();
+            NavigationPage.SetHasNavigationBar(this, false);
         }
     }
 }
