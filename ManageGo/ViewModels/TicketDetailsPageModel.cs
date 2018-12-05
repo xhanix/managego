@@ -7,7 +7,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.IO;
-
+using Plugin.FilePicker.Abstractions;
+using Plugin.FilePicker;
 
 namespace ManageGo
 {
@@ -62,7 +63,10 @@ namespace ManageGo
             //this is the path to a photo/video file that was just captured
             if (returnedData is string path)
             {
-                var bytes = System.IO.File.ReadAllBytes(path);
+                var fileName = Path.GetFileName(path);
+                var docPath = System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                var fullPath = docPath + "/" + fileName;
+                var bytes = System.IO.File.ReadAllBytes(fullPath);
                 var file = new File { Content = bytes, Name = Path.GetFileName(path) };
                 ReplyAttachments.Add(file);
                 CurrentReplyAttachments.Add(file);
@@ -116,7 +120,7 @@ namespace ManageGo
                             fs.Write(fileData, 0, length);
                         }
                         if (Device.RuntimePlatform == Device.iOS)
-                            await CoreMethods.PushPageModel<MGWebViewPageModel>(filePath);
+                            await CoreMethods.PushPageModel<MGWebViewPageModel>(filePath, modal: true);
                         else if (Device.RuntimePlatform == Device.Android)
                             DependencyService.Get<IShareFile>().ShareLocalFile(filePath, file.Name);
                     }
@@ -291,6 +295,35 @@ namespace ManageGo
                     }
                     tcs?.SetResult(true);
                 });
+            }
+        }
+
+        public FreshAwaitCommand OnUploadFileTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand(async (tcs) =>
+               {
+                   try
+                   {
+                       AttachActionSheetIsVisible = false;
+                       FileData fileData = await CrossFilePicker.Current.PickFile();
+                       if (fileData == null)
+                           return; // user canceled file picking
+
+                       string fileName = fileData.FileName;
+                       //string contents = System.Text.Encoding.UTF8.GetString(fileData.DataArray);
+                       var file = new File { Content = fileData.DataArray, Name = fileName };
+                       ReplyAttachments.Add(file);
+                       CurrentReplyAttachments.Add(file);
+
+                   }
+                   catch (Exception ex)
+                   {
+                       await CoreMethods.DisplayAlert("Something went wrong", ex.Message, "DISMISS");
+                   }
+                   tcs?.SetResult(true);
+               });
             }
         }
 

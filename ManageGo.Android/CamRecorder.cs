@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Android.Content;
 using Android.Graphics;
 using Android.Hardware.Camera2;
@@ -156,6 +157,8 @@ namespace ManageGo.Droid
                         height = jpegSizes[0].Height;
                     }
 
+                    var availableAutoFocusModes = (int[])characteristics.Get(CameraCharacteristics.ControlAfAvailableModes);
+
                     // We use an ImageReader to get a JPEG from CameraDevice
                     // Here, we create a new ImageReader and prepare its Surface as an output from the camera
                     var reader = ImageReader.NewInstance(width, height, ImageFormatType.Jpeg, 1);
@@ -163,10 +166,11 @@ namespace ManageGo.Droid
                     outputSurfaces.Add(reader.Surface);
                     outputSurfaces.Add(new Surface(_viewSurface));
 
-                    CaptureRequest.Builder captureBuilder = CameraDevice.CreateCaptureRequest(CameraTemplate.StillCapture);
+                    CaptureRequest.Builder captureBuilder = CameraDevice.CreateCaptureRequest(CameraTemplate.Preview);
                     captureBuilder.AddTarget(reader.Surface);
-                    captureBuilder.Set(CaptureRequest.ControlMode, new Integer((int)ControlMode.Auto));
-
+                    captureBuilder.Set(CaptureRequest.ControlAeMode, (int)ControlAEMode.OnAutoFlash);
+                    // Use the same AE and AF modes as the preview.
+                    captureBuilder.Set(CaptureRequest.ControlAfMode, (int)ControlAFMode.ContinuousPicture);
                     // Orientation
                     var windowManager = _context.GetSystemService(Context.WindowService).JavaCast<IWindowManager>();
                     SurfaceOrientation rotation = windowManager.DefaultDisplay.Rotation;
@@ -199,8 +203,12 @@ namespace ManageGo.Droid
                     captureListener.PhotoComplete += (sender, e) =>
                     {
                         Busy?.Invoke(this, false);
-
+                        captureBuilder.Set(CaptureRequest.ControlAfTrigger, (int)ControlAFTrigger.Cancel);
                     };
+
+                    //lock focus
+                    //captureBuilder.Set(CaptureRequest.ControlAfTrigger, (int)ControlAFTrigger.Start);
+                    captureBuilder.Set(CaptureRequest.ControlAePrecaptureTrigger, (int)ControlAEPrecaptureTrigger.Start);
 
                     CameraDevice.CreateCaptureSession(outputSurfaces, new CameraCaptureStateListener()
                     {
@@ -209,6 +217,14 @@ namespace ManageGo.Droid
                             try
                             {
                                 _previewSession = session;
+                                if (availableAutoFocusModes.Any(afMode => afMode != (int)ControlAFMode.Off))
+                                {
+                                    captureBuilder.Set(CaptureRequest.ControlAfTrigger, (int)ControlAFTrigger.Start);
+                                }
+                                captureBuilder.Set(CaptureRequest.ControlAePrecaptureTrigger, (int)ControlAEPrecaptureTrigger.Start);
+
+                                session.StopRepeating();
+                                session.AbortCaptures();
                                 session.Capture(captureBuilder.Build(), captureListener, backgroundHandler);
                             }
                             catch (CameraAccessException ex)
@@ -229,6 +245,9 @@ namespace ManageGo.Droid
 
             }
         }
+
+
+
 
         public void openCamera(bool forVideo)
         {
@@ -375,7 +394,7 @@ namespace ManageGo.Droid
                 SurfaceTexture texture = _cameraTexture.SurfaceTexture;
                 //Assert.IsNotNull(texture);
                 texture.SetDefaultBufferSize(_previewSize.Width, _previewSize.Height);
-                previewBuilder = CameraDevice.CreateCaptureRequest(CameraTemplate.Record);
+                previewBuilder = CameraDevice.CreateCaptureRequest(CameraTemplate.Preview);
                 var surfaces = new List<Surface>();
                 var previewSurface = new Surface(texture);
                 surfaces.Add(previewSurface);
@@ -639,10 +658,12 @@ namespace ManageGo.Droid
     public class MyCameraStateCallback : CameraDevice.StateCallback
     {
         public CamRecorder fragment;
+
         public MyCameraStateCallback(CamRecorder frag)
         {
             fragment = frag;
         }
+
         public override void OnOpened(CameraDevice camera)
         {
             fragment.CameraDevice = camera;
@@ -669,7 +690,6 @@ namespace ManageGo.Droid
             fragment.cameraOpenCloseLock.Release();
             camera.Close();
             fragment.CameraDevice = null;
-
         }
     }
 

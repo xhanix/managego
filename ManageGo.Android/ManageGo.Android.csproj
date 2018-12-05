@@ -229,6 +229,21 @@
     <AndroidResource Include="Resources\drawable-xxxhdpi\photo_inactive.png" />
     <AndroidResource Include="Resources\drawable-xxxhdpi\video_active.png" />
     <AndroidResource Include="Resources\drawable-xxxhdpi\video_inactive.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\capture_camera.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\capture_video_play.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\capture_video_stop.png" />
+    <AndroidResource Include="Resources\drawable\capture_camera.png" />
+    <AndroidResource Include="Resources\drawable\capture_video_play.png" />
+    <AndroidResource Include="Resources\drawable\capture_video_stop.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\capture_camera.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\capture_video_play.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\capture_video_stop.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\capture_camera.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\capture_video_play.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\capture_video_stop.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\capture_camera.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\capture_video_play.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\capture_video_stop.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\drawable\" />

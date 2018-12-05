@@ -342,5 +342,14 @@
     <BundleResource Include="Resources\video_inactive.png" />
     <BundleResource Include="Resources\video_inactive%402x.png" />
     <BundleResource Include="Resources\video_inactive%403x.png" />
+    <BundleResource Include="Resources\capture_camera.png" />
+    <BundleResource Include="Resources\capture_camera%402x.png" />
+    <BundleResource Include="Resources\capture_camera%403x.png" />
+    <BundleResource Include="Resources\capture_video_play.png" />
+    <BundleResource Include="Resources\capture_video_play%402x.png" />
+    <BundleResource Include="Resources\capture_video_play%403x.png" />
+    <BundleResource Include="Resources\capture_video_stop.png" />
+    <BundleResource Include="Resources\capture_video_stop%402x.png" />
+    <BundleResource Include="Resources\capture_video_stop%403x.png" />
   </ItemGroup>
 </Project>

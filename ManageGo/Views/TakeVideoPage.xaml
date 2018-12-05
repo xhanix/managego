@@ -36,8 +36,17 @@
                     </Image>
                 </StackLayout>
             </Grid>
-             <ContentView Grid.Row="1" Content="{Binding CameraPreviewContent}" HorizontalOptions="FillAndExpand" 
+            <ContentView Grid.Row="1" Content="{Binding CameraPreviewContent}" HorizontalOptions="FillAndExpand" 
                                  VerticalOptions="FillAndExpand" BackgroundColor="Black" />
+            <Image Grid.Row="1" VerticalOptions="EndAndExpand" 
+                   HorizontalOptions="CenterAndExpand" 
+                   Margin="0,0,0,28"
+                   Source="{Binding CaptureButtonIcon}">
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer NumberOfTapsRequired="1"
+                                          Command="{Binding OnCaptureButtonTapped}" />
+                </Image.GestureRecognizers>
+            </Image>
         </Grid>
    
 </ContentPage>

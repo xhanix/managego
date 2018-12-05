@@ -117,7 +117,37 @@
             </ListView>
             <Image Source="gradient.png" InputTransparent="true" Aspect="Fill" HeightRequest="80" Margin="0,-80,0,0" IsVisible="{Binding ReplyBoxIsVisible}"/>
         </StackLayout>
-        <StackLayout Grid.Row="3" Padding="28,0,0,0" x:Name="ReplyBox" IsVisible="{Binding ReplyBoxIsVisible}" BackgroundColor="White">
+            
+        <Grid Grid.Row="2" Grid.RowSpan="2" RowSpacing="0" BackgroundColor="White">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
+            <BoxView Grid.Row="0" HeightRequest="25"  BackgroundColor="#f8f9fa" Margin="-28,0,0,18"/>
+            <Button Grid.Row="1" Image="chevron_down.png" BackgroundColor="Transparent" WidthRequest="40"  Margin="0,-12,0,0" HorizontalOptions="EndAndExpand" Command="{Binding OnCloseReplyBubbleTapped}" />
+            <ScrollView Grid.Row="2" Padding="28,0,28,0" Margin="6,-15,0,0" Scrolled="Handle_Scrolled" >
+                <StackLayout Spacing="8">
+                    <Label Text="Work order summary:" TextColor="#5d5e60" FontAttributes="Bold" VerticalOptions="Start" VerticalTextAlignment="Start" />
+                    <Editor Placeholder="type here..." />
+                    <BoxView HeightRequest="0.75" BackgroundColor="Gray" Opacity="0.75" Margin="0,6,12,6"/>
+                    <Label Text="Details:" TextColor="#5d5e60" FontAttributes="Bold" VerticalOptions="Start" VerticalTextAlignment="Start" />
+                    <Editor Placeholder="type here..." />
+                    <BoxView HeightRequest="0.75" BackgroundColor="Gray" Opacity="0.75" Margin="0,6,12,6"/>
+                    <Label Text="Send to users:" TextColor="#5d5e60" FontAttributes="Bold" VerticalOptions="Start" VerticalTextAlignment="Start" />
+                    <ListView SeparatorVisibility="None" HeightRequest="50" VerticalOptions="Start">
+                          
+                    </ListView>
+                    <Label Text="External contact" TextColor="#5d5e60" FontAttributes="Bold" VerticalOptions="Start" VerticalTextAlignment="Start" />
+                </StackLayout>
+            </ScrollView>
+            <Button Grid.Row="3" Margin="28,0,28,0" Text="Create work order" FontSize="Large" TextColor="White" BackgroundColor="#59c623"/>
+
+        </Grid>  
+            
+        <!-- IsVisible="{Binding ReplyBoxIsVisible}" -->
+        <StackLayout Grid.Row="3" Padding="28,0,0,0" x:Name="ReplyBox" IsVisible="false" BackgroundColor="White">
                <BoxView HeightRequest="0.75" BackgroundColor="Gray" Opacity="0.75" Margin="-28,0,0,18"/>
                <StackLayout  Margin="19,-5,0,8" Orientation="Horizontal" HorizontalOptions="FillAndExpand">
                     <Label Text="Reply:" TextColor="#5d5e60" FontAttributes="Bold" VerticalOptions="Start" VerticalTextAlignment="Start" />
@@ -137,7 +167,7 @@
                                         <ViewCell>
                                             <StackLayout Orientation="Horizontal" Padding="8,8,8,0" Margin="4,0,8,0" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
                                                 <Label Text="{Binding Name}" VerticalOptions="StartAndExpand" FontSize="Small" TextColor="#318bfa"/>
-                                                <Image Source="close_red.png" VerticalOptions="StartAndExpand" HorizontalOptions="EndAndExpand">
+                                                <Image Source="close_red.png" WidthRequest="12" HeightRequest="12" VerticalOptions="StartAndExpand" HorizontalOptions="EndAndExpand">
                                                     <Image.GestureRecognizers>
                                                         <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding BindingContext.OnRemoveAttachmentTapped,Source={x:Reference ThisPage}}" CommandParameter="{Binding .}"/>
                                                     </Image.GestureRecognizers>
@@ -151,14 +181,15 @@
                     </ScrollView>
                 <BoxView HeightRequest="0.75" BackgroundColor="Gray" Opacity="0.75" Margin="6,0,6,2"/>
 
-               <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand" Margin="0,0,10,0">
+                <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand" Margin="0,0,10,0">
                     <Button Image="clip.png" BackgroundColor="#e0eefd" Command="{Binding OnAttachButtonTapped}" WidthRequest="48" Margin="0,0,28,0" CornerRadius="23"  />
                     <Button Text="Send" Command="{Binding OnSendReplyTapped}" WidthRequest="155" CornerRadius="23" ContentLayout="Right,40" FontSize="Medium" HorizontalOptions="EndAndExpand" FontAttributes="Bold" Image="arrow_right.png"   TextColor="#328bf6" BackgroundColor="#e0eefd" />
                 </StackLayout> 
                 <BoxView HeightRequest="0.5" BackgroundColor="Gray" Margin="-28,0,0,0"/>
 
-            </StackLayout>
-        <StackLayout Grid.Row="4" BackgroundColor="White" Orientation="Horizontal" IsVisible="{Binding ReplyButtonIsVisible}" Padding="18">    
+        </StackLayout>
+        <!-- IsVisible="{Binding ReplyButtonIsVisible}" -->
+        <StackLayout Grid.Row="4" BackgroundColor="White" Orientation="Horizontal" IsVisible="false" Padding="18">    
                 <Label Text="Type your reply..."  VerticalTextAlignment="Center" Margin="12,0,0,0" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" TextColor="#a7a9ac">
                     
                 </Label>
@@ -169,19 +200,19 @@
                 </StackLayout.GestureRecognizers>
         </StackLayout>
     </Grid>
-         <!-- IsVisible="{Binding AttachActionSheetIsVisible}" -->
+         <!-- IsVisible="{Binding PopUpBackgroundIsVisible}" -->
          <StackLayout BackgroundColor="Black"
                       Opacity="0.4"
-                     IsVisible="{Binding PopUpBackgroundIsVisible}"
+                     IsVisible="false"
                      RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent, Property=Height,Factor=1,Constant=0}"
                      RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent, Property=Width,Factor=1,Constant=0}">
             <StackLayout.GestureRecognizers>
                 <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnBackgroundTapped}" />
             </StackLayout.GestureRecognizers>
         </StackLayout>
-        <!-- IsVisible="{Binding AttachActionSheetIsVisible}" -->
+        <!-- IsVisible="{Binding SendOptionsPupupIsVisible}" -->
         <Frame BackgroundColor="White"
-                     IsVisible="{Binding SendOptionsPupupIsVisible}"
+                     IsVisible="false"
                      x:Name="SendOptionsPupup"
                      CornerRadius="8"
                      HasShadow="false"
@@ -195,9 +226,9 @@
                 <Button Image="internal_closed.png" Command="{Binding OnInternalTapped}" FontSize="Large" Margin="22,12,0,18" HorizontalOptions="StartAndExpand" BackgroundColor="Transparent" FontAttributes="Bold" Text="Reply to staff only" TextColor="Red" />
             </StackLayout>
         </Frame>
-   
+        <!-- {Binding AttachActionSheetIsVisible} -->
         <Frame BackgroundColor="White"
-                     IsVisible="{Binding AttachActionSheetIsVisible}"
+                     IsVisible="false"
                      x:Name="AttachActionSheet"
                      CornerRadius="8"
                      HasShadow="false"
@@ -232,14 +263,14 @@
                     <Image WidthRequest="47" HeightRequest="47" VerticalOptions="CenterAndExpand" Source="camera_3.png" />
                     <Label FontSize="Large" VerticalOptions="CenterAndExpand"  HorizontalOptions="StartAndExpand" BackgroundColor="Transparent" Text="Upload file" TextColor="#318bfa" />
                 <StackLayout.GestureRecognizers>
-                        <TapGestureRecognizer NumberOfTapsRequired="1"  Command="{Binding OnUploadPhotoTapped}" />
+                        <TapGestureRecognizer NumberOfTapsRequired="1"  Command="{Binding OnUploadFileTapped}" />
                 </StackLayout.GestureRecognizers>
                 </StackLayout>
             </StackLayout>
         </Frame>
         
-        
-         <Frame IsVisible="{Binding IsDownloadingFile}"
+        <!-- {Binding IsDownloadingFile} -->
+         <Frame IsVisible="false"
                 HasShadow="false" 
                 BackgroundColor="#99000000" 
                 RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent, Property=Width,Factor=0,Constant=150}"

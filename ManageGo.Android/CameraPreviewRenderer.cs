@@ -115,11 +115,13 @@ namespace ManageGo.Droid
                         Camera.Photo += e.NewElement.NotifyPhoto;
                         Camera.Video += e.NewElement.NotifyVideo;
                         Camera.Busy += e.NewElement.NotifyBusy;
+
                         Camera.Click += OnCameraPreviewClicked;
                         e.NewElement.Flash += HandleFlashChange;
                         e.NewElement.OpenCamera += HandleCameraInitialisation;
                         e.NewElement.CamFocus += HandleFocus;
                         e.NewElement.Shutter += HandleShutter;
+                        e.NewElement.OnCaptureButtonTapped += OnCameraPreviewClicked;
                     }
                 }
                 else
@@ -170,12 +172,14 @@ namespace ManageGo.Droid
                 else if (Element.Mode == CameraModes.Video && !VideoIsRecording)
                 {
                     Camera.StartRecordingVideo();
+                    Element.NotifyRecordingVideo();
                     VideoIsRecording = true;
                 }
                 else if (Element.Mode == CameraModes.Video && VideoIsRecording)
                 {
                     VideoIsRecording = false;
                     Camera.stopRecordingVideo();
+                    Element.NotifyStoppedRecordingVideo();
                     // Element.SavedMoview(LocalPath, string.Empty);
                 }
             }

@@ -35,6 +35,9 @@ namespace ManageGo
         /// </summary>
         public event EventHandler<bool> Busy;
 
+        public event EventHandler RecordingVideo;
+        public event EventHandler StoppedRecordingVideo;
+        public event EventHandler OnCaptureButtonTapped;
         /// <summary>
         /// Occurs when flash.
         /// </summary>
@@ -54,6 +57,7 @@ namespace ManageGo
         /// Occurs when photo.
         /// </summary>
         public event EventHandler<byte[]> Photo;
+        public event EventHandler<string> PhotoPath;
 
         public event EventHandler<string> Video;
 
@@ -98,6 +102,26 @@ namespace ManageGo
             Shutter?.Invoke(this, EventArgs.Empty);
         }
 
+        public void NotifyCaptureButtonTapped()
+        {
+            OnCaptureButtonTapped?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void NotifyRecordingVideo()
+        {
+            RecordingVideo?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void NotifyStoppedRecordingVideo()
+        {
+            StoppedRecordingVideo?.Invoke(this, EventArgs.Empty);
+        }
+
+
+        public void NotifyStoppedRecordingVideo(object sender, string filePath)
+        {
+            Video?.Invoke(this, filePath);
+        }
         /// <summary>
         /// Notifies the open camera.
         /// </summary>
@@ -158,6 +182,12 @@ namespace ManageGo
         {
             Photo?.Invoke(this, imageData);
         }
+
+        public void NotifyPhoto(object sender, string filePath)
+        {
+            PhotoPath?.Invoke(this, filePath);
+        }
+
         public void NotifyVideo(object sender, string videoFilePath)
         {
             Video?.Invoke(this, videoFilePath);

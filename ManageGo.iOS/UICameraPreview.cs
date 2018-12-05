@@ -19,14 +19,17 @@ namespace ManageGo.iOS
         AVCaptureMovieFileOutput movieFileOutput;
         AVCapturePhotoOutput photoFileOutput;
         protected bool isRecording;
+        string VideoFileUrl { get; set; }
         string FileUrl { get; set; }
         public CameraModes CameraMode { get; set; }
         UIPaintCodeButton takePhotoButton;
         UIPaintCodeButton stopRecordButton;
         bool setupInterface;
 
-        public event EventHandler<ListEventArgs> SavedMovie;
 
+        public event EventHandler StartedRecordingVideo;
+        public event EventHandler<string> Video;
+        public event EventHandler<string> PhotoPath;
         public AVCaptureSession CaptureSession { get; private set; }
 
         public bool IsPreviewing { get; set; }
@@ -49,7 +52,7 @@ namespace ManageGo.iOS
             if (!setupInterface)
             {
                 setupInterface = true;
-                SetupUserInterface();
+                //SetupUserInterface();
             }
         }
 
@@ -101,12 +104,20 @@ namespace ManageGo.iOS
                 CaptureSession.BeginConfiguration();
                 CaptureSession.AddOutput(movieFileOutput);
                 CaptureSession.AddOutput(photoFileOutput);
+                var ranges = device.ActiveFormat.VideoSupportedFrameRateRanges;
+                if (device.LockForConfiguration(out error))
+                {
+                    device.ActiveVideoMinFrameDuration = new CMTime(1, (int)ranges.First().MinFrameRate);
+                    device.ActiveVideoMaxFrameDuration = new CMTime(1, (int)ranges.First().MaxFrameRate);
+
+                }
 
                 var connection = movieFileOutput.ConnectionFromMediaType(AVMediaType.Video);
                 if (connection != null)
                 {
                     if (connection.SupportsVideoStabilization)
                         connection.PreferredVideoStabilizationMode = AVCaptureVideoStabilizationMode.Auto;
+
 
                 }
                 CaptureSession.CommitConfiguration();
@@ -171,9 +182,9 @@ namespace ManageGo.iOS
                CaptureMovie();
            };
 
-            this.Add(takePhotoButton);
-            stopRecordButton.Hidden = true;
-            this.Add(stopRecordButton);
+            // this.Add(takePhotoButton);
+            // stopRecordButton.Hidden = true;
+            // this.Add(stopRecordButton);
         }
 
 
@@ -263,33 +274,39 @@ namespace ManageGo.iOS
 
             if (!isRecording && CameraMode == CameraModes.Video)
             {
-                string localFolder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
-                var localPath = System.IO.Path.Combine(localFolder, $"Video_{DateTime.Now.ToString("yyMMdd-hhmmss")}.mov");
+                var outputUrl = ApplicationDocumentsDirectory().Append($"Video_{DateTime.Now.ToString("yyMMdd_hhmmss")}", false).AppendPathExtension("mov");
+                VideoFileUrl = outputUrl.AbsoluteString;
+                // string localFolder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
+                // var localPath = System.IO.Path.Combine(localFolder, $"Video_{DateTime.Now.ToString("yyMMdd_hhmmss")}.mov");
                 //  var outputUrl = ApplicationDocumentsDirectory().Append($"Video_{DateTime.Now.ToString("yyMMdd-hhmmss")}", false).AppendPathExtension("mov");
                 var _delegate = new OutputRecorder();
                 _delegate.SavedMovie += (sender, e) =>
                  {
-                     SavedMovie(this, new ListEventArgs(localPath, e.error?.LocalizedDescription));
+                     Video?.Invoke(this, VideoFileUrl);
+                     /// SavedMovie(this, new ListEventArgs(outputUrl.AbsoluteString, e.error?.LocalizedDescription));
                      //Analytics.TrackEvent("Trigger seconds SavedMovie Event");
 
                  };
-                movieFileOutput.StartRecordingToOutputFile(NSUrl.CreateFileUrl(new string[] { localPath }), _delegate);
-                takePhotoButton.Hidden = true;
-                stopRecordButton.Hidden = false;
+                movieFileOutput.StartRecordingToOutputFile(outputUrl, _delegate);
+                //takePhotoButton.Hidden = true;
+                //stopRecordButton.Hidden = false;
+                StartedRecordingVideo?.Invoke(this, EventArgs.Empty);
             }
             else if (isRecording && CameraMode == CameraModes.Video)
             {
                 movieFileOutput.StopRecording();
-                takePhotoButton.Hidden = false;
-                stopRecordButton.Hidden = true;
+                //takePhotoButton.Hidden = false;
+                //stopRecordButton.Hidden = true;
             }
             else if (CameraMode == CameraModes.Snapshot)
             {
 
                 var cb = new PhotoRecorderDelegate();
-                cb.SavedMovie += (object sender, ListEventArgs e) =>
+                cb.SavedPhoto += (object sender, ListEventArgs e) =>
                 {
-                    SavedMovie(this, e);
+                    /// SavedMovie(this, e);
+                    PhotoPath?.Invoke(this, e.MovieUrl);
+
                 };
                 var dictionary = new NSDictionary<NSString, NSObject>
                 (
@@ -363,13 +380,13 @@ namespace ManageGo.iOS
 
     public class PhotoRecorderDelegate : AVCapturePhotoCaptureDelegate
     {
-        public event EventHandler<ListEventArgs> SavedMovie;
+        public event EventHandler<ListEventArgs> SavedPhoto;
 
         [Export("captureOutput:didFinishProcessingPhoto:error:")]
         override public void DidFinishProcessingPhoto(AVCapturePhotoOutput output, AVCapturePhoto photo, NSError error)
         {
             string localFolder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
-            var localPath = System.IO.Path.Combine(localFolder, $"Photo_{DateTime.Now.ToString("yyMMdd-hhmmss")}.jpg");
+            var localPath = System.IO.Path.Combine(localFolder, $"Photo_{DateTime.Now.ToString("yyMMdd_hhmmss")}.jpg");
             var errMsg = error?.Description;
             try
             {
@@ -381,8 +398,8 @@ namespace ManageGo.iOS
             }
             finally
             {
-                if (SavedMovie != null)
-                    SavedMovie(this, new ListEventArgs(localPath, errMsg));
+                if (SavedPhoto != null)
+                    SavedPhoto(this, new ListEventArgs(localPath, errMsg));
             }
         }
     }

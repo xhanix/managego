@@ -38,7 +38,10 @@ namespace ManageGo
                 }
                 else
                 {
-                    FilePath = initData as string;
+                    var _path = initData as string;
+                    if (_path.StartsWith("file", StringComparison.InvariantCulture))
+                        _path = _path.Replace("file:///", "");
+                    FilePath = _path;
                 }
 
             }
@@ -66,7 +69,10 @@ namespace ManageGo
                 }
                 else
                 {
-                    FilePath = ((Tuple<string, bool>)initData).Item1 as string;
+                    var _path = ((Tuple<string, bool>)initData).Item1 as string;
+                    if (_path.StartsWith("file", StringComparison.InvariantCulture))
+                        _path = _path.Replace("file:///", "/");
+                    FilePath = _path;
                 }
 
             }

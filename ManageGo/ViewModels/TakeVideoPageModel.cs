@@ -23,8 +23,9 @@ namespace ManageGo
         public event EventHandler<float> Widths;
         public event EventHandler Shutter;
         CameraModes currentCameraMode;
-
-        [AlsoNotifyFor("VideoIcon", "PhotoIcon")]
+        [AlsoNotifyFor("CaptureButtonIcon")]
+        bool IsRecordingVideo { get; set; }
+        [AlsoNotifyFor("VideoIcon", "PhotoIcon", "CaptureButtonIcon")]
         public CameraModes CurrentCameraMode
         {
             get { return currentCameraMode; }
@@ -44,6 +45,31 @@ namespace ManageGo
                 }
                 if (CameraPreviewContent != null)
                     CameraPreviewContent.Mode = CurrentCameraMode;
+            }
+        }
+
+        public FreshAwaitCommand OnCaptureButtonTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((tcs) =>
+                {
+                    CameraPreviewContent.NotifyCaptureButtonTapped();
+                    tcs?.SetResult(true);
+                });
+            }
+        }
+
+        public string CaptureButtonIcon
+        {
+            get
+            {
+                if (CurrentCameraMode == CameraModes.Snapshot)
+                    return "capture_camera.png";
+                else if (CurrentCameraMode == CameraModes.Video && IsRecordingVideo)
+                    return "capture_video_stop.png";
+                else
+                    return "capture_video_play.png";
             }
         }
         #endregion
@@ -81,14 +107,18 @@ namespace ManageGo
             CameraAvailibility = isAvailable;
             AvailibilityChange?.Invoke(this, isAvailable);
         }
+
         public void NotifyPhoto(object sender, byte[] imageData)
         {
             Photo?.Invoke(this, imageData);
         }
+
         public void NotifyVideo(object sender, string videoFilePath)
         {
             Video?.Invoke(this, videoFilePath);
         }
+
+
         public void NotifyFlash(bool flashOn)
         {
             Flash?.Invoke(this, flashOn);
@@ -154,16 +184,30 @@ namespace ManageGo
                 //video from Android is ready
                 //show the videoview for the video, preview page remains on top of current page and behind the photo view page
                 var videoPath = e;
+                IsRecordingVideo = false;
                 await CoreMethods.PushPageModel<VideoPlayerPageModel>(data: videoPath, modal: true, animate: false);
             };
 
+            CameraPreviewContent.PhotoPath += async (object sender, string e) =>
+            {
+                FileUrl = e;
+                await CoreMethods.PushPageModel<MGWebViewPageModel>
+                   (data: new Tuple<string, bool>(e, true),
+                                                         modal: true, animate: false);
+            };
 
+
+            CameraPreviewContent.RecordingVideo += (object sender, EventArgs e) =>
+            {
+                IsRecordingVideo = true;
+            };
 
             CameraPreviewContent.SavedMovie += async (object sender, ListEventArgs e) =>
             {
                 //this can be a movie ".mp4" or a photo
                 FileUrl = e.MovieUrl;
-                if (Path.GetExtension(FileUrl).Equals(".mp4", StringComparison.CurrentCultureIgnoreCase))
+                if (Path.GetExtension(FileUrl).Equals(".mp4", StringComparison.CurrentCultureIgnoreCase)
+                || Path.GetExtension(FileUrl).Equals(".mov", StringComparison.CurrentCultureIgnoreCase))
                 {
                     //need to pop the current(cam preview) page for Android to playback the video (old android phone/memory issue)
                     // await CoreMethods.PopPageModel(modal: true, animate: false);

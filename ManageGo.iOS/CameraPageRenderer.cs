@@ -20,13 +20,27 @@ namespace ManageGo.iOS
             if (Control == null)
             {
                 uiCameraPreview = new UICameraPreview(e.NewElement.Camera, e.NewElement.Speed, e.NewElement.FileUrl, e.NewElement.Mode);
-                uiCameraPreview.SavedMovie += (sender, _e) =>
-                {
-                    var url = _e.MovieUrl;
-                    e.NewElement.SavedMoview(url, _e.ErrorMessage);
 
+                uiCameraPreview.StartedRecordingVideo += (object sender, System.EventArgs __e) =>
+                {
+                    Element.NotifyRecordingVideo();
+                };
+                uiCameraPreview.Video += (object sender, string filePath) =>
+                {
+                    Element.NotifyStoppedRecordingVideo(this, filePath);
+                };
+                uiCameraPreview.PhotoPath += (object sender, string photoPath) =>
+                {
+                    Element.NotifyPhoto(this, photoPath);
                 };
                 SetNativeControl(uiCameraPreview);
+            }
+            if (e.NewElement != null)
+            {
+                e.NewElement.OnCaptureButtonTapped += (sender, _e) =>
+                {
+                    uiCameraPreview.CaptureMovie();
+                };
             }
 
         }
