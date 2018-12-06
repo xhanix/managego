@@ -118,7 +118,7 @@
             <Image Source="gradient.png" InputTransparent="true" Aspect="Fill" HeightRequest="80" Margin="0,-80,0,0" IsVisible="{Binding ReplyBoxIsVisible}"/>
         </StackLayout>
             
-        <Grid Grid.Row="2" Grid.RowSpan="2" RowSpacing="0" BackgroundColor="White">
+        <Grid Grid.Row="2" IsVisible="false" Grid.RowSpan="2" RowSpacing="0" BackgroundColor="White">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
@@ -228,7 +228,7 @@
         </Frame>
         <!-- {Binding AttachActionSheetIsVisible} -->
         <Frame BackgroundColor="White"
-                     IsVisible="false"
+                     IsVisible="true"
                      x:Name="AttachActionSheet"
                      CornerRadius="8"
                      HasShadow="false"

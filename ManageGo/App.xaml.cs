@@ -33,9 +33,17 @@ namespace ManageGo
         public App()
         {
             InitializeComponent();
+
             MasterDetailNav = new FreshMasterDetailNavigationContainer();
             MasterDetailNav.Init("");
             var page = FreshPageModelResolver.ResolvePageModel<MasterMenuPageModel>();
+
+
+            MasterDetailNav.AddPage<TakeVideoPageModel>("Home", null);
+            MainPage = MasterDetailNav;
+            return;
+
+
             page.Title = "Menu";
             MasterDetailNav.Master = page;
             MasterDetailNav.AddPage<WelcomePageModel>("Home", null);

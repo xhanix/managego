@@ -83,6 +83,11 @@
     <Compile Include="AutoFitTextureView.cs" />
     <Compile Include="ImageAvailableListener.cs" />
     <Compile Include="CamRecorder.cs" />
+    <Compile Include="CameraCaptureSessionCallback.cs" />
+    <Compile Include="Camera2BasicSurfaceTextureListener.cs" />
+    <Compile Include="CameraStateListener.cs" />
+    <Compile Include="CameraCaptureStillPictureSessionCallback.cs" />
+    <Compile Include="CompareSizesByArea.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

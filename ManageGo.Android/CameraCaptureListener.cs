@@ -1,8 +1,6 @@
 ﻿using System;
 using Android.Hardware.Camera2;
-using Android.Media;
-using Android.Runtime;
-using Java.Nio;
+using Java.Lang;
 using Xamarin.Forms;
 
 namespace ManageGo.Droid
@@ -10,95 +8,74 @@ namespace ManageGo.Droid
     public class CameraCaptureListener : CameraCaptureSession.CaptureCallback
     {
         public event EventHandler PhotoComplete;
+        CamRecorder owner;
+        public CameraCaptureListener(CamRecorder owner)
+        {
+            this.owner = owner ?? throw new System.ArgumentNullException(nameof(owner));
+        }
         public override void OnCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result)
         {
-            base.OnCaptureCompleted(session, request, result);
-            PhotoComplete?.Invoke(this, EventArgs.Empty);
-
-
-        }
-    }
-
-    public class CameraCaptureStateListener : CameraCaptureSession.StateCallback
-    {
-        public Action<CameraCaptureSession> OnConfigurFailedAction;
-        public Action<CameraCaptureSession> OnConfiguredAction;
-        public override void OnConfigured(CameraCaptureSession session)
-        {
-            OnConfiguredAction?.Invoke(session);
+            Process(result);
         }
 
-        public override void OnConfigureFailed(CameraCaptureSession session)
+        public override void OnCaptureProgressed(CameraCaptureSession session, CaptureRequest request, CaptureResult partialResult)
         {
-            if (OnConfiguredAction != null)
-            {
-                OnConfigurFailedAction?.Invoke(session);
-            }
+            Process(partialResult);
         }
 
-        public class CameraStateListener : CameraDevice.StateCallback
+        private void Process(CaptureResult result)
         {
-            public CamRecorder Camera;
-            public override void OnDisconnected(CameraDevice camera)
+            switch (owner.mState)
             {
-                camera.Close();
-                if (Camera != null)
-                {
-                    Camera.CameraDevice = null;
-                    Camera.OpeningCamera = false;
-                    // Camera?.NotifyAvailable(false);
-                }
-            }
-
-            public override void OnError(CameraDevice camera, [GeneratedEnum] CameraError error)
-            {
-                camera.Close();
-                if (Camera != null)
-                {
-                    Camera.CameraDevice = null;
-                    Camera.OpeningCamera = false;
-                    //Camera?.NotifyAvailable(false);
-                }
-            }
-
-            public override void OnOpened(CameraDevice camera)
-            {
-                if (Camera != null)
-                {
-                    Camera.CameraDevice = camera;
-                    //Camera.StartPreview();
-                    Camera.OpeningCamera = false;
-                    //Camera?.NotifyAvailable(true);
-                }
-            }
-        }
-
-
-        public class ImageAvailableListner : Java.Lang.Object, ImageReader.IOnImageAvailableListener
-        {
-            public event EventHandler<byte[]> Photo;
-            public void OnImageAvailable(ImageReader reader)
-            {
-                Android.Media.Image image = null;
-                try
-                {
-                    image = reader.AcquireLatestImage();
-                    ByteBuffer buffer = image.GetPlanes()[0].Buffer;
-                    byte[] imageData = new byte[buffer.Capacity()];
-                    buffer.Get(imageData);
-                    Photo?.Invoke(this, imageData);
-                }
-                catch (Exception)
-                {
-
-                }
-                finally
-                {
-                    if (image != null)
+                case CamRecorder.STATE_WAITING_LOCK:
                     {
-                        image.Close();
+                        Integer afState = (Integer)result.Get(CaptureResult.ControlAfState);
+                        if (afState == null)
+                        {
+                            owner.CaptureStillPicture();
+                        }
+
+                        else if ((((int)ControlAFState.FocusedLocked) == afState.IntValue()) ||
+                                   (((int)ControlAFState.NotFocusedLocked) == afState.IntValue()))
+                        {
+                            // ControlAeState can be null on some devices
+                            Integer aeState = (Integer)result.Get(CaptureResult.ControlAeState);
+                            if (aeState == null ||
+                                    aeState.IntValue() == ((int)ControlAEState.Converged))
+                            {
+                                owner.mState = CamRecorder.STATE_PICTURE_TAKEN;
+                                owner.CaptureStillPicture();
+                            }
+                            else
+                            {
+                                owner.RunPrecaptureSequence();
+                            }
+                        }
+                        break;
                     }
-                }
+                case CamRecorder.STATE_WAITING_PRECAPTURE:
+                    {
+                        // ControlAeState can be null on some devices
+                        Integer aeState = (Integer)result.Get(CaptureResult.ControlAeState);
+                        if (aeState == null ||
+                                aeState.IntValue() == ((int)ControlAEState.Precapture) ||
+                                aeState.IntValue() == ((int)ControlAEState.FlashRequired))
+                        {
+                            owner.mState = CamRecorder.STATE_WAITING_NON_PRECAPTURE;
+                        }
+                        break;
+                    }
+                case CamRecorder.STATE_WAITING_NON_PRECAPTURE:
+                    {
+                        // ControlAeState can be null on some devices
+                        Integer aeState = (Integer)result.Get(CaptureResult.ControlAeState);
+                        if (aeState == null || aeState.IntValue() != ((int)ControlAEState.Precapture))
+                        {
+                            owner.mState = CamRecorder.STATE_PICTURE_TAKEN;
+                            owner.CaptureStillPicture();
+                        }
+                        break;
+                    }
             }
         }
     }

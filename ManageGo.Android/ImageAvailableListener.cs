@@ -22,6 +22,8 @@ namespace ManageGo.Droid
         /// </summary>
         public event EventHandler<byte[]> Photo;
 
+
+
         /// <summary>
         /// Ons the image available.
         /// </summary>
@@ -29,18 +31,17 @@ namespace ManageGo.Droid
         public void OnImageAvailable(ImageReader reader)
         {
             Image image = null;
-
             try
             {
                 image = reader.AcquireLatestImage();
                 ByteBuffer buffer = image.GetPlanes()[0].Buffer;
                 byte[] imageData = new byte[buffer.Capacity()];
                 buffer.Get(imageData);
-
                 Photo?.Invoke(this, imageData);
             }
             catch (Exception)
             {
+
             }
             finally
             {
@@ -50,5 +51,6 @@ namespace ManageGo.Droid
                 }
             }
         }
+
     }
 }

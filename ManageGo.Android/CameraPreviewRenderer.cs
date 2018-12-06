@@ -103,18 +103,13 @@ namespace ManageGo.Droid
                     //Camera = new CameraDroid(_context);
                     Camera = new CamRecorder(_context);
                     SetNativeControl(Camera);
-                    Camera.openCamera(forVideo: true);
-                    //Camera.startPreview();
                     //Camera.IsPreviewing = true;
-
-                    //cameraPreview = new UICameraPreview(Context);
-                    //SetNativeControl(cameraPreview);
                     if (e.NewElement != null)
                     {
                         // Camera.Available += e.NewElement.NotifyAvailability;
                         Camera.Photo += e.NewElement.NotifyPhoto;
                         Camera.Video += e.NewElement.NotifyVideo;
-                        Camera.Busy += e.NewElement.NotifyBusy;
+                        //Camera.Busy += e.NewElement.NotifyBusy;
 
                         Camera.Click += OnCameraPreviewClicked;
                         e.NewElement.Flash += HandleFlashChange;
@@ -156,11 +151,30 @@ namespace ManageGo.Droid
         protected override void OnLayout(bool changed, int l, int t, int r, int b)
         {
             base.OnLayout(changed, l, t, r, b);
-            Camera?.OnLayout(l, t, r, b);
+            //Camera?.OnLayout(l, t, r, b);
         }
 
         void OnCameraPreviewClicked(object sender, EventArgs e)
         {
+            if (Element.Mode == CameraModes.Snapshot)
+            {
+                VideoIsRecording = false;
+                Camera.TakePicture();
+            }
+
+            else if (Element.Mode == CameraModes.Video && !VideoIsRecording)
+            {
+                Camera.StartRecordingVideo();
+                Element.NotifyRecordingVideo();
+                VideoIsRecording = true;
+            }
+            else if (Element.Mode == CameraModes.Video && VideoIsRecording)
+            {
+                VideoIsRecording = false;
+                Camera.stopRecordingVideo();
+                Element.NotifyStoppedRecordingVideo();
+            }
+            /*
             if (Camera.IsPreviewing)
             {
                 //Camera.IsTakingPhoto = false;
@@ -182,7 +196,8 @@ namespace ManageGo.Droid
                     Element.NotifyStoppedRecordingVideo();
                     // Element.SavedMoview(LocalPath, string.Empty);
                 }
-            }
+
+            }*/
         }
 
 
@@ -201,8 +216,8 @@ namespace ManageGo.Droid
             Element.Shutter -= HandleShutter;
             Camera.Click -= OnCameraPreviewClicked;
             //Camera.Available -= Element.NotifyAvailability;
-            Camera.Photo -= Element.NotifyPhoto;
-            Camera.Video -= Element.NotifyVideo;
+            // Camera.Photo -= Element.NotifyPhoto;
+            // Camera.Video -= Element.NotifyVideo;
             ///Camera.Busy -= Element.NotifyBusy;
             base.Dispose(disposing);
         }
@@ -236,7 +251,7 @@ namespace ManageGo.Droid
         /// <param name="e">E.</param>
         private void HandleShutter(object sender, EventArgs e)
         {
-            Camera.TakePhoto();
+            // Camera.TakePhoto();
         }
 
         /// <summary>
