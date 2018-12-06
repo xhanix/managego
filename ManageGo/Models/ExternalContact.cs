@@ -1,29 +1,22 @@
-﻿using System.Collections.Generic;
-using FreshMvvm;
+﻿using System;
 using Newtonsoft.Json;
 using PropertyChanged;
+using FreshMvvm;
 
 namespace ManageGo
 {
     [AddINotifyPropertyChangedInterface]
-    public class User
+    public class ExternalContact
     {
-        public int UserID { get; set; }
-        public string UserFirstName { get; set; }
-        public string UserLastName { get; set; }
-        public string UserFullName => $"{UserFirstName} {UserLastName}".Trim();
-        [JsonIgnore]
-        public string UserEmailAddress { get; set; }
+        public int ExternalID { get; set; }
+        public string Name { get; set; }
+        public string Title { get; set; }
 
-
-        public List<int> Categories { get; set; }
-
-
-        [JsonIgnore, AlsoNotifyFor("CheckBoxImage")]
+        [JsonIgnore, AlsoNotifyFor("CheckBoxIcon")]
         public bool IsSelected { get; set; }
 
         [JsonIgnore]
-        public string CheckBoxImage
+        public string CheckBoxIcon
         {
             get
             {

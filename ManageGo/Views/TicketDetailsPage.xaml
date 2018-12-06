@@ -5,6 +5,8 @@
              xmlns:local="clr-namespace:ManageGo"
              BackgroundColor="White"
              x:Name="ThisPage"
+             xmlns:tt="clr-namespace:TouchTracking"
+             xmlns:skia="clr-namespace:SkiaSharp.Views.Forms;assembly=SkiaSharp.Views.Forms"
              xmlns:controls="clr-namespace:ManageGo.Controls"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="ManageGo.TicketDetailsPage">
      <ContentPage.Resources>
@@ -55,7 +57,7 @@
             </Grid>
             <BoxView BackgroundColor="#ebebeb" HeightRequest="1"/>
             <ContentView BackgroundColor="White" Content="{Binding PopContentView}" VerticalOptions="StartAndExpand"/>
-            <StackLayout Orientation="Horizontal" Padding="18">
+            <StackLayout Orientation="Horizontal" Padding="18,8,18,0">
                 <Image Source="chat_lg.png" VerticalOptions="Center"/>
                 <Label Text="{Binding TicketTitleText}" HorizontalOptions="FillAndExpand" FontAttributes="Bold" Margin="8,0,0,0" LineBreakMode="TailTruncation" VerticalOptions="CenterAndExpand" />
                 <Image Source="key_blue.png" IsVisible="{Binding HasAccess}" HorizontalOptions="EndAndExpand"/>
@@ -117,37 +119,172 @@
             </ListView>
             <Image Source="gradient.png" InputTransparent="true" Aspect="Fill" HeightRequest="80" Margin="0,-80,0,0" IsVisible="{Binding ReplyBoxIsVisible}"/>
         </StackLayout>
+        
             
-        <Grid Grid.Row="2" IsVisible="false" Grid.RowSpan="2" RowSpacing="0" BackgroundColor="White">
+        <!-- Event action sheet -->
+        <Grid Grid.Row="2" IsVisible="{Binding EventActionSheetIsVisible}" Grid.RowSpan="2" RowSpacing="0" BackgroundColor="White">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="*" />
                     <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
-            <BoxView Grid.Row="0" HeightRequest="25"  BackgroundColor="#f8f9fa" Margin="-28,0,0,18"/>
+            <BoxView Grid.Row="0" HeightRequest="15"  BackgroundColor="#f8f9fa" Margin="-28,0,0,18"/>
             <Button Grid.Row="1" Image="chevron_down.png" BackgroundColor="Transparent" WidthRequest="40"  Margin="0,-12,0,0" HorizontalOptions="EndAndExpand" Command="{Binding OnCloseReplyBubbleTapped}" />
-            <ScrollView Grid.Row="2" Padding="28,0,28,0" Margin="6,-15,0,0" Scrolled="Handle_Scrolled" >
-                <StackLayout Spacing="8">
-                    <Label Text="Work order summary:" TextColor="#5d5e60" FontAttributes="Bold" VerticalOptions="Start" VerticalTextAlignment="Start" />
-                    <Editor Placeholder="type here..." />
-                    <BoxView HeightRequest="0.75" BackgroundColor="Gray" Opacity="0.75" Margin="0,6,12,6"/>
-                    <Label Text="Details:" TextColor="#5d5e60" FontAttributes="Bold" VerticalOptions="Start" VerticalTextAlignment="Start" />
-                    <Editor Placeholder="type here..." />
-                    <BoxView HeightRequest="0.75" BackgroundColor="Gray" Opacity="0.75" Margin="0,6,12,6"/>
-                    <Label Text="Send to users:" TextColor="#5d5e60" FontAttributes="Bold" VerticalOptions="Start" VerticalTextAlignment="Start" />
-                    <ListView SeparatorVisibility="None" HeightRequest="50" VerticalOptions="Start">
-                          
+            <ScrollView Grid.Row="2" x:Name="EventContainerScrollView" Padding="28,0,28,0" Margin="6,-15,0,0" Scrolled="Handle_Scrolled" >
+                <StackLayout Spacing="0">
+                    <Label Text="Event summary:" Margin="0,0,0,4" TextColor="#5d5e60" FontAttributes="Bold" VerticalOptions="Start" VerticalTextAlignment="Start" />
+                    <Editor Placeholder="type here..." FontSize="Small" Margin="0,0,0,4" Text="{Binding EventSummary}" />
+                    <BoxView HeightRequest="0.75" BackgroundColor="Gray" Opacity="0.75" Margin="0,8,12,6"/>
+                    <Label Text="Event date:" Margin="0,0,0,4" TextColor="#5d5e60" FontAttributes="Bold" VerticalOptions="Start" VerticalTextAlignment="Start" />
+                    <Label Text="{Binding SelectedEventDateString}" Margin="4,0,0,8" FontSize="Small" TextColor="#5d5e60" >
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnSelectEventDateLabelTapped}" />
+                            </Label.GestureRecognizers>
+                    </Label>
+                    <!-- IsVisible="{Binding EventCalendarIsVisible}" -->
+                    <controls:CalendarView SelectedDate="{Binding SelectedEventDate}" IsVisible="{Binding EventCalendarIsVisible}" HeightRequest="250" AllowMultipleSelection="false" />
+                    
+                    <BoxView HeightRequest="0.75" BackgroundColor="Gray" Opacity="0.75" Margin="0,8,12,6"/>
+                    <Label Text="Event time:" Margin="0,0,0,8" TextColor="#5d5e60" FontAttributes="Bold" VerticalOptions="Start" VerticalTextAlignment="Start" />
+                    <Grid ColumnSpacing="55" RowSpacing="4" VerticalOptions="Start">
+                        <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                        </Grid.RowDefinitions>
+                        <Label Text="From:" Grid.Column="0" Grid.Row="0" FontSize="Small" TextColor="Gray" />
+                        <Label Text="To:" Grid.Column="1" Grid.Row="0" FontSize="Small"  TextColor="Gray"  />
+
+                        <Frame HasShadow="false" Grid.Column="0" Grid.Row="1" BorderColor="Silver" Padding="8">
+                            <Label Text="11:00 AM" FontSize="Small" FontAttributes="Bold" TextColor="Gray" />
+                        </Frame>
+                        <Frame HasShadow="false" VerticalOptions="Start" Grid.Column="1" Grid.Row="1" BorderColor="Silver" Padding="8" >
+                            <Label Text="11:00 AM" FontSize="Small" FontAttributes="Bold" TextColor="Gray" />
+
+                        </Frame>
+                            
+                        <!-- frame around the clock -->
+                        <Frame HasShadow="false" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" BorderColor="Silver" Margin="0,45,0,0">
+                            <Grid x:Name="MyGrid" HorizontalOptions="CenterAndExpand" VerticalOptions="Start">  
+                                <skia:SKCanvasView x:Name="MyCanvas"
+                                                   VerticalOptions="FillAndExpand"
+                                                   HorizontalOptions="FillAndExpand"
+                                                   IgnorePixelScaling="false"
+                                                    PaintSurface="Handle_PaintSurface" />
+                                         <Grid.Effects>
+                                    <tt:TouchEffect Capture="True"
+                                                TouchAction="Handle_TouchAction" />
+                                </Grid.Effects>
+                            </Grid>
+                        </Frame>
+                        
+                            
+                        <!-- frame to cover bottom of From frame -->
+                        <Frame IsVisible="true" HasShadow="false" HeightRequest="22" Padding="0" VerticalOptions="Start" Grid.Column="0" Grid.Row="1"  Margin="1,32,1,0"/>
+
+                    </Grid>
+                    
+                   
+                    <BoxView HeightRequest="0.75" BackgroundColor="Gray" Opacity="0.75" Margin="0,8,12,6"/>
+                    <Label Text="Send to users:" Margin="0,8,0,0" TextColor="#5d5e60" FontAttributes="Bold" VerticalOptions="Start" VerticalTextAlignment="Start" />
+                    <ListView SeparatorVisibility="None" SelectionMode="None" ItemsSource="{Binding Users}" HeightRequest="75" VerticalOptions="Start">
+                      <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <ViewCell>
+                                    <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Orientation="Horizontal">
+                                        <Image Source="{Binding CheckBoxImage}" VerticalOptions="CenterAndExpand"/>
+                                        <Label Text="{Binding UserFullName}" VerticalOptions="CenterAndExpand" TextColor="#58595b" LineBreakMode="TailTruncation" />
+                                        <StackLayout.GestureRecognizers>
+                                                <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnSelectTapped}" />
+                                        </StackLayout.GestureRecognizers>
+                                    </StackLayout>
+                                </ViewCell>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
                     </ListView>
-                    <Label Text="External contact" TextColor="#5d5e60" FontAttributes="Bold" VerticalOptions="Start" VerticalTextAlignment="Start" />
+                    <Label Text="External contacts" Margin="0,8,0,0" FontSize="Small" TextColor="#5d5e60"  VerticalOptions="Start" VerticalTextAlignment="Start" />
+                    <ListView SeparatorVisibility="None" SelectionMode="None" ItemsSource="{Binding ExternalContacts}" HeightRequest="75" VerticalOptions="Start">
+                      <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <ViewCell>
+                                    <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Orientation="Horizontal">
+                                            <Image Source="{Binding CheckBoxIcon}" VerticalOptions="CenterAndExpand"/>
+                                            <Label Text="{Binding Name}" TextColor="#58595b" VerticalOptions="CenterAndExpand" LineBreakMode="TailTruncation" />
+                                        <StackLayout.GestureRecognizers>
+                                                <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnSelectTapped}" />
+                                        </StackLayout.GestureRecognizers>
+                                    </StackLayout>
+                                </ViewCell>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
                 </StackLayout>
             </ScrollView>
-            <Button Grid.Row="3" Margin="28,0,28,0" Text="Create work order" FontSize="Large" TextColor="White" BackgroundColor="#59c623"/>
+            <Button Grid.Row="3" Command="{Binding OnSendWorkOrderButtonTapped}" BorderRadius="8" Margin="28,0,28,8" Text="Create work order" FontSize="Large" TextColor="White" BackgroundColor="#59c623"/>
+
+        </Grid> 
+            
+       
+        <!-- Work order action sheet -->
+        <!-- IsVisible="{Binding WorkOrderActionSheetIsVisible}" -->
+        <Grid Grid.Row="2" IsVisible="{Binding WorkOrderActionSheetIsVisible}" Grid.RowSpan="2" RowSpacing="0" BackgroundColor="White">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
+            <BoxView Grid.Row="0" HeightRequest="15"  BackgroundColor="#f8f9fa" Margin="-28,0,0,18"/>
+            <Button Grid.Row="1" Image="chevron_down.png" BackgroundColor="Transparent" WidthRequest="40"  Margin="0,-12,0,0" HorizontalOptions="EndAndExpand" Command="{Binding OnCloseReplyBubbleTapped}" />
+            <ScrollView Grid.Row="2" Padding="28,0,28,0" Margin="6,-15,0,0" Scrolled="Handle_Scrolled" >
+                <StackLayout Spacing="0">
+                    <Label Text="Work order summary:" Margin="0,0,0,4" TextColor="#5d5e60" FontAttributes="Bold" VerticalOptions="Start" VerticalTextAlignment="Start" />
+                    <Editor Placeholder="type here..." Margin="0,0,0,4" Text="{Binding WorkOrderSummary}" />
+                    <BoxView HeightRequest="0.75" BackgroundColor="Gray" Opacity="0.75" Margin="0,8,12,6"/>
+                    <Label Text="Details:" Margin="0,0,0,4" TextColor="#5d5e60" FontAttributes="Bold" VerticalOptions="Start" VerticalTextAlignment="Start" />
+                    <Editor Placeholder="type here..." Text="{Binding WorkOrderDetail}" />
+                    <BoxView HeightRequest="0.75" BackgroundColor="Gray" Opacity="0.75" Margin="0,8,12,6"/>
+                    <Label Text="Send to users:" Margin="0,8,0,0" TextColor="#5d5e60" FontAttributes="Bold" VerticalOptions="Start" VerticalTextAlignment="Start" />
+                    <ListView SeparatorVisibility="None" SelectionMode="None" ItemsSource="{Binding Users}" HeightRequest="75" VerticalOptions="Start">
+                      <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <ViewCell>
+                                    <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Orientation="Horizontal">
+                                        <Image Source="{Binding CheckBoxImage}" VerticalOptions="CenterAndExpand"/>
+                                        <Label Text="{Binding UserFullName}" VerticalOptions="CenterAndExpand" TextColor="#58595b" LineBreakMode="TailTruncation" />
+                                        <StackLayout.GestureRecognizers>
+                                                <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnSelectTapped}" />
+                                        </StackLayout.GestureRecognizers>
+                                    </StackLayout>
+                                </ViewCell>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                    <Label Text="External contacts" Margin="0,8,0,0" FontSize="Small" TextColor="#5d5e60"  VerticalOptions="Start" VerticalTextAlignment="Start" />
+                    <ListView SeparatorVisibility="None" SelectionMode="None" ItemsSource="{Binding ExternalContacts}" HeightRequest="75" VerticalOptions="Start">
+                      <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <ViewCell>
+                                    <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Orientation="Horizontal">
+                                            <Image Source="{Binding CheckBoxIcon}" VerticalOptions="CenterAndExpand"/>
+                                            <Label Text="{Binding Name}" TextColor="#58595b" VerticalOptions="CenterAndExpand" LineBreakMode="TailTruncation" />
+                                        <StackLayout.GestureRecognizers>
+                                                <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnSelectTapped}" />
+                                        </StackLayout.GestureRecognizers>
+                                    </StackLayout>
+                                </ViewCell>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </StackLayout>
+            </ScrollView>
+            <Button Grid.Row="3" Command="{Binding OnSendWorkOrderButtonTapped}" BorderRadius="8" Margin="28,0,28,8" Text="Create work order" FontSize="Large" TextColor="White" BackgroundColor="#59c623"/>
 
         </Grid>  
-            
+        
+        <!-- Comment Reply action sheet -->
         <!-- IsVisible="{Binding ReplyBoxIsVisible}" -->
-        <StackLayout Grid.Row="3" Padding="28,0,0,0" x:Name="ReplyBox" IsVisible="false" BackgroundColor="White">
+        <StackLayout Grid.Row="3" Padding="28,0,0,0" x:Name="ReplyBox" IsVisible="{Binding ReplyBoxIsVisible}" BackgroundColor="White">
                <BoxView HeightRequest="0.75" BackgroundColor="Gray" Opacity="0.75" Margin="-28,0,0,18"/>
                <StackLayout  Margin="19,-5,0,8" Orientation="Horizontal" HorizontalOptions="FillAndExpand">
                     <Label Text="Reply:" TextColor="#5d5e60" FontAttributes="Bold" VerticalOptions="Start" VerticalTextAlignment="Start" />
@@ -188,22 +325,30 @@
                 <BoxView HeightRequest="0.5" BackgroundColor="Gray" Margin="-28,0,0,0"/>
 
         </StackLayout>
-        <!-- IsVisible="{Binding ReplyButtonIsVisible}" -->
-        <StackLayout Grid.Row="4" BackgroundColor="White" Orientation="Horizontal" IsVisible="false" Padding="18">    
+        
+        <!-- Bottom Reply Button to open comment reply action sheet -->
+        <StackLayout Grid.Row="4" BackgroundColor="White" Orientation="Horizontal" IsVisible="{Binding ReplyButtonIsVisible}" Padding="18">    
                 <Label Text="Type your reply..."  VerticalTextAlignment="Center" Margin="12,0,0,0" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" TextColor="#a7a9ac">
-                    
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnReplyLabelTapped}" />
+                    </Label.GestureRecognizers>
                 </Label>
-                <Image Source="calendar_blue_sm.png" HorizontalOptions="End" Margin="16,0,0,0"/>
-                <Image Source="wrench_blue.png" HorizontalOptions="End" Margin="16,0,8,0"/>
-                <StackLayout.GestureRecognizers>
-                    <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnReplyLabelTapped}" />
-                </StackLayout.GestureRecognizers>
+                <Image Source="calendar_blue_sm.png" HorizontalOptions="End" Margin="16,0,0,0" >
+                     <Image.GestureRecognizers>
+                        <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnReplyEventTapped}" />
+                    </Image.GestureRecognizers>
+                </Image>
+                <Image Source="wrench_blue.png" HorizontalOptions="End" Margin="16,0,8,0">
+                    <Image.GestureRecognizers>
+                        <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnReplyWorkOrderTapped}" />
+                    </Image.GestureRecognizers>
+                </Image>
         </StackLayout>
     </Grid>
          <!-- IsVisible="{Binding PopUpBackgroundIsVisible}" -->
          <StackLayout BackgroundColor="Black"
                       Opacity="0.4"
-                     IsVisible="false"
+                     IsVisible="{Binding PopUpBackgroundIsVisible}"
                      RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent, Property=Height,Factor=1,Constant=0}"
                      RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent, Property=Width,Factor=1,Constant=0}">
             <StackLayout.GestureRecognizers>
@@ -212,7 +357,7 @@
         </StackLayout>
         <!-- IsVisible="{Binding SendOptionsPupupIsVisible}" -->
         <Frame BackgroundColor="White"
-                     IsVisible="false"
+                     IsVisible="{Binding SendOptionsPupupIsVisible}"
                      x:Name="SendOptionsPupup"
                      CornerRadius="8"
                      HasShadow="false"
@@ -228,7 +373,7 @@
         </Frame>
         <!-- {Binding AttachActionSheetIsVisible} -->
         <Frame BackgroundColor="White"
-                     IsVisible="true"
+                     IsVisible="{Binding AttachActionSheetIsVisible}"
                      x:Name="AttachActionSheet"
                      CornerRadius="8"
                      HasShadow="false"
@@ -270,7 +415,7 @@
         </Frame>
         
         <!-- {Binding IsDownloadingFile} -->
-         <Frame IsVisible="false"
+         <Frame IsVisible="{Binding IsDownloadingFile}"
                 HasShadow="false" 
                 BackgroundColor="#99000000" 
                 RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent, Property=Width,Factor=0,Constant=150}"

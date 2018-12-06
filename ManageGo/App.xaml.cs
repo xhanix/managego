@@ -18,6 +18,8 @@ namespace ManageGo
         internal static List<Categories> Categories { get; set; }
         internal static List<Tags> Tags { get; set; }
         internal static List<User> Users { get; set; }
+        internal static List<ExternalContact> ExternalContacts { get; set; }
+        internal FreshMasterDetailNavigationContainer MasterDetailContainer { get; private set; }
         public static bool MenuIsPresented
         {
             get
@@ -39,22 +41,23 @@ namespace ManageGo
             var page = FreshPageModelResolver.ResolvePageModel<MasterMenuPageModel>();
 
 
-            MasterDetailNav.AddPage<TakeVideoPageModel>("Home", null);
-            MainPage = MasterDetailNav;
-            return;
-
-
             page.Title = "Menu";
             MasterDetailNav.Master = page;
+
             MasterDetailNav.AddPage<WelcomePageModel>("Home", null);
             MasterDetailNav.AddPage<MaintenanceTicketsPageModel>("Maintenance Tickets", null);
             MainPage = MasterDetailNav;
+            MasterDetailContainer = MasterDetailNav;
             MasterDetailNav.IsPresentedChanged += (sender, e) =>
             {
                 foreach (var _page in ((FreshMasterDetailNavigationContainer)sender).Pages.Values)
                 {
                     var nav = _page as NavigationPage;
-                    (nav.CurrentPage.BindingContext as BaseDetailPage).HamburgerIsVisible = !(nav.CurrentPage.BindingContext as BaseDetailPage).HamburgerIsVisible;
+                    if (nav.CurrentPage is null || nav.CurrentPage.BindingContext is null)
+                        return;
+                    if (nav.CurrentPage.BindingContext is BaseDetailPage)
+                        (nav.CurrentPage.BindingContext as BaseDetailPage).HamburgerIsVisible = !(nav.CurrentPage.BindingContext as BaseDetailPage).HamburgerIsVisible;
+
                 }
             };
         }

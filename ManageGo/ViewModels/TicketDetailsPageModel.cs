@@ -32,6 +32,27 @@ namespace ManageGo
         public bool ReplyButtonIsVisible { get; private set; } = true;
         public bool ReplyBoxIsVisible { get; private set; }
         public bool IsDownloadingFile { get; private set; }
+        public bool WorkOrderActionSheetIsVisible { get; private set; }
+        public bool EventActionSheetIsVisible { get; private set; }
+        public List<User> Users { get; private set; }
+
+        public string WorkOrderSummary { get; set; }
+        public string WorkOrderDetail { get; set; }
+        public string WorkOrderSendEmail { get; set; }
+
+        public string EventSummary { get; set; }
+        [AlsoNotifyFor("SelectedEventDateString")]
+        public DateTime SelectedEventDate { get; set; }
+        public bool EventCalendarIsVisible { get; private set; }
+
+        public string SelectedEventDateString
+        {
+            get
+            {
+                return SelectedEventDate == DateTime.MinValue ? "Select..." : SelectedEventDate.ToString("MM/dd/yy");
+            }
+        }
+        public List<ExternalContact> ExternalContacts { get; private set; }
         int TicketId { get; set; }
         [AlsoNotifyFor("PopUpBackgroundIsVisible")]
         public bool SendOptionsPupupIsVisible { get; private set; }
@@ -54,6 +75,8 @@ namespace ManageGo
             FilesToUpload = new List<byte[]>();
             CurrentReplyAttachments = new ObservableCollection<File>();
             Data = initData as Dictionary<string, object>;
+            //need to disable the master-detail nav so the clock functions properly
+            App.MasterDetailNav.IsGestureEnabled = false;
         }
 
 
@@ -83,7 +106,18 @@ namespace ManageGo
                     CurrentReplyAttachments.Remove(file);
                 });
             }
+        }
 
+        public FreshAwaitCommand OnSelectEventDateLabelTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((tcs) =>
+                {
+                    EventCalendarIsVisible = !EventCalendarIsVisible;
+                    tcs?.SetResult(true);
+                });
+            }
         }
 
         public FreshAwaitCommand OnAttachedFileTapped
@@ -273,11 +307,77 @@ namespace ManageGo
                 {
                     ReplyButtonIsVisible = true;
                     ReplyBoxIsVisible = false;
+                    WorkOrderActionSheetIsVisible = false;
+                    EventActionSheetIsVisible = false;
                     tcs?.SetResult(true);
                 });
             }
         }
 
+        public FreshAwaitCommand OnSendWorkOrderButtonTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand(async (tcs) =>
+                {
+                    //send the created work order
+                    if (string.IsNullOrWhiteSpace(WorkOrderSummary) ||
+                        string.IsNullOrWhiteSpace(WorkOrderDetail))
+                    {
+                        await CoreMethods.DisplayAlert("ManageGo", "Please fill out the work order details before sending", "DISMISS");
+                        return;
+                    }
+
+                    var dic = new Dictionary<string, object> {
+                        {"TicketID", TicketId},
+                        {"Summary", WorkOrderSummary},
+                        {"Details", WorkOrderDetail},
+                        {"SendToUsers", Users.Where(t=>t.IsSelected).Select(t=>t.UserID)},
+                        {"SendToExternalContacts", ExternalContacts.Where(t=>t.IsSelected).Select(t=>t.ExternalID) },
+                        {"SendToEmail", WorkOrderSendEmail}
+                    };
+                    Comments.Add(new ManageGo.Comments
+                    {
+                        CommentType = CommentTypes.WorkOrder,
+                        Text = $"{WorkOrderSummary}",
+
+                        CommentCreateTime = DateTime.Now.ToShortDateString(),
+                        Name = App.UserName
+                    });
+                    WorkOrderActionSheetIsVisible = false;
+                    SendOptionsPupupIsVisible = false;
+                    AttachActionSheetIsVisible = false;
+                    ReplyBoxIsVisible = false;
+                    ReplyButtonIsVisible = true;
+                    RaisePropertyChanged("Comments");
+                    try
+                    {
+                        await Services.DataAccess.SendNewWorkOurderAsync(dic);
+                        foreach (var user in Users.Where(t => t.IsSelected))
+                        {
+                            user.IsSelected = false;
+                        }
+                        foreach (var user in ExternalContacts.Where(t => t.IsSelected))
+                        {
+                            user.IsSelected = false;
+                        }
+                        //clear the fields used for the workorder
+                        WorkOrderSummary = null;
+                        WorkOrderDetail = null;
+                        WorkOrderSendEmail = null;
+                    }
+                    catch (Exception ex)
+                    {
+                        await CoreMethods.DisplayAlert("Something went wrong", ex.Message, "DISMISS");
+                    }
+                    finally
+                    {
+                        tcs?.SetResult(true);
+                    }
+
+                });
+            }
+        }
 
         public FreshAwaitCommand OnUploadPhotoTapped
         {
@@ -352,6 +452,9 @@ namespace ManageGo
 
             if (Data.TryGetValue("TicketTitleText", out object subject))
                 TicketTitleText = (string)subject;
+
+            Users = App.Users;
+            ExternalContacts = App.ExternalContacts;
         }
 
 
@@ -395,8 +498,31 @@ namespace ManageGo
             }
         }
 
+        public FreshAwaitCommand OnReplyWorkOrderTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((tcs) =>
+                {
+                    ReplyButtonIsVisible = false;
+                    WorkOrderActionSheetIsVisible = true;
+                    tcs?.SetResult(true);
+                });
+            }
+        }
 
-
+        public FreshAwaitCommand OnReplyEventTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((tcs) =>
+                {
+                    ReplyButtonIsVisible = false;
+                    EventActionSheetIsVisible = true;
+                    tcs?.SetResult(true);
+                });
+            }
+        }
 
     }
 }

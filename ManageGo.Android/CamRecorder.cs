@@ -329,15 +329,28 @@ namespace ManageGo.Droid
 
         internal void StartRecordingVideo()
         {
-            SetUpMediaRecorder();
-            CreateCameraPreviewSession(forVideo: true);
-            mediaRecorder.Start();
+            StartPreviewForVideo();
+
+            try
+            {
+                //Start recording
+                mediaRecorder.Start();
+            }
+            catch (IllegalStateException e)
+            {
+                e.PrintStackTrace();
+            }
         }
+
+
+
 
         public void stopRecordingVideo()
         {
             //UI
             //isRecordingVideo = false;
+            // buttonVideo.SetText(Resource.String.record);
+
 
             //Stop recording
             /*
@@ -346,24 +359,94 @@ namespace ManageGo.Droid
             startPreview ();
             */
 
+            // Workaround for https://github.com/googlesamples/android-Camera2Video/issues/2
+            CloseCameraVideo();
+            OpenCamera(mTextureView.Width, mTextureView.Height);
+            Video?.Invoke(this, videoFilePath);
+        }
+
+        private void CloseCameraVideo()
+        {
             try
             {
-                mediaRecorder.Stop();
+                mCameraOpenCloseLock.Acquire();
+                if (null != mCameraDevice)
+                {
+                    mCameraDevice.Close();
+                    mCameraDevice = null;
+                }
+                if (null != mediaRecorder)
+                {
+                    mediaRecorder.Release();
+                    mediaRecorder = null;
+                }
             }
-            catch (RuntimeException e)
+            catch (InterruptedException e)
             {
-                //handle the exception
+                throw new RuntimeException("Interrupted while trying to lock camera closing.");
             }
+            finally
+            {
+                mCameraOpenCloseLock.Release();
+            }
+        }
 
-            // Workaround for https://github.com/googlesamples/android-Camera2Video/issues/2
-            CloseCamera();
-            OpenCamera(SurfaceWidth, SurfaceHeight);
-            Device.BeginInvokeOnMainThread(() =>
+        public void StartPreviewForVideo()
+        {
+            if (null == mCameraDevice || !mTextureView.IsAvailable || null == mPreviewSize)
+                return;
+
+            try
             {
-                Video?.Invoke(this, videoFilePath);
-            });
-            mediaRecorder.Release();
-            mediaRecorder = null;
+                SetUpMediaRecorder();
+                SurfaceTexture texture = mTextureView.SurfaceTexture;
+                //Assert.IsNotNull(texture);
+                texture.SetDefaultBufferSize(mPreviewSize.Width, mPreviewSize.Height);
+                mPreviewRequestBuilder = mCameraDevice.CreateCaptureRequest(CameraTemplate.Record);
+                var surfaces = new List<Surface>();
+                var previewSurface = new Surface(texture);
+                surfaces.Add(previewSurface);
+                mPreviewRequestBuilder.AddTarget(previewSurface);
+
+                var recorderSurface = mediaRecorder.Surface;
+                surfaces.Add(recorderSurface);
+                mPreviewRequestBuilder.AddTarget(recorderSurface);
+
+                mCameraDevice.CreateCaptureSession(surfaces, new PreviewCaptureStateCallback(this), mBackgroundHandler);
+
+            }
+            catch (CameraAccessException e)
+            {
+                e.PrintStackTrace();
+            }
+            catch (IOException e)
+            {
+                e.PrintStackTrace();
+            }
+        }
+
+        //Update the preview
+        public void updatePreview()
+        {
+            if (null == mCameraDevice)
+                return;
+
+            try
+            {
+                setUpCaptureRequestBuilder(mPreviewRequestBuilder);
+                HandlerThread thread = new HandlerThread("CameraPreview");
+                thread.Start();
+                mCaptureSession.SetRepeatingRequest(mPreviewRequestBuilder.Build(), null, mBackgroundHandler);
+            }
+            catch (CameraAccessException e)
+            {
+                e.PrintStackTrace();
+            }
+        }
+
+        private void setUpCaptureRequestBuilder(CaptureRequest.Builder builder)
+        {
+            builder.Set(CaptureRequest.ControlMode, new Java.Lang.Integer((int)ControlMode.Auto));
 
         }
 
@@ -421,6 +504,7 @@ namespace ManageGo.Droid
                 {
                     throw new RuntimeException("Time out waiting to lock camera opening.");
                 }
+
                 manager.OpenCamera(mCameraId, mStateCallback, mBackgroundHandler);
             }
             catch (CameraAccessException e)

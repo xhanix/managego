@@ -84,10 +84,12 @@ namespace ManageGo.Services
             var result = obj.GetValue("Result");
 
             if (result.ToObject<Dictionary<string, object>>().TryGetValue("Categories", out object list)
-                && list is JContainer && result.ToObject<Dictionary<string, object>>().TryGetValue("Tags", out object tagsList))
+                && list is JContainer && result.ToObject<Dictionary<string, object>>().TryGetValue("Tags", out object tagsList)
+                && result.ToObject<Dictionary<string, object>>().TryGetValue("ExternalContacts", out object contactList))
             {
                 App.Categories = ((JContainer)list).ToObject<List<Categories>>();
                 App.Tags = ((JContainer)tagsList).ToObject<List<Tags>>();
+                App.ExternalContacts = ((JContainer)contactList).ToObject<List<ExternalContact>>();
             }
         }
 
@@ -160,6 +162,22 @@ namespace ManageGo.Services
             var responseString = await response.Content.ReadAsStringAsync();
             var responseObject = JObject.Parse(responseString);
             return responseObject.TryGetValue("Result", out JToken result) ? (int)result["CommentID"] : 0;
+        }
+
+        public static async Task<int> SendNewWorkOurderAsync(Dictionary<string, object> parameters)
+        {
+            if (TokenExpiry < DateTimeOffset.Now)
+                await Login();
+            var jsonString = JsonConvert.SerializeObject(parameters);
+            var content = new StringContent(jsonString, Encoding.UTF8, "application/json");//new FormUrlEncodedContent(filters);
+            var msg = new HttpRequestMessage(HttpMethod.Post, BaseUrl + APIpaths.CreateWorkOrder.ToString())
+            {
+                Content = content
+            };
+            var response = await client.SendAsync(msg);
+            var responseString = await response.Content.ReadAsStringAsync();
+            JObject responseObject = JObject.Parse(responseString);
+            return responseObject.TryGetValue("Result", out JToken result) ? (int)result["WorkOrderID"] : 0;
         }
 
         public static async Task<byte[]> GetCommentFile(Dictionary<string, object> parametes)

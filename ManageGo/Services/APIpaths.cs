@@ -6,13 +6,14 @@
         authorize,
         tickets,
         buildings,
-        MaintenanceObjects, //provides list of Categories,Tags
+        MaintenanceObjects, //provides list of Categories,Tags, external contacts
         Users,
         TicketsDetails,
         TicketNewComment,
         CommentNewFile,
         CommentFilesCompleted,
-        GetTicketFile
+        GetTicketFile,
+        CreateWorkOrder
     }
 }
 
