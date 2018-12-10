@@ -38,9 +38,10 @@ namespace ManageGo
 
             MasterDetailNav = new FreshMasterDetailNavigationContainer();
             MasterDetailNav.Init("");
-            var page = FreshPageModelResolver.ResolvePageModel<MasterMenuPageModel>();
-
-
+            // var page = FreshPageModelResolver.ResolvePageModel<MasterMenuPageModel>();
+            var page = FreshPageModelResolver.ResolvePageModel<TicketDetailsPageModel>();
+            MainPage = page;
+            return;
             page.Title = "Menu";
             MasterDetailNav.Master = page;
 

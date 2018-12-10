@@ -15,13 +15,14 @@ namespace ManageGo
     [AddINotifyPropertyChangedInterface]
     public class TicketDetailsPageModel : FreshBasePageModel
     {
-
         public TicketDetails TicketDetails { get; private set; }
         public ObservableCollection<Comments> Comments { get; private set; }
         public string TicketTitle { get; set; }
         List<byte[]> FilesToUpload { get; set; }
         public string BuildingUnitText { get; private set; }
         public View PopContentView { get; private set; }
+        public bool ShouldShowClock { get; private set; }
+        public bool SetToTime { get; private set; }
         public bool ListIsEnabled { get; private set; } = true;
         public string TicketAddress { get; private set; }
         public string TicketTitleText { get; private set; }
@@ -34,7 +35,27 @@ namespace ManageGo
         public bool IsDownloadingFile { get; private set; }
         public bool WorkOrderActionSheetIsVisible { get; private set; }
         public bool EventActionSheetIsVisible { get; private set; }
+        public LayoutOptions FromFrameVerticalLayout { get; private set; }
+        public LayoutOptions ToFrameVerticalLayout { get; private set; }
+        bool IsToTimeSelected { get; set; }
         public List<User> Users { get; private set; }
+        string pickedTime;
+        public string ToTime { get; set; }
+        public string FromTime { get; set; }
+        public int BridgeColumn { get; private set; }
+        [AlsoNotifyFor("FromTime", "ToTime")]
+        public string PickedTime
+        {
+            get { return pickedTime; }
+            set
+            {
+                pickedTime = value;
+                if (SetToTime)
+                    ToTime = $"{pickedTime}";
+                else if (SetFromTime)
+                    FromTime = $"{pickedTime}";
+            }
+        }
 
         public string WorkOrderSummary { get; set; }
         public string WorkOrderDetail { get; set; }
@@ -77,6 +98,11 @@ namespace ManageGo
             Data = initData as Dictionary<string, object>;
             //need to disable the master-detail nav so the clock functions properly
             App.MasterDetailNav.IsGestureEnabled = false;
+            var timeNow = DateTime.Now;
+            var normalizedTime = new DateTime(timeNow.Year, timeNow.Month, timeNow.Day, timeNow.Hour,
+            (timeNow.Minute / 15) * 15, 0);
+            FromTime = normalizedTime.ToString("hh:mm tt");
+            ToTime = normalizedTime.AddHours(1).ToString("hh:mm tt");
         }
 
 
@@ -127,16 +153,16 @@ namespace ManageGo
                 return new FreshAwaitCommand(async (param, tcs) =>
                 {
                     var file = param as File;
+
                     //get file
                     var dic = new Dictionary<string, object> {
                         {"TicketID", TicketId},
                         {"FileID", file.ID}
                     };
+
                     IsDownloadingFile = true;
                     var fileData = await Services.DataAccess.GetCommentFile(dic);
                     IsDownloadingFile = false;
-
-
 
                     if (fileData is null || string.IsNullOrWhiteSpace(file.Name))
                     {
@@ -430,6 +456,8 @@ namespace ManageGo
         protected override void ViewIsAppearing(object sender, EventArgs e)
         {
             base.ViewIsAppearing(sender, e);
+            if (Data is null)
+                return;
             if (Data.TryGetValue("TicketDetails", out object ticketDetails))
             {
                 TicketDetails = (TicketDetails)ticketDetails;
@@ -466,8 +494,60 @@ namespace ManageGo
                 return new FreshAwaitCommand(async (tcs) =>
                 {
                     AttachActionSheetIsVisible = false;
-
                     await CoreMethods.PushPageModel<TakeVideoPageModel>(true, true, false);
+                    tcs?.SetResult(true);
+                });
+            }
+        }
+
+        public FreshAwaitCommand OnFromTimeLabelTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((tcs) =>
+                {
+                    ShouldShowClock = !ShouldShowClock;
+                    SetToTime = false;
+                    ToFrameVerticalLayout = LayoutOptions.Start;
+                    if (ShouldShowClock)
+                    {
+                        SetFromTime = true;
+                        FromFrameVerticalLayout = LayoutOptions.FillAndExpand;
+                        FromTime = $"{PickedTime}";
+                    }
+                    else
+                    {
+                        SetFromTime = false;
+                        FromFrameVerticalLayout = LayoutOptions.Start;
+                    }
+                    BridgeColumn = 0;
+                    tcs?.SetResult(true);
+                });
+            }
+        }
+
+        public FreshAwaitCommand OnToTimeLabelTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((tcs) =>
+                {
+                    ShouldShowClock = !ShouldShowClock;
+                    SetFromTime = false;
+                    FromFrameVerticalLayout = LayoutOptions.Start;
+                    if (ShouldShowClock)
+                    {
+                        SetToTime = true;
+                        ToFrameVerticalLayout = LayoutOptions.FillAndExpand;
+                        ToTime = $"{PickedTime}";
+                    }
+
+                    else
+                    {
+                        SetToTime = false;
+                        ToFrameVerticalLayout = LayoutOptions.Start;
+                    }
+                    BridgeColumn = 1;
                     tcs?.SetResult(true);
                 });
             }
@@ -524,6 +604,7 @@ namespace ManageGo
             }
         }
 
+        public bool SetFromTime { get; private set; }
     }
 }
 

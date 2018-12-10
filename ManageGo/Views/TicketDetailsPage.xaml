@@ -142,12 +142,17 @@
                                 <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnSelectEventDateLabelTapped}" />
                             </Label.GestureRecognizers>
                     </Label>
-                    <!-- IsVisible="{Binding EventCalendarIsVisible}" -->
-                    <controls:CalendarView SelectedDate="{Binding SelectedEventDate}" IsVisible="{Binding EventCalendarIsVisible}" HeightRequest="250" AllowMultipleSelection="false" />
                     
-                    <BoxView HeightRequest="0.75" BackgroundColor="Gray" Opacity="0.75" Margin="0,8,12,6"/>
-                    <Label Text="Event time:" Margin="0,0,0,8" TextColor="#5d5e60" FontAttributes="Bold" VerticalOptions="Start" VerticalTextAlignment="Start" />
-                    <Grid ColumnSpacing="55" RowSpacing="4" VerticalOptions="Start">
+                        <!-- IsVisible="{Binding EventCalendarIsVisible}" -->
+                    
+                        <controls:CalendarView SelectedDate="{Binding SelectedEventDate}" IsVisible="{Binding EventCalendarIsVisible}" HeightRequest="250" AllowMultipleSelection="false" />
+                    
+                    
+                        <BoxView HeightRequest="0.75" BackgroundColor="Gray" Opacity="0.75" Margin="0,8,12,6"/>
+                    
+                        <Label Text="Event time:" Margin="0,0,0,8" TextColor="#5d5e60" FontAttributes="Bold" VerticalOptions="Start" VerticalTextAlignment="Start" />
+                    
+                        <Grid ColumnSpacing="55" RowSpacing="4" VerticalOptions="Start">
                         <Grid.RowDefinitions>
                                 <RowDefinition Height="auto" />
                                 <RowDefinition Height="auto" />
@@ -155,37 +160,37 @@
                         <Label Text="From:" Grid.Column="0" Grid.Row="0" FontSize="Small" TextColor="Gray" />
                         <Label Text="To:" Grid.Column="1" Grid.Row="0" FontSize="Small"  TextColor="Gray"  />
 
-                        <Frame HasShadow="false" Grid.Column="0" Grid.Row="1" BorderColor="Silver" Padding="8">
-                            <Label Text="11:00 AM" FontSize="Small" FontAttributes="Bold" TextColor="Gray" />
+                        <Frame HasShadow="false" VerticalOptions="{Binding FromFrameVerticalLayout}" Grid.Column="0" Grid.Row="1" BorderColor="Silver" Padding="8">
+                            <Label Text="{Binding FromTime,Mode=TwoWay}" FontSize="Small" FontAttributes="Bold" TextColor="Gray" />
+                            <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer NumberOfTapsRequired="1"
+                                                          Command="{Binding OnFromTimeLabelTapped}" />
+                            </Frame.GestureRecognizers>
                         </Frame>
-                        <Frame HasShadow="false" VerticalOptions="Start" Grid.Column="1" Grid.Row="1" BorderColor="Silver" Padding="8" >
-                            <Label Text="11:00 AM" FontSize="Small" FontAttributes="Bold" TextColor="Gray" />
-
+                            
+                        <Frame HasShadow="false" VerticalOptions="{Binding ToFrameVerticalLayout}" Grid.Column="1" Grid.Row="1" BorderColor="Silver" Padding="8" >
+                            <Label Text="{Binding ToTime,Mode=TwoWay}" FontSize="Small" FontAttributes="Bold" TextColor="Gray" />
+                             <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer NumberOfTapsRequired="1"
+                                                          Command="{Binding OnToTimeLabelTapped}" />
+                            </Frame.GestureRecognizers>
                         </Frame>
                             
                         <!-- frame around the clock -->
-                        <Frame HasShadow="false" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" BorderColor="Silver" Margin="0,45,0,0">
-                            <Grid x:Name="MyGrid" HorizontalOptions="CenterAndExpand" VerticalOptions="Start">  
-                                <skia:SKCanvasView x:Name="MyCanvas"
-                                                   VerticalOptions="FillAndExpand"
-                                                   HorizontalOptions="FillAndExpand"
-                                                   IgnorePixelScaling="false"
-                                                    PaintSurface="Handle_PaintSurface" />
-                                         <Grid.Effects>
-                                    <tt:TouchEffect Capture="True"
-                                                TouchAction="Handle_TouchAction" />
-                                </Grid.Effects>
-                            </Grid>
+                        <Frame HasShadow="false" IsVisible="{Binding ShouldShowClock}" Grid.Column="0" Padding="0" Grid.Row="1" Grid.ColumnSpan="2" BorderColor="Silver" Margin="0,45,0,0">
+                            <local:ClockPicker Container="{x:Reference EventContainerScrollView}"
+                                               Time="{Binding PickedTime}"
+                                               x:Name="TimePicker"
+                                               SecondContainer="{x:Reference MyScrollView}"/>
                         </Frame>
                         
                             
                         <!-- frame to cover bottom of From frame -->
-                        <Frame IsVisible="true" HasShadow="false" HeightRequest="22" Padding="0" VerticalOptions="Start" Grid.Column="0" Grid.Row="1"  Margin="1,32,1,0"/>
+                        <Frame HasShadow="false" IsVisible="{Binding ShouldShowClock}" 
+                               HeightRequest="22" Padding="0" VerticalOptions="Start" Grid.Column="{Binding BridgeColumn}" Grid.Row="1"  Margin="1,32,1,0"/>
 
                     </Grid>
-                    
-                   
-                    <BoxView HeightRequest="0.75" BackgroundColor="Gray" Opacity="0.75" Margin="0,8,12,6"/>
+                    <BoxView x:Name="BottomOfClock" HeightRequest="0.75" BackgroundColor="Gray" Opacity="0.75" Margin="0,8,12,6"/>
                     <Label Text="Send to users:" Margin="0,8,0,0" TextColor="#5d5e60" FontAttributes="Bold" VerticalOptions="Start" VerticalTextAlignment="Start" />
                     <ListView SeparatorVisibility="None" SelectionMode="None" ItemsSource="{Binding Users}" HeightRequest="75" VerticalOptions="Start">
                       <ListView.ItemTemplate>
