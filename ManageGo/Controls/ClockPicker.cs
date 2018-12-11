@@ -25,62 +25,34 @@ namespace ManageGo
         readonly SKPaint handPaint;
         readonly SKPaint fillPaint;
         readonly SKPaint grayIndicatorPaint;
+        readonly SKPaint grayLinePaint;
         DateTime currentTime;
         readonly SKPaint blueIndicatorPaint;
         SKPath path1;
         SKPath path2;
-        readonly float HandCenterCircleRadius = 30;
-        readonly float HandEndCircleRadius = 15;
+        readonly float HandCenterCircleRadius = 15f;
+        readonly float HandEndCircleRadius = 7.5f;
         readonly static int divisions = (4 * 12);
         readonly double degrees_per_iter = 360 / divisions;
         readonly double start_angle_deg = 0;
-        int numberOfTimesPassed12;
-        private bool flippedHours;
-        private bool needsReset;
-        private bool dontAddHours;
-        private int direction;
-        private int totalForward;
-        private int totalBackward;
-        private bool accountedForCurrentTime;
-        private int offsetHours;
-        private int numberofRounds;
-        private int firstMinute;
-        private bool needsToAdd12on12;
-        private bool firstTimePast12;
-        private int minAfter12;
         readonly static int hourDivisions = 12;
         readonly double hour_degrees_per_iter = 360 / hourDivisions;
         readonly double hour_start_angle_deg = -90;
         readonly SKCanvasView Canvas;
 
-        public static readonly BindableProperty ContainerProperty =
-              BindableProperty.Create("Container", typeof(ScrollView), typeof(ScrollView), null, BindingMode.TwoWay);
-
-        public static readonly BindableProperty SecondContainerProperty =
-              BindableProperty.Create("SecondContainer", typeof(ScrollView), typeof(ScrollView), null, BindingMode.TwoWay);
-
         public static readonly BindableProperty TimeProperty =
-              BindableProperty.Create("Time", typeof(string), typeof(string), null, BindingMode.TwoWay);
+              BindableProperty.Create("Time", typeof(DateTime), typeof(DateTime), null, BindingMode.TwoWay);
 
-        public string Time
+        public DateTime Time
         {
-            get { return (string)GetValue(TimeProperty); }
+            get { return (DateTime)GetValue(TimeProperty); }
             set { SetValue(TimeProperty, value); }
         }
-        public ScrollView SecondContainer
-        {
-            get { return (ScrollView)GetValue(SecondContainerProperty); }
-            set { SetValue(SecondContainerProperty, value); }
-        }
 
-        public ScrollView Container
-        {
-            get { return (ScrollView)GetValue(ContainerProperty); }
-            set { SetValue(ContainerProperty, value); }
-        }
 
         public bool Justpassed12 { get; private set; }
         public bool WentPast11 { get; private set; }
+
 
         protected override void OnSizeAllocated(double width, double height)
         {
@@ -109,7 +81,6 @@ namespace ManageGo
                 Style = SKPaintStyle.Fill,
                 Color = SKColor.Parse("#a7a9ac"),
                 StrokeWidth = 2,
-                TextSize = 52,
                 TextAlign = SKTextAlign.Left
             };
             blueIndicatorPaint = new SKPaint
@@ -117,6 +88,13 @@ namespace ManageGo
                 Style = SKPaintStyle.Stroke,
                 Color = SKColor.Parse("#378ef7"),
                 StrokeWidth = 6
+            };
+
+            grayLinePaint = new SKPaint
+            {
+                Style = SKPaintStyle.Stroke,
+                Color = SKColor.Parse("#a7a9ac"),
+                StrokeWidth = 2
             };
 
             var mainDisplayInfo = DeviceDisplay.ScreenMetrics;
@@ -134,16 +112,15 @@ namespace ManageGo
             {
                 Capture = true
             };
+
             touchEffect.TouchAction += (object sender, TouchActionEventArgs args) =>
             {
                 switch (args.Type)
                 {
                     case TouchActionType.Pressed:
-                        if (Container != null && !Container.InputTransparent)
-                        {
-                            Container.InputTransparent = true;
-                            Container.IsEnabled = false;
-                        }
+                        TouchX = args.Location.X;
+                        TouchY = args.Location.Y;
+                        Canvas.InvalidateSurface();
 
                         break;
                     case TouchActionType.Moved:
@@ -154,32 +131,17 @@ namespace ManageGo
                         break;
 
                     case TouchActionType.Released:
-                        if (Container != null)
-                        {
-                            Container.InputTransparent = false;
-                            Container.IsEnabled = true;
-                        }
+
                         break;
                     case TouchActionType.Cancelled:
-                        if (Container != null)
-                        {
-                            Container.InputTransparent = false;
-                            Container.IsEnabled = true;
-                        }
+
                         break;
                 }
             };
             this.Effects.Add(touchEffect);
-            //Canvas.InvalidateSurface();
         }
 
-        //handle touch
-        internal void ProcessTouch(double x, double y)
-        {
-            TouchX = x;
-            TouchY = y;
-            Canvas.InvalidateSurface();
-        }
+
 
         //drawing
         void ClockPicker_PaintSurface(object sender, SKPaintSurfaceEventArgs args)
@@ -190,11 +152,14 @@ namespace ManageGo
             SKSurface surface = args.Surface;
             SKCanvas canvas = surface.Canvas;
             ClockScale = info.Width / this.Width;
+            var fontSize = (float)Device.GetNamedSize(NamedSize.Medium, typeof(Label)) * (float)Math.Abs(ClockScale);
+            grayIndicatorPaint.TextSize = fontSize;
             var divFactor = (float)Math.PI / 180f;
-
             canvas.Clear();
             path1.Reset();
             path2.Reset();
+
+            canvas.DrawCircle(halfWidth, halfHeight, info.Width / 2.1f, grayLinePaint);
 
             for (int i = 0; i < divisions; i++)
             {
@@ -271,7 +236,7 @@ namespace ManageGo
                 var time = TimeSpan.FromTicks(DateTime.Today.Ticks).Add(new TimeSpan(0, (int)(hr * 60), 0));
 
                 didSetupValues = true;
-                if (time.Minutes % 15 == 0 && !newTouches)
+                if (time.Minutes % 15 < 5)
                 {
                     newTouches = true;
                     current_aX = aX;
@@ -280,36 +245,9 @@ namespace ManageGo
                     cuurent_aaY = aaY;
                     current_dX = 0;
                     current_dY = 0;
-                    DateTime _time = new DateTime(time.Ticks);
-                    if (_time.Hour == 11)
-                    {
-                        if (firstMinute == 0)
-                            firstMinute = _time.Minute;
-                        else if (_time.Minute > firstMinute)
-                        {
-                            needsToAdd12on12 = true;
-                        }
-                        WentPast11 = true;
-                    }
-                    else if (_time.Hour == 0)
-                    {
-                        if (minAfter12 == 0)
-                            minAfter12 = _time.Minute;
-                        else if (_time.Minute < minAfter12)
-                        {
-                            needsToAdd12on12 = true;
-                        }
-                    }
-
-                    if ((_time.Hour == 0 && _time.Minute == 0 && needsToAdd12on12) || (currentTime.Hour > 12 && offsetHours < 12))
-                    {
-                        offsetHours = offsetHours + 12;
-                        needsToAdd12on12 = false;
-                    }
-
-                    _time = _time.AddHours(offsetHours);
-                    Console.WriteLine("_time: " + _time);
-                    Time = _time.ToString("hh:mm tt");
+                    var timeSpan = new TimeSpan(time.Hours, time.Minutes / 15 * 15, 0);
+                    DateTime _time = new DateTime(timeSpan.Ticks);
+                    Time = _time;
                 }
 
                 //draw circles at beginning and start of hand clock
@@ -374,7 +312,7 @@ namespace ManageGo
                 angle_deg = angle_deg + Math.Round((hrs * hour_degrees_per_iter) - 90);
                 var normalizedTime = new TimeSpan(currentTime.Hour, (currentTime.Minute / 15) * 15, 0);
                 DateTime _time = DateTime.Today.Add(normalizedTime);
-                Time = _time.ToString("hh:mm tt");
+                Time = _time;
                 var _x = (info.Width / 2.8) * Math.Cos(angle_deg * divFactor);
                 var _y = (info.Height / 2.8) * Math.Sin(angle_deg * divFactor);
                 StartX = _x + halfWidth;

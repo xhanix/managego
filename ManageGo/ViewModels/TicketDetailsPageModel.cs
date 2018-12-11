@@ -39,21 +39,31 @@ namespace ManageGo
         public LayoutOptions ToFrameVerticalLayout { get; private set; }
         bool IsToTimeSelected { get; set; }
         public List<User> Users { get; private set; }
-        string pickedTime;
+        DateTime pickedTime;
         public string ToTime { get; set; }
         public string FromTime { get; set; }
         public int BridgeColumn { get; private set; }
+        [AlsoNotifyFor("AMTextColor", "PMTextColor")]
+        public bool PickedTimeIsAM { get; set; }
+        public string AMTextColor
+        {
+            get { return PickedTimeIsAM ? "#4286f4" : "#d8d8d8"; }
+        }
+        public string PMTextColor
+        {
+            get { return !PickedTimeIsAM ? "#4286f4" : "#d8d8d8"; }
+        }
         [AlsoNotifyFor("FromTime", "ToTime")]
-        public string PickedTime
+        public DateTime PickedTime
         {
             get { return pickedTime; }
             set
             {
                 pickedTime = value;
                 if (SetToTime)
-                    ToTime = $"{pickedTime}";
+                    ToTime = pickedTime.ToString("h:mm").PadRight(3);
                 else if (SetFromTime)
-                    FromTime = $"{pickedTime}";
+                    FromTime = pickedTime.ToString("h:mm");
             }
         }
 
@@ -101,9 +111,12 @@ namespace ManageGo
             var timeNow = DateTime.Now;
             var normalizedTime = new DateTime(timeNow.Year, timeNow.Month, timeNow.Day, timeNow.Hour,
             (timeNow.Minute / 15) * 15, 0);
-            FromTime = normalizedTime.ToString("hh:mm tt");
-            ToTime = normalizedTime.AddHours(1).ToString("hh:mm tt");
+            FromTime = normalizedTime.ToString("h:mm");
+            ToTime = normalizedTime.AddHours(1).ToString("h:mm");
+            if (timeNow.Hour < 12)
+                PickedTimeIsAM = true;
         }
+
 
 
         public override void ReverseInit(object returnedData)
@@ -500,6 +513,30 @@ namespace ManageGo
             }
         }
 
+        public FreshAwaitCommand OnSelectPMTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((tcs) =>
+                {
+                    PickedTimeIsAM = false;
+                    tcs?.SetResult(true);
+                });
+            }
+        }
+
+        public FreshAwaitCommand OnSelectAMTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((tcs) =>
+                {
+                    PickedTimeIsAM = true;
+                    tcs?.SetResult(true);
+                });
+            }
+        }
+
         public FreshAwaitCommand OnFromTimeLabelTapped
         {
             get
@@ -513,7 +550,7 @@ namespace ManageGo
                     {
                         SetFromTime = true;
                         FromFrameVerticalLayout = LayoutOptions.FillAndExpand;
-                        FromTime = $"{PickedTime}";
+                        FromTime = PickedTime.ToString("h:mm");
                     }
                     else
                     {
@@ -523,6 +560,19 @@ namespace ManageGo
                     BridgeColumn = 0;
                     tcs?.SetResult(true);
                 });
+            }
+        }
+
+        public FreshAwaitCommand OnCloseTimePickerTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((tcs) =>
+                {
+                    ShouldShowClock = false;
+                    tcs?.SetResult(true);
+                });
+
             }
         }
 
@@ -539,9 +589,8 @@ namespace ManageGo
                     {
                         SetToTime = true;
                         ToFrameVerticalLayout = LayoutOptions.FillAndExpand;
-                        ToTime = $"{PickedTime}";
+                        ToTime = PickedTime.ToString("h:mm");
                     }
-
                     else
                     {
                         SetToTime = false;

@@ -12,7 +12,7 @@
      <ContentPage.Resources>
         <local:InverseBoolConverter x:Key="InverseBoolConverter" />
     </ContentPage.Resources>
-    <RelativeLayout>
+    <RelativeLayout x:Name="MyRelLayout">
      <Grid RowSpacing="0" 
            RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent, Property=Height,Factor=1,Constant=0}"
            RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent, Property=Width,Factor=1,Constant=0}">
@@ -176,19 +176,7 @@
                             </Frame.GestureRecognizers>
                         </Frame>
                             
-                        <!-- frame around the clock -->
-                        <Frame HasShadow="false" IsVisible="{Binding ShouldShowClock}" Grid.Column="0" Padding="0" Grid.Row="1" Grid.ColumnSpan="2" BorderColor="Silver" Margin="0,45,0,0">
-                            <local:ClockPicker Container="{x:Reference EventContainerScrollView}"
-                                               Time="{Binding PickedTime}"
-                                               x:Name="TimePicker"
-                                               SecondContainer="{x:Reference MyScrollView}"/>
-                        </Frame>
                         
-                            
-                        <!-- frame to cover bottom of From frame -->
-                        <Frame HasShadow="false" IsVisible="{Binding ShouldShowClock}" 
-                               HeightRequest="22" Padding="0" VerticalOptions="Start" Grid.Column="{Binding BridgeColumn}" Grid.Row="1"  Margin="1,32,1,0"/>
-
                     </Grid>
                     <BoxView x:Name="BottomOfClock" HeightRequest="0.75" BackgroundColor="Gray" Opacity="0.75" Margin="0,8,12,6"/>
                     <Label Text="Send to users:" Margin="0,8,0,0" TextColor="#5d5e60" FontAttributes="Bold" VerticalOptions="Start" VerticalTextAlignment="Start" />
@@ -431,5 +419,42 @@
                 <Label Text="Loading File..." TextColor="White"/>
             </StackLayout>
         </Frame>
+    
+        <Grid x:Name="ClockPopupBackground" 
+              IsVisible="{Binding ShouldShowClock}"
+              RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent, Property=Width,Factor=1}"
+              RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent, Property=Height,Factor=1}"
+              BackgroundColor="#7D000000">
+            <Image Source="close_white.png" InputTransparent="true" Margin="0,25,15,0" HorizontalOptions="EndAndExpand" VerticalOptions="StartAndExpand"/>
+
+            <Frame HasShadow="false" InputTransparent="false" Margin="16,0,16,0" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
+                <StackLayout>
+                    <Label Text="Start time:" TextColor="Gray" HorizontalTextAlignment="Center"/>
+                    <Grid>
+                        <Label Text="AM" Grid.Column="0" HorizontalOptions="EndAndExpand" VerticalOptions="Center" TextColor="{Binding AMTextColor}">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnSelectAMTapped}" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                        <Label Text="{Binding FromTime}" HorizontalOptions="CenterAndExpand" Grid.Column="1" FontFamily="{StaticResource Key=MonoBoldFont}" VerticalOptions="Center" FontSize="Large" />
+                        <Label Text="PM" VerticalOptions="Center" Grid.Column="2" HorizontalOptions="StartAndExpand" TextColor="{Binding PMTextColor}">
+                             <Label.GestureRecognizers>
+                                <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnSelectPMTapped}" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </Grid>
+                    <local:ClockPicker Time="{Binding PickedTime}"/>
+                </StackLayout>
+                 <Frame.GestureRecognizers>
+                    <TapGestureRecognizer NumberOfTapsRequired="1"  />
+
+                </Frame.GestureRecognizers>
+            </Frame>
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnCloseTimePickerTapped}" />
+
+            </Grid.GestureRecognizers>
+        </Grid>
+
     </RelativeLayout>  
 </ContentPage>

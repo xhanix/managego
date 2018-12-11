@@ -16,6 +16,7 @@ namespace ManageGo
             InitializeComponent();
             NavigationPage.SetHasNavigationBar(this, false);
             ReplyBox.HeightRequest = ReplyBoxHeigh;
+
         }
 
         protected override void OnSizeAllocated(double width, double height)
@@ -60,5 +61,7 @@ namespace ManageGo
             //MyNavBar.IsVisible = true;
             //TopDetailsView.IsVisible = true;
         }
+
+
     }
 }

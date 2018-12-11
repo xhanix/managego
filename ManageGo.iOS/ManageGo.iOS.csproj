@@ -353,5 +353,10 @@
     <BundleResource Include="Resources\capture_video_stop.png" />
     <BundleResource Include="Resources\capture_video_stop%402x.png" />
     <BundleResource Include="Resources\capture_video_stop%403x.png" />
+    <BundleResource Include="Resources\RobotoMono-Bold.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </BundleResource>
+    <BundleResource Include="Resources\close_white.png" />
+    <BundleResource Include="Resources\close_black.png" />
   </ItemGroup>
 </Project>

@@ -251,6 +251,8 @@
     <AndroidResource Include="Resources\drawable-xxxhdpi\capture_camera.png" />
     <AndroidResource Include="Resources\drawable-xxxhdpi\capture_video_play.png" />
     <AndroidResource Include="Resources\drawable-xxxhdpi\capture_video_stop.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\close_white.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\close_black.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\drawable\" />
@@ -268,6 +270,9 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidAsset Include="Assets\pdf.js" />
+    <AndroidAsset Include="Assets\RobotoMono-Bold.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </AndroidAsset>
   </ItemGroup>
  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
 </Project>
