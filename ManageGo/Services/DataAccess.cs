@@ -164,6 +164,22 @@ namespace ManageGo.Services
             return responseObject.TryGetValue("Result", out JToken result) ? (int)result["CommentID"] : 0;
         }
 
+        public static async Task<int> SendNewEventAsync(Dictionary<string, object> parameters)
+        {
+            if (TokenExpiry < DateTimeOffset.Now)
+                await Login();
+            var jsonString = JsonConvert.SerializeObject(parameters);
+            var content = new StringContent(jsonString, Encoding.UTF8, "application/json");//new FormUrlEncodedContent(filters);
+            var msg = new HttpRequestMessage(HttpMethod.Post, BaseUrl + APIpaths.CreateEvent.ToString())
+            {
+                Content = content
+            };
+            var response = await client.SendAsync(msg);
+            var responseString = await response.Content.ReadAsStringAsync();
+            JObject responseObject = JObject.Parse(responseString);
+            return responseObject.TryGetValue("Result", out JToken result) ? (int)result["EventID"] : 0;
+        }
+
         public static async Task<int> SendNewWorkOurderAsync(Dictionary<string, object> parameters)
         {
             if (TokenExpiry < DateTimeOffset.Now)

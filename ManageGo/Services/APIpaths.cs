@@ -13,7 +13,8 @@
         CommentNewFile,
         CommentFilesCompleted,
         GetTicketFile,
-        CreateWorkOrder
+        CreateWorkOrder,
+        CreateEvent
     }
 }
 

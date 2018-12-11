@@ -21,6 +21,7 @@ namespace ManageGo
         List<byte[]> FilesToUpload { get; set; }
         public string BuildingUnitText { get; private set; }
         public View PopContentView { get; private set; }
+        public DateTime OldTime { get; private set; }
         public bool ShouldShowClock { get; private set; }
         public bool SetToTime { get; private set; }
         public bool ListIsEnabled { get; private set; } = true;
@@ -40,11 +41,15 @@ namespace ManageGo
         bool IsToTimeSelected { get; set; }
         public List<User> Users { get; private set; }
         DateTime pickedTime;
+        [AlsoNotifyFor("EndTimeTextColor")]
         public string ToTime { get; set; }
+        [AlsoNotifyFor("EndTimeTextColor")]
         public string FromTime { get; set; }
+        public string PickerTitleText { get; private set; }
         public int BridgeColumn { get; private set; }
         [AlsoNotifyFor("AMTextColor", "PMTextColor")]
         public bool PickedTimeIsAM { get; set; }
+        public string CurrentTime { get; private set; }
         public string AMTextColor
         {
             get { return PickedTimeIsAM ? "#4286f4" : "#d8d8d8"; }
@@ -53,17 +58,29 @@ namespace ManageGo
         {
             get { return !PickedTimeIsAM ? "#4286f4" : "#d8d8d8"; }
         }
-        [AlsoNotifyFor("FromTime", "ToTime")]
+        readonly string redColor = "#fc3535";
+        public string EndTimeTextColor
+        {
+            get
+            {
+                if (DateTime.Parse(FromTime) > DateTime.Parse(ToTime))
+                    return redColor;
+                return "#9b9b9b";
+            }
+        }
+        [AlsoNotifyFor("FromTime", "ToTime", "CurrentTime")]
         public DateTime PickedTime
         {
             get { return pickedTime; }
             set
             {
-                pickedTime = value;
+                pickedTime = !PickedTimeIsAM && !SwitchingAmPam ? value.AddHours(12) : value;
                 if (SetToTime)
-                    ToTime = pickedTime.ToString("h:mm").PadRight(3);
+                    ToTime = pickedTime.ToString("h:mm tt");
                 else if (SetFromTime)
-                    FromTime = pickedTime.ToString("h:mm");
+                    FromTime = pickedTime.ToString("h:mm tt");
+                CurrentTime = pickedTime.ToString("h:mm");
+                SwitchingAmPam = false;
             }
         }
 
@@ -111,8 +128,8 @@ namespace ManageGo
             var timeNow = DateTime.Now;
             var normalizedTime = new DateTime(timeNow.Year, timeNow.Month, timeNow.Day, timeNow.Hour,
             (timeNow.Minute / 15) * 15, 0);
-            FromTime = normalizedTime.ToString("h:mm");
-            ToTime = normalizedTime.AddHours(1).ToString("h:mm");
+            FromTime = normalizedTime.ToString("h:mm tt");
+            ToTime = normalizedTime.AddHours(1).ToString("h:mm tt");
             if (timeNow.Hour < 12)
                 PickedTimeIsAM = true;
         }
@@ -353,6 +370,92 @@ namespace ManageGo
             }
         }
 
+        public FreshAwaitCommand OnSendEventButtonTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand(async (tcs) =>
+                {
+                    var _timeFrom = DateTime.Parse(FromTime);
+                    var _timeTo = DateTime.Parse(ToTime);
+                    if (string.IsNullOrWhiteSpace(EventSummary) ||
+                        SelectedEventDate == DateTime.MinValue)
+                    {
+                        await CoreMethods.DisplayAlert("ManageGo", "Please fill out the event details before sending", "DISMISS");
+                        tcs?.SetResult(true);
+                        return;
+                    }
+                    if (EndTimeTextColor == redColor)
+                    {
+                        await CoreMethods.DisplayAlert("ManageGo", "Event end time cannot be earlier than event start", "DISMISS");
+                        tcs?.SetResult(true);
+                        return;
+                    }
+                    if (!Users.Any(t => t.IsSelected) && !ExternalContacts.Any(t => t.IsSelected))
+                    {
+                        await CoreMethods.DisplayAlert("ManageGo", "Please select users and try again", "DISMISS");
+                        tcs?.SetResult(true);
+                        return;
+                    }
+                    if (SelectedEventDate.Date <= DateTime.Now.Date && _timeFrom.TimeOfDay < DateTime.Now.TimeOfDay)
+                    {
+                        await CoreMethods.DisplayAlert("ManageGo", "Event start time must be in the future", "DISMISS");
+                        tcs?.SetResult(true);
+                        return;
+                    }
+
+                    var dic = new Dictionary<string, object> {
+                        {"TicketID", TicketId},
+                        {"Note", EventSummary},
+                        {"Title", EventSummary},
+                        {"EventDate", SelectedEventDate},
+                        {"TimeFrom", _timeFrom.ToString("HHmm")},
+                        {"TimeTo", _timeTo.ToString("HHmm")},
+                        {"SendToUsers", Users.Where(t=>t.IsSelected).Select(t=>t.UserID)},
+                        {"SendToExternalContacts", ExternalContacts.Where(t=>t.IsSelected).Select(t=>t.ExternalID) },
+                    };
+                    WorkOrderActionSheetIsVisible = false;
+                    EventActionSheetIsVisible = false;
+                    SendOptionsPupupIsVisible = false;
+                    AttachActionSheetIsVisible = false;
+                    ReplyBoxIsVisible = false;
+                    ReplyButtonIsVisible = true;
+                    Comments.Add(new Comments
+                    {
+                        CommentType = CommentTypes.Event,
+                        Text = $"{EventSummary}",
+                        CommentCreateTime = DateTime.Now.ToShortDateString(),
+                        Name = App.UserName
+                    });
+                    RaisePropertyChanged("Comments");
+                    try
+                    {
+                        await Services.DataAccess.SendNewEventAsync(dic);
+                        foreach (var user in Users.Where(t => t.IsSelected))
+                        {
+                            user.IsSelected = false;
+                        }
+                        foreach (var user in ExternalContacts.Where(t => t.IsSelected))
+                        {
+                            user.IsSelected = false;
+                        }
+                        //clear the fields used for the workorder
+                        EventSummary = null;
+                        SelectedEventDate = DateTime.MinValue;
+                        WorkOrderSendEmail = null;
+                    }
+                    catch (Exception ex)
+                    {
+                        await CoreMethods.DisplayAlert("Something went wrong", ex.Message, "DISMISS");
+                    }
+                    finally
+                    {
+                        tcs?.SetResult(true);
+                    }
+                });
+            }
+        }
+
         public FreshAwaitCommand OnSendWorkOrderButtonTapped
         {
             get
@@ -364,6 +467,7 @@ namespace ManageGo
                         string.IsNullOrWhiteSpace(WorkOrderDetail))
                     {
                         await CoreMethods.DisplayAlert("ManageGo", "Please fill out the work order details before sending", "DISMISS");
+                        tcs?.SetResult(true);
                         return;
                     }
 
@@ -375,19 +479,21 @@ namespace ManageGo
                         {"SendToExternalContacts", ExternalContacts.Where(t=>t.IsSelected).Select(t=>t.ExternalID) },
                         {"SendToEmail", WorkOrderSendEmail}
                     };
-                    Comments.Add(new ManageGo.Comments
-                    {
-                        CommentType = CommentTypes.WorkOrder,
-                        Text = $"{WorkOrderSummary}",
 
-                        CommentCreateTime = DateTime.Now.ToShortDateString(),
-                        Name = App.UserName
-                    });
+
                     WorkOrderActionSheetIsVisible = false;
                     SendOptionsPupupIsVisible = false;
                     AttachActionSheetIsVisible = false;
                     ReplyBoxIsVisible = false;
                     ReplyButtonIsVisible = true;
+                    Comments.Add(new Comments
+                    {
+                        CommentType = CommentTypes.WorkOrder,
+                        Text = $"{WorkOrderSummary}",
+                        CommentCreateTime = DateTime.Now.ToShortDateString(),
+                        Name = App.UserName
+                    });
+
                     RaisePropertyChanged("Comments");
                     try
                     {
@@ -519,6 +625,12 @@ namespace ManageGo
             {
                 return new FreshAwaitCommand((tcs) =>
                 {
+                    if (PickedTimeIsAM)
+                    {
+                        SwitchingAmPam = true;
+                        PickedTime = PickedTime.AddHours(12);
+                    }
+
                     PickedTimeIsAM = false;
                     tcs?.SetResult(true);
                 });
@@ -531,6 +643,12 @@ namespace ManageGo
             {
                 return new FreshAwaitCommand((tcs) =>
                 {
+                    if (!PickedTimeIsAM)
+                    {
+                        SwitchingAmPam = true;
+                        PickedTime = PickedTime.AddHours(-12);
+                    }
+
                     PickedTimeIsAM = true;
                     tcs?.SetResult(true);
                 });
@@ -543,14 +661,24 @@ namespace ManageGo
             {
                 return new FreshAwaitCommand((tcs) =>
                 {
-                    ShouldShowClock = !ShouldShowClock;
+                    OldTime = new DateTime(PickedTime.Ticks);
+                    if (FromTime.ToLower().EndsWith("pm", StringComparison.InvariantCulture)
+                        && OldTime.Hour < 6)
+                        OldTime = OldTime.AddHours(12);
+                    PickedTime = DateTime.Parse(FromTime);
+                    ShouldShowClock = true;
                     SetToTime = false;
+                    PickerTitleText = "Start time:";
+                    if (FromTime.ToLower().EndsWith("pm", StringComparison.CurrentCulture))
+                        PickedTimeIsAM = false;
+                    else
+                        PickedTimeIsAM = true;
                     ToFrameVerticalLayout = LayoutOptions.Start;
                     if (ShouldShowClock)
                     {
                         SetFromTime = true;
                         FromFrameVerticalLayout = LayoutOptions.FillAndExpand;
-                        FromTime = PickedTime.ToString("h:mm");
+                        FromTime = PickedTime.ToString("h:mm tt");
                     }
                     else
                     {
@@ -569,10 +697,28 @@ namespace ManageGo
             {
                 return new FreshAwaitCommand((tcs) =>
                 {
+                    var _oldTime = OldTime;
+                    SwitchingAmPam = true;
+                    if (SetToTime)
+                        PickedTime = new DateTime(_oldTime.Ticks);
+                    else if (SetFromTime)
+                        PickedTime = new DateTime(_oldTime.Ticks);
+                    RaisePropertyChanged("PickedTime");
                     ShouldShowClock = false;
                     tcs?.SetResult(true);
                 });
+            }
+        }
 
+        public FreshAwaitCommand OnSetTimeFromPickerTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((tcs) =>
+                {
+                    ShouldShowClock = false;
+                    tcs?.SetResult(true);
+                });
             }
         }
 
@@ -582,14 +728,24 @@ namespace ManageGo
             {
                 return new FreshAwaitCommand((tcs) =>
                 {
-                    ShouldShowClock = !ShouldShowClock;
+                    OldTime = new DateTime(PickedTime.Ticks);
+                    if (!PickedTimeIsAM)
+                        OldTimeIsPm = true;
+                    else
+                        OldTimeIsPm = false;
+                    ShouldShowClock = true;
                     SetFromTime = false;
+                    PickerTitleText = "End time:";
+                    if (FromTime.ToLower().EndsWith("pm", StringComparison.CurrentCulture))
+                        PickedTimeIsAM = false;
+                    else
+                        PickedTimeIsAM = true;
                     FromFrameVerticalLayout = LayoutOptions.Start;
                     if (ShouldShowClock)
                     {
                         SetToTime = true;
                         ToFrameVerticalLayout = LayoutOptions.FillAndExpand;
-                        ToTime = PickedTime.ToString("h:mm");
+                        ToTime = PickedTime.ToString("h:mm tt");
                     }
                     else
                     {
@@ -654,6 +810,8 @@ namespace ManageGo
         }
 
         public bool SetFromTime { get; private set; }
+        public bool SwitchingAmPam { get; private set; }
+        public bool OldTimeIsPm { get; private set; }
     }
 }
 

@@ -4,6 +4,8 @@ using SkiaSharp.Views.Forms;
 using SkiaSharp;
 using TouchTracking;
 using Xamarin.Essentials;
+using System.Runtime.CompilerServices;
+using System.Windows.Input;
 
 namespace ManageGo
 {
@@ -20,13 +22,14 @@ namespace ManageGo
         double current_dX;
         double current_dY;
         double ClockScale;
-        bool newTouches;
+
         bool didSetupValues;
         readonly SKPaint handPaint;
         readonly SKPaint fillPaint;
         readonly SKPaint grayIndicatorPaint;
         readonly SKPaint grayLinePaint;
         DateTime currentTime;
+        DateTime SetHandToTime;
         readonly SKPaint blueIndicatorPaint;
         SKPath path1;
         SKPath path2;
@@ -40,25 +43,44 @@ namespace ManageGo
         readonly double hour_start_angle_deg = -90;
         readonly SKCanvasView Canvas;
 
+        public static readonly BindableProperty TimeChangedCommandProperty = BindableProperty.Create(
+            "TimeChangedCommand",
+            typeof(ICommand),
+            typeof(SKCanvasView));
+
         public static readonly BindableProperty TimeProperty =
               BindableProperty.Create("Time", typeof(DateTime), typeof(DateTime), null, BindingMode.TwoWay);
 
         public DateTime Time
         {
             get { return (DateTime)GetValue(TimeProperty); }
-            set { SetValue(TimeProperty, value); }
+            set
+            {
+                SetValue(TimeProperty, value);
+            }
+        }
+
+        public ICommand TimeChangedCommand
+        {
+            get => (ICommand)GetValue(TimeChangedCommandProperty);
+            set => SetValue(TimeChangedCommandProperty, value);
         }
 
 
         public bool Justpassed12 { get; private set; }
         public bool WentPast11 { get; private set; }
-
+        public bool InternalTimeChange { get; private set; }
 
         protected override void OnSizeAllocated(double width, double height)
         {
             base.OnSizeAllocated(width, height);
             if (Math.Abs(height - width) > float.Epsilon)
                 HeightRequest = width;
+        }
+
+        protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            base.OnPropertyChanged(propertyName);
         }
 
         public ClockPicker()
@@ -115,16 +137,15 @@ namespace ManageGo
 
             touchEffect.TouchAction += (object sender, TouchActionEventArgs args) =>
             {
+                InternalTimeChange = true;
                 switch (args.Type)
                 {
                     case TouchActionType.Pressed:
                         TouchX = args.Location.X;
                         TouchY = args.Location.Y;
                         Canvas.InvalidateSurface();
-
                         break;
                     case TouchActionType.Moved:
-
                         TouchX = args.Location.X;
                         TouchY = args.Location.Y;
                         Canvas.InvalidateSurface();
@@ -146,6 +167,7 @@ namespace ManageGo
         //drawing
         void ClockPicker_PaintSurface(object sender, SKPaintSurfaceEventArgs args)
         {
+
             SKImageInfo info = args.Info;
             var halfWidth = info.Width / 2;
             var halfHeight = info.Height / 2;
@@ -205,13 +227,13 @@ namespace ManageGo
                 //point on circle at the end of the clock hand
                 double aX = Math.Round(halfWidth + vX / magV * (info.Width / 2.8));
                 double aY = Math.Round(halfHeight + vY / magV * ((info.Height / 2.8)));
-
                 //point on circle where triangle indicators will be
                 double aaX = Math.Round(halfWidth + vX / magV * (info.Width / 3.50));
                 double aaY = Math.Round(halfHeight + vY / magV * (info.Height / 3.50));
 
                 double dy = (aY - halfHeight);
                 double dx = (aX - halfWidth);
+
                 if (!didSetupValues)
                 {
                     current_dX = dx;
@@ -231,23 +253,29 @@ namespace ManageGo
 
                 var diff = Math.Abs(180 - angle) / 30;
 
-
                 var hr = Math.Round(angle - 180 > 0 ? 12 - diff : diff, 2);
                 var time = TimeSpan.FromTicks(DateTime.Today.Ticks).Add(new TimeSpan(0, (int)(hr * 60), 0));
 
                 didSetupValues = true;
-                if (time.Minutes % 15 < 5)
+                if (time.Minutes % 15 < 15)
                 {
-                    newTouches = true;
-                    current_aX = aX;
-                    current_aY = aY;
-                    current_aaX = aaX;
-                    cuurent_aaY = aaY;
-                    current_dX = 0;
-                    current_dY = 0;
+
                     var timeSpan = new TimeSpan(time.Hours, time.Minutes / 15 * 15, 0);
                     DateTime _time = new DateTime(timeSpan.Ticks);
                     Time = _time;
+                    SetHandToTime = new DateTime(Time.Ticks);
+                    var angle_deg = Math.Round(_time.Minute / 15d) * 7.5;
+                    var hrs = _time.Hour;//> 12 ? time.Hours - 12 : time.Hours;
+                    angle_deg = angle_deg + Math.Round((hrs * hour_degrees_per_iter) - 90);
+
+                    var _x = (info.Width / 2.8) * Math.Cos(angle_deg * divFactor);
+                    var _y = (info.Height / 2.8) * Math.Sin(angle_deg * divFactor);
+                    current_aX = _x + halfWidth;
+                    current_aY = _y + halfHeight;
+                    current_aaX = Math.Round(halfWidth + (info.Width / 3.50) * Math.Cos(angle_deg * divFactor));
+                    cuurent_aaY = Math.Round(halfHeight + (info.Height / 3.50) * Math.Sin(angle_deg * divFactor));
+                    current_dX = 0;
+                    current_dY = 0;
                 }
 
                 //draw circles at beginning and start of hand clock
@@ -372,7 +400,7 @@ namespace ManageGo
                 path2.Close();
                 canvas.DrawPath(path2, fillPaint);
             }
-            newTouches = false;
+
         }
 
     }

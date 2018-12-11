@@ -161,7 +161,7 @@
                         <Label Text="To:" Grid.Column="1" Grid.Row="0" FontSize="Small"  TextColor="Gray"  />
 
                         <Frame HasShadow="false" VerticalOptions="{Binding FromFrameVerticalLayout}" Grid.Column="0" Grid.Row="1" BorderColor="Silver" Padding="8">
-                            <Label Text="{Binding FromTime,Mode=TwoWay}" FontSize="Small" FontAttributes="Bold" TextColor="Gray" />
+                            <Label Text="{Binding FromTime,Mode=OneWay}" FontSize="Small" FontAttributes="Bold" TextColor="#9b9b9b" />
                             <Frame.GestureRecognizers>
                                     <TapGestureRecognizer NumberOfTapsRequired="1"
                                                           Command="{Binding OnFromTimeLabelTapped}" />
@@ -169,7 +169,7 @@
                         </Frame>
                             
                         <Frame HasShadow="false" VerticalOptions="{Binding ToFrameVerticalLayout}" Grid.Column="1" Grid.Row="1" BorderColor="Silver" Padding="8" >
-                            <Label Text="{Binding ToTime,Mode=TwoWay}" FontSize="Small" FontAttributes="Bold" TextColor="Gray" />
+                            <Label Text="{Binding ToTime,Mode=OneWay}" FontSize="Small" FontAttributes="Bold" TextColor="{Binding EndTimeTextColor}" />
                              <Frame.GestureRecognizers>
                                     <TapGestureRecognizer NumberOfTapsRequired="1"
                                                           Command="{Binding OnToTimeLabelTapped}" />
@@ -213,7 +213,7 @@
                     </ListView>
                 </StackLayout>
             </ScrollView>
-            <Button Grid.Row="3" Command="{Binding OnSendWorkOrderButtonTapped}" BorderRadius="8" Margin="28,0,28,8" Text="Create work order" FontSize="Large" TextColor="White" BackgroundColor="#59c623"/>
+            <Button Grid.Row="3" Command="{Binding OnSendEventButtonTapped}" BorderRadius="8" Margin="28,0,28,8" Text="Create event" FontSize="Large" TextColor="White" BackgroundColor="#59c623"/>
 
         </Grid> 
             
@@ -429,21 +429,22 @@
 
             <Frame HasShadow="false" InputTransparent="false" Margin="16,0,16,0" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
                 <StackLayout>
-                    <Label Text="Start time:" TextColor="Gray" HorizontalTextAlignment="Center"/>
+                    <Label Text="{Binding PickerTitleText}" TextColor="Gray" HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center"/>
                     <Grid>
                         <Label Text="AM" Grid.Column="0" HorizontalOptions="EndAndExpand" VerticalOptions="Center" TextColor="{Binding AMTextColor}">
                             <Label.GestureRecognizers>
                                 <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnSelectAMTapped}" />
                             </Label.GestureRecognizers>
                         </Label>
-                        <Label Text="{Binding FromTime}" HorizontalOptions="CenterAndExpand" Grid.Column="1" FontFamily="{StaticResource Key=MonoBoldFont}" VerticalOptions="Center" FontSize="Large" />
+                        <Label Text="{Binding CurrentTime}" HorizontalOptions="CenterAndExpand" Grid.Column="1" FontFamily="{StaticResource Key=MonoBoldFont}" VerticalOptions="Center" FontSize="Large" />
                         <Label Text="PM" VerticalOptions="Center" Grid.Column="2" HorizontalOptions="StartAndExpand" TextColor="{Binding PMTextColor}">
                              <Label.GestureRecognizers>
                                 <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnSelectPMTapped}" />
                             </Label.GestureRecognizers>
                         </Label>
                     </Grid>
-                    <local:ClockPicker Time="{Binding PickedTime}"/>
+                    <local:ClockPicker Time="{Binding PickedTime,Mode=TwoWay}"/>
+                    <Button Command="{Binding OnSetTimeFromPickerTapped}" HorizontalOptions="FillAndExpand" Text="Set time" TextColor="White" BorderRadius="8" BackgroundColor="#51c623" />
                 </StackLayout>
                  <Frame.GestureRecognizers>
                     <TapGestureRecognizer NumberOfTapsRequired="1"  />
@@ -452,7 +453,6 @@
             </Frame>
             <Grid.GestureRecognizers>
                 <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnCloseTimePickerTapped}" />
-
             </Grid.GestureRecognizers>
         </Grid>
 

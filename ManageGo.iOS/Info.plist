@@ -52,6 +52,7 @@
 	<key>UIAppFonts</key>
 	<array>
 		<string>RobotoMono-Bold.ttf</string>
+		<string>CourierPSStd-Bold.ttf</string>
 	</array>
 </dict>
 </plist>

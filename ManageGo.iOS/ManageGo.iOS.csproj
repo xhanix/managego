@@ -358,5 +358,8 @@
     </BundleResource>
     <BundleResource Include="Resources\close_white.png" />
     <BundleResource Include="Resources\close_black.png" />
+    <BundleResource Include="Resources\CourierPSStd-Bold.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </BundleResource>
   </ItemGroup>
 </Project>

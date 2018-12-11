@@ -18,8 +18,8 @@
                 
             </Style>
             <OnPlatform x:TypeArguments="x:String" x:Key="MonoBoldFont">
-                <On Platform="Android" Value="RobotoMono-Bold.ttf#Roboto Mono Bold" />
-                <On Platform="iOS" Value="RobotoMono-Bold" />
+                <On Platform="Android" Value="CourierPSStd-Bold.ttf#CourierPSMTStd-Bold" />
+                <On Platform="iOS" Value="CourierPSStd-Bold" />
             </OnPlatform>
             <Style x:Key="Small-Text" TargetType="Label" BasedOn="{StaticResource Regular-Text}">
                 <Setter Property="FontSize" Value="Small" />
