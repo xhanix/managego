@@ -47,16 +47,16 @@ namespace ManageGo
         public string FromTime { get; set; }
         public string PickerTitleText { get; private set; }
         public int BridgeColumn { get; private set; }
-        [AlsoNotifyFor("AMTextColor", "PMTextColor")]
+        [AlsoNotifyFor("AmButtonImage", "PmButtonImage")]
         public bool PickedTimeIsAM { get; set; }
         public string CurrentTime { get; private set; }
-        public string AMTextColor
+        public string AmButtonImage
         {
-            get { return PickedTimeIsAM ? "#4286f4" : "#d8d8d8"; }
+            get { return PickedTimeIsAM ? "am_active.png" : "am_inactive.png"; }
         }
-        public string PMTextColor
+        public string PmButtonImage
         {
-            get { return !PickedTimeIsAM ? "#4286f4" : "#d8d8d8"; }
+            get { return !PickedTimeIsAM ? "pm_active.png" : "pm_inactive.png"; }
         }
         readonly string redColor = "#fc3535";
         public string EndTimeTextColor
@@ -74,7 +74,10 @@ namespace ManageGo
             get { return pickedTime; }
             set
             {
-                pickedTime = !PickedTimeIsAM && !SwitchingAmPam ? value.AddHours(12) : value;
+                if (!PickedTimeIsAM)
+                    pickedTime = !PickedTimeIsAM && !SwitchingAmPam ? value.AddHours(12) : value;
+                else
+                    pickedTime = value;
                 if (SetToTime)
                     ToTime = pickedTime.ToString("h:mm tt");
                 else if (SetFromTime)
@@ -661,31 +664,49 @@ namespace ManageGo
             {
                 return new FreshAwaitCommand((tcs) =>
                 {
-                    OldTime = new DateTime(PickedTime.Ticks);
-                    if (FromTime.ToLower().EndsWith("pm", StringComparison.InvariantCulture)
-                        && OldTime.Hour < 6)
-                        OldTime = OldTime.AddHours(12);
-                    PickedTime = DateTime.Parse(FromTime);
+                    OldTime = DateTime.Parse(FromTime.Replace("PM", ""));
                     ShouldShowClock = true;
                     SetToTime = false;
                     PickerTitleText = "Start time:";
-                    if (FromTime.ToLower().EndsWith("pm", StringComparison.CurrentCulture))
+                    if (FromTime.EndsWith("pm", StringComparison.CurrentCultureIgnoreCase))
+                    {
                         PickedTimeIsAM = false;
+                        OldTimeIsPm = true;
+                    }
                     else
+                    {
                         PickedTimeIsAM = true;
-                    ToFrameVerticalLayout = LayoutOptions.Start;
-                    if (ShouldShowClock)
+                        OldTimeIsPm = false;
+                    }
+                    SetFromTime = true;
+                    PickedTime = DateTime.Parse(FromTime.Replace("PM", ""));
+                    tcs?.SetResult(true);
+                });
+            }
+        }
+
+        public FreshAwaitCommand OnToTimeLabelTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((tcs) =>
+                {
+                    OldTime = DateTime.Parse(ToTime.Replace("PM", ""));
+                    ShouldShowClock = true;
+                    SetFromTime = false;
+                    PickerTitleText = "End time:";
+                    if (ToTime.EndsWith("pm", StringComparison.CurrentCultureIgnoreCase))
                     {
-                        SetFromTime = true;
-                        FromFrameVerticalLayout = LayoutOptions.FillAndExpand;
-                        FromTime = PickedTime.ToString("h:mm tt");
+                        OldTimeIsPm = true;
+                        PickedTimeIsAM = false;
                     }
                     else
                     {
-                        SetFromTime = false;
-                        FromFrameVerticalLayout = LayoutOptions.Start;
+                        PickedTimeIsAM = true;
+                        OldTimeIsPm = false;
                     }
-                    BridgeColumn = 0;
+                    SetToTime = true;
+                    PickedTime = DateTime.Parse(ToTime.Replace("PM", ""));
                     tcs?.SetResult(true);
                 });
             }
@@ -698,11 +719,13 @@ namespace ManageGo
                 return new FreshAwaitCommand((tcs) =>
                 {
                     var _oldTime = OldTime;
-                    SwitchingAmPam = true;
+                    SwitchingAmPam = false;
+                    PickedTimeIsAM = !OldTimeIsPm;
                     if (SetToTime)
                         PickedTime = new DateTime(_oldTime.Ticks);
                     else if (SetFromTime)
                         PickedTime = new DateTime(_oldTime.Ticks);
+
                     RaisePropertyChanged("PickedTime");
                     ShouldShowClock = false;
                     tcs?.SetResult(true);
@@ -716,47 +739,22 @@ namespace ManageGo
             {
                 return new FreshAwaitCommand((tcs) =>
                 {
+                    var _timeString = PickedTime.ToString("hh:mm tt");
+                    if (SetFromTime)
+                    {
+                        FromTime = _timeString;
+                    }
+                    else if (SetToTime)
+                    {
+                        ToTime = _timeString;
+                    }
                     ShouldShowClock = false;
                     tcs?.SetResult(true);
                 });
             }
         }
 
-        public FreshAwaitCommand OnToTimeLabelTapped
-        {
-            get
-            {
-                return new FreshAwaitCommand((tcs) =>
-                {
-                    OldTime = new DateTime(PickedTime.Ticks);
-                    if (!PickedTimeIsAM)
-                        OldTimeIsPm = true;
-                    else
-                        OldTimeIsPm = false;
-                    ShouldShowClock = true;
-                    SetFromTime = false;
-                    PickerTitleText = "End time:";
-                    if (FromTime.ToLower().EndsWith("pm", StringComparison.CurrentCulture))
-                        PickedTimeIsAM = false;
-                    else
-                        PickedTimeIsAM = true;
-                    FromFrameVerticalLayout = LayoutOptions.Start;
-                    if (ShouldShowClock)
-                    {
-                        SetToTime = true;
-                        ToFrameVerticalLayout = LayoutOptions.FillAndExpand;
-                        ToTime = PickedTime.ToString("h:mm tt");
-                    }
-                    else
-                    {
-                        SetToTime = false;
-                        ToFrameVerticalLayout = LayoutOptions.Start;
-                    }
-                    BridgeColumn = 1;
-                    tcs?.SetResult(true);
-                });
-            }
-        }
+
 
         public FreshAwaitCommand OnInternalButtonTapped
         {

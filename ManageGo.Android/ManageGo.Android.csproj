@@ -253,6 +253,26 @@
     <AndroidResource Include="Resources\drawable-xxxhdpi\capture_video_stop.png" />
     <AndroidResource Include="Resources\drawable-xxhdpi\close_white.png" />
     <AndroidResource Include="Resources\drawable-xxhdpi\close_black.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\am_inactive.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\pm_active.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\am_active.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\pm_inactive.png" />
+    <AndroidResource Include="Resources\drawable\pm_inactive.png" />
+    <AndroidResource Include="Resources\drawable\pm_active.png" />
+    <AndroidResource Include="Resources\drawable\am_active.png" />
+    <AndroidResource Include="Resources\drawable\am_inactive.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\pm_active.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\am_active.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\pm_inactive.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\am_inactive.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\pm_inactive.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\pm_active.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\am_active.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\am_inactive.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\am_active.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\am_inactive.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\pm_inactive.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\pm_active.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\drawable\" />

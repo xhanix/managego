@@ -35,16 +35,15 @@ namespace ManageGo
         public App()
         {
             InitializeComponent();
-
             MasterDetailNav = new FreshMasterDetailNavigationContainer();
             MasterDetailNav.Init("");
-            var page = FreshPageModelResolver.ResolvePageModel<MasterMenuPageModel>();
-            /*
-             //comment line above if uncommenting this block           
-            var page = FreshPageModelResolver.ResolvePageModel<TicketDetailsPageModel>();
+            //var page = FreshPageModelResolver.ResolvePageModel<MasterMenuPageModel>();
+
+            //comment out the line above if uncommenting this block           
+            var page = FreshPageModelResolver.ResolvePageModel<LoginPageModel>();
             MainPage = page;
             return;
-            */
+
             page.Title = "Menu";
             MasterDetailNav.Master = page;
 
@@ -81,5 +80,11 @@ namespace ManageGo
         {
             // Handle when your app resumes
         }
+    }
+
+    public interface ILocalAuthHelper
+    {
+        LocalAuthType GetLocalAuthType();
+
     }
 }

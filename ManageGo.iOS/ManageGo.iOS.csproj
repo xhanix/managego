@@ -115,6 +115,7 @@
     <Compile Include="VideoPlayerRenderer.cs" />
     <Compile Include="TouchEffect.cs" />
     <Compile Include="TouchRecognizer.cs" />
+    <Compile Include="LocalAuthHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Resources\LaunchScreen.storyboard" />
@@ -361,5 +362,17 @@
     <BundleResource Include="Resources\CourierPSStd-Bold.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </BundleResource>
+    <BundleResource Include="Resources\am_active%403x.png" />
+    <BundleResource Include="Resources\am_active%402x.png" />
+    <BundleResource Include="Resources\am_inactive%403x.png" />
+    <BundleResource Include="Resources\am_inactive%402x.png" />
+    <BundleResource Include="Resources\am_active.png" />
+    <BundleResource Include="Resources\pm_inactive%402x.png" />
+    <BundleResource Include="Resources\pm_inactive%403x.png" />
+    <BundleResource Include="Resources\pm_active%402x.png" />
+    <BundleResource Include="Resources\pm_active%403x.png" />
+    <BundleResource Include="Resources\pm_active.png" />
+    <BundleResource Include="Resources\pm_inactive.png" />
+    <BundleResource Include="Resources\am_inactive.png" />
   </ItemGroup>
 </Project>

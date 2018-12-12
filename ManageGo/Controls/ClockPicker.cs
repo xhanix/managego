@@ -9,6 +9,7 @@ using System.Windows.Input;
 
 namespace ManageGo
 {
+
     public class ClockPicker : Grid
     {
         double? TouchX;
@@ -28,8 +29,9 @@ namespace ManageGo
         readonly SKPaint fillPaint;
         readonly SKPaint grayIndicatorPaint;
         readonly SKPaint grayLinePaint;
-        DateTime currentTime;
-        DateTime SetHandToTime;
+        DateTime currentTime = DateTime.Now;
+        int SetHandHour;
+        int SetHandMinute;
         readonly SKPaint blueIndicatorPaint;
         SKPath path1;
         SKPath path2;
@@ -48,9 +50,6 @@ namespace ManageGo
             typeof(ICommand),
             typeof(SKCanvasView));
 
-        public static readonly BindableProperty TimeProperty =
-              BindableProperty.Create("Time", typeof(DateTime), typeof(DateTime), null, BindingMode.TwoWay);
-
         public DateTime Time
         {
             get { return (DateTime)GetValue(TimeProperty); }
@@ -60,11 +59,30 @@ namespace ManageGo
             }
         }
 
+        public static readonly BindableProperty TimeProperty =
+              BindableProperty.Create("Time", typeof(DateTime), typeof(ClockPicker), null, BindingMode.TwoWay, propertyChanged: (BindableObject bindable, object oldValue, object newValue) =>
+              {
+                  var control = (ClockPicker)bindable;
+                  var _newVal = (DateTime)newValue;
+                  var correctedNewVal = _newVal.Hour > 12 ? _newVal.AddHours(-12) : _newVal;
+                  if (!control.InternalTimeChange)
+                  {
+                      control.currentTime = correctedNewVal;
+                      control.TouchX = null;
+                      control.TouchY = null;
+                      control.Canvas?.InvalidateSurface();
+                  }
+                  //control.Time = newVal;
+              });
+
+
+
         public ICommand TimeChangedCommand
         {
             get => (ICommand)GetValue(TimeChangedCommandProperty);
             set => SetValue(TimeChangedCommandProperty, value);
         }
+
 
 
         public bool Justpassed12 { get; private set; }
@@ -158,7 +176,10 @@ namespace ManageGo
 
                         break;
                 }
+                InternalTimeChange = false;
             };
+            TouchX = null;
+            TouchY = null;
             this.Effects.Add(touchEffect);
         }
 
@@ -262,8 +283,9 @@ namespace ManageGo
 
                     var timeSpan = new TimeSpan(time.Hours, time.Minutes / 15 * 15, 0);
                     DateTime _time = new DateTime(timeSpan.Ticks);
+                    SetHandHour = _time.Hour;
+                    SetHandMinute = _time.Minute;
                     Time = _time;
-                    SetHandToTime = new DateTime(Time.Ticks);
                     var angle_deg = Math.Round(_time.Minute / 15d) * 7.5;
                     var hrs = _time.Hour;//> 12 ? time.Hours - 12 : time.Hours;
                     angle_deg = angle_deg + Math.Round((hrs * hour_degrees_per_iter) - 90);
@@ -334,13 +356,16 @@ namespace ManageGo
             }
             else
             {
-                currentTime = DateTime.Now;
+
                 var angle_deg = Math.Round(currentTime.Minute / 15d) * 7.5;
                 var hrs = currentTime.Hour;//> 12 ? time.Hours - 12 : time.Hours;
                 angle_deg = angle_deg + Math.Round((hrs * hour_degrees_per_iter) - 90);
                 var normalizedTime = new TimeSpan(currentTime.Hour, (currentTime.Minute / 15) * 15, 0);
                 DateTime _time = DateTime.Today.Add(normalizedTime);
+                SetHandHour = _time.Hour;
+                SetHandMinute = _time.Minute;
                 Time = _time;
+
                 var _x = (info.Width / 2.8) * Math.Cos(angle_deg * divFactor);
                 var _y = (info.Height / 2.8) * Math.Sin(angle_deg * divFactor);
                 StartX = _x + halfWidth;
