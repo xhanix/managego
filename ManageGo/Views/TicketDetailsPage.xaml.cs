@@ -9,6 +9,7 @@ namespace ManageGo
     {
         double pageHeight;
         public double PageWidth { get; private set; }
+        public double PermittedEditorWidth { get; private set; }
         bool WasFocused { get; set; }
         readonly double ReplyBoxHeigh = 250;
         public TicketDetailsPage()
@@ -24,9 +25,34 @@ namespace ManageGo
             base.OnSizeAllocated(width, height);
             pageHeight = height;
             PageWidth = width * 0.7;
+            PermittedEditorWidth = PageWidth;
         }
 
-
+        protected override bool OnBackButtonPressed()
+        {
+            var model = (TicketDetailsPageModel)BindingContext;
+            if (model.ShouldShowClock)
+            {
+                model.OnCloseTimePickerTapped.Execute(null);
+                return true;
+            }
+            else if (model.WorkOrderActionSheetIsVisible || model.EventActionSheetIsVisible ||
+                    model.ReplyBoxIsVisible)
+            {
+                model.OnCloseReplyBubbleTapped.Execute(null);
+                return true;
+            }
+            else if (model.PopContentView != null)
+            {
+                model.OnHideDetailsTapped.Execute(null);
+                return true;
+            }
+            else
+            {
+                base.OnBackButtonPressed();
+                return false;
+            }
+        }
 
         void Handle_Focused(object sender, Xamarin.Forms.FocusEventArgs e)
         {

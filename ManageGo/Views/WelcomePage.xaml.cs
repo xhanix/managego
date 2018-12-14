@@ -12,5 +12,10 @@ namespace ManageGo
             InitializeComponent();
             NavigationPage.SetHasNavigationBar(this, false);
         }
+        protected override bool OnBackButtonPressed()
+        {
+            ((WelcomePageModel)BindingContext).OnMasterMenuTapped.Execute(null);
+            return true;
+        }
     }
 }

@@ -12,6 +12,8 @@ namespace ManageGo
         public System.Collections.ObjectModel.ObservableCollection<Comments> Comments { get; set; }
 
         public List<Tags> Tags { get; set; }
+        public List<Tenant> Tenants { get; set; }
+        public List<Categories> Categories { get; set; }
 
     }
 }

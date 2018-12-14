@@ -3,12 +3,19 @@ using FreshMvvm;
 using Xamarin.Forms;
 using Xamarin.Essentials;
 using PropertyChanged;
+using System.Threading.Tasks;
+using Plugin.Permissions;
 
 namespace ManageGo
 {
     public class LoginPageModel : FreshBasePageModel
     {
         public bool IsBiometricsLabelVisible { get; private set; }
+        public bool IsBioLoginVisible { get; private set; }
+        public bool ResetPasswordViewIsVisible { get; private set; }
+        public string BioLoginButtonText { get; private set; }
+        public bool IsLoggingIn { get; private set; }
+        internal event EventHandler<bool> OnSuccessfulLogin;
         public string AuthString { get; private set; }
         [AlsoNotifyFor("LoginButtonBgColor")]
         public string UserEmail { get; set; }
@@ -26,23 +33,84 @@ namespace ManageGo
         public bool IsBiometricsEnabled { get; private set; }
         public LoginPageModel()
         {
-            if (Device.RuntimePlatform == Device.Android)
-                return;
-            var authType = DependencyService.Get<ILocalAuthHelper>().GetLocalAuthType();
-            switch (authType)
+            var userName = Preferences.Get("UserName", "****");
+            userName = userName.Substring(0, Math.Min(userName.Length - 1, 4)) + "****";
+            LocalAuthType authType = DependencyService.Get<ILocalAuthHelper>().GetLocalAuthType();
+            var isBioLoginEnables = Preferences.Get("IsBiometricAuthEnabled", false);
+            if (isBioLoginEnables)
             {
-                case LocalAuthType.None:
-                case LocalAuthType.Passcode:
-                    IsBiometricsLabelVisible = false;
-                    break;
-                case LocalAuthType.FaceId:
-                    IsBiometricsLabelVisible = true;
-                    AuthString = "Turn on Face ID login";
-                    break;
-                case LocalAuthType.TouchId:
-                    IsBiometricsLabelVisible = true;
-                    AuthString = "Turn on Touch ID login";
-                    break;
+                switch (authType)
+                {
+                    case LocalAuthType.None:
+                    case LocalAuthType.Passcode:
+                        IsBiometricsLabelVisible = false;
+                        break;
+                    case LocalAuthType.FaceId:
+                        IsBiometricsLabelVisible = true;
+                        AuthString = "Turn on Face ID login";
+                        break;
+                    case LocalAuthType.TouchId:
+                        IsBiometricsLabelVisible = true;
+                        AuthString = Device.RuntimePlatform == Device.iOS ? "Turn on Touch ID login" : "Turn on fingerprint login";
+                        break;
+                }
+            }
+            else if (authType == LocalAuthType.FaceId || authType == LocalAuthType.TouchId)
+            {
+                if (authType == LocalAuthType.FaceId)
+                {
+                    BioLoginButtonText = "Log in with Face ID";
+                }
+                else
+                    BioLoginButtonText = Device.RuntimePlatform == Device.iOS ? "Log in with Touch ID"
+                                : $"Touch fingerprint sensor to log in as {userName}";
+                IsBioLoginVisible = true;
+                void onSuccess()
+                {
+                    Device.BeginInvokeOnMainThread(async () =>
+                        await FinishLogin(isBiometricLogin: true)
+                    );
+                }
+
+                async void onFailure()
+                {
+                    //do nothing
+                    if (Device.RuntimePlatform == Device.Android)
+                    {
+                        await CoreMethods.DisplayAlert("ManageGo", "Fingerpring authentication failed", "DISMISS");
+                    }
+                }
+
+
+                DependencyService.Get<ILocalAuthHelper>().Authenticate(userName, onSuccess, onFailure);
+            }
+
+        }
+
+        public FreshAwaitCommand OnBioLoginButtonTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((tcs) =>
+                {
+                    if (Device.RuntimePlatform == Device.Android)
+                        return;
+                    void onSuccess()
+                    {
+                        Device.BeginInvokeOnMainThread(async () =>
+                            await FinishLogin(isBiometricLogin: true)
+                        );
+                    }
+
+                    void onFailure()
+                    {
+                        //do nothing
+                    }
+
+                    var userName = Preferences.Get("UserName", "****").Substring(0, 4) + "****";
+                    DependencyService.Get<ILocalAuthHelper>().Authenticate(userName, onSuccess, onFailure);
+                    tcs?.SetResult(true);
+                });
             }
         }
 
@@ -50,10 +118,37 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand((tcs) =>
+                async void execute(System.Threading.Tasks.TaskCompletionSource<bool> tcs)
                 {
+                    await FinishLogin(isBiometricLogin: false);
+                }
+                return new FreshAwaitCommand(execute,
+                        () => !string.IsNullOrWhiteSpace(UserEmail) && !string.IsNullOrWhiteSpace(UserPassword));
+            }
+        }
 
-                }, () => !string.IsNullOrWhiteSpace(UserEmail) && !string.IsNullOrWhiteSpace(UserPassword));
+        private async Task FinishLogin(bool isBiometricLogin)
+        {
+            try
+            {
+                IsLoggingIn = true;
+                await Services.DataAccess.Login(UserEmail, UserPassword);
+                Preferences.Set("IsFirstLogin", false);
+                if (!isBiometricLogin)
+                {
+                    Preferences.Set("IsBiometricAuthEnabled", IsBiometricsEnabled);
+                    Preferences.Set("UserName", UserEmail);
+                    Preferences.Set("Password", UserPassword);
+                }
+                OnSuccessfulLogin?.Invoke(this, true);
+            }
+            catch (Exception ex)
+            {
+                await CoreMethods.DisplayAlert("ManageGo", ex.Message, "DISMISS");
+            }
+            finally
+            {
+                IsLoggingIn = false;
             }
         }
 
@@ -61,16 +156,58 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand(async (tcs) =>
+                void execute(System.Threading.Tasks.TaskCompletionSource<bool> tcs)
+                {
+                    ResetPasswordViewIsVisible = true;
+                    tcs?.SetResult(true);
+                }
+                return new FreshAwaitCommand(execute);
+            }
+        }
+
+        public FreshAwaitCommand OnCancelResetPasswordTapped
+        {
+            get
+            {
+                void execute(System.Threading.Tasks.TaskCompletionSource<bool> tcs)
+                {
+                    ResetPasswordViewIsVisible = false;
+                    tcs?.SetResult(true);
+                }
+                return new FreshAwaitCommand(execute);
+            }
+        }
+
+        public FreshAwaitCommand OnSubmitResetPasswordTapped
+        {
+            get
+            {
+                async void execute(System.Threading.Tasks.TaskCompletionSource<bool> tcs)
                 {
                     if (string.IsNullOrWhiteSpace(UserEmail))
                     {
-                        await CoreMethods.DisplayAlert("ManageGo", "Enter email to reset password", "DISMISS");
+                        await CoreMethods.DisplayAlert("ManageGo", "Enter your email to reset password", "OK");
                         tcs?.SetResult(true);
                         return;
                     }
-                    tcs?.SetResult(true);
-                });
+                    try
+                    {
+                        await Services.DataAccess.ResetPassword(UserEmail);
+                        ResetPasswordViewIsVisible = false;
+                        await CoreMethods.DisplayAlert("ManageGo", "We have sent you an email with your password reset instructions.", "DISMISS");
+                    }
+                    catch (Exception ex)
+                    {
+                        await CoreMethods.DisplayAlert("Something went wrong", ex.Message, "DISMISS");
+
+                    }
+                    finally
+                    {
+                        tcs?.SetResult(true);
+                    }
+
+                }
+                return new FreshAwaitCommand(execute);
             }
         }
 
@@ -85,6 +222,7 @@ namespace ManageGo
                 });
             }
         }
+
 
     }
 }

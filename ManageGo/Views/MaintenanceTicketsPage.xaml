@@ -123,7 +123,9 @@
             </StackLayout>
         </Frame>
     </Grid>
-        <Image Source="plus_1_1.png" RelativeLayout.XConstraint="{ConstraintExpression Type=RelativeToParent,
+        <Image Source="plus_1_1.png" 
+               IsVisible="{Binding AddNewButtonIsVisisble}"
+               RelativeLayout.XConstraint="{ConstraintExpression Type=RelativeToParent,
                              Property=Width, Factor=1, Constant=-90}" 
                RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent,
                              Property=Height, Factor=1, Constant=-90}">

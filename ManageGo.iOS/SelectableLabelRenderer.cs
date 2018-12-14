@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using ManageGo.Controls;
 using ManageGo.iOS;
 using UIKit;
@@ -22,8 +23,9 @@ namespace ManageGo.iOS
             Control.TextContainerInset = UIEdgeInsets.Zero;
             //Control.TextContainer.LineFragmentPadding = 0;
             Control.TextContainer.LineBreakMode = UILineBreakMode.WordWrap;
-
+            Control.TextContainer.WidthTracksTextView = true;
             Control.BackgroundColor = new UIColor(0, 0);
+
 
         }
     }

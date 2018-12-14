@@ -22,7 +22,7 @@
                     <Label Grid.Column="0" Text="Building" TextColor="{Binding FilterBuildingTextColor}" FontSize="Small" />
                     <StackLayout Grid.Column="1">
                         <Label Text="{Binding SelectedBuildingsString}" LineBreakMode="TailTruncation" TextColor="Gray" FontSize="Small"/>
-                        <ListView IsVisible="{Binding FilterBuildingsExpanded}" ItemsSource="{Binding Buildings}" Margin="0,8,0,0" HasUnevenRows="true" SeparatorVisibility="None"  HeightRequest="150" SelectionMode="None">
+                        <controls:NestedListView IsVisible="{Binding FilterBuildingsExpanded}" ItemsSource="{Binding Buildings}" Margin="0,8,0,0" HasUnevenRows="true" SeparatorVisibility="None"  HeightRequest="150" SelectionMode="None">
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <ViewCell>
@@ -36,7 +36,7 @@
                                     </ViewCell>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
-                        </ListView>
+                        </controls:NestedListView>
                     </StackLayout>
                     <Image VerticalOptions="StartAndExpand" Grid.Column="2" HorizontalOptions="EndAndExpand" Source="chevron_right.png" />
                     <Grid.GestureRecognizers>
@@ -100,7 +100,7 @@
                                 <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnExpandFilterTapped}" CommandParameter="Categories" />
                             </Image.GestureRecognizers>
                         </Label>
-                        <ListView IsVisible="{Binding FilterCategoriesExpanded}" ItemsSource="{Binding Categories}" Margin="0,8,0,0" HasUnevenRows="true" SeparatorVisibility="None"  HeightRequest="150" SelectionMode="None">
+                        <controls:NestedListView IsVisible="{Binding FilterCategoriesExpanded}" ItemsSource="{Binding Categories}" Margin="0,8,0,0" HasUnevenRows="true" SeparatorVisibility="None"  HeightRequest="150" SelectionMode="None">
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <ViewCell>
@@ -114,7 +114,7 @@
                                     </ViewCell>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
-                        </ListView>
+                        </controls:NestedListView>
                     </StackLayout>
                     <Image Grid.Column="2" VerticalOptions="StartAndExpand" HorizontalOptions="EndAndExpand" Source="chevron_right.png" >
                     <Image.GestureRecognizers>
@@ -137,7 +137,7 @@
                                 <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnExpandFilterTapped}" CommandParameter="Tags" />
                             </Label.GestureRecognizers>
                         </Label>
-                        <ListView IsVisible="{Binding FilterTagsExpanded}" ItemsSource="{Binding Tags}" Margin="0,8,0,0" HasUnevenRows="true" SeparatorVisibility="None"  HeightRequest="150" SelectionMode="None">
+                        <controls:NestedListView IsVisible="{Binding FilterTagsExpanded}" ItemsSource="{Binding Tags}" Margin="0,8,0,0" HasUnevenRows="true" SeparatorVisibility="None"  HeightRequest="150" SelectionMode="None">
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <ViewCell>
@@ -151,7 +151,7 @@
                                     </ViewCell>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
-                        </ListView>
+                        </controls:NestedListView>
                     </StackLayout>
                     <Image Grid.Column="2" VerticalOptions="StartAndExpand" HorizontalOptions="EndAndExpand" Source="chevron_right.png" >
                     <Image.GestureRecognizers>
@@ -239,7 +239,7 @@
                     <Label Grid.Column="0" Text="Assigned" TextColor="Gray" FontSize="Small" />
                     <StackLayout Grid.Column="1">
                         <Label Text="{Binding SelectedUsersString}" LineBreakMode="TailTruncation" TextColor="Gray" FontSize="Small"/>
-                        <ListView IsVisible="{Binding FilterUsersExpanded}" ItemsSource="{Binding Users}" Margin="0,8,0,0" HasUnevenRows="true" SeparatorVisibility="None"  HeightRequest="150" SelectionMode="None">
+                        <controls:NestedListView IsVisible="{Binding FilterUsersExpanded}" ItemsSource="{Binding Users}" Margin="0,8,0,0" HasUnevenRows="true" SeparatorVisibility="None"  HeightRequest="150" SelectionMode="None">
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <ViewCell>
@@ -253,7 +253,7 @@
                                     </ViewCell>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
-                        </ListView>
+                        </controls:NestedListView>
                     </StackLayout>
                     <Image Grid.Column="2" VerticalOptions="StartAndExpand" HorizontalOptions="EndAndExpand" Source="chevron_right.png" />
                     

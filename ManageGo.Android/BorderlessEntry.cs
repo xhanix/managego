@@ -8,12 +8,12 @@ using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
 
 
-[assembly: ExportRenderer(typeof(SelectableLabel), typeof(SelectableLabelRenderer))]
+[assembly: ExportRenderer(typeof(BorderlessEditor), typeof(BorderlessEditorRenderer))]
 namespace ManageGo.Droid
 {
-    public class SelectableLabelRenderer : EditorRenderer
+    public class BorderlessEditorRenderer : EditorRenderer
     {
-        public SelectableLabelRenderer(Context context) : base(context)
+        public BorderlessEditorRenderer(Context context) : base(context)
         {
         }
 
@@ -25,15 +25,8 @@ namespace ManageGo.Droid
                 return;
 
             Control.Background = null;
-            Control.SetPadding(0, 0, 0, 0);
-            Control.InputType = Android.Text.InputTypes.TextFlagMultiLine;
-            Control.ShowSoftInputOnFocus = false;
-            Control.SetTextIsSelectable(true);
-            Control.KeyListener = null;
             Control.SetSingleLine(false);
             Control.SetBackground(new ColorDrawable(Android.Graphics.Color.Transparent));
-            Control.CustomSelectionActionModeCallback = new CustomSelectionActionModeCallback();
-            Control.CustomInsertionActionModeCallback = new CustomInsertionActionModeCallback();
         }
 
         private class CustomInsertionActionModeCallback : Java.Lang.Object, ActionMode.ICallback
@@ -66,7 +59,7 @@ namespace ManageGo.Droid
                     menu.Clear();
                     menu.Add(0, CopyId, 0, title);
                 }
-                catch (Exception)
+                catch
                 {
                     // ignored
                 }

@@ -15,7 +15,7 @@
     <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
     <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
     <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
-    <TargetFrameworkVersion>v8.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v9.0</TargetFrameworkVersion>
     <AndroidHttpClientHandlerType>Xamarin.Android.Net.AndroidClientHandler</AndroidHttpClientHandlerType>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
@@ -90,6 +90,10 @@
     <Compile Include="CompareSizesByArea.cs" />
     <Compile Include="PreviewCaptureStateCallback.cs" />
     <Compile Include="TouchEffect.cs" />
+    <Compile Include="BorderlessEntry.cs" />
+    <Compile Include="LocalAuthHelper.cs" />
+    <Compile Include="SimpleAuthCallbacks.cs" />
+    <Compile Include="NestedListView.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -273,6 +277,13 @@
     <AndroidResource Include="Resources\drawable-hdpi\am_inactive.png" />
     <AndroidResource Include="Resources\drawable-hdpi\pm_inactive.png" />
     <AndroidResource Include="Resources\drawable-hdpi\pm_active.png" />
+    <AndroidResource Include="Resources\drawable\icon.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\icon.png" />
+    <AndroidResource Include="Resources\drawable\splash_screen.xml" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\logo_simple.png" />
+    <AndroidResource Include="Resources\drawable\fingerprint.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\radio_selected.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\radio_unselected.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\drawable\" />

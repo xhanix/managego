@@ -1,3 +1,4 @@
+using Android.Graphics;
 using SkiaSharp;
 using SkiaSharp.Views.Android;
 
@@ -20,11 +21,13 @@ namespace CustomCalendar.Droid
             _controlDelegate = controlDelegate;
         }
 
-        protected override void OnDraw(SKSurface surface, SKImageInfo info)
+        protected override void OnPaintSurface(SKPaintSurfaceEventArgs e)
         {
-            base.OnDraw(surface, info);
-            _controlDelegate.Draw(surface, info);
+            base.OnPaintSurface(e);
+            _controlDelegate.Draw(e.Surface, e.Info);
         }
+
+
     }
 
 }

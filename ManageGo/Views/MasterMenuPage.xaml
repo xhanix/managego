@@ -28,27 +28,27 @@
 
         <ScrollView>
             <StackLayout Padding="24,8,0,0" Spacing="0">
-                <Button Text="Home" Command="{Binding OnHomeTapped}" FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
+                <Button Text="Home                     " Command="{Binding OnHomeTapped}" FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
                 <BoxView />
-                <Button Text="Payments" FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
+                <Button Text="Payments                 " FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
                 <BoxView />
-                <Button Text="Bank transactions" FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
+                <Button Text="Bank transactions        " FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
                 <BoxView />
-                <Button Text="Maintenance" Command="{Binding OnMaintenanceTapped}" FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
+                <Button Text="Maintenance              " Command="{Binding OnMaintenanceTapped}" FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
                 <BoxView />
-                <Button Text="Calendar" FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
+                <Button Text="Calendar                 " FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
                 <BoxView />
-                <Button Text="Buildings" FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
+                <Button Text="Buildings                " FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
                 <BoxView />
-                <Button Text="Tenants" FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
+                <Button Text="Tenants                  " FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
                 <BoxView />
-                <Button Text="Notifications" FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
+                <Button Text="Notifications            " FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
                 <BoxView />
-                <Button Text="Settings" FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
+                <Button Text="Settings                 " FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
                 <BoxView />
-                <Button Text="Feedback" FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
+                <Button Text="Feedback                 " FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
                 <BoxView />
-                <Button Text="Logout" FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
+                <Button Text="Logout                   " Command="{Binding OnLogoutTapped}" FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
                 <BoxView />
                 <Label Text="Contact us" FontAttributes="Bold" FontSize="Small" Margin="0,8,0,0" />
                 <StackLayout Orientation="Horizontal" Margin="0,8,0,0">

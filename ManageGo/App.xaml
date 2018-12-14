@@ -11,7 +11,7 @@
             <Color x:Key="Grey-Mid-2">#949494</Color>
             <Color x:Key="Grey-Dark-1">#323232</Color>
             <Color x:Key="Off-White">#F9FAFB</Color>
-
+            <Color x:Key="Yellow">#e0a031</Color>
             <Color x:Key="Green">#55C433</Color>
             <Color x:Key="Red">#E13D40</Color>
             <Style x:Key="Regular-Text" TargetType="Label">

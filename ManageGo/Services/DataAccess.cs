@@ -16,16 +16,19 @@ namespace ManageGo.Services
         internal static string AccessToken { get; private set; }
         private static DateTimeOffset TokenExpiry { get; set; } = DateTimeOffset.FromUnixTimeSeconds(0);
 
-        public static async Task<object> Login()
+        public static async Task<object> Login(string userName = null, string password = null)
         {
+            //todo remove this
+            userName = "pmc@mobile.test";
+            password = "111111";
+
             Dictionary<string, string> credentials = new Dictionary<string, string>
             {
-                { "login", "pmc@mobile.test" },
-                { "password", "111111" }
+                { "login", userName },
+                { "password", password }
             };
             var content = new FormUrlEncodedContent(credentials);
             var response = await client.PostAsync(BaseUrl + APIpaths.authorize.ToString(), content);
-
             var responseString = await response.Content.ReadAsStringAsync();
             //create jobject from response
             var responseObject = JObject.Parse(responseString);
@@ -73,6 +76,17 @@ namespace ManageGo.Services
             }
             Console.WriteLine(responseString);
             return responseString;
+        }
+
+        public static async Task ResetPassword(string userName)
+        {
+            Dictionary<string, string> credentials = new Dictionary<string, string>
+            {
+                { "PMCUserEmailAddress", userName }
+            };
+            var content = new FormUrlEncodedContent(credentials);
+            var response = await client.PostAsync(BaseUrl + APIpaths.authorize.ToString(), content);
+            var responseString = await response.Content.ReadAsStringAsync();
         }
 
         #region MAINTENANCE OBJECT - CATEGORIES

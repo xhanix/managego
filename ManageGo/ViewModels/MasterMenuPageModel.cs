@@ -7,6 +7,7 @@ namespace ManageGo
     public class MasterMenuPageModel : FreshBasePageModel
     {
         public bool HamburgerIsVisible { get; set; }
+        internal event EventHandler<bool> OnLogout;
         public MasterMenuPageModel()
         {
             HamburgerIsVisible = true;
@@ -55,11 +56,23 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand((tcs) =>
+                async void execute(System.Threading.Tasks.TaskCompletionSource<bool> tcs)
                 {
-                    App.MasterDetailNav.SwitchSelectedRootPageModel<MaintenanceTicketsPageModel>();
+
+                    if (App.MasterDetailNav.Detail is NavigationPage
+                    && ((NavigationPage)App.MasterDetailNav.Detail).CurrentPage.GetModel() is MaintenanceTicketsPageModel model)
+                    {
+                        App.MasterDetailNav.IsPresented = false;
+                        model.NumberOfAppliedFilters = " ";
+                        model.DateRange = null;
+                        model.FiltersDictionary = null;
+                        await model.LoadData(true, true);
+                    }
+                    else
+                        await App.MasterDetailNav.SwitchSelectedRootPageModel<MaintenanceTicketsPageModel>();
                     tcs?.SetResult(true);
-                });
+                }
+                return new FreshAwaitCommand(execute);
             }
         }
         public FreshAwaitCommand OnHomeTapped
@@ -70,6 +83,16 @@ namespace ManageGo
                 {
                     App.MasterDetailNav.SwitchSelectedRootPageModel<WelcomePageModel>();
                     tcs?.SetResult(true);
+                });
+            }
+        }
+        public FreshAwaitCommand OnLogoutTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((tcs) =>
+                {
+                    OnLogout?.Invoke(this, true);
                 });
             }
         }

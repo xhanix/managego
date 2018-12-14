@@ -19,10 +19,19 @@ namespace ManageGo
         readonly string filterSelectedColor = "#8ad96b";
         readonly string filterDefaultColor = "#aeb0b3";
         public View PopContentView { get; private set; }
+        [AlsoNotifyFor("AddNewButtonIsVisisble")]
         bool CalendarIsShown { get; set; }
+        [AlsoNotifyFor("AddNewButtonIsVisisble")]
         bool FilterSelectViewIsShown { get; set; }
         public ObservableCollection<MaintenanceTicket> FetchedTickets { get; private set; }
         public bool ListIsEnabled { get; set; } = false;
+        public bool AddNewButtonIsVisisble
+        {
+            get
+            {
+                return !(FilterSelectViewIsShown || CalendarIsShown);
+            }
+        }
         public List<Building> Buildings { get; private set; }
         [AlsoNotifyFor("SelectedCategoriesString")]
         public List<Categories> Categories { get; private set; }
@@ -40,7 +49,7 @@ namespace ManageGo
         [AlsoNotifyFor("ClosedTicketFilterCheckBoxImage", "SelectedStatusFlagsString", "FilterStatusTextColor")]
         public bool SelectedClosedTicketsFilter { get; private set; }
         public string FilterKeywords { get; set; }
-        public string NumberOfAppliedFilters { get; private set; } = " ";
+        public string NumberOfAppliedFilters { get; internal set; } = " ";
         int LastLoadedItemId { get; set; }
         int CurrentListPage { get; set; } = 1;
         bool CanGetMorePages { get; set; }
@@ -199,7 +208,7 @@ namespace ManageGo
             }
         }
         bool HasCalendarFilter { get; set; }
-        Dictionary<string, object> FiltersDictionary { get; set; }
+        internal Dictionary<string, object> FiltersDictionary { get; set; }
         [AlsoNotifyFor("FilterDueDateString", "FilterDueDateColor")]
         public DateRange FilterDueDate { get; set; }
 
@@ -222,7 +231,7 @@ namespace ManageGo
             }
         }
 
-        DateRange DateRange
+        internal DateRange DateRange
         {
             get
             {

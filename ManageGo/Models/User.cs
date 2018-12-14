@@ -12,16 +12,12 @@ namespace ManageGo
         public string UserFirstName { get; set; }
         public string UserLastName { get; set; }
         public string UserFullName => $"{UserFirstName} {UserLastName}".Trim();
-        [JsonIgnore]
-        public string UserEmailAddress { get; set; }
-
-
         public List<int> Categories { get; set; }
 
-
+        [JsonIgnore]
+        public string UserEmailAddress { get; set; }
         [JsonIgnore, AlsoNotifyFor("CheckBoxImage")]
         public bool IsSelected { get; set; }
-
         [JsonIgnore]
         public string CheckBoxImage
         {

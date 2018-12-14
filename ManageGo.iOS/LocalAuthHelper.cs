@@ -15,7 +15,6 @@ namespace ManageGo.iOS
         public string GetLocalAuthIcon()
         {
             var localAuthType = GetLocalAuthType();
-
             switch (localAuthType)
             {
                 case LocalAuthType.Passcode:
@@ -48,7 +47,7 @@ namespace ManageGo.iOS
 
         public bool IsLocalAuthAvailable => GetLocalAuthType() != LocalAuthType.None;
 
-        public void Authenticate(Action onSuccess, Action onFailure)
+        public void Authenticate(string userId, Action onSuccess, Action onFailure)
         {
             var context = new LAContext();
             if (context.CanEvaluatePolicy(LAPolicy.DeviceOwnerAuthenticationWithBiometrics, out NSError AuthError)
@@ -66,7 +65,7 @@ namespace ManageGo.iOS
                     }
                 });
 
-                context.EvaluatePolicy(LAPolicy.DeviceOwnerAuthentication, "PleaseAuthenticateToProceed", replyHandler);
+                context.EvaluatePolicy(LAPolicy.DeviceOwnerAuthentication, $"Sign in with Online Id for {userId}", replyHandler);
             }
         }
 
@@ -81,13 +80,10 @@ namespace ManageGo.iOS
                     {
                         return LocalAuthType.FaceId;
                     }
-
                     return LocalAuthType.TouchId;
                 }
-
                 return LocalAuthType.Passcode;
             }
-
             return LocalAuthType.None;
         }
 

@@ -15,6 +15,7 @@ namespace ManageGo
 
             Control.Layer.BorderWidth = 0;
             Control.BorderStyle = UITextBorderStyle.None;
+
         }
 
     }

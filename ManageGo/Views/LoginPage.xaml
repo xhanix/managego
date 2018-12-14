@@ -5,9 +5,12 @@
              BackgroundColor="#f9fafb"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
              x:Class="ManageGo.LoginPage">
-    
-   <StackLayout Spacing="0">
-        
+   <RelativeLayout>
+   <StackLayout 
+            RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width,Factor=1}"
+            RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height,Factor=1}"
+            Spacing="0"
+                >
         <StackLayout Orientation="Horizontal" Padding="8" HeightRequest="42">
             <Image Source="logo.png"  VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"/>
         </StackLayout>
@@ -21,9 +24,15 @@
                 <Entry Placeholder="Password" Text="{Binding UserPassword}" />
                 <StackLayout IsVisible="{Binding IsBiometricsLabelVisible}" Orientation="Horizontal" Padding="17,22,17,22" HorizontalOptions="CenterAndExpand">
                     <Image Source="{Binding AuthCheckBoxIcon}" VerticalOptions="CenterAndExpand"/>
-                    <Label Text="{Binding AuthString}" VerticalOptions="Center" TextColor="{x:StaticResource Grey-Mid-1}" FontSize="Small" />
+                    <Label Text="{Binding AuthString}" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{x:StaticResource Grey-Mid-1}" FontSize="Small" />
                     <StackLayout.GestureRecognizers>
                         <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnEnableBioAuthTapped}" />
+                    </StackLayout.GestureRecognizers>
+                </StackLayout>
+                 <StackLayout IsVisible="{Binding IsBioLoginVisible}" Orientation="Horizontal" Padding="17,22,17,22" HorizontalOptions="CenterAndExpand">
+                    <Label Text="{Binding BioLoginButtonText}" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{x:StaticResource Grey-Mid-1}" FontSize="Small" />
+                    <StackLayout.GestureRecognizers>
+                        <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnBioLoginButtonTapped}" />
                     </StackLayout.GestureRecognizers>
                 </StackLayout>
                 <Button Command="{Binding OnLoginButtonTapped}" TextColor="White" Margin="0,17,0,0" Text="Log in" FontAttributes="Bold" BackgroundColor="{Binding LoginButtonBgColor}" CornerRadius="4" Padding="4"/>
@@ -41,4 +50,41 @@
             </StackLayout>
         </ScrollView>
         </StackLayout>
+        <Frame HasShadow="false" 
+               x:Name="WaitFrame"
+               IsVisible="{Binding IsLoggingIn}"
+                BackgroundColor="#CC000000" 
+               CornerRadius="12"
+               RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height,Factor=0.4}"
+               RelativeLayout.XConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width,Factor=0.25}"
+               RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height,Factor=0.2}"
+               RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width, Factor=0.5}">
+            <StackLayout VerticalOptions="CenterAndExpand">
+                <ActivityIndicator Color="White" IsRunning="{Binding IsVisible,Source={x:Reference WaitFrame}}" />
+                <Label Text="Checking credentials" HorizontalOptions="CenterAndExpand" TextColor="White" FontSize="Micro"/>
+            </StackLayout>
+        </Frame>
+        <Frame HasShadow="false" 
+               IsVisible="{Binding ResetPasswordViewIsVisible}"
+                BackgroundColor="#99000000" 
+               CornerRadius="0"
+               RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height,Factor=0}"
+               RelativeLayout.XConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width,Factor=0}"
+               RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height,Factor=1}"
+               RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width, Factor=1}">
+            <StackLayout VerticalOptions="CenterAndExpand">
+                <Frame HasShadow="false" BackgroundColor="White" HorizontalOptions="CenterAndExpand">
+                    <StackLayout>
+                        <Label Text="Email address:" TextColor="{x:StaticResource Grey-Mid-1}" FontSize="Small" HorizontalOptions="CenterAndExpand"/>
+                        <Entry Placeholder="Enter your email" WidthRequest="250" Text="{Binding UserEmail}" />
+                        <Button Command="{Binding OnSubmitResetPasswordTapped}" BackgroundColor="{x:StaticResource Primary}" WidthRequest="150" HorizontalOptions="CenterAndExpand" Text="Reset Password" FontSize="Small" Margin="0,12,0,0" TextColor="White" />
+                         <Button BackgroundColor="Transparent" WidthRequest="150" HorizontalOptions="CenterAndExpand" Text="Cancel" Command="{Binding OnCancelResetPasswordTapped}" Margin="0,4,0,0" FontSize="Small" TextColor="{StaticResource Primary}" />
+
+                    </StackLayout>
+                </Frame>
+            </StackLayout>
+        </Frame>
+      
+        </RelativeLayout>
+    
 </ContentPage>

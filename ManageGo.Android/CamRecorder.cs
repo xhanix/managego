@@ -381,7 +381,7 @@ namespace ManageGo.Droid
                     mediaRecorder = null;
                 }
             }
-            catch (InterruptedException e)
+            catch (InterruptedException)
             {
                 throw new RuntimeException("Interrupted while trying to lock camera closing.");
             }

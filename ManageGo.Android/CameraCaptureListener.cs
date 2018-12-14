@@ -7,7 +7,6 @@ namespace ManageGo.Droid
 {
     public class CameraCaptureListener : CameraCaptureSession.CaptureCallback
     {
-        public event EventHandler PhotoComplete;
         CamRecorder owner;
         public CameraCaptureListener(CamRecorder owner)
         {

@@ -23,10 +23,49 @@ namespace ManageGo
         public View PopContentView { get; private set; }
         public DateTime OldTime { get; private set; }
         public bool ShouldShowClock { get; private set; }
+        [AlsoNotifyFor("PriorityOptionsRowIcon")]
+        public bool PriorityOptionsVisible { get; private set; }
+        [AlsoNotifyFor("CategoryOptionsRowIcon")]
+        public bool CategoryOptionsVisible { get; private set; }
+        [AlsoNotifyFor("TagOptionsRowIcon")]
+        public bool TagOptionsVisible { get; private set; }
+        public string CategoryLabelText { get; private set; }
+        public string CategoryLabelColor { get; private set; }
+        public string TagLabelText { get; private set; }
+        public string TagLabelColor { get; private set; }
+        public string DueDate { get; private set; }
+        public List<Categories> Categories { get; private set; }
+        public List<Tags> Tags { get; private set; }
+
+        public string PriorityOptionsRowIcon
+        {
+            get { return PriorityOptionsVisible ? "chevron_down.png" : "chevron_right.png"; }
+        }
+        public string CategoryOptionsRowIcon
+        {
+            get { return CategoryOptionsVisible ? "chevron_down.png" : "chevron_right.png"; }
+        }
+        public string TagOptionsRowIcon
+        {
+            get { return TagOptionsVisible ? "chevron_down.png" : "chevron_right.png"; }
+        }
         public bool SetToTime { get; private set; }
         public bool ListIsEnabled { get; private set; } = true;
         public string TicketAddress { get; private set; }
         public string TicketTitleText { get; private set; }
+        public string PriorityLabelTextColor
+        {
+            get
+            {
+                return PriorityLabelText.ToLower() == "low" ? "#949494" :
+                    PriorityLabelText.ToLower() == "medium" ? "#e0a031" : "#E13D40";
+            }
+        }
+        [AlsoNotifyFor("PriorityLabelTextColor")]
+        public string PriorityLabelText { get; private set; }
+        public string LowPriorityRadioIcon { get { return PriorityLabelText.ToLower() == "low" ? "radio_selected.png" : "radio_unselected.png"; } }
+        public string MediumPriorityRadioIcon { get { return PriorityLabelText.ToLower() == "medium" ? "radio_selected.png" : "radio_unselected.png"; } }
+        public string HighPriorityRadioIcon { get { return PriorityLabelText.ToLower() == "high" ? "radio_selected.png" : "radio_unselected.png"; } }
         public bool HasPet { get; private set; }
         public bool HasAccess { get; private set; }
         public bool HasWorkOrder { get; private set; }
@@ -126,15 +165,14 @@ namespace ManageGo
             FilesToUpload = new List<byte[]>();
             CurrentReplyAttachments = new ObservableCollection<File>();
             Data = initData as Dictionary<string, object>;
-            //need to disable the master-detail nav so the clock functions properly
-            App.MasterDetailNav.IsGestureEnabled = false;
+            //// need to disable the master-detail nav so the clock functions properly
+            //// App.MasterDetailNav.IsGestureEnabled = false;
             var timeNow = DateTime.Now;
             var normalizedTime = new DateTime(timeNow.Year, timeNow.Month, timeNow.Day, timeNow.Hour,
             (timeNow.Minute / 15) * 15, 0);
             FromTime = normalizedTime.ToString("h:mm tt");
             ToTime = normalizedTime.AddHours(1).ToString("h:mm tt");
-            if (timeNow.Hour < 12)
-                PickedTimeIsAM = true;
+            PickedTimeIsAM = timeNow.Hour < 12;
         }
 
 
@@ -152,6 +190,88 @@ namespace ManageGo
                 var file = new File { Content = bytes, Name = Path.GetFileName(path) };
                 ReplyAttachments.Add(file);
                 CurrentReplyAttachments.Add(file);
+            }
+        }
+        public FreshAwaitCommand OnHideDetailsTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((tcs) =>
+                {
+                    PopContentView = null;
+                    ReplyButtonIsVisible = false;
+                    tcs?.SetResult(true);
+                });
+            }
+        }
+        public FreshAwaitCommand OnCloseTicketButtonTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((tcs) =>
+                {
+                    //todo Close ticket
+                });
+            }
+        }
+        public FreshAwaitCommand OnSaveEditsTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((tcs) =>
+                {
+                    //todo save ticket detail edits
+                    PopContentView = null;
+                    ReplyButtonIsVisible = true;
+                });
+            }
+        }
+        public FreshAwaitCommand OnshowDetailsTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((tcs) =>
+                {
+                    PopContentView = new Views.EditTicketDetailsView(this);
+                    ReplyButtonIsVisible = false;
+                    OnCloseReplyBubbleTapped.Execute(null);
+                    tcs?.SetResult(true);
+                });
+            }
+        }
+        public FreshAwaitCommand OnShowPriorityOptionsTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((tcs) =>
+                {
+                    PriorityOptionsVisible = !PriorityOptionsVisible;
+                    tcs?.SetResult(true);
+                });
+            }
+        }
+
+        public FreshAwaitCommand OnShowCategoryOptionsTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((tcs) =>
+                {
+                    CategoryOptionsVisible = !CategoryOptionsVisible;
+                    tcs?.SetResult(true);
+                });
+            }
+        }
+
+        public FreshAwaitCommand OnShowTagOptionsTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((tcs) =>
+                {
+                    TagOptionsVisible = !TagOptionsVisible;
+                    tcs?.SetResult(true);
+                });
             }
         }
 
@@ -183,7 +303,7 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand(async (param, tcs) =>
+                async void execute(object param, TaskCompletionSource<bool> tcs)
                 {
                     var file = param as File;
 
@@ -191,7 +311,7 @@ namespace ManageGo
                     var dic = new Dictionary<string, object> {
                         {"TicketID", TicketId},
                         {"FileID", file.ID}
-                    };
+                                                                                               };
 
                     IsDownloadingFile = true;
                     var fileData = await Services.DataAccess.GetCommentFile(dic);
@@ -218,7 +338,8 @@ namespace ManageGo
                             DependencyService.Get<IShareFile>().ShareLocalFile(filePath, file.Name);
                     }
                     tcs?.SetResult(true);
-                });
+                }
+                return new FreshAwaitCommand(execute);
             }
         }
 
@@ -226,11 +347,12 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand(async (tcs) =>
+                async void execute(TaskCompletionSource<bool> tcs)
                 {
                     ReplyIsInternal = true;
                     await SendComment(commentType: CommentTypes.Internal, tcs: tcs);
-                });
+                }
+                return new FreshAwaitCommand(execute);
             }
         }
 
@@ -238,16 +360,19 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand(async (tcs) =>
+                async void execute(TaskCompletionSource<bool> tcs)
                 {
                     ReplyIsInternal = false;
                     await SendComment(commentType: CommentTypes.Management, tcs: tcs);
-                });
+                }
+                return new FreshAwaitCommand(execute);
             }
         }
 
         async Task SendComment(CommentTypes commentType, TaskCompletionSource<bool> tcs)
         {
+            if (string.IsNullOrWhiteSpace(ReplyTextBody))
+                await CoreMethods.DisplayAlert("ManageGo", "Please enter reply text", "OK");
             try
             {
                 var dic = new Dictionary<string, object> {
@@ -317,7 +442,7 @@ namespace ManageGo
                     SendOptionsPupupIsVisible = !SendOptionsPupupIsVisible;
                     tcs?.SetResult(true);
 
-                });
+                }, () => !string.IsNullOrWhiteSpace(ReplyTextBody));
             }
         }
 
@@ -350,11 +475,26 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand(async (tcs) =>
+                async void execute(TaskCompletionSource<bool> tcs)
                 {
-                    await CoreMethods.PopPageModel(false);
+                    if (ShouldShowClock)
+                    {
+                        OnCloseTimePickerTapped.Execute(null);
+                    }
+                    else if (WorkOrderActionSheetIsVisible || EventActionSheetIsVisible ||
+                            ReplyBoxIsVisible)
+                    {
+                        OnCloseReplyBubbleTapped.Execute(null);
+                    }
+                    else if (PopContentView != null)
+                    {
+                        OnHideDetailsTapped.Execute(null);
+                    }
+                    else
+                        await CoreMethods.PopPageModel(false);
                     tcs?.SetResult(true);
-                });
+                }
+                return new FreshAwaitCommand(execute);
             }
         }
 
@@ -373,11 +513,29 @@ namespace ManageGo
             }
         }
 
+        public FreshAwaitCommand OnSwitchPriorityTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((par, tcs) =>
+                {
+                    string text = (string)par;
+                    if (text == "low")
+                        PriorityLabelText = "Low";
+                    else if (text == "medium")
+                        PriorityLabelText = "Medium";
+                    else
+                        PriorityLabelText = "High";
+                    tcs?.SetResult(true);
+                });
+            }
+        }
+
         public FreshAwaitCommand OnSendEventButtonTapped
         {
             get
             {
-                return new FreshAwaitCommand(async (tcs) =>
+                async void execute(TaskCompletionSource<bool> tcs)
                 {
                     var _timeFrom = DateTime.Parse(FromTime);
                     var _timeTo = DateTime.Parse(ToTime);
@@ -416,7 +574,7 @@ namespace ManageGo
                         {"TimeTo", _timeTo.ToString("HHmm")},
                         {"SendToUsers", Users.Where(t=>t.IsSelected).Select(t=>t.UserID)},
                         {"SendToExternalContacts", ExternalContacts.Where(t=>t.IsSelected).Select(t=>t.ExternalID) },
-                    };
+                                                                                                 };
                     WorkOrderActionSheetIsVisible = false;
                     EventActionSheetIsVisible = false;
                     SendOptionsPupupIsVisible = false;
@@ -455,7 +613,8 @@ namespace ManageGo
                     {
                         tcs?.SetResult(true);
                     }
-                });
+                }
+                return new FreshAwaitCommand(execute);
             }
         }
 
@@ -463,11 +622,11 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand(async (tcs) =>
+                async void execute(TaskCompletionSource<bool> tcs)
                 {
                     //send the created work order
                     if (string.IsNullOrWhiteSpace(WorkOrderSummary) ||
-                        string.IsNullOrWhiteSpace(WorkOrderDetail))
+                                                                                                         string.IsNullOrWhiteSpace(WorkOrderDetail))
                     {
                         await CoreMethods.DisplayAlert("ManageGo", "Please fill out the work order details before sending", "DISMISS");
                         tcs?.SetResult(true);
@@ -481,7 +640,7 @@ namespace ManageGo
                         {"SendToUsers", Users.Where(t=>t.IsSelected).Select(t=>t.UserID)},
                         {"SendToExternalContacts", ExternalContacts.Where(t=>t.IsSelected).Select(t=>t.ExternalID) },
                         {"SendToEmail", WorkOrderSendEmail}
-                    };
+                                                                                                     };
 
 
                     WorkOrderActionSheetIsVisible = false;
@@ -523,7 +682,8 @@ namespace ManageGo
                         tcs?.SetResult(true);
                     }
 
-                });
+                }
+                return new FreshAwaitCommand(execute);
             }
         }
 
@@ -531,7 +691,7 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand(async (tcs) =>
+                async void execute(TaskCompletionSource<bool> tcs)
                 {
                     AttachActionSheetIsVisible = false;
                     var result = await Services.PhotoHelper.AddNewPhoto(fromAlbum: true);
@@ -542,7 +702,8 @@ namespace ManageGo
                         CurrentReplyAttachments.Add(file);
                     }
                     tcs?.SetResult(true);
-                });
+                }
+                return new FreshAwaitCommand(execute);
             }
         }
 
@@ -550,28 +711,29 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand(async (tcs) =>
-               {
-                   try
-                   {
-                       AttachActionSheetIsVisible = false;
-                       FileData fileData = await CrossFilePicker.Current.PickFile();
-                       if (fileData == null)
-                           return; // user canceled file picking
+                async void execute(TaskCompletionSource<bool> tcs)
+                {
+                    try
+                    {
+                        AttachActionSheetIsVisible = false;
+                        FileData fileData = await CrossFilePicker.Current.PickFile();
+                        if (fileData == null)
+                            return; // user canceled file picking
 
-                       string fileName = fileData.FileName;
-                       //string contents = System.Text.Encoding.UTF8.GetString(fileData.DataArray);
-                       var file = new File { Content = fileData.DataArray, Name = fileName };
-                       ReplyAttachments.Add(file);
-                       CurrentReplyAttachments.Add(file);
+                        string fileName = fileData.FileName;
+                        //string contents = System.Text.Encoding.UTF8.GetString(fileData.DataArray);
+                        var file = new File { Content = fileData.DataArray, Name = fileName };
+                        ReplyAttachments.Add(file);
+                        CurrentReplyAttachments.Add(file);
 
-                   }
-                   catch (Exception ex)
-                   {
-                       await CoreMethods.DisplayAlert("Something went wrong", ex.Message, "DISMISS");
-                   }
-                   tcs?.SetResult(true);
-               });
+                    }
+                    catch (Exception ex)
+                    {
+                        await CoreMethods.DisplayAlert("Something went wrong", ex.Message, "DISMISS");
+                    }
+                    tcs?.SetResult(true);
+                }
+                return new FreshAwaitCommand(execute);
             }
         }
 
@@ -582,8 +744,54 @@ namespace ManageGo
                 return;
             if (Data.TryGetValue("TicketDetails", out object ticketDetails))
             {
-                TicketDetails = (TicketDetails)ticketDetails;
-                Comments = new ObservableCollection<Comments>(TicketDetails.Comments);
+                TicketDetails = ticketDetails as TicketDetails;
+                if (TicketDetails != null)
+                {
+                    Comments = new ObservableCollection<Comments>(TicketDetails.Comments);
+                    PriorityLabelText = TicketDetails.Priority;
+                    // Categories = TicketDetails.Categories;
+                    Categories = App.Categories;
+                    Tags = App.Tags;
+                    if (TicketDetails.Categories != null && TicketDetails.Categories.Any())
+                    {
+                        CategoryLabelText = TicketDetails.Categories.First().CategoryName;
+                        CategoryLabelColor = "#" + TicketDetails.Categories.First().Color;
+                        foreach (var cat in Categories)
+                        {
+                            if (TicketDetails.Categories.Any(c => c.CategoryName == cat.CategoryName))
+                            {
+                                cat.IsSelectedForFiltering = true;
+                            }
+                            else
+                            {
+                                cat.IsSelectedForFiltering = false;
+                            }
+                        }
+                    }
+                    if (TicketDetails.Tags != null && TicketDetails.Tags.Any())
+                    {
+                        TagLabelText = TicketDetails.Tags.First().TagName;
+                        TagLabelColor = "#" + TicketDetails.Tags.First().Color;
+                        foreach (var tag in Tags)
+                        {
+                            if (TicketDetails.Tags.Any(c => c.TagName == tag.TagName))
+                            {
+                                tag.IsSelectedForFiltering = true;
+                            }
+                            else
+                            {
+                                tag.IsSelectedForFiltering = false;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    Categories = new List<Categories>();
+                    PriorityLabelText = "Not Available";
+                    Comments = new ObservableCollection<Comments>();
+                }
+
             }
             if (Data.TryGetValue("Ticket", out object _ticket))
             {
@@ -593,6 +801,27 @@ namespace ManageGo
                 HasWorkOrder = ticket.HasWorkorder;
                 HasEvent = ticket.HasEvent;
                 TicketId = ticket.TicketId;
+                Users = App.Users;
+                if (ticket.Assigned.Any())
+                {
+                    foreach (var user in Users)
+                    {
+                        if (ticket.Assigned.Contains(user.UserID))
+                        {
+                            user.IsSelected = true;
+                        }
+                        else
+                        {
+                            user.IsSelected = false;
+                        }
+                    }
+                }
+
+
+                var tenantName = ticket.Tenant.TenantFirstName + " " + ticket.Tenant.TenantLastName;
+                TenantName = string.IsNullOrWhiteSpace(tenantName) ? "Not Available" : tenantName;
+                DueDate = ticket.DueDate;
+
             }
 
             if (Data.TryGetValue("TicketNumber", out object ticketNumber))
@@ -603,7 +832,7 @@ namespace ManageGo
             if (Data.TryGetValue("TicketTitleText", out object subject))
                 TicketTitleText = (string)subject;
 
-            Users = App.Users;
+
             ExternalContacts = App.ExternalContacts;
         }
 
@@ -613,12 +842,13 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand(async (tcs) =>
+                async void execute(TaskCompletionSource<bool> tcs)
                 {
                     AttachActionSheetIsVisible = false;
                     await CoreMethods.PushPageModel<TakeVideoPageModel>(true, true, false);
                     tcs?.SetResult(true);
-                });
+                }
+                return new FreshAwaitCommand(execute);
             }
         }
 
@@ -725,7 +955,6 @@ namespace ManageGo
                         PickedTime = new DateTime(_oldTime.Ticks);
                     else if (SetFromTime)
                         PickedTime = new DateTime(_oldTime.Ticks);
-
                     RaisePropertyChanged("PickedTime");
                     ShouldShowClock = false;
                     tcs?.SetResult(true);
@@ -810,6 +1039,7 @@ namespace ManageGo
         public bool SetFromTime { get; private set; }
         public bool SwitchingAmPam { get; private set; }
         public bool OldTimeIsPm { get; private set; }
+        public string TenantName { get; private set; }
     }
 }
 
