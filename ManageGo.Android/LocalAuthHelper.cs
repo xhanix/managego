@@ -1,26 +1,36 @@
 ﻿using System;
-using Android.Hardware.Fingerprints;
 using Android.Support.V4.Hardware.Fingerprint;
 using ManageGo.Droid;
 using Xamarin.Forms;
 using Plugin.CurrentActivity;
-using Android.Support.V4.Content;
-using Android;
-using Android.Content.PM;
-using Android.Support.V4.OS;
-using Javax.Crypto;
 using Android.Security.Keystore;
+using Android.Hardware.Biometrics;
+using Android.Runtime;
+using Java.Lang;
+using Android.OS;
+using Android.Content;
 
 [assembly: Dependency(typeof(LocalAuthHelper))]
 namespace ManageGo.Droid
 {
     public class LocalAuthHelper : ILocalAuthHelper
     {
-        private CancellationSignal _cancellationSignal;
+
+        private CancellationSignal newCancelSignal;
+        private Android.Support.V4.OS.CancellationSignal cancellationSignal;
+        private BiometricPrompt prompt;
+        public Action OnSuccess;
+        public Action OnFailure;
         static readonly string KEY_ALGORITHM = KeyProperties.KeyAlgorithmAes;
         static readonly string BLOCK_MODE = KeyProperties.BlockModeCbc;
         static readonly string ENCRYPTION_PADDING = KeyProperties.EncryptionPaddingPkcs7;
-        public event EventHandler AuthenticationSucceded;
+        public bool IsBiometricPromptEnabled
+        {
+            get
+            {
+                return (Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.P);
+            }
+        }
         static readonly string TRANSFORMATION = KEY_ALGORITHM + "/" +
                                                 BLOCK_MODE + "/" +
                                                 ENCRYPTION_PADDING;
@@ -28,51 +38,92 @@ namespace ManageGo.Droid
 
         public LocalAuthHelper()
         {
-            Permission permissionResult = ContextCompat.CheckSelfPermission(CrossCurrentActivity.Current.AppContext,
-                                                                                  Manifest.Permission.UseBiometric);
-            if (permissionResult == Permission.Granted)
-            {
-                FingerprintManager = FingerprintManagerCompat.From(context: CrossCurrentActivity.Current.AppContext);
-            }
+
+            FingerprintManager = FingerprintManagerCompat.From(context: CrossCurrentActivity.Current.AppContext);
+
+
         }
 
-        public void CancelAuthentication()
+        internal void CancelAuthentication()
         {
-            _cancellationSignal.Cancel();
-            _cancellationSignal = null;
+            cancellationSignal?.Cancel();
+            newCancelSignal?.Cancel();
+            newCancelSignal = null;
+            cancellationSignal = null;
         }
 
 
         public void Authenticate(string userId, Action onSuccess, Action onFailure)
         {
-            if (FingerprintManager is null)
+            OnSuccess = onSuccess;
+            OnFailure = onFailure;
+            if (IsBiometricPromptEnabled)
             {
-                onFailure?.Invoke();
-                return;
+                newCancelSignal = new Android.OS.CancellationSignal();
+                prompt = new BiometricPrompt.Builder(CrossCurrentActivity.Current.Activity)
+                    .SetTitle("ManageGo")
+                    .SetSubtitle("Fingerprint Login")
+                    .SetDescription($"Place finger on the home button to log in as {userId}")
+                    .SetNegativeButton("CANCEL", CrossCurrentActivity.Current.Activity.MainExecutor,
+                        new DialogListener(this)).Build();
+
+                prompt.Authenticate(newCancelSignal, CrossCurrentActivity.Current.Activity.MainExecutor, new BiometricCallback(this));
             }
-            _cancellationSignal = new CancellationSignal();
-            Cipher cipher = Cipher.GetInstance(TRANSFORMATION);
-            var callback = new SimpleAuthCallbacks();
-            callback.AuthenticationSucceded += (object sender, EventArgs e) =>
+            else
             {
-                onSuccess?.Invoke();
-            };
-            callback.AuthenticationFailed += (sender, e) =>
-            {
-                onFailure?.Invoke();
-            };
-            FingerprintManager.Authenticate(null,
-                (int)FingerprintAuthenticationFlags.None,
-                _cancellationSignal, callback, null
-            );
+                cancellationSignal = new Android.Support.V4.OS.CancellationSignal();
+                var callback = new SimpleAuthCallbacks(this);
+                FingerprintManager.Authenticate(null, 0, cancellationSignal, callback, null);
+            }
+
         }
 
         public LocalAuthType GetLocalAuthType()
         {
-            if (!FingerprintManager.IsHardwareDetected || !FingerprintManager.HasEnrolledFingerprints)
+
+            if (FingerprintManager is null || !FingerprintManager.IsHardwareDetected ||
+                    !FingerprintManager.HasEnrolledFingerprints)
                 return LocalAuthType.None;
+            else if (IsBiometricPromptEnabled)
+                return LocalAuthType.NewAndroidBiometric;
             else
                 return LocalAuthType.TouchId;
+        }
+    }
+
+    public class BiometricCallback : BiometricPrompt.AuthenticationCallback
+    {
+        readonly LocalAuthHelper owner;
+        public BiometricCallback(LocalAuthHelper _owner)
+        {
+            owner = _owner;
+        }
+        public override void OnAuthenticationSucceeded(BiometricPrompt.AuthenticationResult result)
+        {
+            owner.OnSuccess?.Invoke();
+        }
+
+        public override void OnAuthenticationFailed()
+        {
+            owner.OnFailure?.Invoke();
+        }
+        public override void OnAuthenticationHelp([GeneratedEnum] BiometricAcquiredStatus helpCode, ICharSequence helpString)
+        {
+            base.OnAuthenticationHelp(helpCode, helpString);
+        }
+    }
+
+    public class DialogListener : Java.Lang.Object, IDialogInterfaceOnClickListener
+    {
+        readonly LocalAuthHelper owner;
+        public DialogListener(LocalAuthHelper _owner)
+        {
+            owner = _owner;
+        }
+
+        public void OnClick(IDialogInterface dialog, int which)
+        {
+            owner.CancelAuthentication();
         }
     }
 

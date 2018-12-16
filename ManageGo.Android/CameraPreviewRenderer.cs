@@ -171,7 +171,7 @@ namespace ManageGo.Droid
             else if (Element.Mode == CameraModes.Video && VideoIsRecording)
             {
                 VideoIsRecording = false;
-                Camera.stopRecordingVideo();
+                Camera.StopRecordingVideo();
                 Element.NotifyStoppedRecordingVideo();
             }
             /*

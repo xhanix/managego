@@ -9,9 +9,7 @@ namespace ManageGo.Droid
 
         public Camera2BasicSurfaceTextureListener(CamRecorder owner)
         {
-            if (owner == null)
-                throw new System.ArgumentNullException(nameof(owner));
-            this.owner = owner;
+            this.owner = owner ?? throw new System.ArgumentNullException(nameof(owner));
         }
 
         public void OnSurfaceTextureAvailable(Android.Graphics.SurfaceTexture surface, int width, int height)

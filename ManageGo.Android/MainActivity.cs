@@ -10,6 +10,7 @@ using Plugin.CurrentActivity;
 using Plugin.Permissions;
 using System.Threading.Tasks;
 using Android.Content;
+using System.Linq;
 
 namespace ManageGo.Droid
 {
@@ -18,7 +19,7 @@ namespace ManageGo.Droid
     {
         // Field, properties, and method for Video Picker
         public static MainActivity Current { private set; get; }
-
+        public event EventHandler<bool> FingerPringPermissionsResultReady;
         public static readonly int PickImageId = 1000;
 
         public TaskCompletionSource<string> PickImageTaskCompletionSource { set; get; }
@@ -55,6 +56,8 @@ namespace ManageGo.Droid
         {
 
             PermissionsImplementation.Current.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+            if (requestCode == 7890)
+                FingerPringPermissionsResultReady?.Invoke(this, grantResults.Any(t => t == Permission.Granted));
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }

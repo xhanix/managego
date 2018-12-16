@@ -14,7 +14,7 @@ namespace ManageGo.Droid
         public override void OnConfigured(CameraCaptureSession session)
         {
             owner.mCaptureSession = session;
-            owner.updatePreview();
+            owner.UpdatePreview();
 
         }
 

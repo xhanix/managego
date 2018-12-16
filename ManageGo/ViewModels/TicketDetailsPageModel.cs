@@ -802,7 +802,7 @@ namespace ManageGo
                 HasEvent = ticket.HasEvent;
                 TicketId = ticket.TicketId;
                 Users = App.Users;
-                if (ticket.Assigned.Any())
+                if (ticket.Assigned != null && ticket.Assigned.Any())
                 {
                     foreach (var user in Users)
                     {

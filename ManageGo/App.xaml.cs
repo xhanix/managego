@@ -103,4 +103,8 @@ namespace ManageGo
         LocalAuthType GetLocalAuthType();
         void Authenticate(string userId, Action onSuccess, Action onFailure);
     }
+    public interface ILocalPermissionsHelper
+    {
+        void GetBiometricPermission(Action OnSuccess, Action OnFailure);
+    }
 }

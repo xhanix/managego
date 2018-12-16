@@ -5,6 +5,8 @@
         None,
         Passcode,
         TouchId,
-        FaceId
+        FaceId,
+        GetPermission,
+        NewAndroidBiometric
     }
 }

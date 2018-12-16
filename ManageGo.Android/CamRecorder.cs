@@ -16,10 +16,7 @@ using Java.IO;
 using Java.Lang;
 using Java.Util;
 using Java.Util.Concurrent;
-using Plugin.Permissions;
-using Plugin.Permissions.Abstractions;
 using Xamarin.Forms;
-using static ManageGo.Droid.CameraCaptureSessionCallback;
 using Size = Android.Util.Size;
 
 //todo: log errors in this file
@@ -345,7 +342,7 @@ namespace ManageGo.Droid
 
 
 
-        public void stopRecordingVideo()
+        public void StopRecordingVideo()
         {
             //UI
             //isRecordingVideo = false;
@@ -426,7 +423,7 @@ namespace ManageGo.Droid
         }
 
         //Update the preview
-        public void updatePreview()
+        public void UpdatePreview()
         {
             if (null == mCameraDevice)
                 return;
@@ -576,6 +573,7 @@ namespace ManageGo.Droid
         // Creates a new {@link CameraCaptureSession} for camera preview.
         public void CreateCameraPreviewSession(bool forVideo = false)
         {
+            //surfacetexture available -> camera opened -> preview for still images starts
             try
             {
                 SurfaceTexture texture = mTextureView.SurfaceTexture;
@@ -598,8 +596,10 @@ namespace ManageGo.Droid
                 mPreviewRequestBuilder.AddTarget(surface);
 
                 // Here, we create a CameraCaptureSession for camera preview.
-                List<Surface> surfaces = new List<Surface>();
-                surfaces.Add(surface);
+                List<Surface> surfaces = new List<Surface>
+                {
+                    surface
+                };
 
                 if (forVideo && mediaRecorder != null)
                 {
@@ -609,6 +609,9 @@ namespace ManageGo.Droid
                 {
                     surfaces.Add(mImageReader.Surface);
                 }
+                // prepares the camera (focus/flash) and shows the preview for the camera
+                // also sets the mCaptureSession for trigerring the capture on takephoto
+                //todo: change to continueVideo for video preview
                 mCameraDevice.CreateCaptureSession(surfaces, new CameraCaptureSessionCallback(this), null);
 
             }
@@ -713,10 +716,13 @@ namespace ManageGo.Droid
                 return;
             var view = inflater.Inflate(Resource.Layout.CameraLayout, this);
             mTextureView = view.FindViewById<AutoFitTextureView>(Resource.Id.CameraTexture);
+
+            //1- opens camera when surface is available, also resized the view
             mTextureView.SurfaceTextureListener = new Camera2BasicSurfaceTextureListener(this);
 
+            //2- listens for when camera is opened -> calls CreateCameraPreviewSession
             mStateCallback = new CameraStateListener(this);
-            mSurfaceTextureListener = new Camera2BasicSurfaceTextureListener(this);
+            // mSurfaceTextureListener = mTextureView.SurfaceTextureListener;//new Camera2BasicSurfaceTextureListener(this);
 
             // fill ORIENTATIONS list
             ORIENTATIONS.Append((int)SurfaceOrientation.Rotation0, 90);

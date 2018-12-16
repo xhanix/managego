@@ -35,7 +35,8 @@ namespace ManageGo.Droid
                         }
 
                         else if ((((int)ControlAFState.FocusedLocked) == afState.IntValue()) ||
-                                   (((int)ControlAFState.NotFocusedLocked) == afState.IntValue()))
+                                   (((int)ControlAFState.NotFocusedLocked) == afState.IntValue())
+                            )
                         {
                             // ControlAeState can be null on some devices
                             Integer aeState = (Integer)result.Get(CaptureResult.ControlAeState);

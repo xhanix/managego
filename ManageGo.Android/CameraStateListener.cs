@@ -10,9 +10,7 @@ namespace ManageGo.Droid
 
         public CameraStateListener(CamRecorder owner)
         {
-            if (owner == null)
-                throw new System.ArgumentNullException(nameof(owner));
-            this.owner = owner;
+            this.owner = owner ?? throw new System.ArgumentNullException(nameof(owner));
         }
 
         public override void OnOpened(CameraDevice camera)
@@ -20,7 +18,7 @@ namespace ManageGo.Droid
             // This method is called when the camera is opened.  We start camera preview here.
             owner.mCameraOpenCloseLock.Release();
             owner.mCameraDevice = camera;
-            owner.CreateCameraPreviewSession();
+            owner.CreateCameraPreviewSession(forVideo: false);
         }
 
         public override void OnDisconnected(CameraDevice camera)

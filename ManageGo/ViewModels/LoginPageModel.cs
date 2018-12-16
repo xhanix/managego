@@ -4,7 +4,6 @@ using Xamarin.Forms;
 using Xamarin.Essentials;
 using PropertyChanged;
 using System.Threading.Tasks;
-using Plugin.Permissions;
 
 namespace ManageGo
 {
@@ -15,6 +14,7 @@ namespace ManageGo
         public bool ResetPasswordViewIsVisible { get; private set; }
         public string BioLoginButtonText { get; private set; }
         public bool IsLoggingIn { get; private set; }
+
         internal event EventHandler<bool> OnSuccessfulLogin;
         public string AuthString { get; private set; }
         [AlsoNotifyFor("LoginButtonBgColor")]
@@ -36,8 +36,8 @@ namespace ManageGo
             var userName = Preferences.Get("UserName", "****");
             userName = userName.Substring(0, Math.Min(userName.Length - 1, 4)) + "****";
             LocalAuthType authType = DependencyService.Get<ILocalAuthHelper>().GetLocalAuthType();
-            var isBioLoginEnables = Preferences.Get("IsBiometricAuthEnabled", false);
-            if (isBioLoginEnables)
+            var isBioLoginEnabled = Preferences.Get("IsBiometricAuthEnabled", false);
+            if (!isBioLoginEnabled)
             {
                 switch (authType)
                 {
@@ -49,39 +49,46 @@ namespace ManageGo
                         IsBiometricsLabelVisible = true;
                         AuthString = "Turn on Face ID login";
                         break;
+                    case LocalAuthType.NewAndroidBiometric:
                     case LocalAuthType.TouchId:
                         IsBiometricsLabelVisible = true;
                         AuthString = Device.RuntimePlatform == Device.iOS ? "Turn on Touch ID login" : "Turn on fingerprint login";
                         break;
                 }
             }
-            else if (authType == LocalAuthType.FaceId || authType == LocalAuthType.TouchId)
+            else if (authType == LocalAuthType.FaceId || authType == LocalAuthType.TouchId ||
+                        authType == LocalAuthType.NewAndroidBiometric)
             {
                 if (authType == LocalAuthType.FaceId)
                 {
                     BioLoginButtonText = "Log in with Face ID";
+                    IsBioLoginVisible = true;
                 }
                 else
-                    BioLoginButtonText = Device.RuntimePlatform == Device.iOS ? "Log in with Touch ID"
-                                : $"Touch fingerprint sensor to log in as {userName}";
-                IsBioLoginVisible = true;
+                {
+                    // we dont need to show this with the new API
+                    BioLoginButtonText = Device.RuntimePlatform ==
+                    Device.iOS ? "Log in with Touch ID"
+                                : authType == LocalAuthType.NewAndroidBiometric ?
+                                    "Log in with fingerprint" : $"Touch fingerprint sensor to log in as {userName}";
+                    IsBioLoginVisible = true;
+                }
                 void onSuccess()
                 {
-                    Device.BeginInvokeOnMainThread(async () =>
-                        await FinishLogin(isBiometricLogin: true)
-                    );
+                    async void action() =>
+                           await FinishLogin(isBiometricLogin: true);
+                    Device.BeginInvokeOnMainThread(action);
                 }
 
                 async void onFailure()
                 {
                     //do nothing
-                    if (Device.RuntimePlatform == Device.Android)
+                    // we dont need to show this with the new Android API 28
+                    if (Device.RuntimePlatform == Device.Android && authType != LocalAuthType.NewAndroidBiometric)
                     {
                         await CoreMethods.DisplayAlert("ManageGo", "Fingerpring authentication failed", "DISMISS");
                     }
                 }
-
-
                 DependencyService.Get<ILocalAuthHelper>().Authenticate(userName, onSuccess, onFailure);
             }
 
@@ -93,20 +100,20 @@ namespace ManageGo
             {
                 return new FreshAwaitCommand((tcs) =>
                 {
-                    if (Device.RuntimePlatform == Device.Android)
+                    if (Device.RuntimePlatform == Device.Android && DeviceInfo.Version < Version.Parse("9.0"))
+                    {
                         return;
+                    }
                     void onSuccess()
                     {
                         Device.BeginInvokeOnMainThread(async () =>
                             await FinishLogin(isBiometricLogin: true)
                         );
                     }
-
                     void onFailure()
                     {
                         //do nothing
                     }
-
                     var userName = Preferences.Get("UserName", "****").Substring(0, 4) + "****";
                     DependencyService.Get<ILocalAuthHelper>().Authenticate(userName, onSuccess, onFailure);
                     tcs?.SetResult(true);
@@ -136,10 +143,11 @@ namespace ManageGo
                 Preferences.Set("IsFirstLogin", false);
                 if (!isBiometricLogin)
                 {
-                    Preferences.Set("IsBiometricAuthEnabled", IsBiometricsEnabled);
                     Preferences.Set("UserName", UserEmail);
                     Preferences.Set("Password", UserPassword);
+                    Preferences.Set("IsBiometricAuthEnabled", IsBiometricsEnabled);
                 }
+
                 OnSuccessfulLogin?.Invoke(this, true);
             }
             catch (Exception ex)

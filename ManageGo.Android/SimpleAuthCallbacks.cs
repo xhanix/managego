@@ -14,10 +14,12 @@ namespace ManageGo.Droid
         // ReSharper disable once MemberHidesStaticFromOuterClass
         static readonly string TAG = "X:" + typeof(SimpleAuthCallbacks).Name;
         static readonly byte[] SECRET_BYTES = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-        public event EventHandler AuthenticationSucceded;
-        public event EventHandler AuthenticationFailed;
+        LocalAuthHelper owner;
 
-
+        public SimpleAuthCallbacks(LocalAuthHelper _owner)
+        {
+            owner = _owner;
+        }
 
         public override void OnAuthenticationSucceeded(FingerprintManagerCompat.AuthenticationResult result)
         {
@@ -50,17 +52,17 @@ namespace ManageGo.Droid
 
         void ReportSuccess()
         {
-            AuthenticationSucceded?.Invoke(this, EventArgs.Empty);
+            owner.OnSuccess?.Invoke();
         }
 
         void ReportScanFailure(int errMsgId, string errorMessage)
         {
-            AuthenticationFailed?.Invoke(this, EventArgs.Empty);
+            owner.OnFailure?.Invoke();
         }
 
         void ReportAuthenticationFailed()
         {
-            AuthenticationFailed?.Invoke(this, EventArgs.Empty);
+            owner.OnFailure?.Invoke();
         }
 
         public override void OnAuthenticationError(int errMsgId, ICharSequence errString)
