@@ -136,13 +136,7 @@ namespace ManageGo.Droid
             }
         }
 
-        internal void StartPreview()
-        {
-            if (null == mCameraDevice || !mTextureView.IsAvailable)
-                return;
-            mCaptureSession.SetRepeatingRequest(mPreviewRequest,
-                  mCaptureCallback, mBackgroundHandler);
-        }
+
 
         private static Size ChooseOptimalSize(Size[] choices, int textureViewWidth,
             int textureViewHeight, int maxWidth, int maxHeight, Size aspectRatio)
@@ -324,6 +318,11 @@ namespace ManageGo.Droid
 
         #region VIDEO RECORDING
 
+        /// <summary>
+        /// Starts recording video to media recorder. 
+        /// Called from CameraPreviewRenderer class on cam button click 
+        /// when video is selected.
+        /// </summary>
         internal void StartRecordingVideo()
         {
             StartPreviewForVideo();
@@ -339,30 +338,15 @@ namespace ManageGo.Droid
             }
         }
 
-
-
-
         public void StopRecordingVideo()
         {
-            //UI
-            //isRecordingVideo = false;
-            // buttonVideo.SetText(Resource.String.record);
-
-
-            //Stop recording
-            /*
-            mediaRecorder.Stop ();
-            mediaRecorder.Reset ();
-            startPreview ();
-            */
-
             // Workaround for https://github.com/googlesamples/android-Camera2Video/issues/2
             CloseCameraVideo();
             OpenCamera(mTextureView.Width, mTextureView.Height);
             Video?.Invoke(this, videoFilePath);
         }
 
-        private void CloseCameraVideo()
+        public void CloseCameraVideo()
         {
             try
             {
@@ -388,6 +372,9 @@ namespace ManageGo.Droid
             }
         }
 
+        /// <summary>
+        ///  Starts preview before recording video.
+        /// </summary>
         public void StartPreviewForVideo()
         {
             if (null == mCameraDevice || !mTextureView.IsAvailable || null == mPreviewSize)
@@ -404,13 +391,10 @@ namespace ManageGo.Droid
                 var previewSurface = new Surface(texture);
                 surfaces.Add(previewSurface);
                 mPreviewRequestBuilder.AddTarget(previewSurface);
-
                 var recorderSurface = mediaRecorder.Surface;
                 surfaces.Add(recorderSurface);
                 mPreviewRequestBuilder.AddTarget(recorderSurface);
-
                 mCameraDevice.CreateCaptureSession(surfaces, new PreviewCaptureStateCallback(this), mBackgroundHandler);
-
             }
             catch (CameraAccessException e)
             {
@@ -513,7 +497,7 @@ namespace ManageGo.Droid
         }
 
         // Closes the current {@link CameraDevice}.
-        private void CloseCamera()
+        public void CloseCamera()
         {
             try
             {
@@ -751,18 +735,14 @@ namespace ManageGo.Droid
                 // This is the CaptureRequest.Builder that we use to take a picture.
                 if (stillCaptureBuilder == null)
                     stillCaptureBuilder = mCameraDevice.CreateCaptureRequest(CameraTemplate.StillCapture);
-
                 stillCaptureBuilder.AddTarget(mImageReader.Surface);
-
                 // Use the same AE and AF modes as the preview.
                 stillCaptureBuilder.Set(CaptureRequest.ControlAfMode, (int)ControlAFMode.ContinuousPicture);
                 SetAutoFlash(stillCaptureBuilder);
-
                 // Orientation
                 var windowManager = _context.GetSystemService(Context.WindowService).JavaCast<IWindowManager>();
                 int rotation = (int)windowManager.DefaultDisplay.Rotation;
                 stillCaptureBuilder.Set(CaptureRequest.JpegOrientation, GetOrientation(rotation));
-
                 mCaptureSession.StopRepeating();
                 mCaptureSession.Capture(stillCaptureBuilder.Build(), new CameraCaptureStillPictureSessionCallback(this), null);
             }

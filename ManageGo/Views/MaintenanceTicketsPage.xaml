@@ -124,6 +124,7 @@
         </Frame>
     </Grid>
         <Image Source="plus_1_1.png" 
+               x:Name="AddNewTicketButton"
                IsVisible="{Binding AddNewButtonIsVisisble}"
                RelativeLayout.XConstraint="{ConstraintExpression Type=RelativeToParent,
                              Property=Width, Factor=1, Constant=-90}" 

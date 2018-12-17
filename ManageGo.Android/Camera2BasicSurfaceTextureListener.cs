@@ -21,6 +21,10 @@ namespace ManageGo.Droid
 
         public bool OnSurfaceTextureDestroyed(Android.Graphics.SurfaceTexture surface)
         {
+            // IMPORTANT TO CLOSE CAMERA. 
+            // OLDER CAMERA HARWARE CAN CRASH IF WE DONT CLOSE HERE
+            owner.CloseCamera();
+            owner.CloseCameraVideo();
             return true;
         }
 

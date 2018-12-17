@@ -94,7 +94,6 @@
     <Compile Include="LocalAuthHelper.cs" />
     <Compile Include="SimpleAuthCallbacks.cs" />
     <Compile Include="NestedListView.cs" />
-    <Compile Include="LocalPermissionsHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

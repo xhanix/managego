@@ -11,6 +11,7 @@ namespace ManageGo
         {
             InitializeComponent();
             NavigationPage.SetHasNavigationBar(this, false);
+
         }
 
         void Handle_Tapped(object sender, EventArgs e)
