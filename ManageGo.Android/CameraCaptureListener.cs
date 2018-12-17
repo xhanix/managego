@@ -29,8 +29,9 @@ namespace ManageGo.Droid
                 case CamRecorder.STATE_WAITING_LOCK:
                     {
                         Integer afState = (Integer)result.Get(CaptureResult.ControlAfState);
-                        if (afState == null)
+                        if (afState == null || afState.IntValue() == (int)ControlAFState.Inactive)
                         {
+                            owner.mState = CamRecorder.STATE_PICTURE_TAKEN;
                             owner.CaptureStillPicture();
                         }
 

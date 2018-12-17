@@ -490,10 +490,8 @@ namespace ManageGo.Droid
         // Opens the camera specified by {@link Camera2BasicFragment#mCameraId}.
         public void OpenCamera(int width, int height)
         {
-
             SetUpCameraOutputs(width, height);
             ConfigureTransform(width, height);
-
             var manager = (CameraManager)_context.GetSystemService(Context.CameraService);
             try
             {
@@ -589,10 +587,10 @@ namespace ManageGo.Droid
                 Surface surface = new Surface(texture);
 
                 // We set up a CaptureRequest.Builder with the output Surface.
-                if (forVideo)
-                    mPreviewRequestBuilder = mCameraDevice.CreateCaptureRequest(CameraTemplate.Record);
-                else
-                    mPreviewRequestBuilder = mCameraDevice.CreateCaptureRequest(CameraTemplate.Preview);
+                // if (forVideo)
+                //    mPreviewRequestBuilder = mCameraDevice.CreateCaptureRequest(CameraTemplate.Record);
+                // else
+                mPreviewRequestBuilder = mCameraDevice.CreateCaptureRequest(CameraTemplate.Preview);
                 mPreviewRequestBuilder.AddTarget(surface);
 
                 // Here, we create a CameraCaptureSession for camera preview.
@@ -673,7 +671,6 @@ namespace ManageGo.Droid
             try
             {
                 // This is how to tell the camera to lock focus.
-
                 mPreviewRequestBuilder.Set(CaptureRequest.ControlAfTrigger, (int)ControlAFTrigger.Start);
                 // Tell #mCaptureCallback to wait for the lock.
                 mState = STATE_WAITING_LOCK;
@@ -729,8 +726,6 @@ namespace ManageGo.Droid
             ORIENTATIONS.Append((int)SurfaceOrientation.Rotation90, 0);
             ORIENTATIONS.Append((int)SurfaceOrientation.Rotation180, 270);
             ORIENTATIONS.Append((int)SurfaceOrientation.Rotation270, 180);
-
-            //mFile = new File(context.GetExternalFilesDir(null), "pic.jpg");
             mCaptureCallback = new CameraCaptureListener(this);
             mOnImageAvailableListener = new ImageAvailableListener();
             mOnImageAvailableListener.Photo += (object sender, byte[] e) =>
