@@ -5,10 +5,11 @@ using Plugin.Media;
 using Plugin.Media.Abstractions;
 using Plugin.Permissions;
 using Plugin.Permissions.Abstractions;
+using Xamarin.Forms;
 
 namespace ManageGo.Services
 {
-    public static class PhotoHelper
+    public static partial class PhotoHelper
     {
         public static async Task<bool> HasPhotoPermissions()
         {
@@ -25,7 +26,26 @@ namespace ManageGo.Services
             return cameraStatus == PermissionStatus.Granted && storageStatus == PermissionStatus.Granted;
         }
 
+        public async static Task<(byte[], string)> PickPhotoAndVideos()
+        {
+            Tuple<Stream, string, MGFileType> result = await DependencyService.Get<IPicturePicker>().GetImageStreamAsync();
+            using (MemoryStream ms = new MemoryStream())
+            {
+                result.Item1.CopyTo(ms);
+                var extension = Path.GetExtension(result.Item2);
+                var fileName = result.Item3 == MGFileType.Photo ? "Photo_" : "Video_";
+                fileName = fileName + $"{DateTime.Now.ToString("yyMMdd_hhmmss")}" + extension;
+                var array = ms.ToArray();
+                //var removeOrientation = DependencyService.Resolve<App.IMediaService>()
+                //    .SetOrientationUp(array);
 
+                return (array, fileName);//Convert.ToBase64String(array);
+
+                // var thumbnail = DependencyService.Resolve<App.IMediaService>()
+                //  .ResizeImage(removeOrientation, 100, 100);
+
+            }
+        }
 
         public async static Task<(byte[], string)> AddNewPhoto(bool fromAlbum = true)
         {
@@ -45,14 +65,9 @@ namespace ManageGo.Services
                     SaveMetaData = false
                 });
             }
-            else if (CrossMedia.Current.IsPickPhotoSupported)
+            else if (CrossMedia.Current.IsPickVideoSupported)
             {
-                photo = await CrossMedia.Current.PickPhotoAsync(new PickMediaOptions
-                {
-                    CustomPhotoSize = compression,
-                    RotateImage = false,
-                    SaveMetaData = false
-                });
+                photo = await CrossMedia.Current.PickVideoAsync();
             }
             // convert stream to string
             if (photo != null)
@@ -76,7 +91,7 @@ namespace ManageGo.Services
                 }
             }
             return (null, "");
-            
+
 
         }
 

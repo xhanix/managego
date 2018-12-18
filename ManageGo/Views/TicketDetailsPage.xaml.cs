@@ -17,7 +17,6 @@ namespace ManageGo
             InitializeComponent();
             NavigationPage.SetHasNavigationBar(this, false);
             ReplyBox.HeightRequest = ReplyBoxHeigh;
-
         }
 
         protected override void OnSizeAllocated(double width, double height)
@@ -25,7 +24,7 @@ namespace ManageGo
             base.OnSizeAllocated(width, height);
             pageHeight = height;
             PageWidth = width * 0.7;
-            PermittedEditorWidth = PageWidth;
+            PermittedEditorWidth = PageWidth + 20;
         }
 
         protected override bool OnBackButtonPressed()
@@ -40,6 +39,7 @@ namespace ManageGo
                     model.ReplyBoxIsVisible)
             {
                 model.OnCloseReplyBubbleTapped.Execute(null);
+                ReplyEditor.Unfocus();
                 return true;
             }
             else if (model.PopContentView != null)
@@ -54,7 +54,7 @@ namespace ManageGo
             }
         }
 
-        void Handle_Focused(object sender, Xamarin.Forms.FocusEventArgs e)
+        void Handle_Focused(object sender, FocusEventArgs e)
         {
             ReplyBox.HeightRequest = pageHeight * 0.65;
             MyScrollView.VerticalScrollBarVisibility = ScrollBarVisibility.Always;
@@ -62,7 +62,7 @@ namespace ManageGo
         }
 
 
-        async void Handle_Scrolled(object sender, Xamarin.Forms.ScrolledEventArgs e)
+        async void Handle_Scrolled(object sender, ScrolledEventArgs e)
         {
             if ((WasFocused && e.ScrollY > 12) || (string.IsNullOrWhiteSpace(ReplyEditor.Text) && e.ScrollY > 12))
             {
@@ -89,5 +89,19 @@ namespace ManageGo
         }
 
 
+        void Handle_Tapped(object sender, System.EventArgs e)
+        {
+            ReplyEditor.Focus();
+        }
+
+
+        void Handle_Clicked(object sender, System.EventArgs e)
+        {
+            ((TicketDetailsPageModel)BindingContext).OnReplyLabelTapped.Execute(null);
+            ReplyBox.HeightRequest = pageHeight * 0.65;
+            MyScrollView.VerticalScrollBarVisibility = ScrollBarVisibility.Always;
+            WasFocused = true;
+            ReplyEditor.Focus();
+        }
     }
 }

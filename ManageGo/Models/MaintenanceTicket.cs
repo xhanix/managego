@@ -19,7 +19,7 @@ namespace ManageGo
         public Building Building { get; set; }
         public string FirstComment { get; set; }
         public List<MaintenanceCategory> Categories { get; set; }
-        public string DueDate { get; set; }
+        public DateTime? DueDate { get; set; }
         public int NumberOfReplies { get; set; }
         public bool HasWorkorder { get; set; }
         public bool HasEvent { get; set; }

@@ -117,6 +117,7 @@
     <Compile Include="TouchRecognizer.cs" />
     <Compile Include="LocalAuthHelper.cs" />
     <Compile Include="BorderlessEditor.cs" />
+    <Compile Include="PicturePickerImplementation.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Resources\LaunchScreen.storyboard" />
@@ -355,5 +356,7 @@
     <BundleResource Include="Resources\pm_active.png" />
     <BundleResource Include="Resources\pm_inactive.png" />
     <BundleResource Include="Resources\am_inactive.png" />
+    <BundleResource Include="Resources\rec_dot%403x.png" />
+    <BundleResource Include="Resources\rec_dot%402x.png" />
   </ItemGroup>
 </Project>

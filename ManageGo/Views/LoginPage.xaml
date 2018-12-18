@@ -3,25 +3,27 @@
              xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core" 
              ios:Page.UseSafeArea="true"
              BackgroundColor="#f9fafb"
+             xmlns:local="clr-namespace:ManageGo"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
              x:Class="ManageGo.LoginPage">
    <RelativeLayout>
    <StackLayout 
             RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width,Factor=1}"
             RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height,Factor=1}"
-            Spacing="0"
-                >
+            Spacing="0">
         <StackLayout Orientation="Horizontal" Padding="8" HeightRequest="42">
             <Image Source="logo.png"  VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"/>
         </StackLayout>
-        <Label Text="Welcome" FontAttributes="Bold" HorizontalOptions="CenterAndExpand" />
-        <BoxView HeightRequest="1" Margin="0,8,0,8"  BackgroundColor="{x:StaticResource Primary}" HorizontalOptions="FillAndExpand"/>
+        <Label Text="Welcome" FontSize="Large" FontAttributes="Bold" HorizontalOptions="CenterAndExpand" />
+        <BoxView HeightRequest="1" Margin="0,8,0,8" BackgroundColor="{x:StaticResource Primary}" HorizontalOptions="FillAndExpand"/>
         <ScrollView BackgroundColor="#f9fafb" VerticalOptions="FillAndExpand">
             <StackLayout VerticalOptions="CenterAndExpand" Padding="53,0,52,0">
                 <Label Text="Email address:" TextColor="{x:StaticResource Grey-Mid-1}" FontSize="Small" HorizontalOptions="CenterAndExpand"/>
-                <Entry Placeholder="Enter your email" Text="{Binding UserEmail}" />
+                <local:CustomEntry Placeholder="Enter your email" Text="{Binding UserEmail}" />
+                <BoxView HeightRequest="1" Margin="0,-4,0,0" BackgroundColor="Gray" />
                 <Label Text="Password:" Margin="0,35,0,0" TextColor="{x:StaticResource Grey-Mid-1}" FontSize="Small" HorizontalOptions="CenterAndExpand"/>
-                <Entry Placeholder="Password" Text="{Binding UserPassword}" />
+                <local:CustomEntry Placeholder="Password" Text="{Binding UserPassword}" />
+                <BoxView HeightRequest="1" Margin="0,-4,0,0" BackgroundColor="Gray" />
                 <StackLayout IsVisible="{Binding IsBiometricsLabelVisible}" Orientation="Horizontal" Padding="17,22,17,22" HorizontalOptions="CenterAndExpand">
                     <Image Source="{Binding AuthCheckBoxIcon}" VerticalOptions="CenterAndExpand"/>
                     <Label Text="{Binding AuthString}" HorizontalTextAlignment="Center" VerticalOptions="Center" TextColor="{x:StaticResource Grey-Mid-1}" FontSize="Small" />
@@ -76,7 +78,8 @@
                 <Frame HasShadow="false" BackgroundColor="White" HorizontalOptions="CenterAndExpand">
                     <StackLayout>
                         <Label Text="Email address:" TextColor="{x:StaticResource Grey-Mid-1}" FontSize="Small" HorizontalOptions="CenterAndExpand"/>
-                        <Entry Placeholder="Enter your email" WidthRequest="250" Text="{Binding UserEmail}" />
+                        <local:CustomEntry Placeholder="Enter your email" WidthRequest="250" Text="{Binding UserEmail}" />
+                        <BoxView HeightRequest="1" Margin="0,-4,0,0" BackgroundColor="Gray" />
                         <Button Command="{Binding OnSubmitResetPasswordTapped}" BackgroundColor="{x:StaticResource Primary}" WidthRequest="150" HorizontalOptions="CenterAndExpand" Text="Reset Password" FontSize="Small" Margin="0,12,0,0" TextColor="White" />
                          <Button BackgroundColor="Transparent" WidthRequest="150" HorizontalOptions="CenterAndExpand" Text="Cancel" Command="{Binding OnCancelResetPasswordTapped}" Margin="0,4,0,0" FontSize="Small" TextColor="{StaticResource Primary}" />
 

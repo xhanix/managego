@@ -11,12 +11,13 @@ namespace ManageGo
     public class Comments
     {
         private string name;
-        readonly string orange = "#fda639";
-        readonly string blue = "#318bfa";
-        readonly string red = "#e53935";
-        readonly string green = "#378ef7";
+        readonly static string orange = "#fda639";
+        readonly static string blue = "#318bfa";
+        readonly static string red = "#e53935";
+        readonly static string green = "#378ef7";
         [AlsoNotifyFor("SecondLineText")]
         public string Text { get; set; }
+
         [AlsoNotifyFor("SideLineColor", "Name", "BottomSeparatorIsVisible", "BubbleBackgroundColor")]
         public CommentTypes CommentType { get; set; }
         public bool IsCompleted { get; set; }
@@ -37,7 +38,7 @@ namespace ManageGo
         }
         [AlsoNotifyFor("FirstLineText")]
         public string CommentCreateTime { get; set; }
-        [AlsoNotifyFor("HasFiles")]
+        [AlsoNotifyFor("HasFiles", "AttachedFilesListHeight")]
         public ObservableCollection<File> Files { get; set; }
         public List<int> WorkOrders { get; set; }
         public List<int> Events { get; set; }
@@ -113,12 +114,26 @@ namespace ManageGo
             {
                 return CommentType == CommentTypes.Management || CommentType == CommentTypes.Internal ||
                                                   CommentType == CommentTypes.Resident
-                    ? "transparent"
-                                                      : "#fff2e0";
+                    ? "transparent" : "#fff2e0";
             }
         }
-        [JsonIgnore]
+
+        [JsonIgnore, AlsoNotifyFor("AttachedFilesListHeight")]
         public bool HasFiles { get { return Files != null && Files.Count > 0; } }
+
+        [JsonIgnore]
+        public double AttachedFilesListHeight
+        {
+            get
+            {
+                return !HasFiles || Files is null ? 0 : Files.Count * 55;
+            }
+        }
+
+        [JsonIgnore]
+        public string TopSideLineColor { get; set; } = blue;
+        [JsonIgnore]
+        public bool IsNotTheLastComment { get; set; } = true;
         [JsonIgnore]
         public string SideLineColor
         {
@@ -138,7 +153,6 @@ namespace ManageGo
                         return orange;
                     case CommentTypes.Access:
                         return orange;
-
                 }
                 return "White";
             }

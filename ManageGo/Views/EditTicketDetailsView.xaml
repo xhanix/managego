@@ -4,7 +4,7 @@
               xmlns:controls="clr-namespace:ManageGo.Controls"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="ManageGo.Views.EditTicketDetailsView">
     <ContentView.Content>
-        <ScrollView VerticalOptions="StartAndExpand">
+        <ScrollView VerticalOptions="FillAndExpand">
             <StackLayout Spacing="0">
                 <Grid Padding="21,17,21,17" RowSpacing="12">
                     <Grid.ColumnDefinitions>
@@ -26,35 +26,45 @@
                         <RowDefinition Height="auto" />
                         <RowDefinition Height="auto" />
                         <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                         <RowDefinition Height="auto" />
                     </Grid.RowDefinitions>
                     <Label Text="Tenant" FontSize="Small" Grid.Column="0" Grid.Row="0" TextColor="{StaticResource Key=Grey-Light-1}"/>
-                    <BoxView Grid.Row="1" HeightRequest="1" VerticalOptions="Center" BackgroundColor="Gray" Grid.ColumnSpan="2" />
+                    <BoxView Grid.Row="1" HeightRequest="1" VerticalOptions="Center" BackgroundColor="#e0e0e0" Grid.ColumnSpan="2" />
                     <Label Text="Address" FontSize="Small" Grid.Column="0" Grid.Row="2" TextColor="{StaticResource Key=Grey-Light-1}"/>
-                    <BoxView Grid.Row="3" HeightRequest="1" VerticalOptions="Center" BackgroundColor="Gray" Grid.ColumnSpan="2" />
+                    <BoxView Grid.Row="3" HeightRequest="1" VerticalOptions="Center" BackgroundColor="#e0e0e0" Grid.ColumnSpan="2" />
                     <Label Text="Priority" FontSize="Small" Grid.Column="0" Grid.Row="4" TextColor="{StaticResource Key=Grey-Light-1}"/>
-                    <BoxView Grid.Row="5" HeightRequest="1" VerticalOptions="Center" BackgroundColor="Gray" Grid.ColumnSpan="2" />
+                    <BoxView Grid.Row="5" HeightRequest="1" VerticalOptions="Center" BackgroundColor="#e0e0e0" Grid.ColumnSpan="2" />
                     <Label Text="Category" FontSize="Small" Grid.Column="0" Grid.Row="6" TextColor="{StaticResource Key=Grey-Light-1}"/>
-                    <BoxView Grid.Row="7" HeightRequest="1" VerticalOptions="Center" BackgroundColor="Gray" Grid.ColumnSpan="2" />
+                    <BoxView Grid.Row="7" HeightRequest="1" VerticalOptions="Center" BackgroundColor="#e0e0e0" Grid.ColumnSpan="2" />
                     <Label Text="Tags" FontSize="Small" Grid.Column="0" Grid.Row="8" TextColor="{StaticResource Key=Grey-Light-1}"/>
-                    <BoxView Grid.Row="9" HeightRequest="1" VerticalOptions="Center" BackgroundColor="Gray" Grid.ColumnSpan="2" />
+                    <BoxView Grid.Row="9" HeightRequest="1" VerticalOptions="Center" BackgroundColor="#e0e0e0" Grid.ColumnSpan="2" />
                     <Label Text="Assigned" FontSize="Small" Grid.Column="0" Grid.Row="10" TextColor="{StaticResource Key=Grey-Light-1}"/>
-                    <BoxView Grid.Row="11" HeightRequest="1" VerticalOptions="Center" BackgroundColor="Gray" Grid.ColumnSpan="2" />
+                    <BoxView Grid.Row="11" HeightRequest="1" VerticalOptions="Center" BackgroundColor="#e0e0e0" Grid.ColumnSpan="2" />
                     <Label Text="Due date" FontSize="Small" Grid.Column="0" Grid.Row="12" TextColor="{StaticResource Key=Grey-Light-1}"/>
-                    <BoxView Grid.Row="13" HeightRequest="1" VerticalOptions="Center" BackgroundColor="Gray" Grid.ColumnSpan="2" />
+                    <BoxView Grid.Row="13" HeightRequest="1" VerticalOptions="Center" BackgroundColor="#e0e0e0" Grid.ColumnSpan="2" />
                     <Label Text="Status" FontSize="Small" Grid.Column="0" Grid.Row="14" TextColor="{StaticResource Key=Grey-Light-1}"/>
-
-                    <Label Text="{Binding DueDate}" FontSize="Small" Grid.Column="1" Grid.Row="12" TextColor="{StaticResource Key=Grey-Mid-1}"/>
-                    <Label Text="{Binding Status}" FontSize="Small" Grid.Column="1" Grid.Row="13" TextColor="{StaticResource Key=Grey-Mid-1}"/>
-
+                    <StackLayout Grid.Column="1" Grid.Row="12">
+                        <StackLayout Orientation="Horizontal" VerticalOptions="CenterAndExpand">
+                            <Label Text="{Binding DueDate}" FontSize="Small"  TextColor="{StaticResource Key=Grey-Mid-1}"/>
+                            <Image Source="{Binding DueDateRowIcon}" HorizontalOptions="EndAndExpand"/>
+                             <StackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnShowDueDateCalendarTapped}" />
+                            </StackLayout.GestureRecognizers>
+                        </StackLayout>
+                        <ContentView Content="{Binding DueDateCalendarView}" />
+                    </StackLayout>
+                    <Label Text="{Binding Status}" FontSize="Small" Grid.Column="1" Grid.Row="14" TextColor="{StaticResource Key=Grey-Mid-1}"/>
                     <Label Text="{Binding TenantName}" LineBreakMode="MiddleTruncation" FontSize="Small" Grid.Column="1" Grid.Row="0" TextColor="{StaticResource Key=Grey-Mid-1}"/>
                     <Label Text="{Binding TicketAddress}" LineBreakMode="MiddleTruncation" FontSize="Small" Grid.Column="1" Grid.Row="2" TextColor="{StaticResource Key=Grey-Mid-1}"/>
                     <StackLayout Grid.Column="1" Grid.Row="4">
                         <StackLayout Orientation="Horizontal" VerticalOptions="CenterAndExpand">
                             <Label Text="{Binding PriorityLabelText}" LineBreakMode="TailTruncation" FontSize="Small"  TextColor="{Binding PriorityLabelTextColor}"/>
                             <Image Source="{Binding PriorityOptionsRowIcon}" HorizontalOptions="EndAndExpand"/>
-                             <StackLayout.GestureRecognizers>
+                            <StackLayout.GestureRecognizers>
                                     <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnShowPriorityOptionsTapped}" />
-                                </StackLayout.GestureRecognizers>
+                            </StackLayout.GestureRecognizers>
                         </StackLayout>
                         <StackLayout IsVisible="{Binding PriorityOptionsVisible}">
                             <BoxView HeightRequest="1" BackgroundColor="{StaticResource Grey-Light-1}" />
@@ -89,6 +99,7 @@
                                     <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnShowCategoryOptionsTapped}" />
                                 </StackLayout.GestureRecognizers>
                         </StackLayout>
+                        <!-- Categories -->
                         <StackLayout IsVisible="{Binding CategoryOptionsVisible}">
                             <BoxView HeightRequest="1" BackgroundColor="{StaticResource Grey-Light-1}" />
                             <controls:NestedListView  ItemsSource="{Binding Categories}" VerticalOptions="Start" SeparatorVisibility="None" SelectionMode="None" HeightRequest="125" >
@@ -136,13 +147,18 @@
                             </controls:NestedListView>
                         </StackLayout>
                     </StackLayout>
-                    
+                   <Grid Grid.Row="15" Grid.ColumnSpan="2" Margin="0,12,0,0" Padding="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />
+                        </Grid.RowDefinitions>
+                        <Button Command="{Binding OnSaveEditsTapped}" BackgroundColor="{StaticResource Green}" Padding="0" Text="Save Changes" HorizontalOptions="FillAndExpand" Grid.Column="0" Grid.Row="0" VerticalOptions="FillAndExpand" TextColor="White" FontAttributes="Bold" />
+                        <!-- <Button Command="{Binding OnHideDetailsTapped}" BackgroundColor="{StaticResource Grey-Light-1}" Padding="0" Text="View Ticket" HorizontalOptions="FillAndExpand" Grid.Column="1" VerticalOptions="FillAndExpand" Grid.Row="0" TextColor="White" FontAttributes="Bold" /> -->
+                        <Button Command="{Binding OnCloseTicketButtonTapped}" BackgroundColor="Transparent" Padding="0" Text="Close Ticket" HorizontalOptions="FillAndExpand" Grid.Column="2" VerticalOptions="FillAndExpand" Grid.Row="0" TextColor="Red" />
+                    </Grid> 
                 </Grid>
-               <Grid Padding="21,17,21,17">
-                    <Button Command="{Binding OnSaveEditsTapped}" BackgroundColor="{StaticResource Green}" Text="Save" Grid.Column="0" TextColor="White" FontAttributes="Bold"/>
-                    <Button Command="{Binding OnHideDetailsTapped}" BackgroundColor="{StaticResource Grey-Light-1}" Text="Cancel" Grid.Column="1" TextColor="White" FontAttributes="Bold"/>
-                    <Button Command="{Binding OnCloseTicketButtonTapped}" BackgroundColor="{StaticResource Red}" Text="Close ticket" Grid.Column="2" TextColor="White" FontAttributes="Bold"/>
-                </Grid>
+                <BoxView HeightRequest="1" BackgroundColor="#e0e0e0" HorizontalOptions="FillAndExpand" />
+                <BoxView HeightRequest="2" BackgroundColor="Silver" HorizontalOptions="FillAndExpand" />
+
             </StackLayout>
         </ScrollView>
     </ContentView.Content>

@@ -24,11 +24,11 @@ namespace FormsVideoLibrary.Droid
         {
         }
 
-        protected override void OnElementChanged(ElementChangedEventArgs<VideoPlayer> args)
+        protected override void OnElementChanged(ElementChangedEventArgs<VideoPlayer> e)
         {
-            base.OnElementChanged(args);
+            base.OnElementChanged(e);
 
-            if (args.NewElement != null)
+            if (e.NewElement != null)
             {
                 if (Control == null)
                 {
@@ -54,18 +54,18 @@ namespace FormsVideoLibrary.Droid
                 SetAreTransportControlsEnabled();
                 SetSource();
 
-                args.NewElement.UpdateStatus += OnUpdateStatus;
-                args.NewElement.PlayRequested += OnPlayRequested;
-                args.NewElement.PauseRequested += OnPauseRequested;
-                args.NewElement.StopRequested += OnStopRequested;
+                e.NewElement.UpdateStatus += OnUpdateStatus;
+                e.NewElement.PlayRequested += OnPlayRequested;
+                e.NewElement.PauseRequested += OnPauseRequested;
+                e.NewElement.StopRequested += OnStopRequested;
             }
 
-            if (args.OldElement != null)
+            if (e.OldElement != null)
             {
-                args.OldElement.UpdateStatus -= OnUpdateStatus;
-                args.OldElement.PlayRequested -= OnPlayRequested;
-                args.OldElement.PauseRequested -= OnPauseRequested;
-                args.OldElement.StopRequested -= OnStopRequested;
+                e.OldElement.UpdateStatus -= OnUpdateStatus;
+                e.OldElement.PlayRequested -= OnPlayRequested;
+                e.OldElement.PauseRequested -= OnPauseRequested;
+                e.OldElement.StopRequested -= OnStopRequested;
             }
         }
 
@@ -89,19 +89,19 @@ namespace FormsVideoLibrary.Droid
             ((IVideoPlayerController)Element).Duration = TimeSpan.FromMilliseconds(videoView.Duration);
         }
 
-        protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs args)
+        protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            base.OnElementPropertyChanged(sender, args);
+            base.OnElementPropertyChanged(sender, e);
 
-            if (args.PropertyName == VideoPlayer.AreTransportControlsEnabledProperty.PropertyName)
+            if (e.PropertyName == VideoPlayer.AreTransportControlsEnabledProperty.PropertyName)
             {
                 SetAreTransportControlsEnabled();
             }
-            else if (args.PropertyName == VideoPlayer.SourceProperty.PropertyName)
+            else if (e.PropertyName == VideoPlayer.SourceProperty.PropertyName)
             {
                 SetSource();
             }
-            else if (args.PropertyName == VideoPlayer.PositionProperty.PropertyName)
+            else if (e.PropertyName == VideoPlayer.PositionProperty.PropertyName)
             {
                 if (Math.Abs(videoView.CurrentPosition - Element.Position.TotalMilliseconds) > 1000)
                 {
@@ -168,7 +168,7 @@ namespace FormsVideoLibrary.Droid
                     hasSetSource = true;
                 }
             }
-              
+
             if (hasSetSource && Element.AutoPlay)
             {
                 videoView.Start();

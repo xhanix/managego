@@ -12,11 +12,10 @@ namespace ManageGo
         public string Color { get; set; }
 
         [JsonIgnore, AlsoNotifyFor("CheckBoxImage")]
-        public bool IsSelectedForFiltering { get; set; }
+        public bool IsSelected { get; set; }
         //for filtering multiple can be selected
 
-        [JsonIgnore, AlsoNotifyFor("RadioImage")]
-        public bool IsSelectedForTicket { get; set; }
+
         //only one assigned per ticket
 
         [JsonIgnore]
@@ -24,17 +23,10 @@ namespace ManageGo
         {
             get
             {
-                return IsSelectedForFiltering ? "checked.png" : "unchecked.png";
+                return IsSelected ? "checked.png" : "unchecked.png";
             }
         }
 
-        [JsonIgnore]
-        public string RadioImage
-        {
-            get
-            {
-                return IsSelectedForFiltering ? "radio_selected.png" : "radio_unselected.png";
-            }
-        }
+
     }
 }

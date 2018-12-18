@@ -14,7 +14,8 @@ namespace ManageGo.Views
 
         internal EditTicketDetailsView(FreshBasePageModel bindingContext) : this()
         {
-            this.BindingContext = bindingContext;
+            if (bindingContext != null)
+                this.BindingContext = bindingContext;
         }
     }
 }

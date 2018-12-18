@@ -94,6 +94,7 @@
     <Compile Include="LocalAuthHelper.cs" />
     <Compile Include="SimpleAuthCallbacks.cs" />
     <Compile Include="NestedListView.cs" />
+    <Compile Include="PicturePickerImplementation.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -284,6 +285,14 @@
     <AndroidResource Include="Resources\drawable\fingerprint.png" />
     <AndroidResource Include="Resources\drawable-xxxhdpi\radio_selected.png" />
     <AndroidResource Include="Resources\drawable-xxxhdpi\radio_unselected.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\rec_dot.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\rec_dot.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\arrow_right.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\arrow_right.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\internal_closed.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\internal_closed.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\internal_open.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\internal_open.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\drawable\" />

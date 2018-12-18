@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using Android.Media;
 using FreshMvvm;
 using Xamarin.Forms;
 using PropertyChanged;
@@ -24,7 +23,7 @@ namespace ManageGo
         public event EventHandler Shutter;
         CameraModes currentCameraMode;
         [AlsoNotifyFor("CaptureButtonIcon")]
-        bool IsRecordingVideo { get; set; }
+        public bool IsRecordingVideo { get; private set; }
         [AlsoNotifyFor("VideoIcon", "PhotoIcon", "CaptureButtonIcon")]
         public CameraModes CurrentCameraMode
         {

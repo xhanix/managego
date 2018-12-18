@@ -11,6 +11,10 @@ using Plugin.Permissions;
 using System.Threading.Tasks;
 using Android.Content;
 using System.Linq;
+using System.IO;
+using ManageGo.Services;
+using Android.Webkit;
+using Android.Provider;
 
 namespace ManageGo.Droid
 {
@@ -23,6 +27,7 @@ namespace ManageGo.Droid
         public static readonly int PickImageId = 1000;
 
         public TaskCompletionSource<string> PickImageTaskCompletionSource { set; get; }
+        public TaskCompletionSource<Tuple<Stream, string, MGFileType>> PickMediaTaskCompletionSource { set; get; }
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -43,11 +48,21 @@ namespace ManageGo.Droid
                 if ((resultCode == Result.Ok) && (data != null))
                 {
                     // Set the filename as the completion of the Task
-                    PickImageTaskCompletionSource.SetResult(data.DataString);
+                    PickImageTaskCompletionSource?.SetResult(data.DataString);
+                    Android.Net.Uri uri = data.Data;
+                    var mime = this.ContentResolver.GetType(uri);
+                    Android.Database.ICursor cr = ContentResolver.Query(uri, null, null, null, null);
+                    cr.MoveToFirst();
+                    var displayName = cr.GetString(cr.GetColumnIndex(OpenableColumns.DisplayName));
+
+                    Stream stream = ContentResolver.OpenInputStream(uri);
+                    // Set the Stream as the completion of the Task
+                    PickMediaTaskCompletionSource?.SetResult(new Tuple<Stream, string, MGFileType>(stream, displayName,
+                                    mime.Contains("video") ? MGFileType.Video : MGFileType.Photo));
                 }
                 else
                 {
-                    PickImageTaskCompletionSource.SetResult(null);
+                    PickImageTaskCompletionSource?.SetResult(null);
                 }
             }
         }

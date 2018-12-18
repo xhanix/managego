@@ -10,6 +10,7 @@ namespace ManageGo.Controls
     public partial class CalendarView : Grid
     {
         public event EventHandler OnPresetRangeUpdate;
+        public event EventHandler OnSelectedDatesUpdate;
 
         public static readonly BindableProperty AllowMultipleSelectionProperty = BindableProperty.Create(nameof(AllowMultipleSelection),
                                                                                         typeof(bool),
@@ -123,7 +124,6 @@ namespace ManageGo.Controls
         {
             calendar.SelectedDates = new DateRange(DateTime.Now.AddDays(-30), DateTime.Now);
             SelectedDates = new DateRange(DateTime.Now.AddDays(-30), DateTime.Now);
-
             OnPresetRangeUpdate?.Invoke(sender, e);
         }
 
@@ -131,6 +131,7 @@ namespace ManageGo.Controls
         {
             SelectedDate = dates.StartDate;
             SelectedDates = dates;
+            OnSelectedDatesUpdate?.Invoke(this, EventArgs.Empty);
         }
 
         void Handle_OnMonthYearChanged(DateTime date)

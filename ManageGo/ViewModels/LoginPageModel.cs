@@ -125,9 +125,10 @@ namespace ManageGo
         {
             get
             {
-                async void execute(System.Threading.Tasks.TaskCompletionSource<bool> tcs)
+                async void execute(TaskCompletionSource<bool> tcs)
                 {
                     await FinishLogin(isBiometricLogin: false);
+                    tcs?.SetResult(true);
                 }
                 return new FreshAwaitCommand(execute,
                         () => !string.IsNullOrWhiteSpace(UserEmail) && !string.IsNullOrWhiteSpace(UserPassword));
@@ -139,6 +140,8 @@ namespace ManageGo
             try
             {
                 IsLoggingIn = true;
+                if (Connectivity.NetworkAccess != NetworkAccess.Internet)
+                    throw new Exception("Not connected to Internet");
                 await Services.DataAccess.Login(UserEmail, UserPassword);
                 Preferences.Set("IsFirstLogin", false);
                 if (!isBiometricLogin)

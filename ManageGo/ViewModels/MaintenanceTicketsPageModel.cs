@@ -7,8 +7,8 @@ using Xamarin.Forms;
 using PropertyChanged;
 using System.Linq;
 using System.Collections.ObjectModel;
-
-
+using Xamarin.Essentials;
+using System.Threading;
 
 namespace ManageGo
 {
@@ -118,14 +118,14 @@ namespace ManageGo
         {
             get
             {
-                return Categories is null || !Categories.Any(t => t.IsSelectedForFiltering)
-                                                        || Categories.Count() == Categories.Count(t => t.IsSelectedForFiltering)
+                return Categories is null || !Categories.Any(t => t.IsSelected)
+                                                        || Categories.Count() == Categories.Count(t => t.IsSelected)
                     ? "All"
                     :
-                    Categories.Count(t => t.IsSelectedForFiltering) > 1 ?
-                                                        $"{Categories.First(t => t.IsSelectedForFiltering).CategoryName}, {Categories.Count(t => t.IsSelectedForFiltering) - 1} more"
+                    Categories.Count(t => t.IsSelected) > 1 ?
+                                                        $"{Categories.First(t => t.IsSelected).CategoryName}, {Categories.Count(t => t.IsSelected) - 1} more"
                                                             :
-                                                        Categories.First(t => t.IsSelectedForFiltering).CategoryName
+                                                        Categories.First(t => t.IsSelected).CategoryName
                                                         ;
             }
         }
@@ -143,13 +143,13 @@ namespace ManageGo
         {
             get
             {
-                return Tags is null || !Tags.Any(t => t.IsSelectedForFiltering)
-                                            || Tags.Count() == Tags.Count(t => t.IsSelectedForFiltering)
+                return Tags is null || !Tags.Any(t => t.IsSelected)
+                                            || Tags.Count() == Tags.Count(t => t.IsSelected)
                     ? "All"
-                    : Tags.Count(t => t.IsSelectedForFiltering) > 1 ?
-                                            $"{Tags.First(t => t.IsSelectedForFiltering).TagName}, {Tags.Count(t => t.IsSelectedForFiltering) - 1} more"
+                    : Tags.Count(t => t.IsSelected) > 1 ?
+                                            $"{Tags.First(t => t.IsSelected).TagName}, {Tags.Count(t => t.IsSelected) - 1} more"
                                                 :
-                                            Tags.First(t => t.IsSelectedForFiltering).TagName;
+                                            Tags.First(t => t.IsSelected).TagName;
             }
         }
         public bool IsSearching { get; private set; }
@@ -424,7 +424,7 @@ namespace ManageGo
                 return new FreshAwaitCommand((parameter, tcs) =>
                 {
                     var category = parameter as Categories;
-                    category.IsSelectedForFiltering = !category.IsSelectedForFiltering;
+                    category.IsSelected = !category.IsSelected;
                     RaisePropertyChanged("SelectedCategoriesString");
                     RaisePropertyChanged("FilterCategoryTextColor");
                     tcs?.SetResult(true);
@@ -453,7 +453,7 @@ namespace ManageGo
                 return new FreshAwaitCommand((parameter, tcs) =>
                 {
                     var tag = parameter as Tags;
-                    tag.IsSelectedForFiltering = !tag.IsSelectedForFiltering;
+                    tag.IsSelected = !tag.IsSelected;
                     RaisePropertyChanged("SelectedTagsString");
                     RaisePropertyChanged("FilterTagsTextColor");
                     tcs?.SetResult(true);
@@ -491,9 +491,9 @@ namespace ManageGo
                         paramDic.Add("Buildings", Buildings.Where(f => f.IsSelected).Select(f => f.BuildingId));
                         numberOfFilters++;
                     }
-                    if (Tags != null && Tags.Any(f => f.IsSelectedForFiltering))
+                    if (Tags != null && Tags.Any(f => f.IsSelected))
                     {
-                        paramDic.Add("Tags", Tags.Where(t => t.IsSelectedForFiltering).Select(t => t.TagID));
+                        paramDic.Add("Tags", Tags.Where(t => t.IsSelected).Select(t => t.TagID));
                         numberOfFilters++;
                     }
 
@@ -578,7 +578,6 @@ namespace ManageGo
                             {"Ticket", ticket}
                         };
                         await CoreMethods.PushPageModel<TicketDetailsPageModel>(dic, false, false);
-
                     }
                     catch (Exception ex)
                     {
@@ -690,7 +689,7 @@ namespace ManageGo
             }
         }
 
-        protected override void ViewIsDisappearing(object sender, EventArgs e)
+        protected override async void ViewIsDisappearing(object sender, EventArgs e)
         {
             base.ViewIsDisappearing(sender, e);
             FilterDueDate = null;
@@ -698,10 +697,43 @@ namespace ManageGo
             IsLowPriorityFilterSelected = false;
             IsHighPriorityFilterSelected = false;
             IsMediumPriorityFilterSelected = false;
-            Categories?.Select(t => t.IsSelectedForFiltering = false);
+            Categories?.Select(t => t.IsSelected = false);
             Users?.Select(t => t.IsSelected = false);
-            Tags?.Select(t => t.IsSelectedForFiltering = false);
+            Tags?.Select(t => t.IsSelected = false);
             FiltersDictionary = null;
+            try
+            {
+                List<Task> tasks = new List<Task>();
+                if (App.Buildings is null)
+                    tasks.Add(Services.DataAccess.GetBuildings());
+                if (App.Categories is null)
+                {
+                    tasks.Add(Services.DataAccess.GetAllCategoriesAndTags());
+                    tasks.Add(Services.DataAccess.GetAllUsers());
+                }
+                await Task.WhenAll(tasks);
+            }
+            catch
+            {
+                await ShowNoInternetView();
+            }
+        }
+
+        private async Task ShowNoInternetView()
+        {
+            APIhasFailed = true;
+            HasLoaded = false;
+            ErrorText = Connectivity.NetworkAccess != NetworkAccess.Internet ?
+                                    "No Internet Connection" : "Host Unreachable";
+            await Task.Run(() =>
+            {
+                while (Connectivity.NetworkAccess != NetworkAccess.Internet
+                       && !cancellationTokenSource.IsCancellationRequested)
+                {
+                    Thread.Sleep(1000);
+                }
+            });
+            await LoadData();
         }
     }
 }

@@ -12,7 +12,7 @@ namespace ManageGo
         public string Color { get; set; }
 
         [JsonIgnore, AlsoNotifyFor("CheckBoxImage")]
-        public bool IsSelectedForFiltering { get; set; }
+        public bool IsSelected { get; set; }
 
 
         [JsonIgnore]
@@ -20,7 +20,7 @@ namespace ManageGo
         {
             get
             {
-                return IsSelectedForFiltering ? "checked.png" : "unchecked.png";
+                return IsSelected ? "checked.png" : "unchecked.png";
             }
         }
     }

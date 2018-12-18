@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 using FreshMvvm;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -39,9 +41,13 @@ namespace ManageGo
         public App()
         {
             InitializeComponent();
+            Tags = new List<Tags>();
+            Users = new List<User>();
+            Categories = new List<Categories>();
             var page = FreshPageModelResolver.ResolvePageModel<LoginPageModel>();
             MainPage = page;
             ((LoginPageModel)page.BindingContext).OnSuccessfulLogin += Handle_OnSuccessfulLogin;
+
 
         }
 
@@ -102,4 +108,9 @@ namespace ManageGo
         LocalAuthType GetLocalAuthType();
         void Authenticate(string userId, Action onSuccess, Action onFailure);
     }
+    public interface IPicturePicker
+    {
+        Task<Tuple<Stream, string, Services.MGFileType>> GetImageStreamAsync();
+    }
+
 }

@@ -17,6 +17,7 @@ using Java.Lang;
 using Java.Util;
 using Java.Util.Concurrent;
 using Xamarin.Forms;
+using static Android.OS.PowerManager;
 using Size = Android.Util.Size;
 
 //todo: log errors in this file
@@ -33,6 +34,7 @@ namespace ManageGo.Droid
         public event EventHandler<string> Video;
         public int SurfaceWidth;
         public int SurfaceHeight;
+        WakeLock wakeLock;
         string videoFilePath;
         private Size videoSize;
         // Tag for the {@link Log}.
@@ -60,7 +62,7 @@ namespace ManageGo.Droid
         private static readonly int MAX_PREVIEW_HEIGHT = 1080;
 
         // TextureView.ISurfaceTextureListener handles several lifecycle events on a TextureView
-        private Camera2BasicSurfaceTextureListener mSurfaceTextureListener;
+        // private Camera2BasicSurfaceTextureListener mSurfaceTextureListener;
 
         // ID of the current {@link CameraDevice}.
         private string mCameraId;
@@ -252,7 +254,6 @@ namespace ManageGo.Droid
                     var rotatedPreviewHeight = height;
                     var maxPreviewWidth = displaySize.X;
                     var maxPreviewHeight = displaySize.Y;
-
                     if (swappedDimensions)
                     {
                         rotatedPreviewWidth = height;
@@ -260,17 +261,14 @@ namespace ManageGo.Droid
                         maxPreviewWidth = displaySize.Y;
                         maxPreviewHeight = displaySize.X;
                     }
-
                     if (maxPreviewWidth > MAX_PREVIEW_WIDTH)
                     {
                         maxPreviewWidth = MAX_PREVIEW_WIDTH;
                     }
-
                     if (maxPreviewHeight > MAX_PREVIEW_HEIGHT)
                     {
                         maxPreviewHeight = MAX_PREVIEW_HEIGHT;
                     }
-
                     // Danger, W.R.! Attempting to use too large a preview size could  exceed the camera
                     // bus' bandwidth limitation, resulting in gorgeous previews but the storage of
                     // garbage capture data.
@@ -288,7 +286,6 @@ namespace ManageGo.Droid
                     {
                         mTextureView.SetAspectRatio(mPreviewSize.Height, mPreviewSize.Width);
                     }
-
                     // Check if the flash is supported.
                     var available = (Java.Lang.Boolean)characteristics.Get(CameraCharacteristics.FlashInfoAvailable);
                     if (available == null)
@@ -299,7 +296,6 @@ namespace ManageGo.Droid
                     {
                         mFlashSupported = (bool)available;
                     }
-
                     mCameraId = cameraId;
                     return;
                 }
@@ -343,6 +339,7 @@ namespace ManageGo.Droid
             // Workaround for https://github.com/googlesamples/android-Camera2Video/issues/2
             CloseCameraVideo();
             OpenCamera(mTextureView.Width, mTextureView.Height);
+            wakeLock?.Release();
             Video?.Invoke(this, videoFilePath);
         }
 
@@ -382,10 +379,14 @@ namespace ManageGo.Droid
 
             try
             {
+                //wake up the cpu
+                PowerManager powerManager = (PowerManager)_context.GetSystemService(Context.PowerService);
+                wakeLock = powerManager.NewWakeLock(WakeLockFlags.Partial, "MyApp::MyWakelockTag");
+                wakeLock.Acquire();
                 SetUpMediaRecorder();
                 SurfaceTexture texture = mTextureView.SurfaceTexture;
                 //Assert.IsNotNull(texture);
-                texture.SetDefaultBufferSize(mPreviewSize.Width, mPreviewSize.Height);
+                // texture.SetDefaultBufferSize(CamcorderProfile.Get(CamcorderQuality.High., CamcorderProfile.Get(Height));
                 mPreviewRequestBuilder = mCameraDevice.CreateCaptureRequest(CameraTemplate.Record);
                 var surfaces = new List<Surface>();
                 var previewSurface = new Surface(texture);
@@ -436,9 +437,15 @@ namespace ManageGo.Droid
             if (null == _context)
                 return;
             mediaRecorder = new MediaRecorder();
-            mediaRecorder.SetAudioSource(AudioSource.Mic);
+            //changed this camcorder
+            mediaRecorder.SetAudioSource(AudioSource.Camcorder);
             mediaRecorder.SetVideoSource(VideoSource.Surface);
-            mediaRecorder.SetOutputFormat(OutputFormat.Mpeg4);
+            // mediaRecorder.SetOutputFormat(OutputFormat.Mpeg4);
+
+            //profile should be set after audio and video source and before
+            //setting the output file
+            //set this for test A
+            mediaRecorder.SetProfile(CamcorderProfile.Get(CamcorderQuality.High));
 
             string localFolder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
             videoFilePath = System.IO.Path.Combine(localFolder, $"video_{DateTime.Now.ToString("yyMMdd_hhmmss")}.mp4");
@@ -446,11 +453,16 @@ namespace ManageGo.Droid
 
             // var localPath = Android.OS.Environment.ExternalStorageDirectory + "/video1.mp4";
             mediaRecorder.SetOutputFile(videoFilePath);
-            mediaRecorder.SetVideoEncodingBitRate(10000000);
-            mediaRecorder.SetVideoFrameRate(30);
+
+            //mediaRecorder.SetVideoEncodingBitRate(10000000);
+            //mediaRecorder.SetVideoFrameRate(30);
+
+            // Call this after setOutFormat() but before prepare().
             mediaRecorder.SetVideoSize(videoSize.Width, videoSize.Height);
-            mediaRecorder.SetVideoEncoder(VideoEncoder.H264);
-            mediaRecorder.SetAudioEncoder(AudioEncoder.Aac);
+
+            //mediaRecorder.SetVideoEncoder(VideoEncoder.H264);
+            //mediaRecorder.SetAudioEncoder(AudioEncoder.Aac);
+
             var windowManager = _context.GetSystemService(Context.WindowService).JavaCast<IWindowManager>();
             int rotation = (int)windowManager.DefaultDisplay.Rotation;
             int orientation = ORIENTATIONS.Get(rotation);
@@ -462,7 +474,7 @@ namespace ManageGo.Droid
         {
             foreach (Size size in choices)
             {
-                if (size.Width == size.Height * 4 / 3 && size.Width <= 1000)
+                if (size.Width == size.Height * 4 / 3 && size.Width < 2000)
                     return size;
             }
             Log.Error(TAG, "Couldn't find any suitable video size");
