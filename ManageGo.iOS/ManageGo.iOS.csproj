@@ -358,5 +358,17 @@
     <BundleResource Include="Resources\am_inactive.png" />
     <BundleResource Include="Resources\rec_dot%403x.png" />
     <BundleResource Include="Resources\rec_dot%402x.png" />
+    <BundleResource Include="Resources\capture_video_play_2.png" />
+    <BundleResource Include="Resources\capture_video_play_2%402x.png" />
+    <BundleResource Include="Resources\capture_video_play_2%403x.png" />
+    <BundleResource Include="Resources\capture_video_stop_2.png" />
+    <BundleResource Include="Resources\capture_video_stop_2%402x.png" />
+    <BundleResource Include="Resources\capture_video_stop_2%403x.png" />
+    <BundleResource Include="Resources\chevron.png" />
+    <BundleResource Include="Resources\chevron%402x.png" />
+    <BundleResource Include="Resources\chevron%403x.png" />
+    <BundleResource Include="Resources\clip_iso.png" />
+    <BundleResource Include="Resources\clip_iso%402x.png" />
+    <BundleResource Include="Resources\clip_iso%403x.png" />
   </ItemGroup>
 </Project>

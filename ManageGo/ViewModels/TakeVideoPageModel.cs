@@ -66,9 +66,9 @@ namespace ManageGo
                 if (CurrentCameraMode == CameraModes.Snapshot)
                     return "capture_camera.png";
                 else if (CurrentCameraMode == CameraModes.Video && IsRecordingVideo)
-                    return "capture_video_stop.png";
+                    return "capture_video_stop_2.png";
                 else
-                    return "capture_video_play.png";
+                    return "capture_video_play_2.png";
             }
         }
         #endregion

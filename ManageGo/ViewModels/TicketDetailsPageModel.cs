@@ -28,6 +28,9 @@ namespace ManageGo
         List<byte[]> FilesToUpload { get; set; }
         public string BuildingUnitText { get; private set; } = String.Empty;
         public string Status { get; private set; } = String.Empty;
+        public Unit Unit { get; private set; }
+        public int TicketTenant { get; private set; }
+        public int BuildingId { get; private set; }
         public View PopContentView { get; private set; }
         [AlsoNotifyFor("DueDateRowIcon")]
         public View DueDateCalendarView { get; private set; }
@@ -37,16 +40,19 @@ namespace ManageGo
         public bool PriorityOptionsVisible { get; private set; }
         [AlsoNotifyFor("CategoryOptionsRowIcon")]
         public bool CategoryOptionsVisible { get; private set; }
+        [AlsoNotifyFor("AssignedOptionsRowIcon")]
+        public bool AssignedOptionsVisible { get; private set; }
         [AlsoNotifyFor("TagOptionsRowIcon")]
         public bool TagOptionsVisible { get; private set; }
         public string CategoryLabelText { get; private set; } = String.Empty;
+        public string AssignedLabelText { get; private set; } = String.Empty;
         public string CategoryLabelColor { get; private set; } = "#424242";
         public string TagLabelText { get; private set; } = String.Empty;
         public string TagLabelColor { get; private set; } = "#424242";
         public string DueDate { get; private set; } = String.Empty;
         public List<Categories> Categories { get; private set; }
         public List<Tags> Tags { get; private set; }
-
+        int TicketStatus { get; set; }
         public double ReplyAttachedFilesListHeight { get { return CurrentReplyAttachments is null || !CurrentReplyAttachments.Any() ? 0 : CurrentReplyAttachments.Count * 28; } }
 
         public string PriorityOptionsRowIcon
@@ -56,6 +62,10 @@ namespace ManageGo
         public string CategoryOptionsRowIcon
         {
             get { return CategoryOptionsVisible ? "chevron_down.png" : "chevron_right.png"; }
+        }
+        public string AssignedOptionsRowIcon
+        {
+            get { return AssignedOptionsVisible ? "chevron_down.png" : "chevron_right.png"; }
         }
         public string TagOptionsRowIcon
         {
@@ -82,6 +92,8 @@ namespace ManageGo
         public string LowPriorityRadioIcon { get { return PriorityLabelText.ToLower() == "low" ? "radio_selected.png" : "radio_unselected.png"; } }
         public string MediumPriorityRadioIcon { get { return PriorityLabelText.ToLower() == "medium" ? "radio_selected.png" : "radio_unselected.png"; } }
         public string HighPriorityRadioIcon { get { return PriorityLabelText.ToLower() == "high" ? "radio_selected.png" : "radio_unselected.png"; } }
+
+        public MaintenanceTicket CurrentTicket { get; private set; }
         public bool HasPet { get; private set; }
         public bool HasAccess { get; private set; }
         public bool HasWorkOrder { get; private set; }
@@ -96,6 +108,8 @@ namespace ManageGo
         public LayoutOptions ToFrameVerticalLayout { get; private set; }
         bool IsToTimeSelected { get; set; }
         public List<User> Users { get; private set; }
+        public string TicketComment { get; private set; }
+        private List<int> AssignedUserIds { get; set; }
         DateTime pickedTime;
         private int numberOfTries;
 
@@ -203,7 +217,6 @@ namespace ManageGo
         }
 
 
-
         public override void ReverseInit(object returnedData)
         {
             base.ReverseInit(returnedData);
@@ -221,6 +234,7 @@ namespace ManageGo
                 RaisePropertyChanged("ReplyAttachedFilesListHeight");
             }
         }
+
         public FreshAwaitCommand OnHideDetailsTapped
         {
             get
@@ -228,6 +242,7 @@ namespace ManageGo
                 return new FreshAwaitCommand((tcs) =>
                 {
                     PopContentView = null;
+                    ShowingTicketDetails = false;
                     ReplyButtonIsVisible = true;
                     tcs?.SetResult(true);
                 });
@@ -238,10 +253,20 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand((tcs) =>
+                async void execute(TaskCompletionSource<bool> tcs)
                 {
-                    //todo Close ticket
-                });
+
+                    var result = await CoreMethods.DisplayActionSheet($"Do you want to close {TicketTitle}?", "Cancel", "Close Ticket");
+                    if (result == "Close Ticket")
+                    {
+                        TicketStatus = 1;
+                        OnSaveEditsTapped.Execute(null);
+                        OnHideDetailsTapped.Execute(null);
+                        await CoreMethods.PopPageModel(data: CurrentTicket, modal: false);
+                    }
+                    tcs?.SetResult(true);
+                }
+                return new FreshAwaitCommand(execute);
             }
         }
 
@@ -249,12 +274,45 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand((tcs) =>
+                async void execute(TaskCompletionSource<bool> tcs)
                 {
-                    //todo save ticket detail edits
                     PopContentView = null;
                     ReplyButtonIsVisible = true;
-                });
+                    var ticketPriority = 2;
+                    if (PriorityLabelText.ToLower() == "low")
+                        ticketPriority = 0;
+                    else if (PriorityLabelText.ToLower() == "medium")
+                        ticketPriority = 1;
+                    try
+                    {
+                        Dictionary<string, object> parameters = new Dictionary<string, object>
+                        {
+                            { "TicketID", TicketId },
+                            { "Categories", Categories.Where(t=>t.IsSelected) },
+                            { "Status", TicketStatus },
+                            { "Priority", ticketPriority },
+                            { "TenantID", TicketTenant},
+                            { "UnitID", Unit.UnitId},
+                            { "Tags", Tags.Where(t=>t.IsSelected) },
+                            { "Assigned", Users.Where(t=>t.IsSelected) },
+                            { "BuildingID", BuildingId },
+                            { "Comment", TicketComment },
+
+                        };
+                        if (DateTime.TryParse(DueDate, out DateTime d))
+                            parameters.Add("DueDate", d);
+                        await Services.DataAccess.UpdateTicket(parameters);
+                    }
+                    catch (Exception ex)
+                    {
+                        await CoreMethods.DisplayAlert("Unable to update", ex.Message, "DISMISS");
+                    }
+                    finally
+                    {
+                        tcs?.SetResult(true);
+                    }
+                }
+                return new FreshAwaitCommand(execute);
             }
         }
 
@@ -267,6 +325,7 @@ namespace ManageGo
                     if (ShowingTicketDetails)
                     {
                         PopContentView = null;
+                        ReplyButtonIsVisible = false;
                     }
                     else
                     {
@@ -274,6 +333,7 @@ namespace ManageGo
                         ReplyBoxIsVisible = false;
                         WorkOrderActionSheetIsVisible = false;
                         EventActionSheetIsVisible = false;
+                        ReplyButtonIsVisible = true;
                     }
                     ReplyButtonIsVisible = !ReplyButtonIsVisible;
                     ShowingTicketDetails = !ShowingTicketDetails;
@@ -330,6 +390,19 @@ namespace ManageGo
                 });
             }
         }
+
+        public FreshAwaitCommand OnShowAssignedOptionsTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((tcs) =>
+                {
+                    AssignedOptionsVisible = !AssignedOptionsVisible;
+                    tcs?.SetResult(true);
+                });
+            }
+        }
+
 
         public FreshAwaitCommand OnShowTagOptionsTapped
         {
@@ -506,7 +579,7 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand(async (tcs) =>
+                async void execute(TaskCompletionSource<bool> tcs)
                 {
                     //show the send options popup
                     if (string.IsNullOrWhiteSpace(ReplyTextBody))
@@ -515,7 +588,8 @@ namespace ManageGo
                         SendOptionsPupupIsVisible = !SendOptionsPupupIsVisible;
                     tcs?.SetResult(true);
 
-                });
+                }
+                return new FreshAwaitCommand(execute);
             }
         }
 
@@ -564,7 +638,7 @@ namespace ManageGo
                         OnHideDetailsTapped.Execute(null);
                     }
                     else
-                        await CoreMethods.PopPageModel(false);
+                        await CoreMethods.PopPageModel(modal: false);
                     tcs?.SetResult(true);
                 }
                 return new FreshAwaitCommand(execute);
@@ -667,11 +741,17 @@ namespace ManageGo
                         await Services.DataAccess.SendNewEventAsync(dic);
                         foreach (var user in Users.Where(t => t.IsSelected))
                         {
-                            user.IsSelected = false;
+                            if (AssignedUserIds.Contains(user.UserID))
+                                user.IsSelected = true;
+                            else
+                                user.IsSelected = false;
                         }
                         foreach (var user in ExternalContacts.Where(t => t.IsSelected))
                         {
-                            user.IsSelected = false;
+                            if (AssignedUserIds.Contains(user.ExternalID))
+                                user.IsSelected = true;
+                            else
+                                user.IsSelected = false;
                         }
                         //clear the fields used for the workorder
                         EventSummary = null;
@@ -735,11 +815,17 @@ namespace ManageGo
                         await Services.DataAccess.SendNewWorkOurderAsync(dic);
                         foreach (var user in Users.Where(t => t.IsSelected))
                         {
-                            user.IsSelected = false;
+                            if (AssignedUserIds.Contains(user.UserID))
+                                user.IsSelected = true;
+                            else
+                                user.IsSelected = false;
                         }
                         foreach (var user in ExternalContacts.Where(t => t.IsSelected))
                         {
-                            user.IsSelected = false;
+                            if (AssignedUserIds.Contains(user.ExternalID))
+                                user.IsSelected = true;
+                            else
+                                user.IsSelected = false;
                         }
                         //clear the fields used for the workorder
                         WorkOrderSummary = null;
@@ -843,8 +929,6 @@ namespace ManageGo
             Categories = new List<Categories>();
             PriorityLabelText = "Not Available";
             Comments = new ObservableCollection<Comments>();
-            if (ticketDetails is null)
-                return;
             foreach (var cat in App.Categories)
             {
                 cat.IsSelected = false;
@@ -857,58 +941,22 @@ namespace ManageGo
             {
                 tag.IsSelected = false;
             }
-            if (TicketDetails.Comments != null)
-            {
-                Comments = new ObservableCollection<Comments>(TicketDetails.Comments);
-                if (Comments.Any())
-                {
-                    Comments.First().TopSideLineColor = "#00FFFFFF";
-                    Comments.Last().IsNotTheLastComment = false;
-                    for (int i = 1; i < Comments.Count; i++)
-                    {
-                        Comments[i].TopSideLineColor = Comments[i - 1].SideLineColor;
-                    }
-                }
-            }
-
-            PriorityLabelText = TicketDetails.Priority;
-            // Categories = TicketDetails.Categories;
-            Categories = App.Categories;
-            Tags = App.Tags;
-            if (TicketDetails.Categories != null && TicketDetails.Categories.Any())
-            {
-                CategoryLabelText = TicketDetails.Categories.First().CategoryName;
-                CategoryLabelColor = "#" + TicketDetails.Categories.First().Color;
-                foreach (var cat in Categories)
-                {
-                    if (TicketDetails.Categories.Any(c => c.CategoryName == cat.CategoryName))
-                    {
-                        cat.IsSelected = true;
-                    }
-                }
-            }
-            if (TicketDetails.Tags != null && TicketDetails.Tags.Any())
-            {
-                TagLabelText = TicketDetails.Tags.First().TagName;
-                TagLabelColor = "#" + TicketDetails.Tags.First().Color;
-                foreach (var tag in Tags)
-                {
-                    if (TicketDetails.Tags.Any(c => c.TagName == tag.TagName))
-                    {
-                        tag.IsSelected = true;
-                    }
-                }
-            }
             if (ticket != null)
             {
-
+                CurrentTicket = ticket;
                 HasPet = ticket.HasPet;
                 HasAccess = ticket.HasAccess;
                 HasWorkOrder = ticket.HasWorkorder;
                 HasEvent = ticket.HasEvent;
                 TicketId = ticket.TicketId;
                 Status = ticket.TicketStatus;
+                Unit = ticket.Unit;
+                TicketTenant = ticket.Tenant.TenantID;
+                BuildingId = ticket.Building.BuildingId;
                 Users = App.Users;
+                TicketComment = ticket.FirstComment;
+
+                AssignedUserIds = ticket.Assigned;
                 if (ticket.Assigned != null && ticket.Assigned.Any())
                 {
                     foreach (var user in Users)
@@ -927,16 +975,163 @@ namespace ManageGo
                 TenantName = string.IsNullOrWhiteSpace(tenantName) ? "Not Available" : tenantName;
                 DueDate = ticket.DueDate.HasValue ?
                     ticket.DueDate.Value.ToString("MM/dd/yy") : "Not Set";
+                if (ticketDetails is null)
+                {
+                    if (!string.IsNullOrWhiteSpace(TicketComment))
+                        Comments.Insert(0, new Comments
+                        {
+                            CommentType = CommentTypes.Resident,
+                            Text = TicketComment,
+                            TopSideLineColor = "#00FFFFFF",
+                            IsNotTheLastComment = false,
+                            CommentCreateTime = ticket.TicketCreateTime.ToLongDateString(),
+                            HasPet = ticket.HasPet,
+
+                            HasAccess = ticket.HasAccess
+                        });
+                }
+            }
+            if (ticketDetails is null)
+            {
+                return;
+            }
+
+
+            if (TicketDetails.Comments != null)
+            {
+                Comments = new ObservableCollection<Comments>(TicketDetails.Comments);
+                if (Comments.Any())
+                {
+                    Comments.First().TopSideLineColor = "#00FFFFFF";
+                    Comments.Last().IsNotTheLastComment = false;
+                    for (int i = 1; i < Comments.Count; i++)
+                    {
+                        Comments[i].TopSideLineColor = Comments[i - 1].SideLineColor;
+                    }
+                }
+            }
+            PriorityLabelText = TicketDetails.Priority;
+            // Categories = TicketDetails.Categories;
+            Categories = App.Categories;
+            Tags = App.Tags;
+            if (TicketDetails.Categories != null && TicketDetails.Categories.Any())
+            {
+                CategoryLabelText = TicketDetails.Categories.First().CategoryName;
+                CategoryLabelColor = "#" + TicketDetails.Categories.First().Color;
+                foreach (var cat in Categories)
+                {
+                    if (TicketDetails.Categories.Any(c => c.CategoryID == cat.CategoryID))
+                    {
+                        cat.IsSelected = true;
+                    }
+                }
+                if (Categories.Count(t => t.IsSelected) > 1)
+                {
+                    CategoryLabelText = CategoryLabelText + $", +{Categories.Count(t => t.IsSelected) - 1} more";
+                    CategoryLabelColor = "#58595B";
+                }
+            }
+            if (TicketDetails.Tags != null && TicketDetails.Tags.Any())
+            {
+                TagLabelText = TicketDetails.Tags.First().TagName;
+                TagLabelColor = "#" + TicketDetails.Tags.First().Color;
+                foreach (var tag in Tags)
+                {
+                    if (TicketDetails.Tags.Any(c => c.TagID == tag.TagID))
+                    {
+                        tag.IsSelected = true;
+                    }
+                }
+                if (Tags.Count(t => t.IsSelected) > 1)
+                {
+                    TagLabelText = TagLabelText + $", +{Tags.Count(t => t.IsSelected) - 1} more";
+                    TagLabelColor = "#58595B";
+                }
             }
 
             ExternalContacts = App.ExternalContacts;
+        }
+
+        public FreshAwaitCommand OnTagTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((par, tcs) =>
+                {
+                    var tag = (Tags)par;
+                    tag.IsSelected = !tag.IsSelected;
+                    if (Tags.Any(t => t.IsSelected == true))
+                    {
+                        TagLabelText = Tags.First(t => t.IsSelected).TagName;
+                        TagLabelColor = "#" + Tags.First(t => t.IsSelected).Color;
+                        if (Tags.Count(t => t.IsSelected) > 1)
+                        {
+                            TagLabelText = TagLabelText + $", +{Tags.Count(t => t.IsSelected) - 1} more";
+                            TagLabelColor = "#58595B";
+                        }
+                    }
+                    else
+                        TagLabelText = string.Empty;
+                    tcs?.SetResult(true);
+                });
+            }
+        }
+
+        public FreshAwaitCommand OnCategoryTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((par, tcs) =>
+                {
+                    var cat = (Categories)par;
+                    cat.IsSelected = !cat.IsSelected;
+                    if (Categories.Any(t => t.IsSelected == true))
+                    {
+                        CategoryLabelText = Categories.First(t => t.IsSelected).CategoryName;
+                        CategoryLabelColor = "#" + Categories.First(t => t.IsSelected).Color;
+                        if (Categories.Count(t => t.IsSelected) > 1)
+                        {
+                            CategoryLabelText = CategoryLabelText + $", +{Categories.Count(t => t.IsSelected) - 1} more";
+                            CategoryLabelColor = "#58595B";
+                        }
+                    }
+                    else
+                        CategoryLabelText = string.Empty;
+
+                    tcs?.SetResult(true);
+                });
+            }
+        }
+
+        public FreshAwaitCommand OnUserTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((par, tcs) =>
+                {
+                    var u = (User)par;
+                    u.IsSelected = !u.IsSelected;
+                    if (Users.Any(t => t.IsSelected == true))
+                    {
+                        AssignedLabelText = Users.First(t => t.IsSelected).UserFullName;
+                        if (Users.Count(t => t.IsSelected) > 1)
+                        {
+                            AssignedLabelText = AssignedLabelText + $", +{Users.Count(t => t.IsSelected) - 1} more";
+                        }
+                    }
+                    else
+                        AssignedLabelText = string.Empty;
+
+                    tcs?.SetResult(true);
+                });
+            }
         }
 
         public FreshAwaitCommand OnListRefreshRequested
         {
             get
             {
-                return new FreshAwaitCommand(async (tcs) =>
+                async void execute(TaskCompletionSource<bool> tcs)
                 {
                     if (IsBusy)
                         return;
@@ -949,8 +1144,8 @@ namespace ManageGo
                     }
 
                     tcs?.SetResult(true);
-                });
-
+                }
+                return new FreshAwaitCommand(execute);
             }
         }
 

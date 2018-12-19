@@ -6,7 +6,7 @@ using PropertyChanged;
 namespace ManageGo
 {
     [AddINotifyPropertyChangedInterface]
-    public class Building
+    public class Building : IComparable
     {
         public int BuildingId { get; set; }
         public int PropertyId { get; set; }
@@ -18,6 +18,7 @@ namespace ManageGo
         public bool IsMaintenanceEnabled { get; set; }
 
         public List<Unit> Units { get; set; }
+        public List<Tenant> Tenants { get; set; }
 
         // TODO: Find a better way to split this up
         [JsonProperty(PropertyName = "NumberOfUnits")]
@@ -39,6 +40,16 @@ namespace ManageGo
             {
                 return IsSelected ? "checked.png" : "unchecked.png";
             }
+        }
+
+        public int CompareTo(object obj)
+        {
+            if (obj == null) return 1;
+
+            if (obj is Building otherTemperature)
+                return string.Compare(this.BuildingShortAddress, otherTemperature.BuildingShortAddress, StringComparison.Ordinal);
+            else
+                throw new ArgumentException("Object is not a Building");
         }
     }
 }

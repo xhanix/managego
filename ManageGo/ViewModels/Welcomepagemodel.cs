@@ -72,9 +72,9 @@ namespace ManageGo
             try
             {
                 List<Task> tasks = new List<Task>();
-                if (App.Buildings is null)
+                if (App.Buildings is null || App.Buildings.Count == 0)
                     tasks.Add(Services.DataAccess.GetBuildings());
-                if (App.Categories is null)
+                if (App.Categories is null || App.Categories.Count == 0)
                 {
                     tasks.Add(Services.DataAccess.GetAllCategoriesAndTags());
                     tasks.Add(Services.DataAccess.GetAllUsers());
@@ -87,6 +87,8 @@ namespace ManageGo
             }
 
         }
+
+
 
         private async Task ShowNoInternetView()
         {

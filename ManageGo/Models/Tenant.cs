@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
+using PropertyChanged;
 
 namespace ManageGo
 {
+    [AddINotifyPropertyChangedInterface]
     public class Tenant
     {
         public int TenantID { get; set; }
@@ -14,5 +16,18 @@ namespace ManageGo
         public List<Unit> TenantUnits { get; set; }
         [JsonIgnore]
         public string FullName { get { return TenantFirstName + " " + TenantLastName; } }
+
+        [JsonIgnore, AlsoNotifyFor("CheckBoxImage")]
+        public bool IsSelected { get; set; }
+
+        [JsonIgnore]
+        public string CheckBoxImage
+        {
+            get
+            {
+                return IsSelected ? "checked.png" : "unchecked.png";
+            }
+        }
+
     }
 }

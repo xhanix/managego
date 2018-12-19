@@ -19,11 +19,12 @@ namespace ManageGo
             base.OnElementChanged(e);
             if (e.OldElement == null)
             {
-                Control.Background = null;
+                //Control.Background = null;
             }
 
             Control?.SetBackground(new ColorDrawable(Android.Graphics.Color.Transparent));
             Control?.SetBackgroundColor(Android.Graphics.Color.Transparent);
+
         }
     }
 }

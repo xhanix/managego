@@ -122,14 +122,31 @@ namespace ManageGo.Services
         #region BUILDINGS
         public static async Task GetBuildings()
         {
-            var param = new Dictionary<string, string> { { "page", "0" } };
+            var param = new Dictionary<string, string> { { "page", "1" } };
             var response = await client.PostAsync(BaseUrl + APIpaths.buildings.ToString(), new FormUrlEncodedContent(param));
             var responseString = await response.Content.ReadAsStringAsync();
             var dic = JObject.Parse(responseString);
             if (dic.TryGetValue("Result", out JToken list))
             {
                 App.Buildings = list.ToObject<List<Building>>();
+                App.Buildings.Sort();
             }
+        }
+        public static async Task<Building> GetBuildingDetails(int id)
+        {
+            var param = new Dictionary<string, string> { { "BuildingID", $"{id}" } };
+            var response = await client.PostAsync(BaseUrl + APIpaths.BuildingDetails.ToString(), new FormUrlEncodedContent(param));
+            var responseString = await response.Content.ReadAsStringAsync();
+            var dic = JObject.Parse(responseString);
+            if (dic.TryGetValue("Result", out JToken list))
+            {
+                return list.ToObject<Building>();
+            }
+            else if (dic.TryGetValue("Error", out JToken error))
+            {
+                throw new Exception(error.ToObject<string>());
+            }
+            throw new Exception("Unable to get building details");
         }
         #endregion
 
@@ -161,6 +178,40 @@ namespace ManageGo.Services
             return await GetTicketsFromResponse(response);
         }
 
+        public static async Task UpdateTicket(Dictionary<string, object> parameters)
+        {
+            if (TokenExpiry < DateTimeOffset.Now)
+                await Login();
+            var jsonString = JsonConvert.SerializeObject(parameters);
+            var content = new StringContent(jsonString, Encoding.UTF8, "application/json");//new FormUrlEncodedContent(filters);
+            var msg = new HttpRequestMessage(HttpMethod.Post, BaseUrl + APIpaths.UpdateTicket.ToString())
+            {
+                Content = content
+            };
+            var response = await client.SendAsync(msg);
+            var responseString = await response.Content.ReadAsStringAsync();
+            var responseObject = JObject.Parse(responseString);
+        }
+
+        public static async Task<int> CreateTicket(Dictionary<string, object> parameters)
+        {
+            if (TokenExpiry < DateTimeOffset.Now)
+                await Login();
+            var jsonString = JsonConvert.SerializeObject(parameters);
+            var content = new StringContent(jsonString, Encoding.UTF8, "application/json");//new FormUrlEncodedContent(filters);
+            var msg = new HttpRequestMessage(HttpMethod.Post, BaseUrl + APIpaths.CreateTicket.ToString())
+            {
+                Content = content
+            };
+            var response = await client.SendAsync(msg);
+            var responseString = await response.Content.ReadAsStringAsync();
+            var responseObject = JObject.Parse(responseString);
+            if (responseObject.TryGetValue("Status", out JToken status) && (int)status != 1)
+            {
+                throw new Exception(responseObject.GetValue("ErrorMessage").ToObject<string>());
+            }
+            return responseObject.TryGetValue("Result", out JToken result) ? (int)result["TicketID"] : 0;
+        }
 
         public static async Task<int> SendNewCommentAsync(Dictionary<string, object> parametes)
         {

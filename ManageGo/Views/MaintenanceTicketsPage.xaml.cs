@@ -24,7 +24,20 @@ namespace ManageGo
             row.ForceUpdateSize();
         }
 
-
+        protected override bool OnBackButtonPressed()
+        {
+            var model = (MaintenanceTicketsPageModel)BindingContext;
+            if (model.PopContentView != null)
+            {
+                model.PopContentView = null;
+                model.ListIsEnabled = true;
+                model.CalendarIsShown = false;
+                model.FilterSelectViewIsShown = false;
+                return true;
+            }
+            App.MasterDetailNav.SwitchSelectedRootPageModel<WelcomePageModel>();
+            return true;
+        }
 
         void Handle_Clicked(object sender, EventArgs e)
         {

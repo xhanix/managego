@@ -293,6 +293,31 @@
     <AndroidResource Include="Resources\drawable-xhdpi\internal_closed.png" />
     <AndroidResource Include="Resources\drawable-xhdpi\internal_open.png" />
     <AndroidResource Include="Resources\drawable-xxhdpi\internal_open.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\capture_video_play_2.png" />
+    <AndroidResource Include="Resources\mipmap-xhdpi\capture_video_stop_2.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\capture_video_play_2.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\capture_video_stop_2.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\capture_video_play_2.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\capture_video_stop_2.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\capture_video_play_2.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\capture_video_stop_2.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\capture_video_play_2.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\capture_video_stop_2.png" />
+    <AndroidResource Include="Resources\drawable\capture_video_play_2.png" />
+    <AndroidResource Include="Resources\drawable\capture_video_stop_2.png" />
+    <AndroidResource Include="Resources\drawable\chevron.png" />
+    <AndroidResource Include="Resources\drawable\clip_iso.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\chevron.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\clip_iso.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\chevron.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\clip_iso.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\chevron.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\clip_iso.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\chevron.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\clip_iso.png" />
+    <AndroidResource Include="Resources\drawable\camera_1.png" />
+    <AndroidResource Include="Resources\drawable\camera_2.png" />
+    <AndroidResource Include="Resources\drawable\camera_3.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\drawable\" />

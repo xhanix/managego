@@ -54,8 +54,8 @@
             </Grid>
             <BoxView BackgroundColor="#ebebeb" HeightRequest="1"/>
             <StackLayout Orientation="Horizontal" Padding="36,10,18,0">
-                <Image Source="chat_lg.png" WidthRequest="20" HeightRequest="20" Margin="0,2,0,0" VerticalOptions="Center"/>
-                <Label Text="{Binding TicketTitleText}" FontSize="Medium" HorizontalOptions="FillAndExpand" FontAttributes="Bold" Margin="8,-3,0,0" LineBreakMode="TailTruncation" VerticalOptions="Start" />
+                <Image IsVisible="{Binding ShowingTicketDetails,Converter={StaticResource InverseBoolConverter}}" Source="chat_lg.png" WidthRequest="20" HeightRequest="20" Margin="0,2,0,0" VerticalOptions="Center"/>
+                <Label IsVisible="{Binding ShowingTicketDetails,Converter={StaticResource InverseBoolConverter}}" Text="{Binding TicketTitleText}" FontSize="Medium" HorizontalOptions="FillAndExpand" FontAttributes="Bold" Margin="8,-3,0,0" LineBreakMode="TailTruncation" VerticalOptions="Start" />
                 <!-- *** wanted to hide these after all ***
                 <Image Source="key_blue.png" IsVisible="{Binding HasAccess}" HorizontalOptions="EndAndExpand"/>
                 <Image Source="pet_blue.png" IsVisible="{Binding HasPet}" HorizontalOptions="End"/>
@@ -63,8 +63,21 @@
                 <Image Source="calendar_blue_sm.png" IsVisible="{Binding HasEvent}" HorizontalOptions="End"/>
                 -->
                 </StackLayout>
-            <ContentView BackgroundColor="White" Content="{Binding PopContentView}" VerticalOptions="FillAndExpand"/>
-        </StackLayout>
+                <StackLayout IsVisible="{Binding ShowingTicketDetails}" MinimumHeightRequest="75">
+                    <Grid Padding="14,8,18,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="auto" />
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="1" FontSize="Small" TextColor="{StaticResource Grey-Mid-1}" Text="Close ticket" Command="{Binding OnCloseTicketButtonTapped}" BackgroundColor="Transparent" HorizontalOptions="EndAndExpand" />
+                        <Button Grid.Column="0" FontSize="Medium" TextColor="White" Text="Save" CornerRadius="21" Command="{Binding OnSaveEditsTapped}" BackgroundColor="{StaticResource Primary}" HorizontalOptions="FillAndExpand" />
+                        <Button Grid.Column="2" FontSize="Small" TextColor="{StaticResource Grey-Mid-1}" Text="Cancel" Command="{Binding OnHideDetailsTapped}" BackgroundColor="Transparent" HorizontalOptions="EndAndExpand"/>
+                    </Grid>
+                    <BoxView HeightRequest="1" VerticalOptions="Center" BackgroundColor="#e0e0e0" Grid.ColumnSpan="2" />
+                </StackLayout>
+                <ContentView BackgroundColor="White" Content="{Binding PopContentView}" VerticalOptions="FillAndExpand"/>
+            </StackLayout>
         <StackLayout Grid.Row="2" BackgroundColor="#f4f4f4" Spacing="0">
                 <Grid Padding="18">
                     <Frame BackgroundColor="White" CornerRadius="5" HasShadow="false" Padding="0,0,8,0">
@@ -311,7 +324,7 @@
                     </Frame.GestureRecognizers>
                 </Frame>
                 <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand" Margin="0,0,10,8">
-                    <Button Image="clip.png" BackgroundColor="#e0eefd" Command="{Binding OnAttachButtonTapped}" WidthRequest="48" Margin="0,0,28,0" CornerRadius="23"  />
+                    <Button Image="clip.png" BackgroundColor="Transparent" VerticalOptions="Center" Command="{Binding OnAttachButtonTapped}" WidthRequest="48" HeightRequest="48" Margin="0,0,28,0" Padding="0"  />
                     <Button Text=" Cancel " Command="{Binding OnCloseReplyBubbleTapped}" CornerRadius="23" FontSize="Medium" HorizontalOptions="EndAndExpand" FontAttributes="Bold"   TextColor="#4c4b4b" BackgroundColor="Transparent" />
                     <Button Text="Send" Command="{Binding OnSendReplyTapped}" WidthRequest="155" CornerRadius="23" ContentLayout="Right,1" FontSize="Medium" HorizontalOptions="End" FontAttributes="Bold" Image="arrow_right.png" TextColor="#328bf6" BackgroundColor="#e0eefd" />
                 </StackLayout> 

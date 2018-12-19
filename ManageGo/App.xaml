@@ -8,6 +8,7 @@
             <Color x:Key="Tertiary">#FFFFFF</Color>
             <Color x:Key="Grey-Mid-1">#58595B</Color>
             <Color x:Key="Grey-Light-1">#A7A9AC</Color>
+            <Color x:Key="Grey-Light-2">#f4f4f4</Color>
             <Color x:Key="Grey-Mid-2">#949494</Color>
             <Color x:Key="Grey-Dark-1">#323232</Color>
             <Color x:Key="Off-White">#F9FAFB</Color>
@@ -15,7 +16,6 @@
             <Color x:Key="Green">#55C433</Color>
             <Color x:Key="Red">#E13D40</Color>
             <Style x:Key="Regular-Text" TargetType="Label">
-                
             </Style>
             <OnPlatform x:TypeArguments="x:String" x:Key="MonoBoldFont">
                 <On Platform="Android" Value="CourierPSStd-Bold.ttf#CourierPSMTStd-Bold" />

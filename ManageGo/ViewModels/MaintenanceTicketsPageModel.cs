@@ -18,11 +18,11 @@ namespace ManageGo
         DateRange dateRange;
         readonly string filterSelectedColor = "#8ad96b";
         readonly string filterDefaultColor = "#aeb0b3";
-        public View PopContentView { get; private set; }
+        public View PopContentView { get; internal set; }
         [AlsoNotifyFor("AddNewButtonIsVisisble")]
-        bool CalendarIsShown { get; set; }
+        internal bool CalendarIsShown { get; set; }
         [AlsoNotifyFor("AddNewButtonIsVisisble")]
-        bool FilterSelectViewIsShown { get; set; }
+        internal bool FilterSelectViewIsShown { get; set; }
         public ObservableCollection<MaintenanceTicket> FetchedTickets { get; private set; }
         public bool ListIsEnabled { get; set; } = false;
         public bool AddNewButtonIsVisisble
@@ -265,8 +265,16 @@ namespace ManageGo
                 try
                 {
                     if (FetchedTickets is null || applyNewFilter)
+                    {
+                        // FetchedTickets is null on view init
                         FetchedTickets = new ObservableCollection<MaintenanceTicket>(
-                            await Services.DataAccess.GetTicketsAsync(FiltersDictionary));
+                                await Services.DataAccess.GetTicketsAsync(FiltersDictionary));
+                        var lastIdx = FetchedTickets.IndexOf(FetchedTickets.Last());
+                        var index = Math.Floor(lastIdx / 2d);
+                        var markedItem = FetchedTickets.ElementAt((int)index);
+                        LastLoadedItemId = markedItem.TicketId;
+                        CanGetMorePages = FetchedTickets.Count == pageSize;
+                    }
                     else
                     {
                         var list = FetchedTickets.ToList();
@@ -283,7 +291,6 @@ namespace ManageGo
                         var index = Math.Floor(lastIdx / 2d);
                         var markedItem = FetchedTickets.ElementAt((int)index);
                         LastLoadedItemId = markedItem.TicketId;
-
                     }
                     Buildings = App.Buildings;
                     Categories = App.Categories;
@@ -345,11 +352,12 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand((tcs) =>
+                async void execute(TaskCompletionSource<bool> tcs)
                 {
-
+                    await CoreMethods.PushPageModel<CreateTicketPageModel>();
                     tcs?.SetResult(true);
-                });
+                }
+                return new FreshAwaitCommand(execute);
             }
         }
 
@@ -475,11 +483,51 @@ namespace ManageGo
             }
         }
 
+        public FreshAwaitCommand OnResetFiltersButtonTapped
+        {
+            get
+            {
+                async void execute(TaskCompletionSource<bool> tcs)
+                {
+                    PopContentView = null;
+                    await LoadData(true, false);
+                    NumberOfAppliedFilters = string.Empty;
+                    if (Buildings != null)
+                    {
+                        foreach (var b in Buildings)
+                        {
+                            b.IsSelected = false;
+                        }
+                    }
+                    if (Tags != null)
+                    {
+                        foreach (var b in Tags)
+                        {
+                            b.IsSelected = false;
+                        }
+                    }
+                    if (Users != null)
+                    {
+                        foreach (var b in Users)
+                        {
+                            b.IsSelected = false;
+                        }
+                    }
+                    HasCalendarFilter = false;
+                    IsLowPriorityFilterSelected = false;
+                    IsMediumPriorityFilterSelected = false;
+                    IsHighPriorityFilterSelected = false;
+                    tcs?.SetResult(true);
+                }
+                return new FreshAwaitCommand(execute);
+            }
+        }
+
         public FreshAwaitCommand OnApplyFiltersTapped
         {
             get
             {
-                return new FreshAwaitCommand(async (tcs) =>
+                async void execute(TaskCompletionSource<bool> tcs)
                 {
                     PopContentView = null;
                     var numberOfFilters = 0;
@@ -554,7 +602,8 @@ namespace ManageGo
                     ListIsEnabled = true;
                     IsSearching = false;
                     tcs?.SetResult(true);
-                });
+                }
+                return new FreshAwaitCommand(execute);
             }
         }
 
@@ -562,7 +611,7 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand(async (item, tcs) =>
+                async void execute(object item, TaskCompletionSource<bool> tcs)
                 {
                     var ticket = (MaintenanceTicket)item;
                     //get ticket details
@@ -570,13 +619,13 @@ namespace ManageGo
                     {
                         var ticketDetails = await Services.DataAccess.GetTicketDetails(ticket.TicketId);
                         var dic = new Dictionary<string, object>
-                        {
+                            {
                             {"TicketDetails", ticketDetails},
                             {"TicketNumber", ticket.TicketNumber},
                             {"Address", ticket.Building?.BuildingName + " #" + ticket.Unit?.UnitName},
                             {"TicketTitleText", ticket.TicketSubject},
                             {"Ticket", ticket}
-                        };
+                            };
                         await CoreMethods.PushPageModel<TicketDetailsPageModel>(dic, false, false);
                     }
                     catch (Exception ex)
@@ -587,7 +636,8 @@ namespace ManageGo
                     {
                         tcs?.SetResult(true);
                     }
-                });
+                }
+                return new FreshAwaitCommand(execute);
             }
         }
 
@@ -625,7 +675,7 @@ namespace ManageGo
                             HorizontalOptions = LayoutOptions.Center,
                             AllowMultipleSelection = true
                         };
-                        applyButton.Clicked += async (sender, e) =>
+                        async void p(object sender, EventArgs e)
                         {
                             this.DateRange = cal.SelectedDates;
                             OnCalendarButtonTapped.Execute(null);
@@ -633,7 +683,8 @@ namespace ManageGo
                             IsSearching = true;
                             await LoadData(refreshData: true, applyNewFilter: true);
                             IsSearching = false;
-                        };
+                        }
+                        applyButton.Clicked += p;
                         buttonContainer.Children.Add(cancelButton);
                         buttonContainer.Children.Add(applyButton);
                         container.Children.Add(cal);
@@ -704,9 +755,9 @@ namespace ManageGo
             try
             {
                 List<Task> tasks = new List<Task>();
-                if (App.Buildings is null)
+                if (App.Buildings is null || !App.Buildings.Any())
                     tasks.Add(Services.DataAccess.GetBuildings());
-                if (App.Categories is null)
+                if (App.Categories is null || !App.Categories.Any())
                 {
                     tasks.Add(Services.DataAccess.GetAllCategoriesAndTags());
                     tasks.Add(Services.DataAccess.GetAllUsers());
@@ -718,7 +769,19 @@ namespace ManageGo
                 await ShowNoInternetView();
             }
         }
-
+        public override async void ReverseInit(object returnedData)
+        {
+            base.ReverseInit(returnedData);
+            if (returnedData is MaintenanceTicket && FetchedTickets != null &&
+                    FetchedTickets.Contains((MaintenanceTicket)returnedData))
+            {
+                FetchedTickets.Remove((MaintenanceTicket)returnedData);
+            }
+            else if (returnedData is bool && (bool)returnedData && FetchedTickets != null)
+            {
+                await LoadData(refreshData: true);
+            }
+        }
         private async Task ShowNoInternetView()
         {
             APIhasFailed = true;
