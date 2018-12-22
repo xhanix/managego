@@ -10,5 +10,10 @@ namespace ManageGo
         {
             InitializeComponent();
         }
+
+        internal TenantFilterSelectView(BaseDetailPage bindingContext) : this()
+        {
+            this.BindingContext = bindingContext;
+        }
     }
 }

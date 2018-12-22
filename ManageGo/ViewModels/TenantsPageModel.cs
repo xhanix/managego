@@ -15,6 +15,8 @@ namespace ManageGo
         public bool FilterBuildingsExpanded { get; set; }
         public bool FilterUnitsExpanded { get; set; }
         public bool FilterStatusExpanded { get; set; }
+        public string SelectedUnitString { get; set; }
+        public string FilterKeywords { get; set; }
         public View PopContentView { get; set; }
         public bool ListIsEnabled { get; set; }
         public List<Building> Buildings { get; set; }
@@ -33,7 +35,7 @@ namespace ManageGo
         {
             get
             {
-                return !this.SelectedActiveTenantFilter ? "unchecked.png" : "checked.png";
+                return !SelectedActiveTenantFilter ? "unchecked.png" : "checked.png";
             }
         }
         public string InActiveTenantCheckBoxImage
@@ -41,7 +43,7 @@ namespace ManageGo
 
             get
             {
-                return !this.SelectedInActiveTenantFilter ? "unchecked.png" : "checked.png";
+                return !SelectedInActiveTenantFilter ? "unchecked.png" : "checked.png";
             }
         }
 
@@ -49,9 +51,9 @@ namespace ManageGo
         {
             get
             {
-                if (this.SelectedActiveTenantFilter && this.SelectedInActiveTenantFilter || !this.SelectedActiveTenantFilter && !this.SelectedInActiveTenantFilter)
+                if (SelectedActiveTenantFilter && SelectedInActiveTenantFilter || !SelectedActiveTenantFilter && !SelectedInActiveTenantFilter)
                     return "All";
-                return !this.SelectedActiveTenantFilter ? "Inactive" : "Active";
+                return !SelectedActiveTenantFilter ? "Inactive" : "Active";
             }
         }
 
@@ -118,9 +120,9 @@ namespace ManageGo
             {
                 return new FreshAwaitCommand((Action<TaskCompletionSource<bool>>)(tcs =>
                 {
-                    this.PopContentView = (View)null;
-                    this.FilterSelectViewIsShown = false;
-                    this.ListIsEnabled = true;
+                    PopContentView = (View)null;
+                    FilterSelectViewIsShown = false;
+                    ListIsEnabled = true;
                     tcs?.SetResult(true);
                 }));
             }
@@ -135,33 +137,86 @@ namespace ManageGo
                     if (!(str == "Active"))
                     {
                         if (str == "Inactive")
-                            this.SelectedInActiveTenantFilter = !this.SelectedInActiveTenantFilter;
+                            SelectedInActiveTenantFilter = !SelectedInActiveTenantFilter;
                     }
                     else
-                        this.SelectedActiveTenantFilter = !this.SelectedActiveTenantFilter;
+                        SelectedActiveTenantFilter = !SelectedActiveTenantFilter;
                     tcs?.SetResult(true);
                 }));
             }
         }
+        public FreshAwaitCommand OnApplyFiltersTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand(async (parameter, tcs) =>
+                {
 
+                    PopContentView = null;
+                    var numberOfFilters = 0;
+                    FilterSelectViewIsShown = false;
+                    Dictionary<string, object> paramDic = new Dictionary<string, object>();
+                    if (Buildings != null && Buildings.Any(f => f.IsSelected))
+                    {
+                        paramDic.Add("Buildings", Buildings.Where(f => f.IsSelected).Select(f => f.BuildingId));
+                        numberOfFilters++;
+                    }
+                    if (Units != null && Units.Any(f => f.IsSelected))
+                    {
+                        paramDic.Add("Units", Units.Where(f => f.IsSelected).Select(f => f.UnitId));
+                        numberOfFilters++;
+                    }
+                    if (SelectedActiveTenantFilter && SelectedInActiveTenantFilter)
+                    {
+                        paramDic.Add("Status", 2);
+                    }
+                    else if (SelectedActiveTenantFilter)
+                    {
+                        paramDic.Add("Status", 0);
+                        numberOfFilters++;
+                    }
+                    else if (SelectedInActiveTenantFilter)
+                    {
+                        paramDic.Add("Status", 1);
+                        numberOfFilters++;
+                    }
+                    else
+                    {
+                        paramDic.Add("Status", 2);
+                    }
+                    NumberOfAppliedFilters = numberOfFilters > 0 ? $"{numberOfFilters}" : " ";
+                    FiltersDictionary = paramDic;
+                    IsSearching = true;
+                    FetchedTenants = await Services.DataAccess.GetTenantsAsync(paramDic);
+                    ListIsEnabled = true;
+                    IsSearching = false;
+                    tcs?.SetResult(true);
+                });
+            }
+        }
+        protected override void ViewIsAppearing(object sender, EventArgs e)
+        {
+            base.ViewIsAppearing(sender, e);
+            Buildings = App.Buildings;
+        }
         protected override void ViewIsDisappearing(object sender, EventArgs e)
         {
             base.ViewIsDisappearing(sender, e);
-            if (this.Buildings != null)
+            if (Buildings != null)
             {
                 foreach (Building building in Buildings.Where(t => t.IsSelected))
                 {
                     building.IsSelected = false;
                 }
             }
-            if (this.Units != null)
+            if (Units != null)
             {
-                foreach (Unit unit in this.Units.Where((t => t.IsSelected)))
+                foreach (Unit unit in Units.Where((t => t.IsSelected)))
                     unit.IsSelected = false;
             }
-            this.NumberOfAppliedFilters = " ";
-            this.SelectedActiveTenantFilter = true;
-            this.SelectedInActiveTenantFilter = true;
+            NumberOfAppliedFilters = " ";
+            SelectedActiveTenantFilter = true;
+            SelectedInActiveTenantFilter = true;
         }
 
         public async Task OnItemAppeared(Tenant tenant)
@@ -178,17 +233,17 @@ namespace ManageGo
             {
                 return new FreshAwaitCommand((tcs) =>
                 {
-                    if (this.FilterSelectViewIsShown)
+                    if (FilterSelectViewIsShown)
                     {
-                        this.PopContentView = (View)null;
-                        this.ListIsEnabled = true;
+                        PopContentView = (View)null;
+                        ListIsEnabled = true;
                     }
                     else
                     {
-                        //  this.PopContentView = new TenantFilterSelectView((FreshBasePageModel)this).Content;
-                        this.ListIsEnabled = false;
+                        PopContentView = new TenantFilterSelectView(this).Content;
+                        ListIsEnabled = false;
                     }
-                    this.FilterSelectViewIsShown = !this.FilterSelectViewIsShown;
+                    FilterSelectViewIsShown = !FilterSelectViewIsShown;
                     tcs?.SetResult(true);
                 });
             }
@@ -264,7 +319,117 @@ namespace ManageGo
             }
         }
 
-        public string SelectedUnitString { get; set; }
-        public string FilterKeywords { get; set; }
+        public FreshAwaitCommand OnExpandFilterTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand(async (par, tcs) =>
+                {
+                    switch ((string)par)
+                    {
+                        case "Status":
+                            FilterStatusExpanded = !FilterStatusExpanded;
+                            break;
+                        case "Buildings":
+                            FilterBuildingsExpanded = !FilterBuildingsExpanded;
+                            break;
+                        case "Units":
+                            if (Buildings is null || !Buildings.Any(t => t.IsSelected))
+                            {
+                                await CoreMethods.DisplayAlert("ManageGo", "Select a building first", "DIMISS");
+                            }
+                            else
+                            {
+                                FilterUnitsExpanded = !FilterUnitsExpanded;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                    tcs?.SetResult(true);
+                });
+            }
+        }
+
+        public FreshAwaitCommand OnBuildingTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand(async (par, tcs) =>
+                {
+                    var building = (Building)par;
+                    try
+                    {
+                        var details = await DataAccess.GetBuildingDetails(building.BuildingId);
+                        foreach (Building b in Buildings)
+                        {
+                            b.IsSelected = false;
+                        }
+                        building.IsSelected = true;
+                        SelectedBuildingsString = building.BuildingName;
+                        Units = details.Units;
+                    }
+                    catch (Exception ex)
+                    {
+                        await CoreMethods.DisplayAlert("Something went wrong", ex.Message, "DISMISS");
+                    }
+                    finally
+                    {
+                        tcs?.SetResult(true);
+                    }
+                });
+            }
+
+        }
+
+        public FreshAwaitCommand OnUnitTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((par, tcs) =>
+                {
+                    var unit = (Unit)par;
+                    foreach (Unit u in Units)
+                    {
+                        u.IsSelected = false;
+                    }
+                    unit.IsSelected = true;
+                    SelectedUnitString = unit.UnitName;
+                    tcs?.SetResult(true);
+                });
+            }
+
+        }
+
+        public FreshAwaitCommand OnResetFiltersButtonTapped
+        {
+            get
+            {
+                async void execute(TaskCompletionSource<bool> tcs)
+                {
+                    PopContentView = null;
+                    await LoadData(true, false);
+                    NumberOfAppliedFilters = string.Empty;
+                    if (Buildings != null)
+                    {
+                        foreach (var b in Buildings)
+                        {
+                            b.IsSelected = false;
+                        }
+                    }
+                    if (Units != null)
+                    {
+                        foreach (var b in Units)
+                        {
+                            b.IsSelected = false;
+                        }
+                    }
+                    SelectedActiveTenantFilter = false;
+                    SelectedInActiveTenantFilter = false;
+                    tcs?.SetResult(true);
+                }
+                return new FreshAwaitCommand(execute);
+            }
+        }
     }
 }

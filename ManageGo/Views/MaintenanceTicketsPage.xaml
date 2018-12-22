@@ -46,8 +46,8 @@
                 <Button HorizontalOptions="Center" BackgroundColor="Transparent" Grid.Row="0" VerticalOptions="CenterAndExpand" Command="{Binding OnCalendarButtonTapped}" Clicked="Handle_Clicked" Grid.Column="0" TextColor="Black" Image="calendar_blue.png" Text="Calendar"  />
                 <BoxView Grid.Row="0" VerticalOptions="CenterAndExpand" Grid.Column="1" BackgroundColor="#ebebeb" WidthRequest="1" HorizontalOptions="FillAndExpand" />
                 <StackLayout Grid.Row="0" Grid.Column="2" HorizontalOptions="CenterAndExpand" Spacing="0" Orientation="Horizontal">
-                    <Button HorizontalOptions="Center" BackgroundColor="Transparent" VerticalOptions="CenterAndExpand" Command="{Binding OnFilterTapped}" Clicked="Handle_Clicked" TextColor="Black" Image="filter_blue.png" Text="Filter"  />
-                    <Label Text="{Binding NumberOfAppliedFilters}" HorizontalOptions="StartAndExpand" FontSize="Small" Margin="-3,8,0,0" TextColor="#318bfa"/>
+                    <Button HorizontalOptions="Start" BackgroundColor="Transparent" VerticalOptions="CenterAndExpand" Command="{Binding OnFilterTapped}" Clicked="Handle_Clicked" TextColor="Black" Image="filter_blue.png" Text="Filter"  />
+                    <Label Text="{Binding NumberOfAppliedFilters}" HorizontalOptions="Start" FontSize="Small" Margin="-3,8,0,0" TextColor="#318bfa"/>
                 </StackLayout>
             </Grid>
             <BoxView BackgroundColor="#ebebeb" HeightRequest="1"/>

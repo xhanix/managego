@@ -99,6 +99,16 @@
                     </ListView.ItemTemplate>
                 </ListView>
             </StackLayout>
+             <Frame IsVisible="{Binding IsSearching}" 
+                    Grid.Row="2" HasShadow="false" 
+                    BackgroundColor="#99000000" 
+                    VerticalOptions="CenterAndExpand" 
+                    HorizontalOptions="CenterAndExpand">
+            <StackLayout>
+                <ActivityIndicator Color="White" IsRunning="true" HorizontalOptions="Center" VerticalOptions="Center" />
+                <Label Text="Searching..." TextColor="White"/>
+            </StackLayout>
+        </Frame>
         </Grid>
        
     </RelativeLayout>
