@@ -73,6 +73,7 @@ namespace ManageGo
             MasterDetailContainer = MasterDetailNav;
             MasterDetailNav.IsPresentedChanged += (_sender, _e) =>
             {
+
                 if (_sender is FreshMasterDetailNavigationContainer)
                 {
                     foreach (var _page in ((FreshMasterDetailNavigationContainer)_sender).Pages.Values)
@@ -81,7 +82,7 @@ namespace ManageGo
                         if (nav.CurrentPage is null || nav.CurrentPage.BindingContext is null)
                             return;
                         if (nav.CurrentPage.BindingContext is BaseDetailPage)
-                            (nav.CurrentPage.BindingContext as BaseDetailPage).HamburgerIsVisible = !(nav.CurrentPage.BindingContext as BaseDetailPage).HamburgerIsVisible;
+                            (nav.CurrentPage.BindingContext as BaseDetailPage).HamburgerIsVisible = !MasterDetailNav.IsPresented;
                     }
                 }
             };

@@ -11,14 +11,15 @@ namespace ManageGo.Services
 {
     public static class DataAccess
     {
-        public static string BaseUrl = "https://ploop.dynamo-ny.com/api/pmc_v2/";
-        static readonly HttpClient client = new HttpClient();
-        internal static string AccessToken { get; private set; }
+        private const string BaseUrl = "https://ploop.dynamo-ny.com/api/pmc_v2/";
+        private static readonly HttpClient client = new HttpClient();
+        private static string AccessToken { get; set; }
+
         private static DateTimeOffset TokenExpiry { get; set; } = DateTimeOffset.FromUnixTimeSeconds(0);
 
         public static async Task<object> Login(string userName = null, string password = null)
         {
-            //todo remove this
+            //TODO: remove this
             userName = "pmc@mobile.test";
             password = "111111";
 
@@ -28,7 +29,7 @@ namespace ManageGo.Services
                 { "password", password }
             };
             var content = new FormUrlEncodedContent(credentials);
-            var response = await client.PostAsync(BaseUrl + APIpaths.authorize.ToString(), content);
+            var response = await client.PostAsync(BaseUrl + APIpaths.authorize, content);
             var responseString = await response.Content.ReadAsStringAsync();
             //create jobject from response
             var responseObject = JObject.Parse(responseString);
@@ -64,19 +65,21 @@ namespace ManageGo.Services
                 jResult.TryGetValue(APIkeys.Permissions.ToString(), out JObject permisions);
                 var permissionDic = permisions.ToObject<Dictionary<string, object>>();
                 if (permissionDic.TryGetValue(APIkeys.AccessToPayments.ToString(), out object ap)
-                    && ap is bool && (bool)ap)
+                    && ap is bool b && b)
                 {
                     App.UserPermissions = UserPermissions.CanAccessPayments;
                 }
                 if (permissionDic.TryGetValue(APIkeys.AccessToMaintenance.ToString(), out object at)
-                    && at is bool && (bool)at)
+                    && at is bool at1 && at1)
                 {
-                    App.UserPermissions |= UserPermissions.CanAccessTickets;
+                    App.UserPermissions = UserPermissions.CanAccessTickets;
                 }
             }
             Console.WriteLine(responseString);
             return responseString;
         }
+
+
 
         public static async Task ResetPassword(string userName)
         {
@@ -158,6 +161,27 @@ namespace ManageGo.Services
             var obj = JObject.Parse(responseString);
             var result = obj.GetValue("Result");
             App.Users = result.ToObject<List<User>>();
+        }
+
+        internal static async Task<List<Tenant>> GetTenantsAsync(Dictionary<string, object> filtersDictionary)
+        {
+            var jsonString = JsonConvert.SerializeObject(filtersDictionary);
+            var content = new StringContent(jsonString, Encoding.UTF8, "application/json");//new FormUrlEncodedContent(filters);
+            var msg = new HttpRequestMessage(HttpMethod.Post, BaseUrl + APIpaths.Tenants.ToString())
+            {
+                Content = content
+            };
+            var response = await client.SendAsync(msg);
+            var responseString = await response.Content.ReadAsStringAsync();
+            var dic = JObject.Parse(responseString);
+            if (dic.TryGetValue("Result", out JToken list))
+            {
+                return list.ToObject<List<Tenant>>();
+            }
+            else
+            {
+                throw new Exception("Unable to get tenants");
+            }
         }
         #endregion
 
@@ -321,7 +345,7 @@ namespace ManageGo.Services
         }
         #endregion
 
-        static async Task<Dictionary<string, string>> GetResultDictionaryFromResponse(HttpResponseMessage response)
+        private static async Task<Dictionary<string, string>> GetResultDictionaryFromResponse(HttpResponseMessage response)
         {
             var responseString = await response.Content.ReadAsStringAsync();
             var responseObject = JObject.Parse(responseString);

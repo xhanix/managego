@@ -20,6 +20,11 @@ namespace ManageGo
         public string UserName { get; private set; }
         public string PMCName { get; private set; }
 
+        public override void Init(object initData)
+        {
+            base.Init(initData);
+            HamburgerIsVisible = true;
+        }
         override internal async Task LoadData(bool refreshData = false, bool applyNewFilter = false)
         {
             if (cancellationTokenSource.IsCancellationRequested)

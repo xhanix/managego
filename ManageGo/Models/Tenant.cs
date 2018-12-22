@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 using PropertyChanged;
 
@@ -14,8 +15,18 @@ namespace ManageGo
         public string TenantCellPhone { get; set; }
         public string TenantEmailAddress { get; set; }
         public List<Unit> TenantUnits { get; set; }
+
         [JsonIgnore]
         public string FullName { get { return TenantFirstName + " " + TenantLastName; } }
+
+        [JsonIgnore]
+        public string FirstUnitAddress
+        {
+            get
+            {
+                return TenantUnits != null && TenantUnits.Any() ? TenantUnits.First().ShortAddress : "Not Available";
+            }
+        }
 
         [JsonIgnore, AlsoNotifyFor("CheckBoxImage")]
         public bool IsSelected { get; set; }
@@ -28,6 +39,10 @@ namespace ManageGo
                 return IsSelected ? "checked.png" : "unchecked.png";
             }
         }
+
+
+        [JsonIgnore]
+        public bool DetailsShown { get; set; }
 
     }
 }

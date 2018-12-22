@@ -40,7 +40,7 @@
                 <BoxView />
                 <Button Text="Buildings                " FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
                 <BoxView />
-                <Button Text="Tenants                  " FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
+                <Button Text="Tenants                  " Command="{Binding OnTenantsTapped}" FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
                 <BoxView />
                 <Button Text="Notifications            " FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
                 <BoxView />

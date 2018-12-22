@@ -86,6 +86,21 @@ namespace ManageGo
                 });
             }
         }
+
+        public FreshAwaitCommand OnTenantsTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((tcs) =>
+                {
+                    if (!App.MasterDetailNav.Pages.ContainsKey("Tenants"))
+                        App.MasterDetailNav.AddPage<TenantsPageModel>("Tenants");
+                    App.MasterDetailNav.SwitchSelectedRootPageModel<TenantsPageModel>();
+                    tcs?.SetResult(true);
+                });
+            }
+        }
+
         public FreshAwaitCommand OnLogoutTapped
         {
             get

@@ -14,6 +14,10 @@ namespace ManageGo
         public int UnitId { get; set; }
         public string ShortName { get; set; }
         public string UnitName { get; set; }
+
+        [JsonProperty("ShorAddress")]
+        public string ShortAddress { get; set; }
+
         public int LeaseId { get; set; }
 
         public List<Tenant> Tenants { get; set; }

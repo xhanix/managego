@@ -8,7 +8,7 @@ namespace ManageGo
 {
     internal abstract class BaseDetailPage : FreshBasePageModel
     {
-        public bool HamburgerIsVisible { get; internal set; } = true;
+        public bool HamburgerIsVisible { get; internal set; }
         [AlsoNotifyFor("IsLoading")]
         public bool HasLoaded { get; internal set; }
         [AlsoNotifyFor("IsLoading")]

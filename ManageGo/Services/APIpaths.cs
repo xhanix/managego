@@ -17,7 +17,8 @@
         GetTicketFile,
         CreateWorkOrder,
         CreateEvent,
-        UpdateTicket
+        UpdateTicket,
+        Tenants
     }
 }
 

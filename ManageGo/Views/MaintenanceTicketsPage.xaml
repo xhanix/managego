@@ -3,7 +3,7 @@
              xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core" 
              ios:Page.UseSafeArea="true"
              xmlns:local="clr-namespace:ManageGo"
-             BackgroundColor="#f9fafb"
+             BackgroundColor="White"
              x:Name="ThisPage"
              xmlns:controls="clr-namespace:ManageGo.Controls"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="ManageGo.MaintenanceTicketsPage">
