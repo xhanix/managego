@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using FreshMvvm;
 using ManageGo.Services;
 
-namespace ManageGo.ViewModels
+namespace ManageGo
 {
     internal class UnitsListPageModel : BaseDetailPage
     {

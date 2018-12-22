@@ -28,42 +28,75 @@
 
         <ScrollView>
             <StackLayout Padding="24,8,0,0" Spacing="0">
-                <Button Text="Home                     " Command="{Binding OnHomeTapped}" FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
+                <Grid Margin="0,0,4,0">
+                    <Label Text="Home" TextColor="{StaticResource Grey-Dark-1}" FontSize="Medium" FontAttributes="Bold" VerticalOptions="CenterAndExpand" />
+                    <Button Text="Home" Command="{Binding OnHomeTapped}" FontSize="Small" BackgroundColor="Transparent" TextColor="Transparent" HorizontalOptions="Fill"/>
+                </Grid>
                 <BoxView />
-                <Button Text="Payments                 " FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
+                <Grid Margin="0,0,4,0">
+                    <Label Text="Payments" TextColor="{StaticResource Grey-Dark-1}" FontSize="Medium" FontAttributes="Bold" VerticalOptions="CenterAndExpand" />
+                    <Button Text="Payments" FontSize="Small" BackgroundColor="Transparent" TextColor="Transparent" HorizontalOptions="Fill"/>
+                </Grid>
                 <BoxView />
-                <Button Text="Bank transactions        " FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
+                <Grid Margin="0,0,4,0">
+                    <Label Text="Bank transactions" TextColor="{StaticResource Grey-Dark-1}" FontSize="Medium" FontAttributes="Bold" VerticalOptions="CenterAndExpand" />
+                    <Button Text="Bank transactions" VerticalOptions="CenterAndExpand" FontSize="Small" BackgroundColor="Transparent" TextColor="Transparent"  HorizontalOptions="FillAndExpand"/>
+                </Grid>
                 <BoxView />
-                <Button Text="Maintenance              " Command="{Binding OnMaintenanceTapped}" FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
+                <Grid Margin="0,0,4,0">
+                    <Label Text="Maintenance" TextColor="{StaticResource Grey-Dark-1}" FontSize="Medium" FontAttributes="Bold" VerticalOptions="CenterAndExpand" />
+                    <Button Text="Maintenance" Command="{Binding OnMaintenanceTapped}" FontSize="Small" BackgroundColor="Transparent" TextColor="Transparent" HorizontalOptions="Fill"/>
+                </Grid>
                 <BoxView />
-                <Button Text="Calendar                 " FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
+                <Grid Margin="0,0,4,0">
+                    <Label Text="Calendar" TextColor="{StaticResource Grey-Dark-1}" FontSize="Medium" FontAttributes="Bold" VerticalOptions="CenterAndExpand" />
+                    <Button Text="Calendar" FontSize="Small" BackgroundColor="Transparent" TextColor="Transparent" HorizontalOptions="Fill"/>
+                </Grid>
                 <BoxView />
-                <Button Text="Buildings                " FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
+                <Grid Margin="0,0,4,0">
+                    <Label Text="Buildings" TextColor="{StaticResource Grey-Dark-1}" FontSize="Medium" FontAttributes="Bold" VerticalOptions="CenterAndExpand" />
+                    <Button Text="Buildings" Command="{Binding OnBuildingsTapped}" FontSize="Small" BackgroundColor="Transparent" TextColor="Transparent" HorizontalOptions="Fill"/>
+                </Grid>
                 <BoxView />
-                <Button Text="Tenants                  " Command="{Binding OnTenantsTapped}" FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
+                <Grid Margin="0,0,4,0">
+                    <Label Text="Tenants" TextColor="{StaticResource Grey-Dark-1}" FontSize="Medium" FontAttributes="Bold" VerticalOptions="CenterAndExpand" />
+                    <Button Text="Tenants" Command="{Binding OnTenantsTapped}" FontSize="Small" BackgroundColor="Transparent" TextColor="Transparent"  HorizontalOptions="Fill"/>
+                </Grid>
                 <BoxView />
-                <Button Text="Notifications            " FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
+                <Grid Margin="0,0,4,0">
+                    <Label Text="Notifications" TextColor="{StaticResource Grey-Dark-1}" FontSize="Medium" FontAttributes="Bold" VerticalOptions="CenterAndExpand" />
+                    <Button Text="Notifications" FontSize="Small" BackgroundColor="Transparent" TextColor="Transparent" HorizontalOptions="Fill"/>
+                </Grid>
                 <BoxView />
-                <Button Text="Settings                 " FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
+                <Grid Margin="0,0,4,0">
+                    <Label Text="Settings" TextColor="{StaticResource Grey-Dark-1}" FontSize="Medium" FontAttributes="Bold" VerticalOptions="CenterAndExpand" />
+                    <Button Text="Settings" FontSize="Small" BackgroundColor="Transparent" TextColor="Transparent" HorizontalOptions="Fill"/>
+                </Grid>
                 <BoxView />
-                <Button Text="Feedback                 " FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
+                <Grid Margin="0,0,4,0">
+                    <Label Text="Feedback" TextColor="{StaticResource Grey-Dark-1}" FontSize="Medium" FontAttributes="Bold" VerticalOptions="CenterAndExpand" />
+                    <Button Text="Feedback" FontSize="Small" BackgroundColor="Transparent" TextColor="Transparent" HorizontalOptions="Fill"/>
+                </Grid>
                 <BoxView />
-                <Button Text="Logout                   " Command="{Binding OnLogoutTapped}" FontSize="Small" BackgroundColor="Transparent" TextColor="Black" HorizontalOptions="Start"/>
+                <Grid Margin="0,0,4,0">
+                     <Label Text="Logout" TextColor="{StaticResource Grey-Dark-1}" FontSize="Medium" FontAttributes="Bold" VerticalOptions="CenterAndExpand" />
+                    <Button Text="Logout" Command="{Binding OnLogoutTapped}" FontSize="Small" BackgroundColor="Transparent" TextColor="Transparent" HorizontalOptions="Fill"/>
+                </Grid>
                 <BoxView />
-                <Label Text="Contact us" FontAttributes="Bold" FontSize="Small" Margin="0,8,0,0" />
+                <Label Text="Contact us" TextColor="{StaticResource Grey-Dark-1}" FontAttributes="Bold" FontSize="Small" Margin="0,8,0,0" />
                 <StackLayout Orientation="Horizontal" Margin="0,8,0,0">
-                    <Label Text="Email: " TextColor="Gray" FontSize="Micro"/>
-                    <Label Text="support@managego.com" TextColor="#318bfa" FontSize="Micro">
+                    <Label Text="Email: " TextColor="Gray" FontSize="Small"/>
+                    <Label Text="support@managego.com" TextColor="#318bfa" FontSize="Small">
                          <Label.GestureRecognizers>
                             <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Handle_Tapped" />
                         </Label.GestureRecognizers>
                     </Label>
                 </StackLayout>
                 <StackLayout Orientation="Horizontal" Margin="0,8,0,0">
-                    <Label Text="Phone: " TextColor="Gray" FontSize="Micro">
+                    <Label Text="Phone: " TextColor="Gray" FontSize="Small">
                        
                     </Label>
-                    <Label Text="212-300-7950" TextColor="#318bfa" FontSize="Micro">
+                    <Label Text="212-300-7950" TextColor="#318bfa" FontSize="Small">
                          <Label.GestureRecognizers>
                             <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Handle_Tapped_1" />
                         </Label.GestureRecognizers>

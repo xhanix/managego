@@ -101,6 +101,20 @@ namespace ManageGo
             }
         }
 
+        public FreshAwaitCommand OnBuildingsTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((tcs) =>
+                {
+                    if (!App.MasterDetailNav.Pages.ContainsKey("Buildings"))
+                        App.MasterDetailNav.AddPage<BuildingsListPageModel>("Buildings");
+                    App.MasterDetailNav.SwitchSelectedRootPageModel<BuildingsListPageModel>();
+                    tcs?.SetResult(true);
+                });
+            }
+        }
+
         public FreshAwaitCommand OnLogoutTapped
         {
             get

@@ -5,12 +5,13 @@ using System.Threading.Tasks;
 using FreshMvvm;
 using Xamarin.Forms;
 
-namespace ManageGo.ViewModels
+namespace ManageGo
 {
     internal class BuildingsListPageModel : BaseDetailPage
     {
         public List<Building> Buildings { get; set; }
         public bool IsShowingUnitsPage { get; set; }
+        public bool IsSearching { get; set; }
         internal override Task LoadData(bool refreshData = false, bool applyNewFilter = false)
         {
             this.Buildings = App.Buildings ?? new List<Building>();
