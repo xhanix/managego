@@ -21,21 +21,22 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand((Action<object, TaskCompletionSource<bool>>)(async (par, tcs) =>
+                async void execute(object par, TaskCompletionSource<bool> tcs)
                 {
                     BuildingsListPageModel buildingsListPageModel = this;
                     Building building = (Building)par;
                     buildingsListPageModel.IsShowingUnitsPage = true;
                     await buildingsListPageModel.CoreMethods.PushPageModel<UnitsListPageModel>((object)building.BuildingId, false, true);
                     tcs?.SetResult(true);
-                }));
+                }
+                return new FreshAwaitCommand(execute);
             }
         }
         public FreshAwaitCommand OnTenantTapped
         {
             get
             {
-                return new FreshAwaitCommand((Action<object, TaskCompletionSource<bool>>)(async (par, tcs) =>
+                async void p1(object par, TaskCompletionSource<bool> tcs)
                 {
                     Building building = (Building)par;
                     if (!App.MasterDetailNav.Pages.ContainsKey("Tenants"))
@@ -46,13 +47,14 @@ namespace ManageGo
                         model.Buildings = App.Buildings;
                         if (model.Buildings != null)
                         {
-                            foreach (Building building1 in model.Buildings.Where<Building>((Func<Building, bool>)(b => b.BuildingId == building.BuildingId)))
+                            foreach (Building building1 in model.Buildings.Where(b => b.BuildingId == building.BuildingId))
                                 building1.IsSelected = true;
-                            // model.OnApplyFiltersTapped.Execute((object)null);
+                            model.OnApplyFiltersTapped.Execute(null);
                         }
                     }
                     tcs?.SetResult(true);
-                }));
+                }
+                return new FreshAwaitCommand(p1);
             }
         }
     }

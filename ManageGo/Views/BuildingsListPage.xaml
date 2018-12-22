@@ -6,6 +6,9 @@
              x:Name="ThisPage"
              xmlns:local="clr-namespace:ManageGo"
              x:Class="ManageGo.BuildingsListPage">
+     <ContentPage.Resources>
+        <local:PaddedStringNumberFormatter x:Key="PaddedStringConverter" />
+    </ContentPage.Resources>
      <RelativeLayout>
         <Grid RowSpacing="0"
               RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent,
@@ -42,6 +45,26 @@
                                         <StackLayout HorizontalOptions="FillAndExpand">
                                             <Label Text="{Binding BuildingName}" FontSize="Medium" TextColor="{StaticResource Grey-Mid-1}" />
                                             <BoxView HeightRequest="1" BackgroundColor="{StaticResource Grey-Light-1}" />
+                                            <StackLayout Orientation="Horizontal" Spacing="4">
+                                                <StackLayout Orientation="Horizontal" Spacing="2">
+                                                    <Label Text="Units:" FontSize="Small" TextColor="{StaticResource Grey-Light-1}" />
+                                                    <Label Text="{Binding UnitCount, Converter={StaticResource PaddedStringConverter}}" TextColor="{StaticResource Primary}" FontSize="Small"/>
+                                                    <StackLayout.GestureRecognizers>
+                                                        <TapGestureRecognizer Command="{Binding BindingContext.OnUnitTapped,Source={x:Reference ThisPage}}" CommandParameter="{Binding .}" />
+                                                    </StackLayout.GestureRecognizers>
+                                                </StackLayout>
+                                                <BoxView WidthRequest="1" BackgroundColor="{StaticResource Grey-Light-1}" VerticalOptions="Fill"/>
+                                                <StackLayout Orientation="Horizontal" Spacing="2">
+                                                    <Label Text="Tenants:" FontSize="Small" TextColor="{StaticResource Grey-Light-1}" />
+                                                    <Label Text="{Binding TenantCount, Converter={StaticResource PaddedStringConverter}}" TextColor="{StaticResource Primary}" FontSize="Small"/>
+                                                    <StackLayout.GestureRecognizers>
+                                                        <TapGestureRecognizer Command="{Binding BindingContext.OnTenantTapped,Source={x:Reference ThisPage}}" CommandParameter="{Binding .}" />
+                                                    </StackLayout.GestureRecognizers>
+                                                </StackLayout>
+                                                <BoxView WidthRequest="1" BackgroundColor="{StaticResource Grey-Light-1}" VerticalOptions="Fill"/>
+                                                <Label Text="Open tickets:" FontSize="Small" TextColor="{StaticResource Grey-Light-1}" />
+                                                <Label Text="{Binding OpenTicketCount, Converter={StaticResource PaddedStringConverter}}" TextColor="{StaticResource Primary}" FontSize="Small"/>
+                                            </StackLayout>
                                         </StackLayout>
                                     </StackLayout>
                                 </Frame>

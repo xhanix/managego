@@ -10,6 +10,7 @@ namespace ManageGo
         public BuildingsListPage()
         {
             InitializeComponent();
+            NavigationPage.SetHasNavigationBar(this, false);
         }
     }
 }
