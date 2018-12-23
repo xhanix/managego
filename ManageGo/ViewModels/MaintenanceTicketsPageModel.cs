@@ -153,6 +153,8 @@ namespace ManageGo
             }
         }
         public bool IsSearching { get; private set; }
+        public bool BackbuttonIsVisible { get; private set; }
+
         public string SelectedBuildingsString
         {
             get
@@ -243,11 +245,32 @@ namespace ManageGo
             }
         }
 
+        public FreshAwaitCommand OnBackbuttonTapped
+        {
+            get
+            {
+                async void execute(TaskCompletionSource<bool> tcs)
+                {
+                    await CoreMethods.PopPageModel(modal: CurrentPage.Navigation.ModalStack.Contains(CurrentPage), animate: false);
+                    tcs?.SetResult(true);
+                }
+                return new FreshAwaitCommand(execute);
+            }
+        }
+
         internal override async Task LoadData(bool refreshData = false, bool applyNewFilter = false)
         {
-            //throw new NotImplementedException();
 
-            if (FetchedTickets is null || refreshData)
+            if (HasPreExistingFilter)
+            {
+                IsSearching = true;
+                var results = await Services.DataAccess.GetTicketsAsync(FiltersDictionary);
+                FetchedTickets = new ObservableCollection<MaintenanceTicket>(results);
+                NumberOfAppliedFilters = "1";
+                IsSearching = false;
+                BackbuttonIsVisible = true;
+            }
+            else if (FetchedTickets is null || refreshData)
             {
                 if (FiltersDictionary is null || refreshData)
                 {
@@ -320,7 +343,8 @@ namespace ManageGo
             {
                 //load more items
                 CurrentListPage++;
-                await LoadData(refreshData: true);
+                if (!HasPreExistingFilter)
+                    await LoadData(refreshData: true);
             }
         }
 
@@ -740,6 +764,8 @@ namespace ManageGo
             }
         }
 
+        public bool HasPreExistingFilter { get; private set; }
+
         protected override async void ViewIsDisappearing(object sender, EventArgs e)
         {
             base.ViewIsDisappearing(sender, e);
@@ -769,6 +795,27 @@ namespace ManageGo
                 await ShowNoInternetView();
             }
         }
+
+
+        public override void Init(object initData)
+        {
+            base.Init(initData);
+            if (initData is int buildingId)
+            {
+                HasPreExistingFilter = true;
+                Buildings = App.Buildings;
+                Categories = App.Categories;
+                Tags = App.Tags;
+                Users = App.Users;
+
+                FiltersDictionary = new Dictionary<string, object>
+                {
+                    { "Buildings", new List<int> { buildingId }}
+                };
+
+            }
+        }
+
         public override async void ReverseInit(object returnedData)
         {
             base.ReverseInit(returnedData);

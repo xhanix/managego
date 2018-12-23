@@ -10,6 +10,7 @@ namespace ManageGo
         public UnitsListPage()
         {
             InitializeComponent();
+            NavigationPage.SetHasNavigationBar(this, false);
         }
     }
 }

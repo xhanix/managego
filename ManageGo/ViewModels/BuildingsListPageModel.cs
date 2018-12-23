@@ -17,16 +17,30 @@ namespace ManageGo
             this.Buildings = App.Buildings ?? new List<Building>();
             return (Task)Task.FromResult<int>(0);
         }
+
+        public FreshAwaitCommand OnTicketsTapped
+        {
+            get
+            {
+                async void execute(object par, TaskCompletionSource<bool> tcs)
+                {
+                    Building building = (Building)par;
+                    await CoreMethods.PushPageModel<MaintenanceTicketsPageModel>(building.BuildingId, false, true);
+                    tcs?.SetResult(true);
+                }
+                return new FreshAwaitCommand(execute);
+            }
+        }
+
         public FreshAwaitCommand OnUnitTapped
         {
             get
             {
                 async void execute(object par, TaskCompletionSource<bool> tcs)
                 {
-                    BuildingsListPageModel buildingsListPageModel = this;
                     Building building = (Building)par;
-                    buildingsListPageModel.IsShowingUnitsPage = true;
-                    await buildingsListPageModel.CoreMethods.PushPageModel<UnitsListPageModel>((object)building.BuildingId, false, true);
+                    IsShowingUnitsPage = true;
+                    await CoreMethods.PushPageModel<UnitsListPageModel>(building.BuildingId, false, true);
                     tcs?.SetResult(true);
                 }
                 return new FreshAwaitCommand(execute);

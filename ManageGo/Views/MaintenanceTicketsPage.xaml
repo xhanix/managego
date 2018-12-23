@@ -29,6 +29,14 @@
                     IsVisible="{Binding HamburgerIsVisible}"
                     VerticalOptions="CenterAndExpand"
                     Image="nav_menu_icon.png" />
+            <Button BackgroundColor="Transparent"
+                Command="{Binding OnBackbuttonTapped}"
+                HorizontalOptions="Start"
+                WidthRequest="42"
+                Rotation="180"
+                IsVisible="{Binding BackbuttonIsVisible}"
+                VerticalOptions="CenterAndExpand"
+                Image="arrow_right.png" />
             <Image Source="logo.png" Margin="-42,0,0,0" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"/>
         </StackLayout>
         <StackLayout Spacing="0" Grid.Row="1">

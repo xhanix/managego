@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 using PropertyChanged;
 
@@ -33,6 +34,17 @@ namespace ManageGo
                 return IsSelected ? "checked.png" : "unchecked.png";
             }
         }
-
+        [JsonIgnore]
+        public string FormattedTenantNames
+        {
+            get
+            {
+                if (Tenants is null || !Tenants.Any())
+                {
+                    return "Not Found";
+                }
+                return string.Join(", ", Tenants.Select(t => t.FullName));
+            }
+        }
     }
 }

@@ -37,17 +37,17 @@
                         <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnBioLoginButtonTapped}" />
                     </StackLayout.GestureRecognizers>
                 </StackLayout>
-                <Button Command="{Binding OnLoginButtonTapped}" TextColor="White" Margin="0,17,0,0" Text="Log in" FontAttributes="Bold" BackgroundColor="{Binding LoginButtonBgColor}" CornerRadius="4" Padding="4"/>
+                <Button Command="{Binding OnLoginButtonTapped}" TextColor="White" Margin="0,17,0,0" Text="Log in" FontSize="Medium" FontAttributes="Bold" BackgroundColor="{Binding LoginButtonBgColor}" CornerRadius="4" Padding="4"/>
                 <StackLayout HorizontalOptions="CenterAndExpand" Padding="8,21,8,21">
-                    <Label Text="Forgot your password?" TextColor="{x:StaticResource Grey-Mid-1}" FontSize="Micro" HorizontalOptions="CenterAndExpand"/>
-                    <Label Text="Click to reset" HorizontalOptions="CenterAndExpand" TextColor="Red" FontSize="Micro"/>
+                    <Label Text="Forgot your password?" TextColor="{x:StaticResource Grey-Mid-1}" FontSize="Small" HorizontalOptions="CenterAndExpand"/>
+                    <Label Text="Click to reset" HorizontalOptions="CenterAndExpand" TextColor="Red" FontSize="Small"/>
                     <StackLayout.GestureRecognizers>
                         <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnResetPasswordTapped}" />
                     </StackLayout.GestureRecognizers>
                 </StackLayout>
                 <StackLayout HorizontalOptions="CenterAndExpand" Padding="8,12,8,21">
-                    <Label Text="Don't have an account yet?" TextColor="{x:StaticResource Grey-Mid-1}" FontSize="Micro" HorizontalOptions="CenterAndExpand"/>
-                    <Label Text="Contact us to sign up" HorizontalOptions="CenterAndExpand" TextColor="{x:StaticResource Primary}" FontSize="Micro"/>
+                    <Label Text="Don't have an account yet?" TextColor="{x:StaticResource Grey-Mid-1}" FontSize="Small" HorizontalOptions="CenterAndExpand"/>
+                    <Label Text="Contact us to sign up" HorizontalOptions="CenterAndExpand" TextColor="{x:StaticResource Primary}" FontSize="Small"/>
                 </StackLayout>
             </StackLayout>
         </ScrollView>
@@ -55,7 +55,7 @@
         <Frame HasShadow="false" 
                x:Name="WaitFrame"
                IsVisible="{Binding IsLoggingIn}"
-                BackgroundColor="#CC000000" 
+               BackgroundColor="#CC000000" 
                CornerRadius="12"
                RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height,Factor=0.4}"
                RelativeLayout.XConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width,Factor=0.25}"
@@ -81,7 +81,7 @@
                         <local:CustomEntry Placeholder="Enter your email" WidthRequest="250" Text="{Binding UserEmail}" />
                         <BoxView HeightRequest="1" Margin="0,-4,0,0" BackgroundColor="Gray" />
                         <Button Command="{Binding OnSubmitResetPasswordTapped}" BackgroundColor="{x:StaticResource Primary}" WidthRequest="150" HorizontalOptions="CenterAndExpand" Text="Reset Password" FontSize="Small" Margin="0,12,0,0" TextColor="White" />
-                         <Button BackgroundColor="Transparent" WidthRequest="150" HorizontalOptions="CenterAndExpand" Text="Cancel" Command="{Binding OnCancelResetPasswordTapped}" Margin="0,4,0,0" FontSize="Small" TextColor="{StaticResource Primary}" />
+                        <Button BackgroundColor="Transparent" WidthRequest="150" HorizontalOptions="CenterAndExpand" Text="Cancel" Command="{Binding OnCancelResetPasswordTapped}" Margin="0,4,0,0" FontSize="Small" TextColor="{StaticResource Primary}" />
 
                     </StackLayout>
                 </Frame>
