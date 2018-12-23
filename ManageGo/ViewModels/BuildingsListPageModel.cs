@@ -53,19 +53,7 @@ namespace ManageGo
                 async void p1(object par, TaskCompletionSource<bool> tcs)
                 {
                     Building building = (Building)par;
-                    if (!App.MasterDetailNav.Pages.ContainsKey("Tenants"))
-                        App.MasterDetailNav.AddPage<TenantsPageModel>("Tenants", (object)null);
-                    FreshBasePageModel freshBasePageModel = await App.MasterDetailNav.SwitchSelectedRootPageModel<TenantsPageModel>();
-                    if (App.MasterDetailNav.Detail is NavigationPage && ((NavigationPage)App.MasterDetailNav.Detail).CurrentPage.GetModel() is TenantsPageModel model)
-                    {
-                        model.Buildings = App.Buildings;
-                        if (model.Buildings != null)
-                        {
-                            foreach (Building building1 in model.Buildings.Where(b => b.BuildingId == building.BuildingId))
-                                building1.IsSelected = true;
-                            model.OnApplyFiltersTapped.Execute(null);
-                        }
-                    }
+                    await CoreMethods.PushPageModel<TenantsPageModel>(data: building);
                     tcs?.SetResult(true);
                 }
                 return new FreshAwaitCommand(p1);

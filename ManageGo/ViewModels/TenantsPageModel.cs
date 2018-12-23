@@ -19,6 +19,7 @@ namespace ManageGo
         public string FilterKeywords { get; set; }
         public View PopContentView { get; set; }
         public bool ListIsEnabled { get; set; }
+        public bool HasPreExistingFilter { get; private set; }
         public List<Building> Buildings { get; set; }
         public List<Unit> Units { get; set; }
         public List<Tenant> FetchedTenants { get; set; }
@@ -31,6 +32,7 @@ namespace ManageGo
         public string SelectedBuildingsString { get; set; }
         public bool SelectedActiveTenantFilter { get; set; }
         public bool SelectedInActiveTenantFilter { get; set; }
+        public bool BackbuttonIsVisible { get; private set; }
         public string ActiveTenantCheckBoxImage
         {
             get
@@ -60,57 +62,98 @@ namespace ManageGo
         public override void Init(object initData)
         {
             base.Init(initData);
-            HamburgerIsVisible = true;
+            Buildings = App.Buildings;
+
+            if (initData is Building building)
+            {
+                HasPreExistingFilter = true;
+
+                foreach (Building b in Buildings.Where(t => t.BuildingId == building.BuildingId))
+                {
+                    b.IsSelected = true;
+                }
+
+                FiltersDictionary = new Dictionary<string, object>
+                {
+                    { "Buildings", new List<int> { building.BuildingId }}
+                };
+                BackbuttonIsVisible = true;
+            }
         }
 
+        public FreshAwaitCommand OnBackbuttonTapped
+        {
+            get
+            {
+                async void execute(TaskCompletionSource<bool> tcs)
+                {
+                    await CoreMethods.PopPageModel(modal: CurrentPage.Navigation.ModalStack.Contains(CurrentPage), animate: false);
+                    tcs?.SetResult(true);
+                }
+                return new FreshAwaitCommand(execute);
+            }
+        }
 
         internal override async Task LoadData(bool refreshData = false, bool applyNewFilter = false)
         {
-            TenantsPageModel tenantsPageModel = this;
-            if (!(tenantsPageModel.FetchedTenants == null | refreshData))
+            if (!(FetchedTenants == null || refreshData))
                 return;
-            if (tenantsPageModel.FiltersDictionary == null | refreshData)
-                tenantsPageModel.FiltersDictionary = new Dictionary<string, object>()
+            if (FiltersDictionary == null || refreshData)
+                FiltersDictionary = new Dictionary<string, object>()
                     {
                       { "PageSize", 30},
                       { "Page", CurrentListPage }
                     };
             try
             {
-                if (tenantsPageModel.FetchedTenants == null | applyNewFilter)
+                if (FetchedTenants == null || applyNewFilter || HasPreExistingFilter)
                 {
-                    List<Tenant> tenantsAsync = await DataAccess.GetTenantsAsync(tenantsPageModel.FiltersDictionary);
-                    tenantsPageModel.FetchedTenants = tenantsAsync;
-                    double num = Math.Floor((double)tenantsPageModel.FetchedTenants.IndexOf(tenantsPageModel.FetchedTenants.Last<Tenant>()) / 2.0);
-                    Tenant tenant = tenantsPageModel.FetchedTenants.ElementAt<Tenant>((int)num);
-                    tenantsPageModel.LastLoadedItemId = tenant.TenantID;
-                    tenantsPageModel.CanGetMorePages = tenantsPageModel.FetchedTenants.Count == 30;
+                    List<Tenant> tenantsAsync = await DataAccess.GetTenantsAsync(FiltersDictionary);
+                    FetchedTenants = tenantsAsync;
+                    if (FetchedTenants.Any())
+                    {
+                        double num = Math.Floor(FetchedTenants.IndexOf(FetchedTenants.Last<Tenant>()) / 2.0);
+                        Tenant tenant = FetchedTenants.ElementAt((int)num);
+                        LastLoadedItemId = tenant.TenantID;
+                    }
+                    CanGetMorePages = FetchedTenants.Count == 30;
+                    if (Buildings.Any(t => t.IsSelected))
+                    {
+                        var details = await DataAccess.GetBuildingDetails(Buildings.First(t => t.IsSelected).BuildingId);
+                        SelectedBuildingsString = details.BuildingName;
+                        Units = details.Units;
+                    }
                 }
                 else
                 {
-                    List<Tenant> list = tenantsPageModel.FetchedTenants.ToList<Tenant>();
-                    List<Tenant> tenantsAsync = await DataAccess.GetTenantsAsync(tenantsPageModel.FiltersDictionary);
-                    tenantsPageModel.CanGetMorePages = tenantsAsync.Count == 30;
+                    List<Tenant> list = FetchedTenants.ToList<Tenant>();
+                    List<Tenant> tenantsAsync = await DataAccess.GetTenantsAsync(FiltersDictionary);
+                    CanGetMorePages = tenantsAsync.Count == 30;
                     list.AddRange((IEnumerable<Tenant>)tenantsAsync);
-                    tenantsPageModel.FetchedTenants = list;
+                    FetchedTenants = list;
                     list = (List<Tenant>)null;
                 }
-                if (tenantsPageModel.FetchedTenants.Count > 0 && tenantsPageModel.CanGetMorePages)
+                if (FetchedTenants.Count > 0 && CanGetMorePages)
                 {
-                    double num = Math.Floor((double)tenantsPageModel.FetchedTenants.IndexOf(tenantsPageModel.FetchedTenants.Last<Tenant>()) / 2.0);
-                    Tenant tenant = tenantsPageModel.FetchedTenants.ElementAt<Tenant>((int)num);
-                    tenantsPageModel.LastLoadedItemId = tenant.TenantID;
+                    double num = Math.Floor(FetchedTenants.IndexOf(FetchedTenants.Last<Tenant>()) / 2.0);
+                    Tenant tenant = FetchedTenants.ElementAt<Tenant>((int)num);
+                    LastLoadedItemId = tenant.TenantID;
+
                 }
-                tenantsPageModel.Buildings = App.Buildings;
-                tenantsPageModel.ListIsEnabled = true;
-                Console.WriteLine(string.Format("Tenants Fetched: {0}", (object)tenantsPageModel.FetchedTenants.Count));
-                tenantsPageModel.HasLoaded = true;
+                Buildings = App.Buildings;
+                ListIsEnabled = true;
+                Console.WriteLine(string.Format("Tenants Fetched: {0}", FetchedTenants.Count));
+                HasLoaded = true;
             }
             catch
             {
-                tenantsPageModel.APIhasFailed = true;
-                tenantsPageModel.FetchedTenants = (List<Tenant>)null;
+                APIhasFailed = true;
+                FetchedTenants = (List<Tenant>)null;
                 await CoreMethods.DisplayAlert("Something went wrong", "Unable to get tickets. Connect to network and try again", "Try again", "Dismiss");
+            }
+            finally
+            {
+                NothingFetched = FetchedTenants.Any();
             }
         }
 
@@ -431,5 +474,7 @@ namespace ManageGo
                 return new FreshAwaitCommand(execute);
             }
         }
+
+        public bool NothingFetched { get; private set; }
     }
 }
