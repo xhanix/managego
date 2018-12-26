@@ -446,7 +446,7 @@
                             </Image.GestureRecognizers>
                         </Image>
                     </Grid>
-                   <local:ClockPicker Time="{Binding PickedTime,Mode=TwoWay}"/>
+                   <local:MGTimePicker Time="{Binding PickedTime,Mode=TwoWay}"/>
                     <Button Command="{Binding OnSetTimeFromPickerTapped}" HorizontalOptions="FillAndExpand" Text="Set time" FontSize="Large" TextColor="White" BorderRadius="8" BackgroundColor="#51c623" />
                 </StackLayout>
                  <Frame.GestureRecognizers>

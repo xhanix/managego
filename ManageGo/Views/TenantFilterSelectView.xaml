@@ -123,17 +123,7 @@
                         <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnExpandFilterTapped}" CommandParameter="Status" />
                     </Grid.GestureRecognizers>
                 </Grid>
-                
-               
-                  
-                
-                
-                
-               
-                
-               
             </StackLayout>
-           
         </StackLayout>
     </ScrollView>
 </ContentView>

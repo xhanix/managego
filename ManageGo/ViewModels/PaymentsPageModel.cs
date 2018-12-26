@@ -17,7 +17,14 @@ namespace ManageGo
         [AlsoNotifyFor("NumberOfAppliedFilters")]
         Dictionary<string, object> FilterDictionary { get; set; }
         public bool FilterSelectViewIsShown { get; set; }
+        public bool RangeSelectorIsShown { get; private set; }
         public List<Payment> FetchedPayments { get; set; }
+        public List<Building> Buildings { get; private set; }
+        public List<Tenant> Tenants { get; private set; }
+        public List<Unit> Units { get; private set; }
+
+
+
         public bool BackbuttonIsVisible { get; set; }
         public View PopContentView { get; private set; }
         public string NumberOfAppliedFilters
@@ -121,7 +128,7 @@ namespace ManageGo
                     }
                     else
                     {
-                        // PopContentView = new TenantFilterSelectView(this).Content;
+                        PopContentView = new Views.PaymentFilterView(this).Content;
                         // ListIsEnabled = false;
                     }
                     FilterSelectViewIsShown = !FilterSelectViewIsShown;
@@ -130,7 +137,29 @@ namespace ManageGo
             }
         }
 
+        public FreshAwaitCommand OnExpandAmountFilterTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((tcs) =>
+                {
+                    RangeSelectorIsShown = true;
+                    tcs?.SetResult(true);
+                });
+            }
+        }
 
+        public FreshAwaitCommand OnDismissPopupTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((tcs) =>
+                {
+                    RangeSelectorIsShown = false;
+                    tcs?.SetResult(true);
+                });
+            }
+        }
 
         public FreshAwaitCommand OnBackbuttonTapped
         {

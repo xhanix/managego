@@ -5,6 +5,7 @@
              ios:Page.UseSafeArea="true"
              x:Name="ThisPage"
              xmlns:local="clr-namespace:ManageGo"
+             xmlns:controls="clr-namespace:ManageGo.Controls"
              x:Class="ManageGo.PaymentsPage">
     <ContentPage.Resources>
         <local:InverseBoolConverter x:Key="InverseBoolConverter" />
@@ -165,6 +166,47 @@
                 <Label Text="Try a broadening your search" HorizontalTextAlignment="Center" FontSize="Small"  TextColor="Gray"/>
             </StackLayout>
         </Grid>
-       
+        <Grid
+            RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width,Factor=1}"
+            RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height,Factor=1}"
+            RelativeLayout.XConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width,Factor=0}"
+            RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height,Factor=0}"
+            BackgroundColor="#99000000"
+            IsVisible="{Binding RangeSelectorIsShown}"
+        >
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnDismissPopupTapped}" />
+            </Grid.GestureRecognizers>
+        </Grid>
+        <Frame
+            RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width,Factor=0.7}"
+            RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height,Factor=0.75}"
+            RelativeLayout.XConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width,Factor=0.175}"
+            RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height,Factor=0.1875}"
+            BackgroundColor="White"
+            HasShadow="false"
+            IsVisible="{Binding RangeSelectorIsShown}"
+            >
+           <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Text="Amount range:" TextColor="{StaticResource Grey-Dark-1}" Margin="0,0,0,17" FontSize="Medium" HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center"/>
+                <Frame Grid.Row="1" Padding="22,12,22,12" WidthRequest="90" CornerRadius="23" VerticalOptions="Center" HasShadow="false" BackgroundColor="#e0eefd"  HorizontalOptions="Center" >
+                    <Label Text="{Binding RangeMaxString,Source={x:Reference RangePicker}}" HorizontalOptions="CenterAndExpand" TextColor="{StaticResource Primary}" FontSize="Medium" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                </Frame>
+                <controls:MGRangePicker Grid.Row="2" x:Name="RangePicker"/>
+                <Frame Grid.Row="3" Padding="22,12,22,12" WidthRequest="90" CornerRadius="23" VerticalOptions="Center" HasShadow="false" BackgroundColor="#e0eefd"  HorizontalOptions="Center" >
+                    <Label Text="{Binding RangeMinString,Source={x:Reference RangePicker}}" HorizontalOptions="CenterAndExpand" TextColor="{StaticResource Primary}" FontSize="Medium" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                </Frame>
+                 <Frame Grid.Row="4" Padding="22,12,22,12"  CornerRadius="21" VerticalOptions="Center" Margin="0,17,0,0" HasShadow="false" BackgroundColor="{StaticResource Primary}"  HorizontalOptions="Center" >
+                    <Label Text="Apply amount range" HorizontalOptions="CenterAndExpand" TextColor="White" FontSize="Medium"  FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                </Frame>
+            </Grid>
+        </Frame>  
     </RelativeLayout>
 </ContentPage>

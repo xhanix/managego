@@ -3,22 +3,19 @@ using System.Collections.Generic;
 using FreshMvvm;
 using Xamarin.Forms;
 
-namespace ManageGo
+namespace ManageGo.Views
 {
-    public partial class TicketFilterSelectView : ContentPage
+    public partial class PaymentFilterView : ContentView
     {
-
-        public TicketFilterSelectView()
+        public PaymentFilterView()
         {
             InitializeComponent();
-
         }
 
-        internal TicketFilterSelectView(FreshBasePageModel bindingContext) : this()
+        internal PaymentFilterView(FreshBasePageModel bindingContext) : this()
         {
             this.BindingContext = bindingContext;
         }
-
 
     }
 }
