@@ -51,10 +51,10 @@
                     <ColumnDefinition Width="1" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Button HorizontalOptions="Center" BackgroundColor="Transparent" Grid.Row="0" VerticalOptions="CenterAndExpand" Command="{Binding OnCalendarButtonTapped}" Clicked="Handle_Clicked" Grid.Column="0" TextColor="Black" Image="calendar_blue.png" Text="Calendar"  />
+                <Button Image="calendar_blue.png" Text="{Binding CalendarButtonText}" HorizontalOptions="Center" BackgroundColor="Transparent" Grid.Row="0" VerticalOptions="CenterAndExpand" Command="{Binding OnCalendarButtonTapped}" Clicked="Handle_Clicked" Grid.Column="0" TextColor="{StaticResource Grey-Dark-1}"   />
                 <BoxView Grid.Row="0" VerticalOptions="CenterAndExpand" Grid.Column="1" BackgroundColor="#ebebeb" WidthRequest="1" HorizontalOptions="FillAndExpand" />
                 <StackLayout Grid.Row="0" Grid.Column="2" HorizontalOptions="CenterAndExpand" Spacing="0" Orientation="Horizontal">
-                    <Button HorizontalOptions="Start" BackgroundColor="Transparent" VerticalOptions="CenterAndExpand" Command="{Binding OnFilterTapped}" Clicked="Handle_Clicked" TextColor="Black" Image="filter_blue.png" Text="Filter"  />
+                    <Button HorizontalOptions="Start" BackgroundColor="Transparent" VerticalOptions="CenterAndExpand" Command="{Binding OnFilterTapped}" Clicked="Handle_Clicked" TextColor="{StaticResource Grey-Dark-1}" Image="filter_blue.png" Text="Filter"  />
                     <Label Text="{Binding NumberOfAppliedFilters}" HorizontalOptions="Start" FontSize="Small" Margin="-3,8,0,0" TextColor="#318bfa"/>
                 </StackLayout>
             </Grid>

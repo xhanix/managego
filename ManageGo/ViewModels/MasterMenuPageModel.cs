@@ -101,6 +101,34 @@ namespace ManageGo
             }
         }
 
+        public FreshAwaitCommand PaymentsTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((tcs) =>
+                {
+                    if (!App.MasterDetailNav.Pages.ContainsKey("Payments"))
+                        App.MasterDetailNav.AddPage<PaymentsPageModel>("Payments");
+                    App.MasterDetailNav.SwitchSelectedRootPageModel<PaymentsPageModel>();
+                    tcs?.SetResult(true);
+                });
+            }
+        }
+
+        public FreshAwaitCommand OnTransactionsTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((tcs) =>
+                {
+                    if (!App.MasterDetailNav.Pages.ContainsKey("Transactions"))
+                        App.MasterDetailNav.AddPage<TransactionsPageModel>("Transactions");
+                    App.MasterDetailNav.SwitchSelectedRootPageModel<TransactionsPageModel>();
+                    tcs?.SetResult(true);
+                });
+            }
+        }
+
         public FreshAwaitCommand OnBuildingsTapped
         {
             get

@@ -2,6 +2,9 @@
 <Application xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="ManageGo.App">
     <Application.Resources>
         <ResourceDictionary>
+            <!-- Format -->
+            <x:String x:Key="FormatDecimalToCurrency">{0:C}</x:String>
+            <x:String x:Key="DateTimeToHeaderString">{0:MMM dd - hh:mm tt}</x:String>
              <!-- Colors -->
             <Color x:Key="Primary">#3E90F4</Color>
             <Color x:Key="Secondary">#60A6F5</Color>

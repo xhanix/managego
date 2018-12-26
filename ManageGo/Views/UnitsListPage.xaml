@@ -43,9 +43,13 @@
                                  <StackLayout Spacing="0" >
                                 <Frame HasShadow="false" BackgroundColor="White"  >
                                    
-                                    <StackLayout Orientation="Horizontal" Spacing="45" Margin="0,12,0,12">
-                                        <Label Text="{Binding UnitName}" FontSize="Small" TextColor="{StaticResource Grey-Mid-1}" />
-                                        <Label LineBreakMode="WordWrap">
+                                    <Grid Margin="0,8,0,8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="45" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Column="0" Text="{Binding UnitName}"  HorizontalOptions="Start" HorizontalTextAlignment="Start" FontSize="Small" TextColor="{StaticResource Grey-Mid-1}" />
+                                        <Label Grid.Column="1" LineBreakMode="WordWrap" HorizontalOptions="FillAndExpand" HorizontalTextAlignment="Start">
                                             <Label.FormattedText>
                                                 <FormattedString>
                                                     <Span Text="Tenants: " FontSize="Small" TextColor="{StaticResource Grey-Mid-1}" />
@@ -53,7 +57,7 @@
                                                 </FormattedString>
                                             </Label.FormattedText>
                                         </Label>
-                                    </StackLayout>
+                                    </Grid>
                                 </Frame>
                                 <BoxView HeightRequest="1"  BackgroundColor="{StaticResource Grey-Light-2}" />
 

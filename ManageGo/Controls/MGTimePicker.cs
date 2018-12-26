@@ -10,7 +10,7 @@ using System.Windows.Input;
 namespace ManageGo
 {
 
-    public class ClockPicker : Grid
+    public class MGTimePicker : Grid
     {
         double? TouchX;
         double? TouchY;
@@ -60,9 +60,9 @@ namespace ManageGo
         }
 
         public static readonly BindableProperty TimeProperty =
-              BindableProperty.Create("Time", typeof(DateTime), typeof(ClockPicker), null, BindingMode.TwoWay, propertyChanged: (BindableObject bindable, object oldValue, object newValue) =>
+              BindableProperty.Create("Time", typeof(DateTime), typeof(MGTimePicker), null, BindingMode.TwoWay, propertyChanged: (BindableObject bindable, object oldValue, object newValue) =>
               {
-                  var control = (ClockPicker)bindable;
+                  var control = (MGTimePicker)bindable;
                   var _newVal = (DateTime)newValue;
                   var correctedNewVal = _newVal.Hour > 12 ? _newVal.AddHours(-12) : _newVal;
                   if (!control.InternalTimeChange)
@@ -101,7 +101,7 @@ namespace ManageGo
             base.OnPropertyChanged(propertyName);
         }
 
-        public ClockPicker()
+        public MGTimePicker()
         {
             Padding = 0;
             handPaint = new SKPaint
@@ -147,7 +147,7 @@ namespace ManageGo
                 VerticalOptions = LayoutOptions.FillAndExpand
             };
             Canvas.PaintSurface += ClockPicker_PaintSurface;
-            this.Children.Add(Canvas);
+            Children.Add(Canvas);
             var touchEffect = new TouchEffect
             {
                 Capture = true

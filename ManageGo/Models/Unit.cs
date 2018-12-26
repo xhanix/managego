@@ -14,6 +14,7 @@ namespace ManageGo
         public int PropertyId { get; set; }
         public int UnitId { get; set; }
         public string ShortName { get; set; }
+
         public string UnitName { get; set; }
 
         [JsonProperty("ShorAddress")]
@@ -41,7 +42,7 @@ namespace ManageGo
             {
                 if (Tenants is null || !Tenants.Any())
                 {
-                    return "Not Found";
+                    return "Empty";
                 }
                 return string.Join(", ", Tenants.Select(t => t.FullName));
             }

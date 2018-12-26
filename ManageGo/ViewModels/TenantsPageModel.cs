@@ -17,7 +17,7 @@ namespace ManageGo
         public bool FilterStatusExpanded { get; set; }
         public string SelectedUnitString { get; set; }
         public string FilterKeywords { get; set; }
-        public View PopContentView { get; set; }
+        public View PopContentView { get; private set; }
         public bool ListIsEnabled { get; set; }
         public bool HasPreExistingFilter { get; private set; }
         public List<Building> Buildings { get; set; }
@@ -28,7 +28,7 @@ namespace ManageGo
         private bool CanGetMorePages { get; set; }
         public string NumberOfAppliedFilters { get; set; }
         internal Dictionary<string, object> FiltersDictionary { get; set; }
-        public bool IsSearching { get; set; }
+
         public string SelectedBuildingsString { get; set; }
         public bool SelectedActiveTenantFilter { get; set; }
         public bool SelectedInActiveTenantFilter { get; set; }
@@ -153,7 +153,7 @@ namespace ManageGo
             }
             finally
             {
-                NothingFetched = FetchedTenants.Any();
+                NothingFetched = !FetchedTenants.Any();
             }
         }
 
@@ -229,10 +229,10 @@ namespace ManageGo
                     }
                     NumberOfAppliedFilters = numberOfFilters > 0 ? $"{numberOfFilters}" : " ";
                     FiltersDictionary = paramDic;
-                    IsSearching = true;
+                    HasLoaded = false;
                     FetchedTenants = await Services.DataAccess.GetTenantsAsync(paramDic);
                     ListIsEnabled = true;
-                    IsSearching = false;
+                    HasLoaded = true;
                     tcs?.SetResult(true);
                 });
             }
@@ -283,7 +283,7 @@ namespace ManageGo
                     }
                     else
                     {
-                        PopContentView = new TenantFilterSelectView(this).Content;
+                        // PopContentView = new TenantFilterSelectView(this).Content;
                         ListIsEnabled = false;
                     }
                     FilterSelectViewIsShown = !FilterSelectViewIsShown;

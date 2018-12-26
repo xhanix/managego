@@ -1,6 +1,6 @@
 ﻿namespace ManageGo.Services
 {
-    public enum APIpaths
+    internal enum APIpaths
     {
         dashboard,
         authorize,
@@ -18,7 +18,9 @@
         CreateWorkOrder,
         CreateEvent,
         UpdateTicket,
-        Tenants
+        Tenants,
+        Payments,
+        BankTransactions
     }
 }
 

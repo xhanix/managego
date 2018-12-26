@@ -67,12 +67,12 @@ namespace ManageGo.Services
                 if (permissionDic.TryGetValue(APIkeys.AccessToPayments.ToString(), out object ap)
                     && ap is bool b && b)
                 {
-                    App.UserPermissions = UserPermissions.CanAccessPayments;
+                    App.UserPermissions = App.UserPermissions | UserPermissions.CanAccessPayments;
                 }
                 if (permissionDic.TryGetValue(APIkeys.AccessToMaintenance.ToString(), out object at)
                     && at is bool at1 && at1)
                 {
-                    App.UserPermissions = UserPermissions.CanAccessTickets;
+                    App.UserPermissions = App.UserPermissions | UserPermissions.CanAccessTickets;
                 }
             }
             Console.WriteLine(responseString);
@@ -342,6 +342,51 @@ namespace ManageGo.Services
                 Content = content
             };
             var response = await client.SendAsync(msg);
+        }
+        #endregion
+
+
+        #region Payments
+        internal static async Task<List<Models.Payment>> GetPaymentsAsync(Dictionary<string, object> filtersDictionary)
+        {
+            var jsonString = JsonConvert.SerializeObject(filtersDictionary);
+            var content = new StringContent(jsonString, Encoding.UTF8, "application/json");//new FormUrlEncodedContent(filters);
+            var msg = new HttpRequestMessage(HttpMethod.Post, BaseUrl + APIpaths.Payments.ToString())
+            {
+                Content = content
+            };
+            var response = await client.SendAsync(msg);
+            var responseString = await response.Content.ReadAsStringAsync();
+            var dic = JObject.Parse(responseString);
+            if (dic.TryGetValue("Result", out JToken list))
+            {
+                return list.ToObject<List<Models.Payment>>();
+            }
+            else
+            {
+                throw new Exception("Unable to get payments");
+            }
+        }
+
+        internal static async Task<List<Models.BankTransaction>> GetTransactionsAsync(Dictionary<string, object> filtersDictionary)
+        {
+            var jsonString = JsonConvert.SerializeObject(filtersDictionary);
+            var content = new StringContent(jsonString, Encoding.UTF8, "application/json");//new FormUrlEncodedContent(filters);
+            var msg = new HttpRequestMessage(HttpMethod.Post, BaseUrl + APIpaths.BankTransactions.ToString())
+            {
+                Content = content
+            };
+            var response = await client.SendAsync(msg);
+            var responseString = await response.Content.ReadAsStringAsync();
+            var dic = JObject.Parse(responseString);
+            if (dic.TryGetValue("Result", out JToken list))
+            {
+                return list.ToObject<List<Models.BankTransaction>>();
+            }
+            else
+            {
+                throw new Exception("Unable to get payments");
+            }
         }
         #endregion
 

@@ -54,6 +54,7 @@ namespace ManageGo
         int CurrentListPage { get; set; } = 1;
         bool CanGetMorePages { get; set; }
         readonly int pageSize = 30;
+
         public string ClosedTicketFilterCheckBoxImage
         {
             get
@@ -232,7 +233,7 @@ namespace ManageGo
                 return FilterDueDate != null ? filterSelectedColor : filterDefaultColor;
             }
         }
-
+        [AlsoNotifyFor("CalendarButtonText")]
         internal DateRange DateRange
         {
             get
@@ -244,7 +245,24 @@ namespace ManageGo
                 dateRange = value;
             }
         }
+        public string CalendarButtonText
+        {
+            get
+            {
+                if (DateRange.EndDate.HasValue)
+                {
+                    if (DateRange.StartDate == DateRange.EndDate)
+                        return DateRange.StartDate.ToString("MMM-dd");
+                    else
+                        return DateRange.StartDate.ToString("MMM dd") + "-" + DateRange.EndDate.Value.ToString("MMM dd");
+                }
+                else
+                {
+                    return DateRange.StartDate.ToString("MMM-dd");
+                }
 
+            }
+        }
         public FreshAwaitCommand OnBackbuttonTapped
         {
             get

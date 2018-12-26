@@ -24,7 +24,7 @@ namespace ManageGo
         {
             get
             {
-                return TenantUnits != null && TenantUnits.Any() ? TenantUnits.First().ShortAddress : "Not Available";
+                return TenantUnits != null && TenantUnits.Any(t => !string.IsNullOrWhiteSpace(t.UnitName)) ? TenantUnits.First(t => !string.IsNullOrWhiteSpace(t.UnitName)).ShortAddress : "[Address not available]";
             }
         }
 
