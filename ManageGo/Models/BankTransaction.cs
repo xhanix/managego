@@ -75,5 +75,13 @@ namespace ManageGo.Models
                 return Amount >= 0 ? "#51bd23" : "#e23b3b";
             }
         }
+        [JsonIgnore]
+        public double PaymentsListHeight
+        {
+            get
+            {
+                return Payments != null ? Payments.Count * 50 : 0;
+            }
+        }
     }
 }

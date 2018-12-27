@@ -130,12 +130,12 @@
                                                 </StackLayout>
                                                 <Label Text="Payments: " FontSize="Small" HorizontalOptions="Start" TextColor="{StaticResource Grey-Light-1}" />
                                                 <!-- list transaction payments -->
-                                                <controls:NestedListView ItemsSource="{Binding Payments}" SelectionMode="None" SeparatorVisibility="None" HasUnevenRows="true" >
+                                                <controls:NestedListView ItemsSource="{Binding Payments}" HeightRequest="{Binding PaymentsListHeight}" SelectionMode="None" SeparatorVisibility="None" HasUnevenRows="true" >
                                                     <ListView.ItemTemplate>
                                                         <DataTemplate>
                                                             <ViewCell>
-                                                                <StackLayout>
-                                                                    <Label VerticalTextAlignment="Center">
+                                                                <StackLayout Spacing="0">
+                                                                    <Label VerticalOptions="Start">
                                                                         <Label.FormattedText>
                                                                             <FormattedString>
                                                                                 <Span Text="{Binding Amount,StringFormat={StaticResource FormatDecimalToCurrency}}" FontSize="Small" TextColor="{StaticResource Grey-Mid-1}"/>
@@ -146,7 +146,8 @@
                                                                             </FormattedString>
                                                                         </Label.FormattedText>
                                                                     </Label>
-                                                                    <Label Text="{Binding ShortDescription}" FontSize="Small" TextColor="{StaticResource Grey-Mid-1}" />
+                                                                    <Label Text="{Binding ShortDescription}" VerticalOptions="Start" FontSize="Small" TextColor="{StaticResource Grey-Mid-1}" />
+                                                                    <BoxView HeightRequest="1" Margin="0,8,0,8" HorizontalOptions="FillAndExpand" BackgroundColor="{StaticResource Grey-Light-1}" />
                                                                 </StackLayout>
                                                             </ViewCell>
                                                         </DataTemplate>
