@@ -55,13 +55,7 @@ namespace ManageGo.Controls
                   var control = (MGRangePicker)bindable;
                   var _newVal = (Tuple<int, int>)newValue;
                   var _oldVal = (Tuple<int, int>)oldValue;
-                  if (_oldVal != _newVal && !control.InternalValueChange)
-                  {
-                      //control.SelectedRange = _newVal;
-                      control.TouchX = null;
-                      control.TouchY = null;
-                      control.Canvas?.InvalidateSurface();
-                  }
+
               });
 
 
@@ -69,7 +63,7 @@ namespace ManageGo.Controls
 
         public MGRangePicker()
         {
-            SelectedRange = new Tuple<int, int>(0, 5000);
+
             endKnobPaint = new SKPaint
             {
                 Style = SKPaintStyle.Fill,
@@ -148,29 +142,22 @@ namespace ManageGo.Controls
             SKSurface surface = args.Surface;
             SKCanvas canvas = surface.Canvas;
             CanvasScale = info.Height / this.Height;
-
+            StepDollarValue = 100;
+            var maxLength = (info.Height - 50) - 50;
+            StepSize = (StepDollarValue * maxLength) / 5000;
 
             if (!TouchY.HasValue)
             {
                 // set the knob locations on first draw pass
-                //get y for top of line
-
-                StepDollarValue = 100;
+                // get y for top of line
+                if (SelectedRange is null)
+                    SelectedRange = new Tuple<int, int>(0, 5000);
                 var topSteps = (5000 - SelectedRange.Item2) / StepDollarValue;
                 var bottomSteps = SelectedRange.Item1 / StepDollarValue;
                 TopKnobCenter = new Tuple<float, float>(halfWidth, 50 + (topSteps * StepSize));
                 BottomKnobCenter = new Tuple<float, float>(halfWidth, (info.Height - 50) - (bottomSteps * StepSize));
                 RangeMax = SelectedRange.Item2;
                 RangeMin = SelectedRange.Item1;
-                // TopKnobCenter = new Tuple<float, float>(halfWidth, 50);
-                // BottomKnobCenter = new Tuple<float, float>(halfWidth, info.Height - 50);
-                var maxLength = BottomKnobCenter.Item2 - TopKnobCenter.Item2;
-                //maxRange = $5000
-                //minRnge  =  $0
-                // stepSize = 20;
-                // stepDollarValue = (float)Math.Round((stepSize * 5000) / maxLength);
-
-                StepSize = (StepDollarValue * maxLength) / 5000;
             }
             else
             {
@@ -214,6 +201,7 @@ namespace ManageGo.Controls
 
                     }
                 }
+                SelectedRange = new Tuple<int, int>(RangeMin, RangeMax);
             }
             RangeMinString = RangeMin.ToString("C0");
             RangeMaxString = RangeMax.ToString("C0") + (Math.Abs(RangeMax - 5000) < float.Epsilon ? "+" : "");
@@ -228,7 +216,7 @@ namespace ManageGo.Controls
             // draw bottom circle
             canvas.DrawCircle(BottomKnobCenter.Item1, BottomKnobCenter.Item2, knobRadius, endKnobPaint);
             InternalValueChange = true;
-            SelectedRange = new Tuple<int, int>(RangeMin, RangeMax);
+
             InternalValueChange = false;
             isDrawing = false;
         }

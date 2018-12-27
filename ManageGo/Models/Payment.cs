@@ -16,6 +16,14 @@ namespace ManageGo.Models
         public Tenant Tenant { get; set; }
         public Unit Unit { get; set; }
         public Building Building { get; set; }
+        [JsonIgnore]
+        public string ShortDescription
+        {
+            get
+            {
+                return Tenant.FullName + ", " + Building.BuildingShortAddress + ", " + Unit.UnitName;
+            }
+        }
     }
 
     public class Payment : PaymentBase

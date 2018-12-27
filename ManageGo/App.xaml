@@ -3,7 +3,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <!-- Format -->
-            <x:String x:Key="FormatDecimalToCurrency">{0:C}</x:String>
+            <x:String x:Key="FormatDecimalToCurrency">{0:$#,##0.00}</x:String>
             <x:String x:Key="DateTimeToHeaderString">{0:MMM dd - hh:mm tt}</x:String>
              <!-- Colors -->
             <Color x:Key="Primary">#3E90F4</Color>

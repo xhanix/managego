@@ -48,13 +48,21 @@
                         <ColumnDefinition Width="1" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <StackLayout Grid.Column="0" HorizontalOptions="CenterAndExpand" Spacing="0" Orientation="Horizontal">
-                        <Button Text="{Binding CalendarButtonText}" HorizontalOptions="Center" BackgroundColor="Transparent" VerticalOptions="CenterAndExpand" Command="{Binding OnFilterTapped}" TextColor="Black" Image="calendar_blue.png"   />
+                    <StackLayout Grid.Column="0" HorizontalOptions="Center" Spacing="0" Orientation="Horizontal">
+                        <Image Source="calendar_blue.png" VerticalOptions="Center" />
+                        <Label Text="{Binding CalendarButtonText}" VerticalOptions="Center" TextColor="{StaticResource Grey-Dark-1}" FontSize="Medium" Margin="4,0,0,0"/>
+                        <StackLayout.GestureRecognizers>
+                            <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnFilterTapped}"/>
+                        </StackLayout.GestureRecognizers>
                     </StackLayout>
                     <BoxView WidthRequest="1" Margin="0,4,0,4" HorizontalOptions="Start" Grid.Column="1" BackgroundColor="{StaticResource Grey-Mid-2}"/>
-                    <StackLayout Grid.Column="2" HorizontalOptions="CenterAndExpand" Spacing="0" Orientation="Horizontal">
-                        <Button HorizontalOptions="Center" BackgroundColor="Transparent" VerticalOptions="CenterAndExpand" Command="{Binding OnFilterTapped}" TextColor="Black" Image="filter_blue.png" Text="Filter"  />
-                        <Label Text="{Binding NumberOfAppliedFilters}" HorizontalOptions="StartAndExpand" FontSize="Small" Margin="-3,8,0,0" TextColor="#318bfa"/>
+                    <StackLayout Grid.Column="2" HorizontalOptions="Center" Spacing="0" Orientation="Horizontal">
+                        <Image Source="filter_blue.png" VerticalOptions="Center" />
+                        <Label Text="Filter" VerticalOptions="Center" TextColor="{StaticResource Grey-Dark-1}" FontSize="Medium" Margin="4,0,0,0"/>
+                        <Label Text="{Binding NumberOfAppliedFilters}" HorizontalOptions="Start" Margin="2,8,0,0" HorizontalTextAlignment="Start" FontSize="Small" TextColor="#318bfa"/>
+                        <StackLayout.GestureRecognizers>
+                            <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnFilterTapped}"/>
+                        </StackLayout.GestureRecognizers>
                     </StackLayout>
                 </Grid>
                 <BoxView BackgroundColor="#f7f9fa" HeightRequest="2"/>
@@ -172,8 +180,7 @@
             RelativeLayout.XConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width,Factor=0}"
             RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height,Factor=0}"
             BackgroundColor="#99000000"
-            IsVisible="{Binding RangeSelectorIsShown}"
-        >
+            IsVisible="{Binding RangeSelectorIsShown}">
             <Grid.GestureRecognizers>
                 <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnDismissPopupTapped}" />
             </Grid.GestureRecognizers>

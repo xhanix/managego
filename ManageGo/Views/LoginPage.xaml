@@ -63,7 +63,7 @@
                RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width, Factor=0.5}">
             <StackLayout VerticalOptions="CenterAndExpand">
                 <ActivityIndicator Color="White" IsRunning="{Binding IsVisible,Source={x:Reference WaitFrame}}" />
-                <Label Text="Checking credentials" HorizontalOptions="CenterAndExpand" TextColor="White" FontSize="Micro"/>
+                <Label Text="Checking credentials" HorizontalOptions="CenterAndExpand" TextColor="White" FontSize="Small"/>
             </StackLayout>
         </Frame>
         <Frame HasShadow="false" 

@@ -21,8 +21,19 @@ namespace ManageGo
 
         public bool FilterSelectViewIsShown { get; set; }
         public bool RangeSelectorIsShown { get; private set; }
-
-        public List<Payment> FetchedPayments { get; set; }
+        List<Payment> fetchedPayments;
+        public List<Payment> FetchedPayments
+        {
+            get { return fetchedPayments; }
+            set
+            {
+                fetchedPayments = value;
+                if (fetchedPayments != null && !fetchedPayments.Any())
+                    NothingFetched = true;
+                else
+                    NothingFetched = false;
+            }
+        }
         public List<Building> Buildings { get; private set; }
         public List<Tenant> Tenants { get; private set; }
         public List<Unit> Units { get; private set; }
@@ -105,7 +116,17 @@ namespace ManageGo
             }
         }
         public string RangeSelectorMin { get { return SelectedAmountRange != null ? SelectedAmountRange.Item1.ToString("C0") : ""; } }
-        public string RangeSelectorMax { get { return SelectedAmountRange != null ? (SelectedAmountRange.Item2 >= 5000 ? "$5,000+" : FilteredAmountRange.Item2.ToString("C0")) : ""; } }
+        public string RangeSelectorMax
+        {
+            get
+            {
+                if (SelectedAmountRange is null)
+                    return string.Empty;
+                else if (SelectedAmountRange.Item2 >= 5000)
+                    return "$5,000+";
+                return SelectedAmountRange.Item2.ToString("C0");
+            }
+        }
 
         public bool BackbuttonIsVisible { get; set; }
         public View PopContentView { get; private set; }
@@ -113,7 +134,9 @@ namespace ManageGo
         {
             get
             {
-                return FilterDictionary is null || !FilterDictionary.Keys.Any() ? " " : $"{FilterDictionary.Keys.Count}";
+                return FilterDictionary is null ||
+                !FilterDictionary.Keys.Any() ? " " :
+                    $"{FilterDictionary.Keys.Count(t => t != "DateFrom")}";
             }
         }
 
@@ -125,7 +148,7 @@ namespace ManageGo
                 {
                     if (FilterDueDate.StartDate == FilterDueDate.EndDate)
                         return FilterDueDate.StartDate.ToString("MMM-dd");
-                    return FilterDueDate.StartDate.ToString("MMM dd") + "-" + FilterDueDate.EndDate.Value.ToString("MMM dd");
+                    return FilterDueDate.StartDate.ToString("MMM dd") + " - " + FilterDueDate.EndDate.Value.ToString("MMM dd");
                 }
                 return FilterDueDate.StartDate.ToString("MMM-dd");
             }
@@ -173,30 +196,22 @@ namespace ManageGo
 
         internal override async Task LoadData(bool refreshData = false, bool applyNewFilter = false)
         {
-
             try
             {
-                if (FilterDictionary is null || refreshData)
-                {
-                    Dictionary<string, object> parameters = new Dictionary<string, object>
+                Dictionary<string, object> parameters = new Dictionary<string, object>
                     {
                         { "PageSize", 50},
                         { "Page", CurrentListPage},
                         { "DateFrom",FilterDueDate.StartDate}
                     };
-                    if (FilterDueDate.EndDate.HasValue)
-                    {
-                        parameters.Add("DateTo", FilterDueDate.EndDate.Value);
-                    }
-                    FetchedPayments = await Services.DataAccess.GetPaymentsAsync(parameters);
-                }
-                else
+                if (FilterDueDate.EndDate.HasValue)
                 {
-                    FetchedPayments = await Services.DataAccess.GetPaymentsAsync(FilterDictionary);
+                    parameters.Add("DateTo", FilterDueDate.EndDate.Value);
                 }
+                FetchedPayments = await DataAccess.GetPaymentsAsync(parameters);
                 HasLoaded = true;
             }
-            catch (Exception ex)
+            catch
             {
                 APIhasFailed = true;
                 FetchedPayments = null;
@@ -206,7 +221,6 @@ namespace ManageGo
             {
                 NothingFetched = FetchedPayments is null || !FetchedPayments.Any();
             }
-
         }
 
 
@@ -438,10 +452,14 @@ namespace ManageGo
                     {
                         paramDic.Add("Search", FilterKeywords);
                     }
-
+                    paramDic.Add("DateFrom", FilterDueDate.StartDate);
+                    if (FilterDueDate.EndDate.HasValue)
+                    {
+                        paramDic.Add("DateTo", FilterDueDate.EndDate.Value);
+                    }
                     FilterDictionary = paramDic;
                     HasLoaded = false;
-                    FetchedPayments = await Services.DataAccess.GetPaymentsAsync(paramDic);
+                    FetchedPayments = await DataAccess.GetPaymentsAsync(paramDic);
                     HasLoaded = true;
                     tcs?.SetResult(true);
                 });
@@ -468,8 +486,7 @@ namespace ManageGo
                 async void execute(TaskCompletionSource<bool> tcs)
                 {
                     PopContentView = null;
-                    await LoadData(true, false);
-                    FilterDictionary.Clear();
+                    FilterDictionary = null;
                     if (Buildings != null)
                     {
                         foreach (var b in Buildings)
@@ -497,6 +514,17 @@ namespace ManageGo
                     FilteredAmountRange = null;
                     SelectedAmountRange = new Tuple<int, int>(0, 5000);
                     FilterKeywords = string.Empty;
+                    Dictionary<string, object> parameters = new Dictionary<string, object>
+                    {
+                        { "PageSize", 50},
+                        { "Page", CurrentListPage},
+                        { "DateFrom",FilterDueDate.StartDate}
+                    };
+                    if (FilterDueDate.EndDate.HasValue)
+                    {
+                        parameters.Add("DateTo", FilterDueDate.EndDate.Value);
+                    }
+                    FetchedPayments = await DataAccess.GetPaymentsAsync(parameters);
                     tcs?.SetResult(true);
                 }
                 return new FreshAwaitCommand(execute);

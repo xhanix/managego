@@ -72,7 +72,7 @@ namespace ManageGo.Models
         {
             get
             {
-                return !IsMarked ? "#51bd23" : "#e23b3b";
+                return Amount >= 0 ? "#51bd23" : "#e23b3b";
             }
         }
     }

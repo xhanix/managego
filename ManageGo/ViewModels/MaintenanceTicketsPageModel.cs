@@ -22,8 +22,9 @@ namespace ManageGo
         [AlsoNotifyFor("AddNewButtonIsVisisble")]
         internal bool CalendarIsShown { get; set; }
         [AlsoNotifyFor("AddNewButtonIsVisisble")]
-        internal bool FilterSelectViewIsShown { get; set; }
-        public ObservableCollection<MaintenanceTicket> FetchedTickets { get; private set; }
+        public bool FilterSelectViewIsShown { get; set; }
+        public bool NothingFetched { get; private set; }
+        public List<MaintenanceTicket> FetchedTickets { get; set; }
         public bool ListIsEnabled { get; set; } = false;
         public bool AddNewButtonIsVisisble
         {
@@ -153,7 +154,7 @@ namespace ManageGo
                                             Tags.First(t => t.IsSelected).TagName;
             }
         }
-        public bool IsSearching { get; private set; }
+
         public bool BackbuttonIsVisible { get; private set; }
 
         public string SelectedBuildingsString
@@ -254,7 +255,7 @@ namespace ManageGo
                     if (DateRange.StartDate == DateRange.EndDate)
                         return DateRange.StartDate.ToString("MMM-dd");
                     else
-                        return DateRange.StartDate.ToString("MMM dd") + "-" + DateRange.EndDate.Value.ToString("MMM dd");
+                        return DateRange.StartDate.ToString("MMM dd") + " - " + DateRange.EndDate.Value.ToString("MMM dd");
                 }
                 else
                 {
@@ -278,43 +279,47 @@ namespace ManageGo
 
         internal override async Task LoadData(bool refreshData = false, bool applyNewFilter = false)
         {
-
-            if (HasPreExistingFilter)
+            NothingFetched = false;
+            try
             {
-                IsSearching = true;
-                var results = await Services.DataAccess.GetTicketsAsync(FiltersDictionary);
-                FetchedTickets = new ObservableCollection<MaintenanceTicket>(results);
-                NumberOfAppliedFilters = "1";
-                IsSearching = false;
-                BackbuttonIsVisible = true;
-            }
-            else if (FetchedTickets is null || refreshData)
-            {
-                if (FiltersDictionary is null || refreshData)
+                if (HasPreExistingFilter)
                 {
-                    FiltersDictionary = new Dictionary<string, object>
+                    FetchedTickets = await Services.DataAccess.GetTicketsAsync(FiltersDictionary);
+                    NumberOfAppliedFilters = "1";
+                    BackbuttonIsVisible = true;
+                }
+                else if (FetchedTickets is null || refreshData)
+                {
+                    if (FiltersDictionary is null || refreshData)
+                    {
+                        FiltersDictionary = new Dictionary<string, object>
                     {
                          { "PageSize", pageSize },
                          { "Page",  1},
                     };
-                    if (HasCalendarFilter)
-                    {
-                        FiltersDictionary.Add("DateFrom", DateRange.StartDate);
-                        FiltersDictionary.Add("DateTo", DateRange.EndDate ?? DateRange.StartDate);
+                        if (HasCalendarFilter)
+                        {
+                            FiltersDictionary.Add("DateFrom", DateRange.StartDate);
+                            FiltersDictionary.Add("DateTo", DateRange.EndDate ?? DateRange.StartDate);
+                        }
                     }
-                }
-                try
-                {
                     if (FetchedTickets is null || applyNewFilter)
                     {
                         // FetchedTickets is null on view init
-                        FetchedTickets = new ObservableCollection<MaintenanceTicket>(
-                                await Services.DataAccess.GetTicketsAsync(FiltersDictionary));
-                        var lastIdx = FetchedTickets.IndexOf(FetchedTickets.Last());
-                        var index = Math.Floor(lastIdx / 2d);
-                        var markedItem = FetchedTickets.ElementAt((int)index);
-                        LastLoadedItemId = markedItem.TicketId;
-                        CanGetMorePages = FetchedTickets.Count == pageSize;
+                        FetchedTickets = await Services.DataAccess.GetTicketsAsync(FiltersDictionary);
+                        if (FetchedTickets.Count >= pageSize)
+                        {
+                            var lastIdx = FetchedTickets.IndexOf(FetchedTickets.Last());
+                            var index = Math.Floor(lastIdx / 2d);
+                            var markedItem = FetchedTickets.ElementAt((int)index);
+                            LastLoadedItemId = markedItem.TicketId;
+                            CanGetMorePages = FetchedTickets.Count == pageSize;
+                        }
+                        else
+                        {
+                            CanGetMorePages = false;
+                        }
+
                     }
                     else
                     {
@@ -322,7 +327,7 @@ namespace ManageGo
                         var nextPage = await Services.DataAccess.GetTicketsAsync(FiltersDictionary);
                         CanGetMorePages = nextPage.Count == pageSize;
                         list.AddRange(nextPage);
-                        FetchedTickets = new ObservableCollection<MaintenanceTicket>(list);
+                        FetchedTickets = list;
                     }
 
                     //RaisePropertyChanged("FetchedTickets");
@@ -341,15 +346,28 @@ namespace ManageGo
                     Console.WriteLine($"Tickets Fetched: {FetchedTickets.Count}");
                     HasLoaded = true;
                 }
-                catch
+            }
+            catch
+            {
+                APIhasFailed = true;
+                FetchedTickets = null;
+                NothingFetched = true;
+                if (await CoreMethods.DisplayAlert("Something went wrong", "Unable to get tickets. Connect to network and try again", "Try again", "Dismiss"))
                 {
-                    APIhasFailed = true;
-                    FetchedTickets = null;
-                    if (await CoreMethods.DisplayAlert("Something went wrong", "Unable to get tickets. Connect to network and try again", "Try again", "Dismiss"))
-                    {
-                        if (!this.IsLoading)
-                            await this.LoadData();
-                    }
+                    if (!this.IsLoading)
+                        await this.LoadData();
+                }
+            }
+            finally
+            {
+                HasLoaded = true;
+                if (!FetchedTickets.Any())
+                {
+                    NothingFetched = true;
+                }
+                else
+                {
+                    NothingFetched = false;
                 }
             }
         }
@@ -532,6 +550,7 @@ namespace ManageGo
                 async void execute(TaskCompletionSource<bool> tcs)
                 {
                     PopContentView = null;
+                    FilterSelectViewIsShown = false;
                     await LoadData(true, false);
                     NumberOfAppliedFilters = string.Empty;
                     if (Buildings != null)
@@ -638,11 +657,16 @@ namespace ManageGo
                     }
                     NumberOfAppliedFilters = numberOfFilters > 0 ? $"{numberOfFilters}" : " ";
                     FiltersDictionary = paramDic;
-                    IsSearching = true;
-                    var results = await Services.DataAccess.GetTicketsAsync(paramDic);
-                    FetchedTickets = new ObservableCollection<MaintenanceTicket>(results);
+                    NothingFetched = false;
+                    HasLoaded = false;
+                    FetchedTickets = new List<MaintenanceTicket>();
+                    FetchedTickets = await Services.DataAccess.GetTicketsAsync(paramDic);
+                    HasLoaded = true;
+                    if (!FetchedTickets.Any())
+                        NothingFetched = true;
+                    else
+                        NothingFetched = false;
                     ListIsEnabled = true;
-                    IsSearching = false;
                     tcs?.SetResult(true);
                 }
                 return new FreshAwaitCommand(execute);
@@ -722,9 +746,9 @@ namespace ManageGo
                             this.DateRange = cal.SelectedDates;
                             OnCalendarButtonTapped.Execute(null);
                             HasCalendarFilter = true;
-                            IsSearching = true;
+                            FiltersDictionary = null;
+                            NumberOfAppliedFilters = " ";
                             await LoadData(refreshData: true, applyNewFilter: true);
-                            IsSearching = false;
                         }
                         applyButton.Clicked += p;
                         buttonContainer.Children.Add(cancelButton);

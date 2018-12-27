@@ -122,6 +122,19 @@ namespace ManageGo.Services
         }
         #endregion
 
+        public static async Task GetBankAccounts()
+        {
+            // var param = new Dictionary<string, string> { { "page", "1" } };
+            var response = await client.PostAsync(BaseUrl + APIpaths.BankAccounts.ToString(), null);
+            var responseString = await response.Content.ReadAsStringAsync();
+            var dic = JObject.Parse(responseString);
+            if (dic.TryGetValue("Result", out JToken list))
+            {
+                App.BankAccounts = list.ToObject<List<Models.BankAccount>>();
+            }
+        }
+
+
         #region BUILDINGS
         public static async Task GetBuildings()
         {
@@ -362,10 +375,8 @@ namespace ManageGo.Services
             {
                 return list.ToObject<List<Models.Payment>>();
             }
-            else
-            {
-                throw new Exception("Unable to get payments");
-            }
+            throw new Exception("Unable to get payments");
+
         }
 
         internal static async Task<List<Models.BankTransaction>> GetTransactionsAsync(Dictionary<string, object> filtersDictionary)
@@ -383,10 +394,7 @@ namespace ManageGo.Services
             {
                 return list.ToObject<List<Models.BankTransaction>>();
             }
-            else
-            {
-                throw new Exception("Unable to get payments");
-            }
+            throw new Exception("Unable to get payments");
         }
         #endregion
 
@@ -405,12 +413,8 @@ namespace ManageGo.Services
                 {
                     return new Dictionary<string, string>();
                 }
-
             }
-            else
-            {
-                throw new Exception("Unable to get the Result token from the HTTP response content");
-            }
+            throw new Exception("Unable to get the Result token from the HTTP response content");
         }
 
         internal static async Task<TicketDetails> GetTicketDetails(int ticketId)
@@ -453,8 +457,6 @@ namespace ManageGo.Services
                 throw new Exception("Unable to get the Result token from the HTTP response content");
             }
         }
-
-
     }
 }
 

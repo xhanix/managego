@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using FreshMvvm;
+using ManageGo.Models;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -36,7 +37,7 @@ namespace ManageGo
             }
         }
 
-
+        public static List<BankAccount> BankAccounts { get; internal set; }
 
         public App()
         {

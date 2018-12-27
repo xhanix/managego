@@ -27,7 +27,14 @@ namespace ManageGo
                 return TenantUnits != null && TenantUnits.Any(t => !string.IsNullOrWhiteSpace(t.UnitName)) ? TenantUnits.First(t => !string.IsNullOrWhiteSpace(t.UnitName)).ShortAddress : "[Address not available]";
             }
         }
-
+        [JsonIgnore]
+        public string ShortDescription
+        {
+            get
+            {
+                return FullName + ", " + FirstUnitAddress;
+            }
+        }
         [JsonIgnore, AlsoNotifyFor("CheckBoxImage")]
         public bool IsSelected { get; set; }
 

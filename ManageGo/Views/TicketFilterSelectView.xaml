@@ -7,13 +7,7 @@
              x:Class="ManageGo.TicketFilterSelectView">
     <ScrollView>
         <StackLayout Spacing="0">
-            <StackLayout Orientation="Horizontal" Padding="21,8,21,0">
-                <Button FontSize="Medium" TextColor="{StaticResource Grey-Mid-1}" Text="Reset" Command="{Binding OnResetFiltersButtonTapped}" BackgroundColor="Transparent" HorizontalOptions="StartAndExpand" />
-                <Button FontSize="Medium" TextColor="White" Text="      Apply filters      " CornerRadius="21" Command="{Binding OnApplyFiltersTapped}" BackgroundColor="{StaticResource Primary}" HorizontalOptions="CenterAndExpand" />
-                <Button FontSize="Medium" TextColor="{StaticResource Grey-Mid-1}" Text="Cancel" Command="{Binding OnCloseFliterViewTapped}" BackgroundColor="Transparent" HorizontalOptions="EndAndExpand"/>
-            </StackLayout>
             <StackLayout Padding="21,17,21,17" Spacing="17">
-                <BoxView HeightRequest="1" BackgroundColor="Silver" HorizontalOptions="FillAndExpand" />
                 <StackLayout Orientation="Horizontal">
                     <Image Source="search_grey" />
                     <local:CustomEntry Placeholder="keywords..." Text="{Binding FilterKeywords}" FontSize="Small"  HorizontalOptions="FillAndExpand" />

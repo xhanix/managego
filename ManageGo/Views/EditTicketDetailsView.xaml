@@ -27,7 +27,6 @@
                         <RowDefinition Height="auto" />
                         <RowDefinition Height="auto" />
                         <RowDefinition Height="auto" />
-                        
                     </Grid.RowDefinitions>
                     <Label Text="Tenant" FontSize="Small" Grid.Column="0" Grid.Row="0" TextColor="{StaticResource Key=Grey-Light-1}"/>
                     <BoxView Grid.Row="1" HeightRequest="1" VerticalOptions="Center" BackgroundColor="#e0e0e0" Grid.ColumnSpan="2" />

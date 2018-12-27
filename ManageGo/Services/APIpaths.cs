@@ -20,7 +20,8 @@
         UpdateTicket,
         Tenants,
         Payments,
-        BankTransactions
+        BankTransactions,
+        BankAccounts
     }
 }
 

@@ -58,7 +58,6 @@ namespace ManageGo
             {
                 async void execute(System.Threading.Tasks.TaskCompletionSource<bool> tcs)
                 {
-
                     if (App.MasterDetailNav.Detail is NavigationPage
                     && ((NavigationPage)App.MasterDetailNav.Detail).CurrentPage.GetModel() is MaintenanceTicketsPageModel model)
                     {

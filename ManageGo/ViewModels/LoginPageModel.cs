@@ -5,6 +5,7 @@ using Xamarin.Essentials;
 using PropertyChanged;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ManageGo
 {
@@ -154,8 +155,10 @@ namespace ManageGo
                 try
                 {
                     List<Task> tasks = new List<Task>();
-                    if (App.Buildings is null || App.Buildings.Count == 0)
+                    if (App.Buildings is null || !App.Buildings.Any())
                         tasks.Add(Services.DataAccess.GetBuildings());
+                    if (App.BankAccounts is null || !App.BankAccounts.Any())
+                        tasks.Add(Services.DataAccess.GetBankAccounts());
                     if (App.Categories is null || App.Categories.Count == 0)
                     {
                         tasks.Add(Services.DataAccess.GetAllCategoriesAndTags());
