@@ -197,14 +197,18 @@
                 </Grid.RowDefinitions>
                 <Label Grid.Row="0" Text="Amount range:" TextColor="{StaticResource Grey-Dark-1}" Margin="0,0,0,17" FontSize="Medium" HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center"/>
                 <Frame Grid.Row="1" Padding="22,12,22,12" WidthRequest="90" CornerRadius="23" VerticalOptions="Center" HasShadow="false" BackgroundColor="#e0eefd"  HorizontalOptions="Center" >
-                    <Label Text="{Binding RangeMaxString,Source={x:Reference RangePicker}}" HorizontalOptions="CenterAndExpand" TextColor="{StaticResource Primary}" FontSize="Medium" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                    <Label Text="{Binding RangeSelectorMax}" HorizontalOptions="CenterAndExpand" TextColor="{StaticResource Primary}" FontSize="Medium" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
                 </Frame>
-                <controls:MGRangePicker Grid.Row="2" x:Name="RangePicker"/>
+                <ContentView Content="{Binding RangePickerView}" Grid.Row="2" />
                 <Frame Grid.Row="3" Padding="22,12,22,12" WidthRequest="90" CornerRadius="23" VerticalOptions="Center" HasShadow="false" BackgroundColor="#e0eefd"  HorizontalOptions="Center" >
-                    <Label Text="{Binding RangeMinString,Source={x:Reference RangePicker}}" HorizontalOptions="CenterAndExpand" TextColor="{StaticResource Primary}" FontSize="Medium" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                    <Label Text="{Binding RangeSelectorMin}" HorizontalOptions="CenterAndExpand" TextColor="{StaticResource Primary}" FontSize="Medium" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
                 </Frame>
                  <Frame Grid.Row="4" Padding="22,12,22,12"  CornerRadius="21" VerticalOptions="Center" Margin="0,17,0,0" HasShadow="false" BackgroundColor="{StaticResource Primary}"  HorizontalOptions="Center" >
                     <Label Text="Apply amount range" HorizontalOptions="CenterAndExpand" TextColor="White" FontSize="Medium"  FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer NumberOfTapsRequired="1" 
+                                              Command="{Binding OnApplyFilterRangeButtonTapped}" />
+                    </Frame.GestureRecognizers>
                 </Frame>
             </Grid>
         </Frame>  

@@ -21,10 +21,10 @@ namespace TouchTracking.Droid
         Func<double, double> fromPixels;
         int[] twoIntArray = new int[2];
 
-        static Dictionary<Android.Views.View, TouchEffect> viewDictionary = 
+        static Dictionary<Android.Views.View, TouchEffect> viewDictionary =
             new Dictionary<Android.Views.View, TouchEffect>();
 
-        static Dictionary<int, TouchEffect> idToEffectDictionary = 
+        static Dictionary<int, TouchEffect> idToEffectDictionary =
             new Dictionary<int, TouchEffect>();
 
         protected override void OnAttached()
@@ -33,7 +33,7 @@ namespace TouchTracking.Droid
             view = Control == null ? Container : Control;
 
             // Get access to the TouchEffect class in the .NET Standard library
-            TouchTracking.TouchEffect touchEffect = 
+            TouchTracking.TouchEffect touchEffect =
                 (TouchTracking.TouchEffect)Element.Effects.
                     FirstOrDefault(e => e is TouchTracking.TouchEffect);
 
@@ -46,6 +46,7 @@ namespace TouchTracking.Droid
                 libTouchEffect = touchEffect;
 
                 // Save fromPixels function
+
                 fromPixels = view.Context.FromPixels;
 
                 // Set event handler on View
@@ -55,7 +56,7 @@ namespace TouchTracking.Droid
 
         protected override void OnDetached()
         {
-            if (viewDictionary.ContainsKey(view))
+            if (view != null && viewDictionary.ContainsKey(view))
             {
                 viewDictionary.Remove(view);
                 view.Touch -= OnTouch;
@@ -155,7 +156,7 @@ namespace TouchTracking.Droid
         }
 
         void CheckForBoundaryHop(int id, Point pointerLocation)
-        { 
+        {
             TouchEffect touchEffectHit = null;
 
             foreach (Android.Views.View view in viewDictionary.Keys)

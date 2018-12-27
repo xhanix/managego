@@ -441,7 +441,6 @@ namespace ManageGo
                     tcs?.SetResult(true);
                 });
             }
-
         }
 
         public FreshAwaitCommand OnResetFiltersButtonTapped

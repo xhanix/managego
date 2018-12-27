@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using TouchTracking;
@@ -20,22 +21,55 @@ namespace ManageGo.Controls
 
         double? releaseTouchX;
         double? releaseTouchY;
+        private bool isDrawing;
 
         public bool InternalValueChange { get; private set; }
         public bool MovingTopKnob { get; private set; }
         public bool MovingBottomKnob { get; private set; }
         public Tuple<float, float> TopKnobCenter { get; private set; }
-        public float RangeMax { get; private set; } = 5000;
-        public string RangeMaxString { get; private set; } = "5000";
+        private int RangeMax = 5000;
+        public int RangeMin { get; set; } = 0;
+
         public Tuple<float, float> BottomKnobCenter { get; private set; }
         public double CanvasScale { get; private set; }
         public float StepSize { get; private set; }
         public float StepDollarValue { get; private set; }
-        public float RangeMin { get; private set; }
-        public string RangeMinString { get; private set; } = "0";
+        public string RangeMaxString { get; private set; } = "$5,000+";
+        public string RangeMinString { get; private set; } = "$0";
+
+        public Tuple<int, int> SelectedRange
+        {
+            get
+            {
+                return (Tuple<int, int>)GetValue(SelectedRangeProperty);
+            }
+            set
+            {
+                SetValue(SelectedRangeProperty, value);
+            }
+        }
+
+        public static readonly BindableProperty SelectedRangeProperty =
+              BindableProperty.Create("SelectedRange", typeof(Tuple<int, int>), typeof(MGRangePicker), null, BindingMode.TwoWay, propertyChanged: (BindableObject bindable, object oldValue, object newValue) =>
+              {
+                  var control = (MGRangePicker)bindable;
+                  var _newVal = (Tuple<int, int>)newValue;
+                  var _oldVal = (Tuple<int, int>)oldValue;
+                  if (_oldVal != _newVal && !control.InternalValueChange)
+                  {
+                      //control.SelectedRange = _newVal;
+                      control.TouchX = null;
+                      control.TouchY = null;
+                      control.Canvas?.InvalidateSurface();
+                  }
+              });
+
+
+
 
         public MGRangePicker()
         {
+            SelectedRange = new Tuple<int, int>(0, 5000);
             endKnobPaint = new SKPaint
             {
                 Style = SKPaintStyle.Fill,
@@ -65,7 +99,7 @@ namespace ManageGo.Controls
 
             touchEffect.TouchAction += (object sender, TouchActionEventArgs args) =>
             {
-                InternalValueChange = true;
+
                 switch (args.Type)
                 {
                     case TouchActionType.Pressed:
@@ -85,6 +119,10 @@ namespace ManageGo.Controls
                     case TouchActionType.Released:
                         releaseTouchX = args.Location.X;
                         releaseTouchY = args.Location.Y;
+                        TouchX = args.Location.X;
+                        TouchY = args.Location.Y;
+                        Canvas.InvalidateSurface();
+                        Console.WriteLine("******** released ********");
                         MovingTopKnob = false;
                         MovingBottomKnob = false;
                         break;
@@ -93,7 +131,7 @@ namespace ManageGo.Controls
                         MovingBottomKnob = false;
                         break;
                 }
-                InternalValueChange = false;
+
             };
             TouchX = null;
             TouchY = null;
@@ -112,40 +150,50 @@ namespace ManageGo.Controls
             CanvasScale = info.Height / this.Height;
 
 
-
             if (!TouchY.HasValue)
             {
                 // set the knob locations on first draw pass
                 //get y for top of line
-                TopKnobCenter = new Tuple<float, float>(halfWidth, 50);
-                BottomKnobCenter = new Tuple<float, float>(halfWidth, info.Height - 50);
+
+                StepDollarValue = 100;
+                var topSteps = (5000 - SelectedRange.Item2) / StepDollarValue;
+                var bottomSteps = SelectedRange.Item1 / StepDollarValue;
+                TopKnobCenter = new Tuple<float, float>(halfWidth, 50 + (topSteps * StepSize));
+                BottomKnobCenter = new Tuple<float, float>(halfWidth, (info.Height - 50) - (bottomSteps * StepSize));
+                RangeMax = SelectedRange.Item2;
+                RangeMin = SelectedRange.Item1;
+                // TopKnobCenter = new Tuple<float, float>(halfWidth, 50);
+                // BottomKnobCenter = new Tuple<float, float>(halfWidth, info.Height - 50);
                 var maxLength = BottomKnobCenter.Item2 - TopKnobCenter.Item2;
                 //maxRange = $5000
                 //minRnge  =  $0
                 // stepSize = 20;
                 // stepDollarValue = (float)Math.Round((stepSize * 5000) / maxLength);
-                StepDollarValue = 100;
+
                 StepSize = (StepDollarValue * maxLength) / 5000;
             }
             else
             {
                 // set the knob locations on movement
+                if (isDrawing)
+                    return;
+                isDrawing = true;
                 var newY = (float)(TouchY.Value * CanvasScale);
-                if (newY < 50 && MovingTopKnob)
-                    newY = 50;
-                else if (newY > info.Height - 50 && MovingBottomKnob)
-                    newY = info.Height - 50;
+                if ((float)Math.Round(newY) <= 50.0f && MovingTopKnob)
+                    newY = 50.0f;
+                else if ((float)Math.Round(newY) >= info.Height - 50.0f && MovingBottomKnob)
+                    newY = info.Height - 50.0f;
                 if (MovingTopKnob || (Math.Abs(newY - TopKnobCenter.Item2) <= 50 && !MovingBottomKnob))
                 {
                     MovingTopKnob = true;
                     MovingBottomKnob = false;
-                    var numOfSteps = (float)Math.Round((newY - 50) / StepSize);
+                    var numOfSteps = (float)Math.Round(Math.Abs(newY - 50) / StepSize);
                     var topDollarValue = 5000 - (numOfSteps * StepDollarValue);
-                    if (topDollarValue - RangeMin >= StepDollarValue)
+                    if (topDollarValue - RangeMin >= StepDollarValue * 3)
                     {
                         TopKnobCenter = new Tuple<float, float>(halfWidth, 50 + (numOfSteps * StepSize));
-                        RangeMax = Math.Max(RangeMin, topDollarValue);
-                        RangeMaxString = RangeMax.ToString("C0");
+                        RangeMax = (int)Math.Max(RangeMin, topDollarValue);
+
                         Console.WriteLine($"Max value: {RangeMax}");
 
                     }
@@ -157,26 +205,32 @@ namespace ManageGo.Controls
                     MovingBottomKnob = true;
                     var numOfSteps = (float)Math.Round(Math.Abs(newY - (info.Height - 50)) / StepSize);
                     var bottomDollarValue = (numOfSteps * StepDollarValue);
-                    if (RangeMax - bottomDollarValue >= StepDollarValue)
+                    if (RangeMax - bottomDollarValue >= StepDollarValue * 3)
                     {
                         BottomKnobCenter = new Tuple<float, float>(halfWidth, info.Height - (numOfSteps * StepSize) - 50);
                         //get distance from topknobCenter to top of the view
-                        RangeMin = Math.Min(RangeMax, bottomDollarValue);
+                        RangeMin = (int)Math.Min(RangeMax, bottomDollarValue);
                         Console.WriteLine($"Min value: {RangeMin}");
-                        RangeMinString = RangeMin.ToString("C0");
+
                     }
                 }
             }
+            RangeMinString = RangeMin.ToString("C0");
+            RangeMaxString = RangeMax.ToString("C0") + (Math.Abs(RangeMax - 5000) < float.Epsilon ? "+" : "");
             canvas.Clear();
             // draw line in between --order of drawing is important
-            canvas.DrawLine(TopKnobCenter.Item1, TopKnobCenter.Item2,
-                    BottomKnobCenter.Item1, BottomKnobCenter.Item2, linePaint);
+            canvas.DrawLine(halfWidth, 50,
+                 halfWidth, info.Height - 50, linePaint);
 
             // draw top circle
             canvas.DrawCircle(TopKnobCenter.Item1, TopKnobCenter.Item2, knobRadius, endKnobPaint);
 
             // draw bottom circle
             canvas.DrawCircle(BottomKnobCenter.Item1, BottomKnobCenter.Item2, knobRadius, endKnobPaint);
+            InternalValueChange = true;
+            SelectedRange = new Tuple<int, int>(RangeMin, RangeMax);
+            InternalValueChange = false;
+            isDrawing = false;
         }
 
     }
