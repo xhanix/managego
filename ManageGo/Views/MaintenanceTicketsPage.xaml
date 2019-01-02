@@ -131,10 +131,10 @@
                                     <Button Text="View ticket" IsVisible="{Binding FirstCommentShown}" InputTransparent="true" HorizontalOptions="StartAndExpand" FontSize="Small" TextColor="#318bfa" BackgroundColor="Transparent"/>
                                 </StackLayout>
                                 <StackLayout Grid.Column="2" Padding="8,8,4,8">
-                                    <Image  Source="chevron_down.png" Rotation="0" IsVisible="{Binding FirstCommentShown, Converter={StaticResource InverseBoolConverter} }" VerticalOptions="Start" HorizontalOptions="End"/>
-                                    <Image  Source="chevron_down.png" Rotation="180" IsVisible="{Binding FirstCommentShown}" VerticalOptions="Start" HorizontalOptions="End"/>
+                                    <Image Source="chevron_down.png" Rotation="0" IsVisible="{Binding FirstCommentShown, Converter={StaticResource InverseBoolConverter} }" VerticalOptions="Start" HorizontalOptions="End"/>
+                                    <Image Source="chevron_down.png" Rotation="180" IsVisible="{Binding FirstCommentShown}" VerticalOptions="Start" HorizontalOptions="End"/>
                                     <StackLayout.GestureRecognizers>
-                                            <TapGestureRecognizer NumberOfTapsRequired="1"  CommandParameter="{Binding .}" Tapped="Handle_Tapped" />
+                                            <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding BindingContext.ShowDetails,Source={x:Reference ThisPage}}"  CommandParameter="{Binding .}" Tapped="Handle_Tapped" />
                                     </StackLayout.GestureRecognizers>
                                 </StackLayout>
                             </Grid>  

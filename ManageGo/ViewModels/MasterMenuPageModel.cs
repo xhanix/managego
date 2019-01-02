@@ -74,6 +74,7 @@ namespace ManageGo
                 return new FreshAwaitCommand(execute);
             }
         }
+
         public FreshAwaitCommand OnHomeTapped
         {
             get
@@ -81,6 +82,36 @@ namespace ManageGo
                 return new FreshAwaitCommand((tcs) =>
                 {
                     App.MasterDetailNav.SwitchSelectedRootPageModel<WelcomePageModel>();
+                    tcs?.SetResult(true);
+                });
+            }
+        }
+
+
+
+        public FreshAwaitCommand OnFeedbackTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((tcs) =>
+                {
+                    if (!App.MasterDetailNav.Pages.ContainsKey("Feedback"))
+                        App.MasterDetailNav.AddPage<FeedbackPageModel>("Feedback");
+                    App.MasterDetailNav.SwitchSelectedRootPageModel<FeedbackPageModel>();
+                    tcs?.SetResult(true);
+                });
+            }
+        }
+
+        public FreshAwaitCommand OnSettingsTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((tcs) =>
+                {
+                    if (!App.MasterDetailNav.Pages.ContainsKey("Settings"))
+                        App.MasterDetailNav.AddPage<SettingsPageModel>("Settings");
+                    App.MasterDetailNav.SwitchSelectedRootPageModel<SettingsPageModel>();
                     tcs?.SetResult(true);
                 });
             }

@@ -137,7 +137,7 @@ namespace ManageGo
                 StrokeWidth = 2
             };
 
-            var mainDisplayInfo = DeviceDisplay.ScreenMetrics;
+            var mainDisplayInfo = DeviceDisplay.MainDisplayInfo;
             WidthRequest = mainDisplayInfo.Width * 0.80;
 
             Canvas = new SKCanvasView

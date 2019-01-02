@@ -138,8 +138,11 @@ namespace ManageGo
             {
                 return new FreshAwaitCommand((par, tcs) =>
                 {
-                    var t = (BankTransaction)par;
-                    t.DetailsShown = !t.DetailsShown;
+                    var transaction = (BankTransaction)par;
+                    var alreadyExpandedItem = FetchedTransactions.FirstOrDefault(t => t.DetailsShown && t.Id != transaction.Id);
+                    if (alreadyExpandedItem != null)
+                        alreadyExpandedItem.DetailsShown = false;
+                    transaction.DetailsShown = !transaction.DetailsShown;
                     tcs?.SetResult(true);
                 });
             }

@@ -17,8 +17,6 @@ namespace ManageGo
         void Handle_Tapped(object sender, EventArgs e)
         {
             var st = (StackLayout)sender;
-            var item = ((TappedEventArgs)e).Parameter as MaintenanceTicket;
-            item.FirstCommentShown = !item.FirstCommentShown;
             var container = st.Parent;
             var row = container.Parent.Parent as ViewCell;
             row.ForceUpdateSize();

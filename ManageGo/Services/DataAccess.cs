@@ -12,16 +12,18 @@ namespace ManageGo.Services
     public static class DataAccess
     {
         private const string BaseUrl = "https://ploop.dynamo-ny.com/api/pmc_v2/";
-        private static readonly HttpClient client = new HttpClient();
+        internal static readonly HttpClient client = new HttpClient();
         private static string AccessToken { get; set; }
 
         private static DateTimeOffset TokenExpiry { get; set; } = DateTimeOffset.FromUnixTimeSeconds(0);
 
         public static async Task<object> Login(string userName = null, string password = null)
         {
-            //TODO: remove this
+            //todo: may need to remove this at some point
+#if DEBUG
             userName = "pmc@mobile.test";
             password = "111111";
+#endif
 
             Dictionary<string, string> credentials = new Dictionary<string, string>
             {
@@ -57,6 +59,7 @@ namespace ManageGo.Services
                 {
                     App.UserName = firstName + " " + lastName;
                 }
+
                 if (pmcDic.TryGetValue(APIkeys.PMCName.ToString(), out string pmcName))
                 {
                     App.PMCName = pmcName;

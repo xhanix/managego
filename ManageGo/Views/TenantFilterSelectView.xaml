@@ -64,7 +64,7 @@
                                     <ViewCell>
                                         <StackLayout Orientation="Horizontal" VerticalOptions="FillAndExpand" Padding="0,12,0,0">
                                             <Image Source="{Binding CheckBoxImage}" />
-                                            <Label Text="{Binding ShortAddress}" VerticalOptions="CenterAndExpand" LineBreakMode="TailTruncation" FontSize="Small" />
+                                            <Label Text="{Binding UnitName}" VerticalOptions="CenterAndExpand" LineBreakMode="TailTruncation" FontSize="Small" />
                                             <StackLayout.GestureRecognizers>
                                                 <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding BindingContext.OnUnitTapped, Source={x:Reference ThisPage}}" CommandParameter="{Binding .}" />
                                             </StackLayout.GestureRecognizers>

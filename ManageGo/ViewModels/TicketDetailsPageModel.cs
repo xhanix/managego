@@ -952,7 +952,7 @@ namespace ManageGo
                 Status = ticket.TicketStatus;
                 Unit = ticket.Unit;
                 TicketTenant = ticket.Tenant.TenantID;
-                BuildingId = ticket.Building.BuildingId;
+                BuildingId = ticket.Building is null ? 0 : ticket.Building.BuildingId;
                 Users = App.Users;
                 TicketComment = ticket.FirstComment;
 

@@ -407,6 +407,23 @@ namespace ManageGo
             }
         }
 
+        public FreshAwaitCommand ShowDetails
+        {
+            get
+            {
+                return new FreshAwaitCommand((par, tcs) =>
+                {
+                    var ticket = (MaintenanceTicket)par;
+                    var alreadyExpandedTicket = FetchedTickets.FirstOrDefault(t => t.FirstCommentShown && t.TicketId != ticket.TicketId);
+                    if (alreadyExpandedTicket != null)
+                    {
+                        alreadyExpandedTicket.FirstCommentShown = false;
+                    }
+                    ticket.FirstCommentShown = !ticket.FirstCommentShown;
+                    tcs?.SetResult(true);
+                });
+            }
+        }
 
         public FreshAwaitCommand OnAddButtonTapped
         {

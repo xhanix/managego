@@ -152,24 +152,18 @@ namespace ManageGo
                     Preferences.Set("Password", UserPassword);
                     Preferences.Set("IsBiometricAuthEnabled", IsBiometricsEnabled);
                 }
-                try
+                List<Task> tasks = new List<Task>();
+                if (App.Buildings is null || !App.Buildings.Any())
+                    tasks.Add(Services.DataAccess.GetBuildings());
+                if (App.BankAccounts is null || !App.BankAccounts.Any())
+                    tasks.Add(Services.DataAccess.GetBankAccounts());
+                if (App.Categories is null || App.Categories.Count == 0)
                 {
-                    List<Task> tasks = new List<Task>();
-                    if (App.Buildings is null || !App.Buildings.Any())
-                        tasks.Add(Services.DataAccess.GetBuildings());
-                    if (App.BankAccounts is null || !App.BankAccounts.Any())
-                        tasks.Add(Services.DataAccess.GetBankAccounts());
-                    if (App.Categories is null || App.Categories.Count == 0)
-                    {
-                        tasks.Add(Services.DataAccess.GetAllCategoriesAndTags());
-                        tasks.Add(Services.DataAccess.GetAllUsers());
-                    }
-                    await Task.WhenAll(tasks);
+                    tasks.Add(Services.DataAccess.GetAllCategoriesAndTags());
+                    tasks.Add(Services.DataAccess.GetAllUsers());
                 }
-                catch (Exception)
-                {
-                    //todo: add retry logic after showing welcome page 
-                }
+                await Task.WhenAll(tasks);
+
                 OnSuccessfulLogin?.Invoke(this, true);
             }
             catch (Exception ex)

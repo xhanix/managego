@@ -6,6 +6,7 @@ using ManageGo.Services;
 using System.Linq;
 using FreshMvvm;
 using Xamarin.Essentials;
+using PropertyChanged;
 
 namespace ManageGo
 {
@@ -16,6 +17,17 @@ namespace ManageGo
         public bool FilterUnitsExpanded { get; set; }
         public bool FilterStatusExpanded { get; set; }
         public string SelectedUnitString { get; set; }
+        public bool FilterButtonIsEnabled
+        {
+            get
+            {
+                var selectedBuilding = Buildings.Any(t => t.IsSelected);
+                var statusSelected = SelectedActiveTenantFilter != SelectedInActiveTenantFilter;
+                var hasKeywords = !string.IsNullOrWhiteSpace(FilterKeywords);
+                return selectedBuilding || statusSelected || hasKeywords;
+            }
+        }
+        [AlsoNotifyFor("FilterButtonIsEnabled")]
         public string FilterKeywords { get; set; }
         public View PopContentView { get; private set; }
         public bool ListIsEnabled { get; set; }
@@ -28,9 +40,11 @@ namespace ManageGo
         private bool CanGetMorePages { get; set; }
         public string NumberOfAppliedFilters { get; set; }
         internal Dictionary<string, object> FiltersDictionary { get; set; }
-
+        [AlsoNotifyFor("FilterButtonIsEnabled")]
         public string SelectedBuildingsString { get; set; }
+        [AlsoNotifyFor("FilterButtonIsEnabled")]
         public bool SelectedActiveTenantFilter { get; set; }
+        [AlsoNotifyFor("FilterButtonIsEnabled")]
         public bool SelectedInActiveTenantFilter { get; set; }
         public bool BackbuttonIsVisible { get; private set; }
         public string ActiveTenantCheckBoxImage
@@ -170,6 +184,7 @@ namespace ManageGo
                 }));
             }
         }
+
         public FreshAwaitCommand SetFilterStatus
         {
             get
@@ -234,7 +249,7 @@ namespace ManageGo
                     ListIsEnabled = true;
                     HasLoaded = true;
                     tcs?.SetResult(true);
-                });
+                }, (arg) => FilterButtonIsEnabled);
             }
         }
         protected override void ViewIsAppearing(object sender, EventArgs e)
@@ -283,7 +298,7 @@ namespace ManageGo
                     }
                     else
                     {
-                        // PopContentView = new TenantFilterSelectView(this).Content;
+                        PopContentView = new TenantFilterSelectView(this).Content;
                         ListIsEnabled = false;
                     }
                     FilterSelectViewIsShown = !FilterSelectViewIsShown;
@@ -356,6 +371,9 @@ namespace ManageGo
                 return new FreshAwaitCommand((par, tcs) =>
                 {
                     var tenant = (Tenant)par;
+                    var alreadyExpandedTenant = FetchedTenants.FirstOrDefault(t => t.DetailsShown && t.TenantID != tenant.TenantID);
+                    if (alreadyExpandedTenant != null)
+                        alreadyExpandedTenant.DetailsShown = false;
                     tenant.DetailsShown = !tenant.DetailsShown;
                     tcs?.SetResult(true);
                 });
@@ -404,12 +422,15 @@ namespace ManageGo
                     try
                     {
                         var details = await DataAccess.GetBuildingDetails(building.BuildingId);
-                        foreach (Building b in Buildings)
+                        foreach (Building b in Buildings.Where(t => t.IsSelected && t.BuildingId != building.BuildingId))
                         {
                             b.IsSelected = false;
                         }
-                        building.IsSelected = true;
-                        SelectedBuildingsString = building.BuildingName;
+                        building.IsSelected = !building.IsSelected;
+                        if (building.IsSelected)
+                            SelectedBuildingsString = building.BuildingName;
+                        else
+                            SelectedBuildingsString = string.Empty;
                         Units = details.Units;
                     }
                     catch (Exception ex)
@@ -450,6 +471,7 @@ namespace ManageGo
                 async void execute(TaskCompletionSource<bool> tcs)
                 {
                     PopContentView = null;
+                    FilterSelectViewIsShown = false;
                     await LoadData(true, false);
                     NumberOfAppliedFilters = string.Empty;
                     if (Buildings != null)
@@ -473,7 +495,6 @@ namespace ManageGo
                 return new FreshAwaitCommand(execute);
             }
         }
-
         public bool NothingFetched { get; private set; }
     }
 }

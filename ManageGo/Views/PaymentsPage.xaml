@@ -96,7 +96,7 @@
                                                     <Image  Source="chevron_down.png" Rotation="0" IsVisible="{Binding DetailsShown, Converter={StaticResource InverseBoolConverter} }" VerticalOptions="Start" HorizontalOptions="End"/>
                                                     <Image  Source="chevron_down.png" Rotation="180" IsVisible="{Binding DetailsShown}" VerticalOptions="Start" HorizontalOptions="End"/>
                                                     <StackLayout.GestureRecognizers>
-                                                            <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding BindingContext.OnShowDetailsTapped,Source={x:Reference ThisPage}}"  CommandParameter="{Binding .}"  />
+                                                            <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Handle_Tapped" Command="{Binding BindingContext.OnShowDetailsTapped,Source={x:Reference ThisPage}}"  CommandParameter="{Binding .}"  />
                                                     </StackLayout.GestureRecognizers>
                                                 </StackLayout>
                                             </StackLayout>

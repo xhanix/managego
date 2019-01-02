@@ -71,7 +71,7 @@
                 <BoxView />
                 <Grid Margin="0,0,4,0">
                     <Label Text="Feedback" TextColor="{StaticResource Grey-Dark-1}" FontSize="Medium" FontAttributes="Bold" VerticalOptions="CenterAndExpand" />
-                    <Button Text="Feedback" FontSize="Small" BackgroundColor="Transparent" TextColor="Transparent" HorizontalOptions="Fill"/>
+                    <Button Text="Feedback" Command="{Binding OnFeedbackTapped}" FontSize="Small" BackgroundColor="Transparent" TextColor="Transparent" HorizontalOptions="Fill"/>
                 </Grid>
                 <BoxView />
                 <Grid Margin="0,0,4,0">
