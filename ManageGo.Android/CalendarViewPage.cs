@@ -84,7 +84,12 @@ namespace CustomCalendar.Droid
         public void UpdateSelectedDates(DateRange dates)
         {
             SelectedDates = dates;
+            Invalidate();
+        }
 
+        public void UpdateHighlightedDates(List<DateTime> dates)
+        {
+            HighlightedDates = dates;
             Invalidate();
         }
 
@@ -104,14 +109,12 @@ namespace CustomCalendar.Droid
                 {
                     pager.SetCurrentItem(1, false);
                     pager.SetMonth(pager.PreviousMonth);
-
                     Invalidate();
                 }
                 else if (pager.CurrentItem == 2)
                 {
                     pager.SetCurrentItem(1, false);
                     pager.SetMonth(pager.NextMonth);
-
                     Invalidate();
                 }
             }
@@ -185,7 +188,6 @@ namespace CustomCalendar.Droid
                     if (pager.ScrollX == 0 && !_isInitialized)
                     {
                         _isInitialized = true;
-
                         pager.SetCurrentItem(1, false);
                         pager.ScrollX = pager.Width;
 

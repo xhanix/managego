@@ -21,7 +21,9 @@
         Tenants,
         Payments,
         BankTransactions,
-        BankAccounts
+        BankAccounts,
+        UserSettings,
+        EventsListDates
     }
 }
 

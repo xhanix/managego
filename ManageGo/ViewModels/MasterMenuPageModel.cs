@@ -117,6 +117,20 @@ namespace ManageGo
             }
         }
 
+        public FreshAwaitCommand OnCalendarPageTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((tcs) =>
+                {
+                    if (!App.MasterDetailNav.Pages.ContainsKey("OnCalendarPage"))
+                        App.MasterDetailNav.AddPage<CalendarPageModel>("OnCalendarPage");
+                    App.MasterDetailNav.SwitchSelectedRootPageModel<CalendarPageModel>();
+                    tcs?.SetResult(true);
+                });
+            }
+        }
+
         public FreshAwaitCommand OnTenantsTapped
         {
             get

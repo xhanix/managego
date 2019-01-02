@@ -34,12 +34,14 @@ namespace ManageGo.iOS
 
                 Element.SizeChanged -= ElementSizeChanged;
                 Element.UpdateSelectedDates = null;
+                Element.UpdateHighlightedDates = null;
             }
 
             if (e.NewElement != null)
             {
                 Element.SizeChanged += ElementSizeChanged;
                 Element.UpdateSelectedDates = UpdateSelectedDates;
+                Element.UpdateHighlightedDates = UpdateHighlightedDates;
             }
 
             InitializeNativeView();

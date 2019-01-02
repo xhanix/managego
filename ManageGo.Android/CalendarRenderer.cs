@@ -10,6 +10,7 @@ using Xamarin.Forms.Platform.Android;
 using ManageGo.Controls;
 using CustomCalendar.Droid;
 using CustomCalendar;
+using System.Collections.Generic;
 
 [assembly: ExportRenderer(typeof(Calendar), typeof(CalendarRenderer))]
 namespace ManageGo.UI.Droid.Renderers
@@ -40,12 +41,14 @@ namespace ManageGo.UI.Droid.Renderers
 
                 Element.SizeChanged -= ElementSizeChanged;
                 Element.UpdateSelectedDates = null;
+                Element.UpdateHighlightedDates = null;
             }
 
             if (e.NewElement != null)
             {
                 Element.SizeChanged += ElementSizeChanged;
                 Element.UpdateSelectedDates = UpdateSelectedDates;
+                Element.UpdateHighlightedDates = UpdateHighlightedDates;
             }
 
             InitializeNativeView();
@@ -80,22 +83,27 @@ namespace ManageGo.UI.Droid.Renderers
             _calendarView?.UpdateSelectedDates(dates);
         }
 
+        void UpdateHighlightedDates(List<DateTime> dates)
+        {
+            _calendarView?.UpdateHighlightedDates(dates);
+        }
+
         void InitializeNativeView()
         {
             if (elementWidth <= 0 || elementHeight <= 0)
             {
                 return;
             }
-            
+
             ResetNativeView();
 
             _calendarView = new CalendarViewPage(Context, Element.AllowMultipleSelection, Element.SelectedDates, Element.HighlightedDates);
 
-			_calendarView.OnCurrentMonthYearChange += Element.OnCurrentMonthYearChanged;
+            _calendarView.OnCurrentMonthYearChange += Element.OnCurrentMonthYearChanged;
             _calendarView.OnSelectedDatesChange += Element.OnDatesChanged;
 
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LayoutParams.MatchParent, LayoutParams.MatchParent);
-          
+
             _calendarView.LayoutParameters = layoutParams;
 
             SetNativeControl(_calendarView);
@@ -111,7 +119,7 @@ namespace ManageGo.UI.Droid.Renderers
             if (_calendarView != null)
             {
                 _calendarView.RemoveFromParent();
-				_calendarView.OnCurrentMonthYearChange -= Element.OnCurrentMonthYearChanged;
+                _calendarView.OnCurrentMonthYearChange -= Element.OnCurrentMonthYearChanged;
                 _calendarView.OnSelectedDatesChange -= Element.OnDatesChanged;
                 _calendarView.Adapter = null;
                 _calendarView = null;
@@ -131,9 +139,9 @@ namespace ManageGo.UI.Droid.Renderers
                     Element.SizeChanged -= ElementSizeChanged;
                 }
 
-				if (_calendarView != null)
-				{
-					_calendarView.OnCurrentMonthYearChange -= Element.OnCurrentMonthYearChanged;
+                if (_calendarView != null)
+                {
+                    _calendarView.OnCurrentMonthYearChange -= Element.OnCurrentMonthYearChanged;
                     _calendarView.OnSelectedDatesChange -= Element.OnDatesChanged;
                 }
             }

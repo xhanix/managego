@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using ManageGo.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -41,7 +42,11 @@ namespace ManageGo.Services
                 //result is a dictionary of jobjects
                 var jResult = result.ToObject<Dictionary<string, JObject>>();
                 //get user-info
-                jResult.TryGetValue(APIkeys.UserInfo.ToString(), out JObject userInfo);
+                if (jResult.TryGetValue(APIkeys.UserInfo.ToString(), out JObject userInfo))
+                {
+                    App.UserInfo = userInfo.ToObject<Models.SignedInUserInfo>();
+                }
+
                 jResult.TryGetValue(APIkeys.PMCInfo.ToString(), out JObject pmcInfo);
                 //user info is a dictionary
                 var dic = userInfo.ToObject<Dictionary<string, string>>();
@@ -177,6 +182,39 @@ namespace ManageGo.Services
             var obj = JObject.Parse(responseString);
             var result = obj.GetValue("Result");
             App.Users = result.ToObject<List<User>>();
+        }
+
+        internal static async Task UpdateUserInfo(Dictionary<string, object> filtersDictionary)
+        {
+            var jsonString = JsonConvert.SerializeObject(filtersDictionary);
+            var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+            var msg = new HttpRequestMessage(HttpMethod.Post, BaseUrl + APIpaths.UserSettings.ToString())
+            {
+                Content = content
+            };
+            var response = await client.SendAsync(msg);
+            var responseString = await response.Content.ReadAsStringAsync();
+        }
+
+        internal static async Task<List<DateTime>> GetEventsList(Dictionary<string, object> filtersDictionary)
+        {
+            var jsonString = JsonConvert.SerializeObject(filtersDictionary);
+            var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+            var msg = new HttpRequestMessage(HttpMethod.Post, BaseUrl + APIpaths.EventsListDates.ToString())
+            {
+                Content = content
+            };
+            var response = await client.SendAsync(msg);
+            var responseString = await response.Content.ReadAsStringAsync();
+            var dic = JObject.Parse(responseString);
+            if (dic.TryGetValue("Result", out JToken list))
+            {
+                return list["Dates"].ToObject<List<DateTime>>();
+            }
+            else
+            {
+                throw new Exception("Unable to get tenants");
+            }
         }
 
         internal static async Task<List<Tenant>> GetTenantsAsync(Dictionary<string, object> filtersDictionary)

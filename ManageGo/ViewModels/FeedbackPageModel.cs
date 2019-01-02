@@ -10,7 +10,9 @@ namespace ManageGo
 
         public string SelectedTopic { get; set; }
         public string Message { get; set; }
-        public bool HamburgerIsVisible = true;
+        public bool HamburgerIsVisible { get; set; } = true;
+
+        private readonly string receivingEmail = "naftaliklein@gmail.com";//"nklein@managego.com";
 
         public FreshAwaitCommand OnMasterMenuTapped
         {
@@ -31,14 +33,24 @@ namespace ManageGo
             {
                 return new FreshAwaitCommand(async (tcs) =>
                 {
-                    if (string.IsNullOrWhiteSpace(Message))
+                    if (string.IsNullOrWhiteSpace(Message) || string.IsNullOrWhiteSpace(SelectedTopic))
                     {
-                        await CoreMethods.DisplayAlert("ManageGo", "Please write a message", "OK");
+                        await CoreMethods.DisplayAlert("ManageGo", "Please select a topic and write your message", "OK");
                         tcs?.SetResult(true);
                         return;
                     }
                     var finalMessage = $" Topic: {SelectedTopic}\n\r" +
                     $" Message: {Message}\n\r" +
+                    "\n\r------------\n\r" +
+                    "USER INFO\n\r" +
+                    "------------\n\r" +
+                    $" User id: {App.UserInfo.UserID}\n\r" +
+                    $" Username: {App.UserInfo.UserFirstName + " " + App.UserInfo.UserLastName}\n\r" +
+                    $" User email: {App.UserInfo.UserEmailAddress}\n\r" +
+                    $" PMC: {App.PMCName}\n\r" +
+                    "\n\r------------\n\r" +
+                    "DEVICE INFO\n\r" +
+                    "------------\n\r" +
                     $" Device Manufacturer: {DeviceInfo.Manufacturer}\n\r" +
                     $" Device Model: {DeviceInfo.Model}\n\r" +
                     $" Device Name: {DeviceInfo.Name}\n\r" +
@@ -47,15 +59,18 @@ namespace ManageGo
                     $" Device Type: {DeviceInfo.DeviceType}\n\r";
 
 
-                    var stringToSend = "{\"serverId\": \"12003\"," +
-                        "\"APIKey\": \"Hb35KdWo4g2A7Qwc8SFa\", " +
-                        "\"Messages\": " +
-                        "[{" +
-                            "\"To\":[{\"emailAddress\": \"hani@aiderbotics.com\",\"friendlyName\": \"managego\"}]," +
-                            "\"From\": {\"emailAddress\": \"hani@aiderbotics.com\",\"friendlyName\": \"Mobile App\"}," +
-                            "\"Subject\": \"Feedback\"," +
-                            "\"TextBody\": " + $"\"{finalMessage}\"" +
-                            "}]}";
+                    var stringToSend = "{\"serverId\": \"12003\",\"APIKey\": \"Hb35KdWo4g2A7Qwc8SFa\",\"Messages\": [  " +
+                        "{ \"To\": [ {\"emailAddress\": \"" +
+                        $"{receivingEmail}" +
+                        "\",\"friendlyName\": \"App feedback ManageGo\" }  ],    \"From\": {  \"emailAddress\": \"" +
+                        $"{receivingEmail}" +
+                        "\", \"friendlyName\": \"" +
+                        "App feedback ManageGo" +
+                        "\"  }, \"Subject\": \"" +
+                        $"{SelectedTopic}" +
+                        "\",\"TextBody\": \"" +
+                        $"{finalMessage}" +
+                        "\"}]}";
 
                     try
                     {

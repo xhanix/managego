@@ -24,7 +24,8 @@ namespace ManageGo
 
             Control?.SetBackground(new ColorDrawable(Android.Graphics.Color.Transparent));
             Control?.SetBackgroundColor(Android.Graphics.Color.Transparent);
-
+            if (Control != null && !Control.Enabled)
+                Control?.SetTextColor(Android.Graphics.Color.Gray);
         }
     }
 }

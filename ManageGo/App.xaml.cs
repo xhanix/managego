@@ -19,6 +19,7 @@ namespace ManageGo
         internal static UserPermissions UserPermissions { get; set; }
         internal static string UserName { get; set; }
         internal static string PMCName { get; set; }
+        internal static SignedInUserInfo UserInfo { get; set; }
         internal static List<Building> Buildings { get; set; }
         internal static List<Categories> Categories { get; set; }
         internal static List<Tags> Tags { get; set; }

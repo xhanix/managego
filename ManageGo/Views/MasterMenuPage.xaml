@@ -50,7 +50,7 @@
                 <BoxView />
                 <Grid Margin="0,0,4,0">
                     <Label Text="Calendar" TextColor="{StaticResource Grey-Dark-1}" FontSize="Medium" FontAttributes="Bold" VerticalOptions="CenterAndExpand" />
-                    <Button Text="Calendar" FontSize="Small" BackgroundColor="Transparent" TextColor="Transparent" HorizontalOptions="Fill"/>
+                    <Button Text="Calendar" Command="{Binding OnCalendarPageTapped}" FontSize="Small" BackgroundColor="Transparent" TextColor="Transparent" HorizontalOptions="Fill"/>
                 </Grid>
                 <BoxView />
                 <Grid Margin="0,0,4,0">
@@ -66,7 +66,7 @@
                 <BoxView />
                 <Grid Margin="0,0,4,0">
                     <Label Text="Settings" TextColor="{StaticResource Grey-Dark-1}" FontSize="Medium" FontAttributes="Bold" VerticalOptions="CenterAndExpand" />
-                    <Button Text="Settings" FontSize="Small" BackgroundColor="Transparent" TextColor="Transparent" HorizontalOptions="Fill"/>
+                    <Button Text="Settings" Command="{Binding OnSettingsTapped}" FontSize="Small" BackgroundColor="Transparent" TextColor="Transparent" HorizontalOptions="Fill"/>
                 </Grid>
                 <BoxView />
                 <Grid Margin="0,0,4,0">

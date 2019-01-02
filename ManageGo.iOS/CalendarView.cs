@@ -69,14 +69,12 @@ namespace CustomCalendar.iOS
         public void UpdateSelectedDates(DateRange dates)
         {
             SelectedDates = dates;
-
             infiniteScrollView.ReloadData();
         }
 
         public void UpdateHighlatedDates(List<DateTime> dates)
         {
             HighlightedDates = dates;
-
             infiniteScrollView.ReloadData();
         }
 

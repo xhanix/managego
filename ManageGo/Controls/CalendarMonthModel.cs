@@ -6,66 +6,72 @@ using SkiaSharp;
 namespace CustomCalendar
 {
     public enum HighlightType
-	{
-		Dark,
+    {
+        Dark,
         Light
-	}
+    }
 
     public class HighlightedDay
-	{
-		public HighlightType Type { get; set; }
-		public int Day { get; set; }
-	}
+    {
+        public HighlightType Type { get; set; }
+        public int Day { get; set; }
+    }
 
-	public class CalendarMonthModel
-	{
-		public int Year { get; private set; }
+    public class CalendarMonthModel
+    {
+        private IEnumerable<HighlightedDay> _highlightedDays;
 
-		public int Month { get; private set; }
+        public int Year { get; private set; }
 
-		public IEnumerable<CalendarDayModel> Days { get; private set; }
+        public int Month { get; private set; }
 
-		public int GridSize { get; private set; }
+        public IEnumerable<CalendarDayModel> Days { get; private set; }
 
-		public IEnumerable<HighlightedDay> HighlightedDays { get; private set; }
+        public int GridSize { get; private set; }
 
-		CalendarMonthModel(int year, int month, IEnumerable<CalendarDayModel> calendarDays, int gridSize, IEnumerable<HighlightedDay> highlightedDays)
-		{
-			Year = year;
-			Month = month;
-			Days = calendarDays;
-			GridSize = gridSize;
-			HighlightedDays = highlightedDays;
-		}
+        public IEnumerable<HighlightedDay> HighlightedDays
+        {
+            get => _highlightedDays;
+            private set => _highlightedDays = value;
+        }
 
-		public CalendarDayModel TryFindCalendarDayByPoint(SKPoint point)
-		{
-			return this.Days.FirstOrDefault(day => day.Rectangle.Contains(point));
-		}
-        
-		public static CalendarMonthModel Create(int year, int month, IEnumerable<HighlightedDay> highlightedDays, int width, int height)
-		{
-			var monthDate = new DateTime(year, month, 1);
+        CalendarMonthModel(int year, int month, IEnumerable<CalendarDayModel> calendarDays, int gridSize, IEnumerable<HighlightedDay> highlightedDays)
+        {
+            Year = year;
+            Month = month;
+            Days = calendarDays;
+            GridSize = gridSize;
+            HighlightedDays = highlightedDays;
+        }
 
-			var calendarDays = new List<CalendarDayModel>();
+        public CalendarDayModel TryFindCalendarDayByPoint(SKPoint point)
+        {
+            return this.Days.FirstOrDefault(day => day.Rectangle.Contains(point));
+        }
 
-			int dayOfWeek = int.Parse(monthDate.DayOfWeek.ToString("D"));
+        public static CalendarMonthModel Create(int year, int month, IEnumerable<HighlightedDay> highlightedDays, int width, int height)
+        {
+            var monthDate = new DateTime(year, month, 1);
 
-			var rows = Math.Ceiling((DateTime.DaysInMonth(year, month) + dayOfWeek) / 7f) + 1;
-                     
-			var columns = 7;
-           
-			var date = monthDate.AddDays(0 - dayOfWeek);
+            var calendarDays = new List<CalendarDayModel>();
 
-			var gridSize = 0;
-			int offset_x = 0;
+            int dayOfWeek = int.Parse(monthDate.DayOfWeek.ToString("D"));
+
+            var rows = Math.Ceiling((DateTime.DaysInMonth(year, month) + dayOfWeek) / 7f) + 1;
+
+            var columns = 7;
+
+            var date = monthDate.AddDays(0 - dayOfWeek);
+
+            var gridSize = 0;
+            int offset_x = 0;
             int offset_y = 0;
 
-			if (width > height)
+            if (width > height)
             {
-				//gridSize = height / columns;
-                
-				gridSize = (int)((.75 * width) / columns);
+                //gridSize = height / columns;
+
+                gridSize = (int)((.75 * width) / columns);
 
                 //var totalMargin = (width - (columns ))
 
@@ -75,32 +81,32 @@ namespace CustomCalendar
             {
                 gridSize = width / columns;
                 offset_y = (height - (columns * gridSize)) / 2;
-            }         
-            
-			string[] days = { "S", "M", "T", "W", "T", "F", "S" };
+            }
 
-			for (int i = 0; i < days.Length; i++)
-			{
-				var x = (float)((gridSize * i)) + offset_x;
-				var y = 0f;
+            string[] days = { "S", "M", "T", "W", "T", "F", "S" };
+
+            for (int i = 0; i < days.Length; i++)
+            {
+                var x = (float)((gridSize * i)) + offset_x;
+                var y = 0f;
 
                 calendarDays.Add(new CalendarDayModel(days[i], x, y, gridSize, gridSize));
-			}
+            }
 
-			for (int i = 1; i < rows; i++)
-			{
-				for (int j = 0; j < columns; j++)
-				{
-					var x = (float)((gridSize * j)) + offset_x;
-					var y = (float)((((gridSize / 1.25 )) * i)) + offset_y;
+            for (int i = 1; i < rows; i++)
+            {
+                for (int j = 0; j < columns; j++)
+                {
+                    var x = (float)((gridSize * j)) + offset_x;
+                    var y = (float)((((gridSize / 1.25)) * i)) + offset_y;
 
-					calendarDays.Add(new CalendarDayModel(date.Year, date.Month, date.Day, x, y, gridSize, gridSize));
+                    calendarDays.Add(new CalendarDayModel(date.Year, date.Month, date.Day, x, y, gridSize, gridSize));
 
-					date = date.AddDays(1);
-				}
-			}
+                    date = date.AddDays(1);
+                }
+            }
 
-			return new CalendarMonthModel(year, month, calendarDays, gridSize, highlightedDays);
-		}
-	}
+            return new CalendarMonthModel(year, month, calendarDays, gridSize, highlightedDays);
+        }
+    }
 }
