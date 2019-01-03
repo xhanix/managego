@@ -4,25 +4,25 @@ using System;
 namespace CustomCalendar.Droid
 {
 
-	public class CalendarPageAdapter : Android.Support.V4.View.PagerAdapter
-	{
-		WeakReference<CalendarViewPage> _weakPager;
+    public class CalendarPageAdapter : Android.Support.V4.View.PagerAdapter
+    {
+        WeakReference<CalendarViewPage> _weakPager;
 
-		public CalendarPageAdapter(CalendarViewPage pager)
-		{
-			_weakPager = new WeakReference<CalendarViewPage>(pager);
-		}
+        public CalendarPageAdapter(CalendarViewPage pager)
+        {
+            _weakPager = new WeakReference<CalendarViewPage>(pager);
+        }
 
-		public override int Count
-		{
-			get
-			{
-				return 3;
-			}
-		}
+        public override int Count
+        {
+            get
+            {
+                return 3;
+            }
+        }
 
-		public override Java.Lang.Object InstantiateItem(ViewGroup container, int position)
-		{
+        public override Java.Lang.Object InstantiateItem(ViewGroup container, int position)
+        {
             if (_weakPager.TryGetTarget(out CalendarViewPage pager))
             {
                 var color = Android.Graphics.Color.Red;
@@ -64,14 +64,14 @@ namespace CustomCalendar.Droid
             }
 
             return null;
-		}
+        }
 
-		public override void DestroyItem(ViewGroup container, int position, Java.Lang.Object objectValue)
-		{ }
+        public override void DestroyItem(ViewGroup container, int position, Java.Lang.Object @object)
+        { }
 
-		public override bool IsViewFromObject(View view, Java.Lang.Object objectValue)
-		{
-			return view == objectValue;
-		}
-	}
+        public override bool IsViewFromObject(View view, Java.Lang.Object @object)
+        {
+            return view == @object;
+        }
+    }
 }

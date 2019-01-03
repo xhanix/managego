@@ -198,6 +198,8 @@ namespace ManageGo.Services
 
         internal static async Task<List<DateTime>> GetEventsList(Dictionary<string, object> filtersDictionary)
         {
+            //the API return only list of Dates
+            // call EventList to get the actual events
             var jsonString = JsonConvert.SerializeObject(filtersDictionary);
             var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
             var msg = new HttpRequestMessage(HttpMethod.Post, BaseUrl + APIpaths.EventsListDates.ToString())
@@ -210,6 +212,31 @@ namespace ManageGo.Services
             if (dic.TryGetValue("Result", out JToken list))
             {
                 return list["Dates"].ToObject<List<DateTime>>();
+            }
+            else
+            {
+                throw new Exception("Unable to get tenants");
+            }
+        }
+
+        internal static async Task<List<Models.CalendarEvent>> GetEventsForDate(DateTime date)
+        {
+            var pars = new Dictionary<string, DateTime> {
+                { "DateFrom", date.Date },
+                { "DateTo", date.Date.AddHours(24) }
+            };
+            var jsonString = JsonConvert.SerializeObject(pars);
+            var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+            var msg = new HttpRequestMessage(HttpMethod.Post, BaseUrl + APIpaths.EventList.ToString())
+            {
+                Content = content
+            };
+            var response = await client.SendAsync(msg);
+            var responseString = await response.Content.ReadAsStringAsync();
+            var dic = JObject.Parse(responseString);
+            if (dic.TryGetValue("Result", out JToken list))
+            {
+                return list.ToObject<List<CalendarEvent>>();
             }
             else
             {

@@ -10,6 +10,7 @@ namespace ManageGo
         public CalendarPage()
         {
             InitializeComponent();
+            NavigationPage.SetHasNavigationBar(this, false);
         }
     }
 }

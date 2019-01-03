@@ -5,6 +5,7 @@
     xmlns:controls="clr-namespace:ManageGo.Controls"
     xmlns:global-controls="clr-namespace:ManageGo.Controls;assembly=ManageGo"
     x:Name="CalendarViewControl"
+    RowSpacing="0"
     x:Class="ManageGo.Controls.CalendarView">
 
     <Grid.ColumnDefinitions>
@@ -18,7 +19,7 @@
         <RowDefinition Height="*" />
     </Grid.RowDefinitions>
 
-    <Grid Grid.Row="0" Grid.ColumnSpan="3">
+    <Grid Grid.Row="0" BackgroundColor="White" Grid.ColumnSpan="3">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width=".3*" />
             <ColumnDefinition Width=".4*" />
@@ -33,14 +34,22 @@
                                        Style="{StaticResource Primary-Small}"
                                        IsVisible="false" />
         
-        <StackLayout Spacing="15" Grid.Column="1" Orientation="Horizontal">
+        <StackLayout Spacing="15" Grid.Column="1"  Orientation="Horizontal">
 
-            <Image Source="chevron_left" VerticalOptions="Center" />
+            <Image Source="chevron_left" VerticalOptions="Center" >
+                 <Image.GestureRecognizers>
+                    <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Past7DaysButton_Tapped" />
+                </Image.GestureRecognizers>
+            </Image>
             
             <Label x:Name="titleLabel" HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                     FontSize="Micro" FontAttributes="Bold" />
 
-            <Image Source="chevron_right" VerticalOptions="Center" />
+            <Image Source="chevron_right" VerticalOptions="Center" >
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="ShowNextMonth_Tapped" />
+                </Image.GestureRecognizers>
+            </Image>
 
         </StackLayout>
 
@@ -57,7 +66,7 @@
 
     <controls:Calendar x:Name="calendar" Grid.Row="2" Grid.ColumnSpan="3" 
                        OnMonthYearChanged="Handle_OnMonthYearChanged"
-                       OnSelectedDatesChanged="Handle_OnSelectedDatesChanged"
+                       chevron="Handle_chevron"
                        HeightRequest="500"
                        WidthRequest="700"
                        HorizontalOptions="Center" />

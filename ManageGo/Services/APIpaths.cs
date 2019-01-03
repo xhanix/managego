@@ -23,7 +23,8 @@
         BankTransactions,
         BankAccounts,
         UserSettings,
-        EventsListDates
+        EventsListDates,
+        EventList
     }
 }
 

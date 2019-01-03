@@ -115,9 +115,15 @@ namespace ManageGo.Controls
         void Past7DaysButton_Tapped(object sender, EventArgs e)
         {
             calendar.SelectedDates = new DateRange(DateTime.Now.AddDays(-7), DateTime.Now);
+
             SelectedDates = new DateRange(DateTime.Now.AddDays(-7), DateTime.Now);
 
             OnPresetRangeUpdate?.Invoke(sender, e);
+        }
+
+        void ShowNextMonth_Tapped(object sender, EventArgs e)
+        {
+            calendar.GotoNextMonth();
         }
 
         void Past30DaysButton_Tapped(object sender, EventArgs e)
@@ -127,7 +133,7 @@ namespace ManageGo.Controls
             OnPresetRangeUpdate?.Invoke(sender, e);
         }
 
-        void Handle_OnSelectedDatesChanged(DateRange dates)
+        void Handle_chevron(DateRange dates)
         {
             SelectedDate = dates.StartDate;
             SelectedDates = dates;

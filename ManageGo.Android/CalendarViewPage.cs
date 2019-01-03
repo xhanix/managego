@@ -90,7 +90,8 @@ namespace CustomCalendar.Droid
         public void UpdateHighlightedDates(List<DateTime> dates)
         {
             HighlightedDates = dates;
-            Invalidate();
+            UpdateHighlightedDates();
+            //Invalidate();
         }
 
         public override bool DispatchTouchEvent(MotionEvent e)
@@ -152,6 +153,11 @@ namespace CustomCalendar.Droid
             OnSelectedDatesChange?.Invoke(SelectedDates);
         }
 
+        void UpdateHighlightedDates()
+        {
+            UpdateCalendars();
+        }
+
         void SetMonth(DateTime dateTime)
         {
             var monthDate = dateTime.Date;
@@ -165,6 +171,12 @@ namespace CustomCalendar.Droid
             Item2.ControlDelegate.Date = NextMonth;
 
             OnCurrentMonthYearChange?.Invoke(new DateTime(monthDate.Year, monthDate.Month, 1));
+        }
+
+        internal void GoToNextMonth(object sender, EventArgs e)
+        {
+            SetMonth(NextMonth);
+            UpdateCalendars();
         }
 
         class OnPageChangeListener : Java.Lang.Object, Android.Support.V4.View.ViewPager.IOnPageChangeListener

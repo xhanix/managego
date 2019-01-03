@@ -5,15 +5,16 @@ using Xamarin.Forms;
 
 namespace ManageGo.Controls
 {
-	public class Calendar : View
+    public class Calendar : View
     {
         public event CurrentMonthYearHandler OnMonthYearChanged;
-        public event DateRangeHandler OnSelectedDatesChanged;
+        public event EventHandler OnNextMonthRequested;
+        public event DateRangeHandler chevron;
 
         public Action<DateRange> UpdateSelectedDates { get; set; }
         public Action<List<DateTime>> UpdateHighlightedDates { get; set; }
 
-		public bool AllowMultipleSelection { get; set; }
+        public bool AllowMultipleSelection { get; set; }
 
         public static readonly BindableProperty SelectedDatesProperty
             = BindableProperty.Create(nameof(SelectedDates),
@@ -55,7 +56,7 @@ namespace ManageGo.Controls
             calendar?.UpdateHighlightedDates?.Invoke(newValue as List<DateTime>);
         }
 
-		public static readonly BindableProperty CurrentMonthYearProperty
+        public static readonly BindableProperty CurrentMonthYearProperty
             = BindableProperty.Create(nameof(CurrentMonthYear),
                                       typeof(DateTime),
                                       typeof(Calendar),
@@ -64,11 +65,15 @@ namespace ManageGo.Controls
 
         public DateTime CurrentMonthYear
         {
-			get => (DateTime)GetValue(CurrentMonthYearProperty);
-			set => SetValue(CurrentMonthYearProperty, value);
+            get => (DateTime)GetValue(CurrentMonthYearProperty);
+            set => SetValue(CurrentMonthYearProperty, value);
         }
 
         public void OnCurrentMonthYearChanged(DateTime date) => OnMonthYearChanged?.Invoke(date);
-        public void OnDatesChanged(DateRange dates) => OnSelectedDatesChanged?.Invoke(dates);
+        public void GotoNextMonth() => OnNextMonthRequested?.Invoke(this, EventArgs.Empty);
+
+
+
+        public void OnDatesChanged(DateRange dates) => chevron?.Invoke(dates);
     }
 }
