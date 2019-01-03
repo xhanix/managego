@@ -42,6 +42,7 @@ namespace ManageGo
             }
             var row = p as ViewCell;
             row.ForceUpdateSize();
+
         }
     }
 }

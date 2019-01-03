@@ -4,10 +4,10 @@
              xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core" 
              ios:Page.UseSafeArea="true"
              x:Name="ThisPage"
+             BackgroundColor="{StaticResource Off-White}"
              xmlns:local="clr-namespace:ManageGo"
               xmlns:controls="clr-namespace:ManageGo.Controls"
              x:Class="ManageGo.CalendarPage">
-    
         <Grid RowSpacing="0"
               RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent,
                              Property=Height, Factor=1, Constant=0}"
@@ -30,16 +30,16 @@
             </StackLayout>
             <StackLayout Spacing="0" Grid.Row="1" BackgroundColor="White">
                 <Label Text="Calendar" TextColor="{StaticResource Grey-Dark-1}"  FontAttributes="Bold" Margin="0,8,0,7" FontSize="Medium" HorizontalTextAlignment="Center"/>
-                <BoxView HeightRequest="1" BackgroundColor="#85bafa" />
+                <BoxView HeightRequest="1" BackgroundColor="{StaticResource Primary}" />
             </StackLayout>
             
             <Grid Grid.Row="2">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="0.75*" />
+                    <RowDefinition Height="auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-                <controls:CalendarView Grid.Row="0" VerticalOptions="StartAndExpand"  SelectedDate="{Binding SelectedDate}" HighlightedDates="{Binding HighlightedDates}"  />
-              <ListView Grid.Row="1" ItemsSource="{Binding CalendarEvents}" SelectionMode="None" HasUnevenRows="true" BackgroundColor="Transparent" SeparatorVisibility="None" Margin="22,18,22,18" CachingStrategy="RecycleElement">
+                <controls:CalendarView x:Name="CalView" Grid.Row="0" VerticalOptions="Start" HeightRequest="250"  SelectedDate="{Binding SelectedDate}" HighlightedDates="{Binding HighlightedDates}"  />
+              <ListView x:Name="CalEventList" Grid.Row="1" ItemsSource="{Binding CalendarEvents}" SelectionMode="None" HasUnevenRows="true" BackgroundColor="Transparent" SeparatorVisibility="None" Margin="22,18,22,18" CachingStrategy="RecycleElement">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
@@ -51,11 +51,36 @@
                                                 <Label Text="{Binding HeaderTime}" FontSize="Small" TextColor="{StaticResource Grey-Mid-1}" />
                                                 <Label Text="-" FontSize="Small" TextColor="{StaticResource Grey-Light-1}" />
                                                 <Label Text="{Binding HeaderDate}" FontSize="Small" TextColor="{StaticResource Grey-Light-1}" />
+                                                <StackLayout WidthRequest="18" HeightRequest="18" HorizontalOptions="EndAndExpand" VerticalOptions="CenterAndExpand">
+                                                    <Image Source="{Binding ExpandButtonIcon}" VerticalOptions="StartAndExpand" HorizontalOptions="EndAndExpand"/>
+                                                </StackLayout>
+                                                <StackLayout.GestureRecognizers>
+                                                            <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Handle_Tapped" Command="{Binding BindingContext.OnShowDetailsTapped,Source={x:Reference ThisPage}}" CommandParameter="{Binding .}" />
+                                                </StackLayout.GestureRecognizers>
+                                                </StackLayout>
+                                            <StackLayout>
+                                                <Label Text="{Binding Title}" FontSize="Medium" FontAttributes="Bold" TextColor="{StaticResource Grey-Dark-1}" />
+                                                <StackLayout.GestureRecognizers>
+                                                    <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Handle_Tapped" Command="{Binding BindingContext.OnShowDetailsTapped,Source={x:Reference ThisPage}}" CommandParameter="{Binding .}" />
+                                                </StackLayout.GestureRecognizers>
                                             </StackLayout>
-                                            <Label Text="{Binding Title}" FontSize="Medium" FontAttributes="Bold" TextColor="{StaticResource Grey-Dark-1}" />
-                                            <Label Text="{Binding HeaderAddress}" FontSize="Small" TextColor="{StaticResource Grey-Light-1}" />
-                                            <BoxView HeightRequest="1" BackgroundColor="{StaticResource Grey-Light-1}" />
-                                           
+                                            <StackLayout Spacing="8" Orientation="Horizontal">
+                                                <Image Source="building_grey.png" VerticalOptions="CenterAndExpand" />
+                                                <Label VerticalOptions="CenterAndExpand" Text="{Binding HeaderAddress}" FontSize="Small" TextColor="{StaticResource Grey-Light-1}" />
+                                                <StackLayout.GestureRecognizers>
+                                                    <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Handle_Tapped" Command="{Binding BindingContext.OnShowDetailsTapped,Source={x:Reference ThisPage}}" CommandParameter="{Binding .}" />
+                                                </StackLayout.GestureRecognizers>
+                                            </StackLayout>
+                                            <StackLayout IsVisible="{Binding DetailsShown}" Margin="0,12,0,0">
+                                                <Label Text="{Binding Note}" FontSize="Small" TextColor="{StaticResource Grey-Light-1}" />
+                                                <BoxView HeightRequest="1" Margin="0,18,0,0" BackgroundColor="{StaticResource Grey-Light-2}" />
+                                                <Frame HasShadow="false" BackgroundColor="{StaticResource Grey-Light-2}">
+                                                    <Label Text="View ticket" FontSize="Small" TextColor="{StaticResource Primary}" HorizontalOptions="StartAndExpand"/>
+                                                    <Frame.GestureRecognizers>
+                                                        <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding BindingContext.OnViewTicketTapped,Source={x:Reference ThisPage}}" CommandParameter="{Binding .}" />
+                                                    </Frame.GestureRecognizers>
+                                                </Frame>
+                                        </StackLayout>
                                         </StackLayout>
                                     </StackLayout>
                                 </Frame>

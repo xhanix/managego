@@ -9,6 +9,7 @@ namespace ManageGo.Controls
     {
         public event CurrentMonthYearHandler OnMonthYearChanged;
         public event EventHandler OnNextMonthRequested;
+        public event EventHandler OnPreviousMonthRequested;
         public event DateRangeHandler chevron;
 
         public Action<DateRange> UpdateSelectedDates { get; set; }
@@ -71,7 +72,7 @@ namespace ManageGo.Controls
 
         public void OnCurrentMonthYearChanged(DateTime date) => OnMonthYearChanged?.Invoke(date);
         public void GotoNextMonth() => OnNextMonthRequested?.Invoke(this, EventArgs.Empty);
-
+        public void GotoPreviousMonth() => OnPreviousMonthRequested?.Invoke(this, EventArgs.Empty);
 
 
         public void OnDatesChanged(DateRange dates) => chevron?.Invoke(dates);

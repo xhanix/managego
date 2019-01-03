@@ -73,7 +73,8 @@ namespace ManageGo.iOS
 
             _calendarView.OnCurrentMonthYearChange += Element.OnCurrentMonthYearChanged;
             _calendarView.OnSelectedDatesChange += Element.OnDatesChanged;
-
+            Element.OnNextMonthRequested += _calendarView.GoToNextMonth;
+            Element.OnPreviousMonthRequested += _calendarView.GoToPreviousMonth;
             SetNativeControl(_calendarView);
         }
 
@@ -83,6 +84,8 @@ namespace ManageGo.iOS
             {
                 _calendarView.OnCurrentMonthYearChange -= Element.OnCurrentMonthYearChanged;
                 _calendarView.OnSelectedDatesChange -= Element.OnDatesChanged;
+                Element.OnNextMonthRequested -= _calendarView.GoToNextMonth;
+                Element.OnPreviousMonthRequested -= _calendarView.GoToPreviousMonth;
                 _calendarView.RemoveFromSuperview();
                 _calendarView.Dispose();
                 _calendarView = null;
@@ -145,6 +148,11 @@ namespace ManageGo.iOS
                 {
                     _calendarView.OnCurrentMonthYearChange -= Element.OnCurrentMonthYearChanged;
                     _calendarView.OnSelectedDatesChange -= Element.OnDatesChanged;
+                    if (Element != null)
+                    {
+                        Element.OnNextMonthRequested += _calendarView.GoToNextMonth;
+                        Element.OnPreviousMonthRequested += _calendarView.GoToPreviousMonth;
+                    }
                 }
             }
 

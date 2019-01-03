@@ -35,7 +35,6 @@ namespace CustomCalendar.iOS
                             List<DateTime> highlightedDates = null) : base(frame)
         {
             InitViews(frame);
-
             AllowMultipleSelection = allowMultipleSelection;
 
             SelectedDates = selectedDates ?? new DateRange(DateTime.Now);
@@ -64,6 +63,18 @@ namespace CustomCalendar.iOS
             {
                 Month = SelectedDates.StartDate;
             }
+        }
+
+        internal void GoToNextMonth(object sender, EventArgs e)
+        {
+            Month = Month.AddMonths(1);
+            infiniteScrollView.ReloadData();
+        }
+
+        internal void GoToPreviousMonth(object sender, EventArgs e)
+        {
+            Month = Month.AddMonths(-1);
+            infiniteScrollView.ReloadData();
         }
 
         public void UpdateSelectedDates(DateRange dates)
@@ -147,7 +158,6 @@ namespace CustomCalendar.iOS
                     {
                         view.Month = view.Month.AddMonths(1);
                     }
-
                     view.CurrentIndex = infiniteScrollView.CurrentIndex;
                 }
             }

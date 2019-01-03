@@ -179,6 +179,12 @@ namespace CustomCalendar.Droid
             UpdateCalendars();
         }
 
+        internal void GoToPreviousMonth(object sender, EventArgs e)
+        {
+            SetMonth(PreviousMonth);
+            UpdateCalendars();
+        }
+
         class OnPageChangeListener : Java.Lang.Object, Android.Support.V4.View.ViewPager.IOnPageChangeListener
         {
             WeakReference<CalendarViewPage> _weakPager;

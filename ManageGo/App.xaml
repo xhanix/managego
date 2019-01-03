@@ -39,6 +39,54 @@
                 <Setter Property="FontSize" Value="Small" />
                 <Setter Property="TextColor" Value="#a7a9ac" />
             </Style>
+            
+            
+            <Style TargetType="Label">
+                <Style.Triggers>
+                    <Trigger TargetType="Label" Property="FontAttributes" Value="Bold">
+                        <Setter Property="FontFamily"  >
+                            <Setter.Value>
+                                <OnPlatform
+                                    x:TypeArguments="x:String"
+                                    iOS="Roboto Bold"
+                                    Android="Roboto-Bold.ttf#Roboto Bold" />
+                            </Setter.Value>
+                        </Setter>
+                    </Trigger>
+                </Style.Triggers>
+                <Setter Property="FontFamily">
+                    <Setter.Value>
+                        <OnPlatform
+                            x:TypeArguments="x:String"
+                            iOS="Roboto"
+                            Android="Roboto-Regular.ttf#Roboto" />
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+             <Style TargetType="Button">
+                <Setter Property="FontFamily">
+                    <Setter.Value>
+                        <OnPlatform
+                            x:TypeArguments="x:String"
+                            iOS="Roboto"
+                            Android="Roboto-Regular.ttf#Roboto" />
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style TargetType="Entry">
+                <Setter Property="FontFamily">
+                    <Setter.Value>
+                        <OnPlatform
+                            x:TypeArguments="x:String"
+                            iOS="Roboto"
+                            Android="Roboto-Regular.ttf#Roboto" />
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            
+            
         </ResourceDictionary>
     </Application.Resources>
 </Application>

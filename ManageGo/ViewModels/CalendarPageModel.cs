@@ -42,9 +42,11 @@ namespace ManageGo
                 if (HighlightedDates.Any(t => t.Date == SelectedDate.Date))
                 {
                     CalendarEvents = await Services.DataAccess.GetEventsForDate(SelectedDate);
+                    DateHasNoEvents = false;
                 }
                 else
                 {
+                    CalendarEvents?.Clear();
                     DateHasNoEvents = true;
                 }
             }
@@ -59,6 +61,46 @@ namespace ManageGo
                 HasLoaded = true;
             }
 
+        }
+
+        public FreshAwaitCommand OnViewTicketTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand(async (par, tcs) =>
+                {
+                    var calEvent = (Models.CalendarEvent)par;
+                    var ticketId = calEvent.TicketID;
+                    // var ticket = await Services.DataAccess.GetTicketsAsync();
+                    var ticketDetails = await Services.DataAccess.GetTicketDetails(ticketId);
+                    var dic = new Dictionary<string, object>
+                        {
+                            {"TicketDetails", ticketDetails},
+                            {"TicketNumber", null},
+                            {"Address", null},
+                            {"TicketTitleText", null},
+                            {"Ticket", null}
+                        };
+                    await CoreMethods.PushPageModel<TicketDetailsPageModel>(dic, false, false);
+                    tcs?.SetResult(true);
+                });
+            }
+        }
+
+        public FreshAwaitCommand OnShowDetailsTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((par, tcs) =>
+                {
+                    var calEvent = (Models.CalendarEvent)par;
+                    var alreadyExpandedEvent = CalendarEvents.FirstOrDefault(t => t.DetailsShown && t.EventID != calEvent.EventID);
+                    if (alreadyExpandedEvent != null)
+                        alreadyExpandedEvent.DetailsShown = false;
+                    calEvent.DetailsShown = !calEvent.DetailsShown;
+                    tcs?.SetResult(true);
+                });
+            }
         }
 
         internal override async Task LoadData(bool refreshData = false, bool applyNewFilter = false)

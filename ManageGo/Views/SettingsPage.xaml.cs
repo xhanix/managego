@@ -33,8 +33,8 @@ namespace ManageGo
                         EmailEntry.Focus();
                     break;
                 case "DisplayName":
-                    if (!DisplayNameEntry.IsFocused)
-                        DisplayNameEntry.Focus();
+                    //  if (!DisplayNameEntry.IsFocused)
+                    // DisplayNameEntry.Focus();
                     break;
 
                 default:

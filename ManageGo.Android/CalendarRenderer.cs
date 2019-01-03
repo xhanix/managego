@@ -43,6 +43,7 @@ namespace ManageGo.UI.Droid.Renderers
                 Element.UpdateSelectedDates = null;
                 Element.UpdateHighlightedDates = null;
                 Element.OnNextMonthRequested -= _calendarView.GoToNextMonth;
+                Element.OnPreviousMonthRequested -= _calendarView.GoToPreviousMonth;
             }
 
             if (e.NewElement != null)
@@ -51,6 +52,7 @@ namespace ManageGo.UI.Droid.Renderers
                 Element.UpdateSelectedDates = UpdateSelectedDates;
                 Element.UpdateHighlightedDates = UpdateHighlightedDates;
                 Element.OnNextMonthRequested += (_sender, _e) => _calendarView.GoToNextMonth((object)_sender, _e);
+                Element.OnPreviousMonthRequested += (_sender, _e) => _calendarView.GoToPreviousMonth((object)_sender, _e);
             }
 
             InitializeNativeView();

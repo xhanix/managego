@@ -4,6 +4,7 @@
              ios:Page.UseSafeArea="true" 
              BackgroundColor="White"
              xmlns:local="clr-namespace:ManageGo"
+             xmlns:controls="clr-namespace:ManageGo.Controls"
              x:Name="ThisPage"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
              x:Class="ManageGo.SettingsPage">
@@ -34,21 +35,24 @@
         </Grid.ColumnDefinitions>
         <Label Grid.Column="0" VerticalOptions="Center" Grid.Row="0" Text="Name" TextColor="{StaticResource Grey-Light-1}" FontSize="Medium"/>
         <Label Grid.Column="0" VerticalOptions="Center" Grid.Row="1" Text="Email" TextColor="{StaticResource Grey-Light-1}" FontSize="Medium"/>
-        <Label Grid.Column="0" VerticalOptions="Center" Grid.Row="2" Text="Display name" TextColor="{StaticResource Grey-Light-1}" FontSize="Medium"/>
         <!--
+                    <Label Grid.Column="0" VerticalOptions="Center" Grid.Row="2" Text="Display name" TextColor="{StaticResource Grey-Light-1}" FontSize="Medium"/>
+        -->
+                    <!--
                     <Label Grid.Column="0" VerticalOptions="Center" Grid.Row="3" Text="Password" TextColor="{StaticResource Grey-Light-1}" FontSize="Medium"/>
         -->
-                    <Label Grid.ColumnSpan="2" VerticalOptions="Center" Grid.Row="3" Text="Push notifications"  TextColor="{StaticResource Grey-Light-1}" FontSize="Medium"/>
-        <Label Grid.ColumnSpan="2" VerticalOptions="Center" Grid.Row="4" Text="Fingerprint/biometric login" TextColor="{StaticResource Grey-Light-1}" FontSize="Medium"/>
-        <StackLayout Grid.ColumnSpan="3" Grid.Row="5">
+                    <Label Grid.ColumnSpan="2" VerticalOptions="Center" Grid.Row="2" Text="Push notifications"  TextColor="{StaticResource Grey-Light-1}" FontSize="Medium"/>
+        <Label Grid.ColumnSpan="2" VerticalOptions="Center" Grid.Row="3" Text="Fingerprint/biometric login" TextColor="{StaticResource Grey-Light-1}" FontSize="Medium"/>
+        <StackLayout Grid.ColumnSpan="3" Grid.Row="4">
             <Label  VerticalOptions="Center" Text="Notifications" Margin="0,12,0,12" TextColor="{StaticResource Grey-Mid-1}" FontSize="Medium" FontAttributes="Bold"/>
             <BoxView HeightRequest="1" BackgroundColor="{StaticResource Grey-Light-1}" HorizontalOptions="FillAndExpand"/> 
         </StackLayout>
-        <Label Grid.Column="0" VerticalOptions="Center" Grid.Row="6" Text="Payments" TextColor="{StaticResource Grey-Light-1}" FontSize="Medium"/>
-        <Label Grid.Column="0" VerticalOptions="Center" Grid.Row="7" Text="Maintenance" TextColor="{StaticResource Grey-Light-1}" FontSize="Medium"/>
-        <Label Grid.Column="0" VerticalOptions="Center" Grid.Row="8" Text="Tenants" TextColor="{StaticResource Grey-Light-1}" FontSize="Medium"/>
-        <Label Grid.Column="0" VerticalOptions="Center" Grid.Row="9" Text="Applications" TextColor="{StaticResource Grey-Light-1}" FontSize="Medium"/>
-        
+        <Label Grid.Column="0" VerticalOptions="Center" Grid.Row="5" Text="Payments" TextColor="{StaticResource Grey-Light-1}" FontSize="Medium"/>
+        <Label Grid.Column="0" VerticalOptions="Center" Grid.Row="6" Text="Maintenance" TextColor="{StaticResource Grey-Light-1}" FontSize="Medium"/>
+        <Label Grid.Column="0" VerticalOptions="Center" Grid.Row="7" Text="Tenants" TextColor="{StaticResource Grey-Light-1}" FontSize="Medium"/>
+        <!--
+            <Label Grid.Column="0" VerticalOptions="Center" Grid.Row="8" Text="Applications" TextColor="{StaticResource Grey-Light-1}" FontSize="Medium"/>
+        -->
         <Frame HasShadow="false" CornerRadius="8" BackgroundColor="{Binding NameFieldBackgroundColor}" BorderColor="{Binding NameFieldBorderColor}" Padding="0" Grid.Column="1" Grid.Row="0">
             <local:CustomEntry x:Name="UserNameEntry" VerticalOptions="CenterAndExpand" ClassId="UserName" IsEnabled="{Binding NameFieldIsEnabled}" Unfocused="Handle_Unfocused" Text="{Binding UserName}" TextColor="{StaticResource Grey-Mid-1}" FontSize="Medium" />
         </Frame>
@@ -56,21 +60,24 @@
         <Frame HasShadow="false" CornerRadius="8" BackgroundColor="{Binding EmailFieldBackgroundColor}" BorderColor="{Binding EmailFieldBorderColor}" Padding="0" Grid.Column="1" Grid.Row="1">
             <local:CustomEntry x:Name="EmailEntry" Unfocused="Handle_Unfocused" ClassId="Email" VerticalOptions="CenterAndExpand" Text="{Binding UserEmail}" IsEnabled="{Binding EmailFieldIsEnabled}" TextColor="{StaticResource Grey-Mid-1}" FontSize="Medium"/>
         </Frame>
+        <!--
         <Frame HasShadow="false" CornerRadius="8" BackgroundColor="{Binding DisplayNameFieldBackgroundColor}" BorderColor="{Binding DisplayNameFieldBorderColor}" Padding="2" Grid.Column="1" Grid.Row="2">       
             <local:CustomEntry x:Name="DisplayNameEntry" VerticalOptions="CenterAndExpand" Unfocused="Handle_Unfocused" ClassId="DisplayName" Text="{Binding UserAlias}" IsEnabled="{Binding DisplayNameFieldIsEnabled}" TextColor="{StaticResource Grey-Mid-1}" FontSize="Medium"/>
-        </Frame>
+        </Frame> 
+        -->
         <!--
         <Frame HasShadow="false" CornerRadius="8" BackgroundColor="{Binding PasswordFieldBackgroundColor}" BorderColor="{Binding PasswordFieldBorderColor}" Padding="2" Grid.Column="1" Grid.Row="3">       
             <local:CustomEntry x:Name="PasswordEntry" VerticalOptions="CenterAndExpand" Unfocused="Handle_Unfocused" ClassId="Password" Text="{Binding UserPassword}" IsEnabled="{Binding PasswordFieldIsEnabled}" TextColor="{StaticResource Grey-Mid-1}" FontSize="Medium"/>
         </Frame>
                  -->   
-        <Switch Grid.Column="1" VerticalOptions="Center" IsToggled="{Binding PushNotificationsIsOn}" Grid.Row="3" HorizontalOptions="EndAndExpand"/>
-        <Switch Grid.Column="1" VerticalOptions="Center" IsToggled="{Binding BiometricLoginIsOn}" Grid.Row="4" HorizontalOptions="EndAndExpand"/>
+        <controls:CustomSwitch Grid.Column="1" SwitchThumbColor="White" SwitchOnColor="Green" SwitchOffColor="Red" VerticalOptions="Center" IsToggled="{Binding PushNotificationsIsOn}" Grid.Row="2" HorizontalOptions="EndAndExpand"/>
+        <Switch Grid.Column="1" VerticalOptions="Center" IsToggled="{Binding BiometricLoginIsOn}" Grid.Row="3" HorizontalOptions="EndAndExpand"/>
         <Switch Grid.Column="1" VerticalOptions="Center" IsToggled="{Binding PaymentNotificationsIsOn}" Grid.Row="5" HorizontalOptions="EndAndExpand"/>
         <Switch Grid.Column="1" VerticalOptions="Center" IsToggled="{Binding MaintenanceNotificationsIsOn}" Grid.Row="6" HorizontalOptions="EndAndExpand"/>
         <Switch Grid.Column="1" VerticalOptions="Center"  IsToggled="{Binding TenantsNotificationsIsOn}" Grid.Row="7" HorizontalOptions="EndAndExpand"/>
-        <Switch Grid.Column="1" VerticalOptions="Center"  IsToggled="{Binding ApplicationsNotificationsIsOn}" Grid.Row="8" HorizontalOptions="EndAndExpand"/>
-        
+        <!--
+                    <Switch Grid.Column="1" VerticalOptions="Center"  IsToggled="{Binding ApplicationsNotificationsIsOn}" Grid.Row="7" HorizontalOptions="EndAndExpand"/>
+        -->
         <Image Source="pencil_grey.png" Grid.Column="2" Grid.Row="0">
             <Image.GestureRecognizers>
                 <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Handle_Tapped" Command="{Binding OnEditButtonTapped}" CommandParameter="UserName" />
@@ -81,11 +88,12 @@
                 <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Handle_Tapped" Command="{Binding OnEditButtonTapped}" CommandParameter="Email" />
             </Image.GestureRecognizers>
         </Image>
+                    <!--
         <Image Source="pencil_grey.png" Grid.Column="2" Grid.Row="2">
              <Image.GestureRecognizers>
                 <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Handle_Tapped" Command="{Binding OnEditButtonTapped}" CommandParameter="DisplayName" />
             </Image.GestureRecognizers>
-        </Image>
+        </Image> -->
                     <!--
         <Image Source="pencil_grey.png" Grid.Column="2" Grid.Row="3">
              <Image.GestureRecognizers>

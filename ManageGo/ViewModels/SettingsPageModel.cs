@@ -223,7 +223,7 @@ namespace ManageGo
             {
                 {"UserFirstName", UserName.Split(' ').FirstOrDefault()},
                 {"UserLastName", UserName.Split(' ').LastOrDefault()},
-                {"DisplayName", UserAlias},
+                //{"DisplayName", UserAlias},
                 {"UserEmailAddress", UserEmail},
                // {"Password", UserPassword},
                 {"PaymentPushNotification", PaymentNotificationsIsOn},

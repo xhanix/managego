@@ -92,6 +92,7 @@
     <Compile Include="SimpleAuthCallbacks.cs" />
     <Compile Include="NestedListView.cs" />
     <Compile Include="PicturePickerImplementation.cs" />
+    <Compile Include="CustomSwitchRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -315,6 +316,14 @@
     <AndroidResource Include="Resources\drawable\camera_1.png" />
     <AndroidResource Include="Resources\drawable\camera_2.png" />
     <AndroidResource Include="Resources\drawable\camera_3.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\checked.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\unchecked.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\checked.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\unchecked.png" />
+    <AndroidResource Include="Resources\drawable\checked.png" />
+    <AndroidResource Include="Resources\drawable\unchecked.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\checked.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\unchecked.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\drawable\" />
@@ -338,6 +347,11 @@
     <AndroidAsset Include="Assets\CourierPSStd-Bold.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </AndroidAsset>
+    <AndroidAsset Include="Assets\Roboto-Bold.ttf" />
+    <AndroidAsset Include="Assets\Roboto-Light.ttf" />
+    <AndroidAsset Include="Assets\Roboto-Medium.ttf" />
+    <AndroidAsset Include="Assets\Roboto-Regular.ttf" />
+    <AndroidAsset Include="Assets\Roboto-Thin.ttf" />
   </ItemGroup>
  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
 </Project>

@@ -31,6 +31,8 @@ namespace ManageGo.Services
                 { "login", userName },
                 { "password", password }
             };
+
+            //todo: fix error when user not found in release mode
             var content = new FormUrlEncodedContent(credentials);
             var response = await client.PostAsync(BaseUrl + APIpaths.authorize, content);
             var responseString = await response.Content.ReadAsStringAsync();

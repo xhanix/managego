@@ -126,6 +126,11 @@ namespace ManageGo.Controls
             calendar.GotoNextMonth();
         }
 
+        void ShowPreviousMonth_Tapped(object sender, EventArgs e)
+        {
+            calendar.GotoPreviousMonth();
+        }
+
         void Past30DaysButton_Tapped(object sender, EventArgs e)
         {
             calendar.SelectedDates = new DateRange(DateTime.Now.AddDays(-30), DateTime.Now);

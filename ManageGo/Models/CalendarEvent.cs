@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using PropertyChanged;
 
 namespace ManageGo.Models
 {
+    [AddINotifyPropertyChangedInterface]
     public class CalendarEvent
     {
         public int EventID { get; set; }
@@ -41,6 +43,16 @@ namespace ManageGo.Models
                     return "No address";
                 return Building.BuildingShortAddress + ", " + Unit?.UnitName;
             }
+        }
+
+        [JsonIgnore, AlsoNotifyFor("ExpandButtonIcon")]
+
+        public bool DetailsShown { get; set; }
+
+        [JsonIgnore]
+        public string ExpandButtonIcon
+        {
+            get => DetailsShown ? "chevron_down.png" : "chevron_right.png";
         }
     }
 }

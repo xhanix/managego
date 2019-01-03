@@ -38,7 +38,7 @@
 
             <Image Source="chevron_left" VerticalOptions="Center" >
                  <Image.GestureRecognizers>
-                    <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Past7DaysButton_Tapped" />
+                    <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="ShowPreviousMonth_Tapped" />
                 </Image.GestureRecognizers>
             </Image>
             

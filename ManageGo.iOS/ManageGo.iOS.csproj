@@ -118,6 +118,7 @@
     <Compile Include="LocalAuthHelper.cs" />
     <Compile Include="BorderlessEditor.cs" />
     <Compile Include="PicturePickerImplementation.cs" />
+    <Compile Include="CustomSwitchRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Resources\LaunchScreen.storyboard" />
@@ -370,5 +371,8 @@
     <BundleResource Include="Resources\clip_iso.png" />
     <BundleResource Include="Resources\clip_iso%402x.png" />
     <BundleResource Include="Resources\clip_iso%403x.png" />
+    <BundleResource Include="Resources\filled_circle.png" />
+    <BundleResource Include="Resources\checked.png" />
+    <BundleResource Include="Resources\unchecked.png" />
   </ItemGroup>
 </Project>

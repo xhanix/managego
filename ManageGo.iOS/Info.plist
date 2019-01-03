@@ -53,6 +53,11 @@
 	<array>
 		<string>RobotoMono-Bold.ttf</string>
 		<string>CourierPSStd-Bold.ttf</string>
+		<string>Roboto-Bold.ttf</string>
+		<string>Roboto-Light.ttf</string>
+		<string>Roboto-Medium.ttf</string>
+		<string>Roboto-Regular.ttf</string>
+		<string>Roboto-Thin.ttf</string>
 	</array>
 	<key>NSFaceIDUsageDescription</key>
 	<string>ManageGO needs Face ID to log in</string>
