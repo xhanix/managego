@@ -71,10 +71,10 @@
         </Frame>
                  -->   
         <controls:CustomSwitch Grid.Column="1" SwitchThumbColor="White" SwitchOnColor="Green" SwitchOffColor="Red" VerticalOptions="Center" IsToggled="{Binding PushNotificationsIsOn}" Grid.Row="2" HorizontalOptions="EndAndExpand"/>
-        <Switch Grid.Column="1" VerticalOptions="Center" IsToggled="{Binding BiometricLoginIsOn}" Grid.Row="3" HorizontalOptions="EndAndExpand"/>
-        <Switch Grid.Column="1" VerticalOptions="Center" IsToggled="{Binding PaymentNotificationsIsOn}" Grid.Row="5" HorizontalOptions="EndAndExpand"/>
-        <Switch Grid.Column="1" VerticalOptions="Center" IsToggled="{Binding MaintenanceNotificationsIsOn}" Grid.Row="6" HorizontalOptions="EndAndExpand"/>
-        <Switch Grid.Column="1" VerticalOptions="Center"  IsToggled="{Binding TenantsNotificationsIsOn}" Grid.Row="7" HorizontalOptions="EndAndExpand"/>
+        <controls:CustomSwitch Grid.Column="1" SwitchThumbColor="White" SwitchOnColor="Green" SwitchOffColor="Red" VerticalOptions="Center" IsToggled="{Binding BiometricLoginIsOn}" Grid.Row="3" HorizontalOptions="EndAndExpand"/>
+        <controls:CustomSwitch Grid.Column="1" SwitchThumbColor="White" SwitchOnColor="Green" SwitchOffColor="Red" VerticalOptions="Center" IsToggled="{Binding PaymentNotificationsIsOn}" Grid.Row="5" HorizontalOptions="EndAndExpand"/>
+        <controls:CustomSwitch Grid.Column="1" SwitchThumbColor="White" SwitchOnColor="Green" SwitchOffColor="Red" VerticalOptions="Center" IsToggled="{Binding MaintenanceNotificationsIsOn}" Grid.Row="6" HorizontalOptions="EndAndExpand"/>
+        <controls:CustomSwitch Grid.Column="1" SwitchThumbColor="White" SwitchOnColor="Green" SwitchOffColor="Red" VerticalOptions="Center" IsToggled="{Binding TenantsNotificationsIsOn}" Grid.Row="7" HorizontalOptions="EndAndExpand"/>
         <!--
                     <Switch Grid.Column="1" VerticalOptions="Center"  IsToggled="{Binding ApplicationsNotificationsIsOn}" Grid.Row="7" HorizontalOptions="EndAndExpand"/>
         -->

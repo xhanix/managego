@@ -2,6 +2,8 @@
 using Android.Content;
 using Android.Content.Res;
 using Android.Graphics;
+using Android.Graphics.Drawables;
+using Android.Widget;
 using ManageGo.Controls;
 using ManageGo.Droid;
 using Xamarin.Forms;
@@ -27,11 +29,12 @@ namespace ManageGo.Droid
 
         ColorStateList trackStates = new ColorStateList(
             new int[][]{
-
+                    new int[]{-Android.Resource.Attribute.StateEnabled},
                     new int[]{Android.Resource.Attribute.StateChecked},
                     new int[] { }
             },
             new int[]{
+                    Android.Resource.Color.HoloGreenDark,
                     Android.Resource.Color.HoloGreenDark,
                     Android.Resource.Color.HoloRedDark
             }
@@ -44,46 +47,40 @@ namespace ManageGo.Droid
 
 
 
-        protected override void OnElementChanged(ElementChangedEventArgs<Switch> e)
+        protected override void OnElementChanged(ElementChangedEventArgs<Xamarin.Forms.Switch> e)
         {
             base.OnElementChanged(e);
+
             if (e.OldElement != null || e.NewElement == null)
                 return;
             var view = (CustomSwitch)Element;
-            Control.TrackTintList = trackStates;
-            Element.Toggled += (_sender, _e) =>
-            {
-                Control.TrackTintList = trackStates;
-                Control.TrackDrawable.ClearColorFilter();
-                if (this.Control.Checked)
-                {
-                    this.Control.ThumbDrawable.SetColorFilter(Android.Graphics.Color.White, PorterDuff.Mode.SrcAtop);
 
-                    Control.TrackDrawable.SetColorFilter(Android.Graphics.Color.DarkGreen, PorterDuff.Mode.Add);
-                }
-                else
-                {
-                    this.Control.ThumbDrawable.SetColorFilter(Android.Graphics.Color.White, PorterDuff.Mode.SrcAtop);
-
-                    Control.TrackDrawable.SetColorFilter(Android.Graphics.Color.DarkRed, PorterDuff.Mode.SrcAtop);
-                }
-            };
-            Control.TrackDrawable.ClearColorFilter();
-            if (this.Control.Checked)
-            {
-                this.Control.ThumbDrawable.SetColorFilter(Android.Graphics.Color.White, PorterDuff.Mode.SrcAtop);
-
-                Control.TrackDrawable.SetColorFilter(Android.Graphics.Color.DarkGreen, PorterDuff.Mode.Add);
-            }
+            Control.SetTrackResource(Resource.Drawable.switch_track_custom);
+            Control.SetOnCheckedChangeListener(new CheckedChangedListener());
+            Control.ThumbDrawable.SetColorFilter(Android.Graphics.Color.White, PorterDuff.Mode.SrcAtop);
+            if (Control.Checked)
+                Control.TrackDrawable.SetColorFilter(new Android.Graphics.Color(37, 206, 4), PorterDuff.Mode.SrcOver);
             else
-            {
-                this.Control.ThumbDrawable.SetColorFilter(Android.Graphics.Color.White, PorterDuff.Mode.SrcAtop);
-
-                Control.TrackDrawable.SetColorFilter(Android.Graphics.Color.DarkRed, PorterDuff.Mode.SrcAtop);
-            }
+                Control.TrackDrawable.SetColorFilter(new Android.Graphics.Color(201, 36, 4), PorterDuff.Mode.SrcOver);
 
         }
 
 
     }
+
+    public class CheckedChangedListener : Java.Lang.Object, CompoundButton.IOnCheckedChangeListener
+    {
+        public void OnCheckedChanged(CompoundButton buttonView, bool isChecked)
+        {
+            var control = (Android.Widget.Switch)buttonView;
+            //  buttonView.SetOutlineSpotShadowColor(Android.Graphics.Color.Red);
+            // ((Android.Widget.Switch)buttonView).TrackDrawable.SetTint(Android.Resource.Color.Black);
+            if (isChecked)
+                control.TrackDrawable.SetColorFilter(new Android.Graphics.Color(37, 206, 4), PorterDuff.Mode.SrcOver);
+            else
+                control.TrackDrawable.SetColorFilter(new Android.Graphics.Color(201, 36, 4), PorterDuff.Mode.SrcOver);
+
+        }
+    }
+
 }

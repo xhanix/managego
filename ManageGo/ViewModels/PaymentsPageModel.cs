@@ -422,7 +422,7 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand(async (parameter, tcs) =>
+                async void execute(object parameter, TaskCompletionSource<bool> tcs)
                 {
 
                     PopContentView = null;
@@ -465,7 +465,8 @@ namespace ManageGo
                     FetchedPayments = await DataAccess.GetPaymentsAsync(paramDic);
                     HasLoaded = true;
                     tcs?.SetResult(true);
-                });
+                }
+                return new FreshAwaitCommand(execute);
             }
         }
 

@@ -18,7 +18,7 @@ using Android.Provider;
 
 namespace ManageGo.Droid
 {
-    [Activity(Label = "ManageGo", Icon = "@mipmap/icon", Theme = "@style/MainTheme", ScreenOrientation = Android.Content.PM.ScreenOrientation.Portrait, MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+    [Activity(Label = "ManageGo", Icon = "@mipmap/icon", Theme = "@style/MainTheme", ScreenOrientation = Android.Content.PM.ScreenOrientation.Portrait, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
         // Field, properties, and method for Video Picker

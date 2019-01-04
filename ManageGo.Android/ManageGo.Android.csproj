@@ -39,6 +39,7 @@
     <WarningLevel>4</WarningLevel>
     <AndroidManagedSymbols>true</AndroidManagedSymbols>
     <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
+    <EnableProguard>true</EnableProguard>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Android" />
@@ -93,6 +94,7 @@
     <Compile Include="NestedListView.cs" />
     <Compile Include="PicturePickerImplementation.cs" />
     <Compile Include="CustomSwitchRenderer.cs" />
+    <Compile Include="SplashActivity.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -324,6 +326,8 @@
     <AndroidResource Include="Resources\drawable\unchecked.png" />
     <AndroidResource Include="Resources\drawable-hdpi\checked.png" />
     <AndroidResource Include="Resources\drawable-hdpi\unchecked.png" />
+    <AndroidResource Include="Resources\drawable\switch_track_custom.xml" />
+    <AndroidResource Include="Resources\Color\color.xml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\drawable\" />
@@ -332,6 +336,7 @@
     <Folder Include="Resources\drawable-xxhdpi\" />
     <Folder Include="Resources\drawable-xxxhdpi\" />
     <Folder Include="Resources\xml\" />
+    <Folder Include="Resources\Color\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ManageGo\ManageGo.csproj">

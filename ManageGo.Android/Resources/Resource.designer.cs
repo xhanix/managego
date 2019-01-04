@@ -1389,6 +1389,9 @@ namespace ManageGo.Droid
 			// aapt resource value: 0x7f0e0003
 			public const int cardview_shadow_start_color = 2131623939;
 			
+			// aapt resource value: 0x7f0e0064
+			public const int color = 2131624036;
+			
 			// aapt resource value: 0x7f0e004e
 			public const int colorAccent = 2131624014;
 			
@@ -1401,8 +1404,8 @@ namespace ManageGo.Droid
 			// aapt resource value: 0x7f0e0040
 			public const int design_bottom_navigation_shadow_color = 2131624000;
 			
-			// aapt resource value: 0x7f0e0064
-			public const int design_error = 2131624036;
+			// aapt resource value: 0x7f0e0065
+			public const int design_error = 2131624037;
 			
 			// aapt resource value: 0x7f0e0041
 			public const int design_fab_shadow_end_color = 2131624001;
@@ -1428,8 +1431,8 @@ namespace ManageGo.Droid
 			// aapt resource value: 0x7f0e0048
 			public const int design_snackbar_background_color = 2131624008;
 			
-			// aapt resource value: 0x7f0e0065
-			public const int design_tint_password_toggle = 2131624037;
+			// aapt resource value: 0x7f0e0066
+			public const int design_tint_password_toggle = 2131624038;
 			
 			// aapt resource value: 0x7f0e0016
 			public const int dim_foreground_disabled_material_dark = 2131623958;
@@ -1557,11 +1560,11 @@ namespace ManageGo.Droid
 			// aapt resource value: 0x7f0e003a
 			public const int switch_thumb_disabled_material_light = 2131623994;
 			
-			// aapt resource value: 0x7f0e0066
-			public const int switch_thumb_material_dark = 2131624038;
-			
 			// aapt resource value: 0x7f0e0067
-			public const int switch_thumb_material_light = 2131624039;
+			public const int switch_thumb_material_dark = 2131624039;
+			
+			// aapt resource value: 0x7f0e0068
+			public const int switch_thumb_material_light = 2131624040;
 			
 			// aapt resource value: 0x7f0e003b
 			public const int switch_thumb_normal_material_dark = 2131623995;
@@ -2360,26 +2363,26 @@ namespace ManageGo.Droid
 			// aapt resource value: 0x7f020058
 			public const int avd_hide_password = 2130837592;
 			
-			// aapt resource value: 0x7f02017d
-			public const int avd_hide_password_1 = 2130837885;
-			
 			// aapt resource value: 0x7f02017e
-			public const int avd_hide_password_2 = 2130837886;
+			public const int avd_hide_password_1 = 2130837886;
 			
 			// aapt resource value: 0x7f02017f
-			public const int avd_hide_password_3 = 2130837887;
+			public const int avd_hide_password_2 = 2130837887;
+			
+			// aapt resource value: 0x7f020180
+			public const int avd_hide_password_3 = 2130837888;
 			
 			// aapt resource value: 0x7f020059
 			public const int avd_show_password = 2130837593;
 			
-			// aapt resource value: 0x7f020180
-			public const int avd_show_password_1 = 2130837888;
-			
 			// aapt resource value: 0x7f020181
-			public const int avd_show_password_2 = 2130837889;
+			public const int avd_show_password_1 = 2130837889;
 			
 			// aapt resource value: 0x7f020182
-			public const int avd_show_password_3 = 2130837890;
+			public const int avd_show_password_2 = 2130837890;
+			
+			// aapt resource value: 0x7f020183
+			public const int avd_show_password_3 = 2130837891;
 			
 			// aapt resource value: 0x7f02005a
 			public const int bank_blue = 2130837594;
@@ -3161,11 +3164,11 @@ namespace ManageGo.Droid
 			// aapt resource value: 0x7f02015d
 			public const int notification_icon_background = 2130837853;
 			
-			// aapt resource value: 0x7f02017b
-			public const int notification_template_icon_bg = 2130837883;
-			
 			// aapt resource value: 0x7f02017c
-			public const int notification_template_icon_low_bg = 2130837884;
+			public const int notification_template_icon_bg = 2130837884;
+			
+			// aapt resource value: 0x7f02017d
+			public const int notification_template_icon_low_bg = 2130837885;
 			
 			// aapt resource value: 0x7f02015e
 			public const int notification_tile_bg = 2130837854;
@@ -3228,31 +3231,34 @@ namespace ManageGo.Droid
 			public const int star_blue = 2130837873;
 			
 			// aapt resource value: 0x7f020172
-			public const int tooltip_frame_dark = 2130837874;
+			public const int switch_track_custom = 2130837874;
 			
 			// aapt resource value: 0x7f020173
-			public const int tooltip_frame_light = 2130837875;
+			public const int tooltip_frame_dark = 2130837875;
 			
 			// aapt resource value: 0x7f020174
-			public const int @unchecked = 2130837876;
+			public const int tooltip_frame_light = 2130837876;
 			
 			// aapt resource value: 0x7f020175
-			public const int upload_blue = 2130837877;
+			public const int @unchecked = 2130837877;
 			
 			// aapt resource value: 0x7f020176
-			public const int upload_white = 2130837878;
+			public const int upload_blue = 2130837878;
 			
 			// aapt resource value: 0x7f020177
-			public const int video_active = 2130837879;
+			public const int upload_white = 2130837879;
 			
 			// aapt resource value: 0x7f020178
-			public const int video_inactive = 2130837880;
+			public const int video_active = 2130837880;
 			
 			// aapt resource value: 0x7f020179
-			public const int welcome_page_image = 2130837881;
+			public const int video_inactive = 2130837881;
 			
 			// aapt resource value: 0x7f02017a
-			public const int wrench_blue = 2130837882;
+			public const int welcome_page_image = 2130837882;
+			
+			// aapt resource value: 0x7f02017b
+			public const int wrench_blue = 2130837883;
 			
 			static Drawable()
 			{

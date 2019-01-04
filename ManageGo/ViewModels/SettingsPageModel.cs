@@ -9,7 +9,7 @@ using Xamarin.Essentials;
 
 namespace ManageGo
 {
-    public class SettingsPageModel : FreshBasePageModel
+    internal class SettingsPageModel : BaseDetailPage
     {
         private bool _applicationsNotificationsIsOn;
         private bool _tenantsNotificationsIsOn;
@@ -87,7 +87,7 @@ namespace ManageGo
             }
         }
 
-        public bool HamburgerIsVisible { get; set; }
+
 
         [AlsoNotifyFor("NameFieldBackgroundColor", "NameFieldBorderColor")]
         public bool NameFieldIsEnabled { get; set; }
@@ -240,6 +240,11 @@ namespace ManageGo
             }
         }
 
+        internal override Task LoadData(bool refreshData = false, bool applyNewFilter = false)
+        {
+            return new Task(() => { });
+        }
+
         public FreshAwaitCommand OnFieldLostFocus
         {
             get
@@ -270,18 +275,7 @@ namespace ManageGo
             }
         }
 
-        public FreshAwaitCommand OnMasterMenuTapped
-        {
-            get
-            {
-                return new FreshAwaitCommand((tcs) =>
-                {
-                    App.MenuIsPresented = true;
-                    HamburgerIsVisible = false;
-                    tcs?.SetResult(true);
-                });
-            }
-        }
+
     }
 }
 
