@@ -24,7 +24,9 @@
         BankAccounts,
         UserSettings,
         EventsListDates,
-        EventList
+        EventList,
+        PendingApprovals,
+        PendingApprovalAction
     }
 }
 

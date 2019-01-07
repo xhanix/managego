@@ -62,10 +62,7 @@ namespace ManageGo.Droid
                 Control.TrackDrawable.SetColorFilter(new Android.Graphics.Color(37, 206, 4), PorterDuff.Mode.SrcOver);
             else
                 Control.TrackDrawable.SetColorFilter(new Android.Graphics.Color(201, 36, 4), PorterDuff.Mode.SrcOver);
-
         }
-
-
     }
 
     public class CheckedChangedListener : Java.Lang.Object, CompoundButton.IOnCheckedChangeListener
@@ -79,7 +76,6 @@ namespace ManageGo.Droid
                 control.TrackDrawable.SetColorFilter(new Android.Graphics.Color(37, 206, 4), PorterDuff.Mode.SrcOver);
             else
                 control.TrackDrawable.SetColorFilter(new Android.Graphics.Color(201, 36, 4), PorterDuff.Mode.SrcOver);
-
         }
     }
 

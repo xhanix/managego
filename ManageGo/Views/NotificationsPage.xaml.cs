@@ -12,5 +12,7 @@ namespace ManageGo
             InitializeComponent();
             NavigationPage.SetHasNavigationBar(this, false);
         }
+
+
     }
 }

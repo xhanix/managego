@@ -52,6 +52,21 @@ namespace ManageGo
             }
         }
 
+        public FreshAwaitCommand OnNotificationsTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((tcs) =>
+                {
+                    if (!App.MasterDetailNav.Pages.ContainsKey("Notifications"))
+                        App.MasterDetailNav.AddPage<NotificationsPageModel>("Notifications");
+                    App.MasterDetailNav.SwitchSelectedRootPageModel<NotificationsPageModel>();
+                    tcs?.SetResult(true);
+                });
+
+            }
+        }
+
         public FreshAwaitCommand OnMaintenanceTapped
         {
             get

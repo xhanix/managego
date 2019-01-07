@@ -4,6 +4,7 @@
              ios:Page.UseSafeArea="true"
              x:Name="ThisPage"
              xmlns:local="clr-namespace:ManageGo"
+             xmlns:control="clr-namespace:ManageGo.Controls"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
              x:Class="ManageGo.NotificationsPage">
     <RelativeLayout>
@@ -31,55 +32,56 @@
                 <Label Text="Notifications" TextColor="{StaticResource Grey-Dark-1}"  FontAttributes="Bold" Margin="0,8,0,7" FontSize="Medium" HorizontalTextAlignment="Center"/>
                 <BoxView HeightRequest="1" BackgroundColor="{StaticResource Primary}" />
                 <StackLayout Padding="0,8,0,8">
-                    <Label Text="Tenants and Units awaiting approval" HorizontalTextAlignment="Center" />
+                    <Label Text="Tenants and Units awaiting approval" FontAttributes="Bold" TextColor="{StaticResource Grey-Mid-1}" HorizontalTextAlignment="Center" />
                 </StackLayout>
-                <BoxView HeightRequest="1" BackgroundColor="{StaticResource Grey-Light-1}" />
+                <BoxView HeightRequest="1" BackgroundColor="{StaticResource Grey-Light-1}"  />
             </StackLayout>
             <StackLayout BackgroundColor="{StaticResource Grey-Light-2}" Grid.Row="2">
-                <ListView ItemsSource="{Binding Buildings}" SelectionMode="None" HasUnevenRows="true" BackgroundColor="Transparent" SeparatorVisibility="None" Margin="22,18,22,18" CachingStrategy="RecycleElement">
+                <ListView ItemsSource="{Binding FetchedNotifications}" SelectionMode="None" HasUnevenRows="true" BackgroundColor="Transparent" SeparatorVisibility="None" Margin="22,18,22,18" CachingStrategy="RecycleElement">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
                                 <Frame HasShadow="false" BackgroundColor="White" Margin="0,0,0,12" Padding="8">
-                                    <StackLayout Orientation="Horizontal" Spacing="17">
-                                        <Image Source="building_grey.png" Margin="8,6,0,0" HorizontalOptions="Center" VerticalOptions="StartAndExpand"/>
+                                    <StackLayout Orientation="Horizontal" Margin="0,4,0,4" Spacing="17">
+                                        <Image Source="{Binding ListIcon}" Margin="8,6,0,0" HorizontalOptions="Center" VerticalOptions="StartAndExpand"/>
                                         <StackLayout HorizontalOptions="FillAndExpand">
-                                            <Label Text="{Binding BuildingName}" FontSize="Medium" TextColor="{StaticResource Grey-Mid-1}" />
-                                            <BoxView HeightRequest="1" BackgroundColor="{StaticResource Grey-Light-2}" />
-                                            <StackLayout Orientation="Horizontal" Spacing="4">
-                                                <StackLayout Orientation="Horizontal" VerticalOptions="CenterAndExpand" Spacing="2">
-                                                    <Label Text="Units:" FontSize="Small" TextColor="{StaticResource Grey-Light-1}" />
-                                                    <Label Text="{Binding UnitCount, Converter={StaticResource PaddedStringConverter}}" TextColor="{StaticResource Primary}" FontSize="Small"/>
-                                                    <StackLayout.GestureRecognizers>
-                                                        <TapGestureRecognizer Command="{Binding BindingContext.OnUnitTapped,Source={x:Reference ThisPage}}" CommandParameter="{Binding .}" />
-                                                    </StackLayout.GestureRecognizers>
+                                            <StackLayout Orientation="Horizontal">
+                                                <Label HorizontalOptions="StartAndExpand" VerticalOptions="CenterAndExpand" Text="{Binding Title}" FontSize="Medium" TextColor="{StaticResource Grey-Mid-1}" />
+                                                <Image Source="{Binding ShowDetailsIcon}" VerticalOptions="CenterAndExpand" HorizontalOptions="EndAndExpand" />
+                                            </StackLayout>
+                                            <BoxView HeightRequest="1" Margin="0,4,0,4" BackgroundColor="{StaticResource Grey-Light-2}" />
+                                            <Label Text="{Binding SubTitle}" FontSize="Small" TextColor="{StaticResource Grey-Light-1}" />
+                                            <StackLayout Spacing="4" Margin="0,8,0,0" IsVisible="{Binding DetailsShown}">
+                                                <StackLayout Orientation="Horizontal">
+                                                    <Label Text="Email: " HorizontalOptions="StartAndExpand" TextColor="{StaticResource Grey-Light-1}" FontSize="Small" />
+                                                    <Label Text="{Binding Tenant.TenantEmailAddress}" HorizontalOptions="EndAndExpand" TextColor="{StaticResource Primary}" FontSize="Small" />
                                                 </StackLayout>
-                                                <BoxView WidthRequest="1" BackgroundColor="{StaticResource Grey-Light-2}" VerticalOptions="Fill"/>
-                                                <StackLayout Orientation="Horizontal" VerticalOptions="CenterAndExpand" Spacing="2">
-                                                    <Label Text="Tenants:" FontSize="Small" TextColor="{StaticResource Grey-Light-1}" />
-                                                    <Label Text="{Binding TenantCount, Converter={StaticResource PaddedStringConverter}}" TextColor="{StaticResource Primary}" FontSize="Small"/>
-                                                    <StackLayout.GestureRecognizers>
-                                                        <TapGestureRecognizer Command="{Binding BindingContext.OnTenantTapped,Source={x:Reference ThisPage}}" CommandParameter="{Binding .}" />
-                                                    </StackLayout.GestureRecognizers>
+                                                <StackLayout Orientation="Horizontal">
+                                                    <Label Text="Home: " HorizontalOptions="StartAndExpand" TextColor="{StaticResource Grey-Light-1}" FontSize="Small" />
+                                                    <Label Text="{Binding Tenant.TenantHomePhone}" HorizontalOptions="EndAndExpand" TextColor="{StaticResource Primary}" FontSize="Small" />
                                                 </StackLayout>
-                                                <BoxView WidthRequest="1" BackgroundColor="{StaticResource Grey-Light-2}" VerticalOptions="Fill"/>
-                                                <StackLayout Orientation="Horizontal" VerticalOptions="CenterAndExpand" Spacing="2">
-                                                    <Label Text="Open tickets:" FontSize="Small" TextColor="{StaticResource Grey-Light-1}" />
-                                                    <Label Text="{Binding OpenTicketCount, Converter={StaticResource PaddedStringConverter}}" TextColor="{StaticResource Primary}" FontSize="Small"/>
-                                                    <StackLayout.GestureRecognizers>
-                                                        <TapGestureRecognizer Command="{Binding BindingContext.OnTicketsTapped,Source={x:Reference ThisPage}}" CommandParameter="{Binding .}" />
-                                                    </StackLayout.GestureRecognizers>
+                                                <StackLayout Orientation="Horizontal">
+                                                    <Label Text="Cell: " HorizontalOptions="StartAndExpand" TextColor="{StaticResource Grey-Light-1}" FontSize="Small" />
+                                                    <Label Text="{Binding Tenant.TenantCellPhone}" HorizontalOptions="EndAndExpand" TextColor="{StaticResource Primary}" FontSize="Small" />
+                                                </StackLayout>
+                                                <StackLayout Orientation="Horizontal">
+                                                    <Label VerticalOptions="CenterAndExpand" Text="Approve tenant and activate: " HorizontalOptions="StartAndExpand" TextColor="{StaticResource Grey-Light-1}" FontSize="Small" />
+                                                    <Button HorizontalOptions="End" Text="Approve" Command="{Binding BindingContext.ApproveItem,Source={x:Reference ThisPage}}" CommandParameter="{Binding .}"/>
                                                 </StackLayout>
                                             </StackLayout>
                                         </StackLayout>
+                                        
                                     </StackLayout>
+                                    <Frame.GestureRecognizers>
+                                        <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding BindingContext.ShowDetails,Source={x:Reference ThisPage}}" CommandParameter="{Binding .}" />
+                                    </Frame.GestureRecognizers>
                                 </Frame>
                             </ViewCell>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
             </StackLayout>
-             <Frame IsVisible="{Binding IsSearching}" 
+             <Frame IsVisible="{Binding IsLoading}" 
                     Grid.Row="2" HasShadow="false" 
                     BackgroundColor="#99000000" 
                     VerticalOptions="CenterAndExpand" 
@@ -90,6 +92,5 @@
             </StackLayout>
         </Frame>
         </Grid>
-       
     </RelativeLayout>
 </ContentPage>

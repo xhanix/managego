@@ -25,6 +25,7 @@ namespace ManageGo
         public bool FilterSelectViewIsShown { get; set; }
         public bool NothingFetched { get; private set; }
         public List<MaintenanceTicket> FetchedTickets { get; set; }
+        public bool IsRefreshingList { get; set; }
         public bool ListIsEnabled { get; set; } = false;
         public bool AddNewButtonIsVisisble
         {
@@ -499,6 +500,21 @@ namespace ManageGo
                     RaisePropertyChanged("FilterBuildingTextColor");
                     tcs?.SetResult(true);
                 });
+            }
+        }
+
+        public FreshAwaitCommand OnPulledToRefresh
+        {
+            get
+            {
+                async void execute(TaskCompletionSource<bool> tcs)
+                {
+                    IsRefreshingList = true;
+                    await LoadData(false, false);
+                    IsRefreshingList = false;
+                    tcs?.SetResult(true);
+                }
+                return new FreshAwaitCommand(execute);
             }
         }
 

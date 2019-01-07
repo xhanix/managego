@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Windows.Input;
 using Xamarin.Forms;
 
 namespace ManageGo.Controls
 {
     public class CustomSwitch : Switch
     {
+
         public static readonly BindableProperty SwitchOffColorProperty =
           BindableProperty.Create(nameof(SwitchOffColor),
               typeof(Color), typeof(CustomSwitch),
@@ -49,5 +51,9 @@ namespace ManageGo.Controls
             get { return (string)GetValue(SwitchThumbImageProperty); }
             set { SetValue(SwitchThumbImageProperty, value); }
         }
+
+
+
+
     }
 }

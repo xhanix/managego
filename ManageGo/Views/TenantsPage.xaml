@@ -72,7 +72,7 @@
                         <DataTemplate>
                             <ViewCell>
                                 <Frame HasShadow="false" BackgroundColor="White" Margin="0,0,0,12" Padding="8">
-                                    <StackLayout Orientation="Horizontal" Spacing="17">
+                                    <StackLayout Orientation="Horizontal" Margin="0,4,0,4" Spacing="17">
                                         <Image Source="profile_grey.png" Margin="8,6,0,0" HorizontalOptions="Center" VerticalOptions="StartAndExpand"/>
                                         <StackLayout HorizontalOptions="FillAndExpand">
                                             <StackLayout Orientation="Horizontal">
@@ -80,14 +80,11 @@
                                                 <StackLayout Grid.Column="2" Padding="8,8,4,8" HorizontalOptions="EndAndExpand">
                                                     <Image  Source="chevron_down.png" Rotation="0" IsVisible="{Binding DetailsShown, Converter={StaticResource InverseBoolConverter} }" VerticalOptions="Start" HorizontalOptions="End"/>
                                                     <Image  Source="chevron_down.png" Rotation="180" IsVisible="{Binding DetailsShown}" VerticalOptions="Start" HorizontalOptions="End"/>
-                                                    <StackLayout.GestureRecognizers>
-                                                            <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding BindingContext.OnShowTenantDetailsTapped,Source={x:Reference ThisPage}}"  CommandParameter="{Binding .}"  Tapped="Handle_Tapped"/>
-                                                    </StackLayout.GestureRecognizers>
                                                 </StackLayout>
                                             </StackLayout>
-                                            <BoxView HeightRequest="1" BackgroundColor="{StaticResource Grey-Light-1}" />
+                                            <BoxView HeightRequest="1" Margin="0,4,0,4" BackgroundColor="{StaticResource Grey-Light-2}" />
                                             <Label Text="{Binding FirstUnitAddress}" FontSize="Small" TextColor="{StaticResource Grey-Light-1}" />
-                                            <StackLayout IsVisible="{Binding DetailsShown}" HorizontalOptions="FillAndExpand">
+                                            <StackLayout IsVisible="{Binding DetailsShown}" Margin="0,8,0,0" HorizontalOptions="FillAndExpand">
                                                 <StackLayout Orientation="Horizontal">
                                                     <Label Text="Email:" FontSize="Small" TextColor="{StaticResource Grey-Light-1}" />
                                                     <Label Text="{Binding TenantEmailAddress}" HorizontalOptions="EndAndExpand" HorizontalTextAlignment="End" FontSize="Small" TextColor="{StaticResource Primary}" >
@@ -116,6 +113,9 @@
                                             </StackLayout>
                                         </StackLayout>
                                     </StackLayout>
+                                    <Frame.GestureRecognizers>
+                                        <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding BindingContext.OnShowTenantDetailsTapped,Source={x:Reference ThisPage}}"  CommandParameter="{Binding .}"  Tapped="Handle_Tapped"/>
+                                    </Frame.GestureRecognizers>
                                 </Frame>
                             </ViewCell>
                         </DataTemplate>

@@ -18,7 +18,7 @@ namespace ManageGo
         DateRange dateRange;
         [AlsoNotifyFor("NumberOfAppliedFilters")]
         Dictionary<string, object> FilterDictionary { get; set; }
-
+        public bool IsRefreshingList { get; set; }
         public bool FilterSelectViewIsShown { get; set; }
         public bool RangeSelectorIsShown { get; private set; }
         List<Payment> fetchedPayments;
@@ -223,6 +223,23 @@ namespace ManageGo
             }
         }
 
+        public FreshAwaitCommand OnPulledToRefresh
+        {
+            get
+            {
+                async void execute(TaskCompletionSource<bool> tcs)
+                {
+                    IsRefreshingList = true;
+                    if (FilterDictionary is null || !FilterDictionary.Keys.Any())
+                        await LoadData(false, false);
+                    else
+                        OnApplyFiltersTapped.Execute(null);
+                    IsRefreshingList = false;
+                    tcs?.SetResult(true);
+                }
+                return new FreshAwaitCommand(execute);
+            }
+        }
 
         public FreshAwaitCommand OnShowDetailsTapped
         {
@@ -281,7 +298,7 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand(async (par, tcs) =>
+                async void execute(object par, TaskCompletionSource<bool> tcs)
                 {
                     var building = (Building)par;
                     try
@@ -305,7 +322,8 @@ namespace ManageGo
                     {
                         tcs?.SetResult(true);
                     }
-                });
+                }
+                return new FreshAwaitCommand(execute);
             }
         }
 
@@ -539,7 +557,7 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand(async (par, tcs) =>
+                async void execute(object par, TaskCompletionSource<bool> tcs)
                 {
                     switch ((string)par)
                     {
@@ -580,7 +598,8 @@ namespace ManageGo
                             break;
                     }
                     tcs?.SetResult(true);
-                });
+                }
+                return new FreshAwaitCommand(execute);
             }
         }
 

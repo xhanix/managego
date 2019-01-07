@@ -48,7 +48,6 @@ namespace ManageGo.Services
                 {
                     App.UserInfo = userInfo.ToObject<Models.SignedInUserInfo>();
                 }
-
                 jResult.TryGetValue(APIkeys.PMCInfo.ToString(), out JObject pmcInfo);
                 //user info is a dictionary
                 var dic = userInfo.ToObject<Dictionary<string, string>>();
@@ -143,6 +142,37 @@ namespace ManageGo.Services
                 App.BankAccounts = list.ToObject<List<Models.BankAccount>>();
             }
         }
+
+        #region PENDING NOTIFICATIONS
+        public static async Task<List<PendingApprovalItem>> GetPendingNotifications()
+        {
+            // var param = new Dictionary<string, string> { { "page", "1" } };
+            var response = await client.PostAsync(BaseUrl + APIpaths.PendingApprovals.ToString(), null);
+            var responseString = await response.Content.ReadAsStringAsync();
+            var dic = JObject.Parse(responseString);
+            if (dic.TryGetValue("Result", out JToken list))
+            {
+                return list.ToObject<List<PendingApprovalItem>>();
+            }
+            throw new Exception("Unable to get notifications");
+        }
+        public static async Task ApproveItem(PendingApprovalItem item)
+        {
+            var param = new Dictionary<string, object> {
+                { "LeaseID", item.LeaseID },
+                { "Action", true}
+            };
+            var jsonString = JsonConvert.SerializeObject(param);
+            var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+            var response = await client.PostAsync(BaseUrl + APIpaths.PendingApprovalAction.ToString(), content);
+            var responseString = await response.Content.ReadAsStringAsync();
+            var dic = JObject.Parse(responseString);
+            if (((string)dic["Result"]).ToLower() != "success")
+            {
+                throw new Exception((string)dic["ErrorMessage"]);
+            }
+        }
+        #endregion
 
 
         #region BUILDINGS

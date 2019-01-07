@@ -15,15 +15,24 @@ namespace ManageGo
 
         void Handle_Tapped(object sender, System.EventArgs e)
         {
-            var st = (StackLayout)sender;
+            var st = (Frame)sender;
             var container = st.Parent;
-            var p = container.Parent;
-            while (p as ViewCell is null)
+            if (container is ViewCell)
             {
-                p = p.Parent;
+                var row = container as ViewCell;
+                row.ForceUpdateSize();
             }
-            var row = p as ViewCell;
-            row.ForceUpdateSize();
+            else if (container.Parent != null)
+            {
+                var p = container.Parent;
+                while (p as ViewCell is null)
+                {
+                    p = p.Parent;
+                }
+                var row = p as ViewCell;
+                row.ForceUpdateSize();
+            }
+
         }
 
         protected override bool OnBackButtonPressed()

@@ -66,6 +66,10 @@
                     <Button Text="Tenants" Command="{Binding OnTenantsTapped}" FontSize="Small" BackgroundColor="Transparent" TextColor="Transparent"  HorizontalOptions="Fill"/>
                 </Grid>
                 <BoxView BackgroundColor="{StaticResource Grey-Light-2}"/>
+                <Grid Margin="0,0,4,0">
+                    <Label Text="Notifications" TextColor="{StaticResource Grey-Dark-1}" FontSize="Medium"  VerticalOptions="CenterAndExpand" />
+                    <Button Text="Notifications" Command="{Binding OnNotificationsTapped}" FontSize="Small" BackgroundColor="Transparent" TextColor="Transparent" HorizontalOptions="Fill"/>
+                </Grid>
                 <BoxView BackgroundColor="{StaticResource Grey-Light-2}"/>
                 <Grid Margin="0,0,4,0">
                     <Label Text="Settings" TextColor="{StaticResource Grey-Dark-1}" FontSize="Medium"  VerticalOptions="CenterAndExpand" />
