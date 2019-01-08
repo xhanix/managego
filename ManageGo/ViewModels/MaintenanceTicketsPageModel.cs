@@ -297,6 +297,7 @@ namespace ManageGo
                     {
                          { "PageSize", pageSize },
                          { "Page",  1},
+
                     };
                         if (HasCalendarFilter)
                         {

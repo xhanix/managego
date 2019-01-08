@@ -10,6 +10,7 @@ namespace ManageGo
         public CreateTicketPage()
         {
             InitializeComponent();
+            NavigationPage.SetHasNavigationBar(this, false);
         }
     }
 }

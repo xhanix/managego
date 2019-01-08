@@ -47,8 +47,8 @@
                  <StackLayout Grid.Row="0" Grid.Column="0" Padding="12,0,12,0" HorizontalOptions="CenterAndExpand" Spacing="0" Orientation="Horizontal">
                     <Button Text="{Binding TicketAddress}" BackgroundColor="Transparent" VerticalOptions="CenterAndExpand" FontAttributes="None" FontSize="Small" Image="building_blue.png"   />
                 </StackLayout>
-                <BoxView Grid.Row="0" VerticalOptions="CenterAndExpand" Grid.Column="1" BackgroundColor="#ebebeb" WidthRequest="1" HorizontalOptions="FillAndExpand" />
-                <StackLayout Grid.Row="0" Grid.Column="2" HorizontalOptions="CenterAndExpand" Spacing="0" Orientation="Horizontal">
+                <BoxView Grid.Row="0" IsVisible="{Binding CanEditTicketDetails}" VerticalOptions="CenterAndExpand" Grid.Column="1" BackgroundColor="#ebebeb" WidthRequest="1" HorizontalOptions="FillAndExpand" />
+                <StackLayout Grid.Row="0" IsVisible="{Binding CanEditTicketDetails}" Grid.Column="2" HorizontalOptions="CenterAndExpand" Spacing="0" Orientation="Horizontal">
                     <Button Text="Ticket details" Command="{Binding OnshowDetailsTapped}" BackgroundColor="Transparent" VerticalOptions="CenterAndExpand" FontAttributes="None" FontSize="Small" Image="star_blue.png"   />
                 </StackLayout>
             </Grid>
@@ -81,8 +81,11 @@
         <StackLayout Grid.Row="2" BackgroundColor="#f4f4f4" Spacing="0">
                 <Grid Padding="18">
                     <Frame BackgroundColor="White" CornerRadius="5" HasShadow="false" Padding="0,0,8,0">
-                        <ListView ItemsSource="{Binding Comments}" IsRefreshing="{Binding IsBusy,Mode=OneWay}" ItemAppearing="Handle_ItemAppearing"  x:Name="MyListView" CachingStrategy="RetainElement" VerticalOptions="StartAndExpand" RefreshCommand="{Binding OnListRefreshRequested}" IsPullToRefreshEnabled="true" SelectionMode="None" IsEnabled="{Binding ListIsEnabled}" HasUnevenRows="true"  BackgroundColor="White" SeparatorVisibility="None" >
-                        <ListView.ItemTemplate>
+                        <controls:NestedListView ItemsSource="{Binding Comments}" IsRefreshing="{Binding IsBusy,Mode=OneWay}" ItemAppearing="Handle_ItemAppearing"  x:Name="MyListView" VerticalOptions="StartAndExpand" RefreshCommand="{Binding OnListRefreshRequested}" IsPullToRefreshEnabled="true" SelectionMode="None" IsEnabled="{Binding ListIsEnabled}" HasUnevenRows="true"  BackgroundColor="White" SeparatorVisibility="None" >
+                            <x:Arguments>
+                                <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
+                            </x:Arguments>
+                            <ListView.ItemTemplate>
                             <DataTemplate>
                                 <ViewCell>
                                    <StackLayout Orientation="Horizontal"  Margin="0,0,4,0">
@@ -129,7 +132,7 @@
                             </ViewCell>
                             </DataTemplate>
                         </ListView.ItemTemplate>
-                    </ListView>
+                    </controls:NestedListView>
                     </Frame>
                 </Grid>
                 <Image Source="gradient.png" InputTransparent="true" Aspect="Fill" HeightRequest="80" Margin="0,-80,0,0" IsVisible="{Binding ReplyBoxIsVisible}"/>
@@ -183,7 +186,6 @@
                                                           Command="{Binding OnFromTimeLabelTapped}" />
                             </Frame.GestureRecognizers>
                         </Frame>
-                            
                         <Frame HasShadow="false" VerticalOptions="{Binding ToFrameVerticalLayout}" Grid.Column="1" Grid.Row="1" BorderColor="Silver" Padding="8" >
                             <Label Text="{Binding ToTime,Mode=OneWay}" FontSize="Small" FontAttributes="Bold" TextColor="{Binding EndTimeTextColor}" />
                              <Frame.GestureRecognizers>
@@ -191,8 +193,6 @@
                                                           Command="{Binding OnToTimeLabelTapped}" />
                             </Frame.GestureRecognizers>
                         </Frame>
-                            
-                        
                     </Grid>
                     <BoxView x:Name="BottomOfClock" HeightRequest="0.75" BackgroundColor="#e0e0e0" Opacity="0.75" Margin="0,8,12,6"/>
                     <Label Text="Send to users:" Margin="0,8,0,0" TextColor="#5d5e60" FontAttributes="Bold" VerticalOptions="Start" VerticalTextAlignment="Start" />
@@ -234,22 +234,19 @@
                         </ListView.ItemTemplate>
                     </controls:NestedListView>
                     <Button Grid.Row="3" Command="{Binding OnSendEventButtonTapped}" BorderRadius="8" Margin="28,0,28,8" Text="Create event" FontSize="Medium" TextColor="White" BackgroundColor="#59c623"/>
-
                 </StackLayout>
             </ScrollView>
-
-        </Grid> 
-            
+        </Grid>
        
         <!-- Work order action sheet -->
         <!-- IsVisible="{Binding WorkOrderActionSheetIsVisible}" -->
         <Grid Grid.Row="2" IsVisible="{Binding WorkOrderActionSheetIsVisible}" Grid.RowSpan="2" RowSpacing="0" BackgroundColor="White">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="auto" />
-                </Grid.RowDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
             <BoxView Grid.Row="0" HeightRequest="15" BackgroundColor="#f8f9fa" Margin="-28,0,0,18"/>
             <Button Grid.Row="1" Image="chevron_down.png" BackgroundColor="Transparent" WidthRequest="40"  Margin="0,-12,0,0" HorizontalOptions="EndAndExpand" Command="{Binding OnCloseReplyBubbleTapped}" />
             <ScrollView Grid.Row="2" Padding="28,0,28,0" Margin="6,-15,0,0" Scrolled="Handle_Scrolled" >
@@ -272,7 +269,7 @@
                                         <Image Source="{Binding CheckBoxImage}" VerticalOptions="CenterAndExpand"/>
                                         <Label Text="{Binding UserFullName}" VerticalOptions="CenterAndExpand" TextColor="#58595b" LineBreakMode="TailTruncation" />
                                         <StackLayout.GestureRecognizers>
-                                                <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnSelectTapped}" />
+                                            <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnSelectTapped}" />
                                         </StackLayout.GestureRecognizers>
                                     </StackLayout>
                                 </ViewCell>
@@ -298,7 +295,6 @@
                     <Button Grid.Row="3" Command="{Binding OnSendWorkOrderButtonTapped}" BorderRadius="8" Margin="28,0,28,8" Text="Create work order" FontSize="Large" TextColor="White" BackgroundColor="#59c623"/>
                 </StackLayout>
             </ScrollView>
-
         </Grid>  
         
         <!-- Comment Reply action sheet -->
@@ -349,10 +345,9 @@
         <!-- Bottom Reply Button to open comment reply action sheet -->
         <StackLayout Grid.Row="4" Padding="18,0,0,0" BackgroundColor="White" VerticalOptions="FillAndExpand" IsVisible="{Binding ReplyButtonIsVisible}" >
             <StackLayout VerticalOptions="FillAndExpand" Orientation="Horizontal" Padding="10,0,8,4">    
-                    <Button Text="Type your reply..."  FontSize="Medium" Clicked="Handle_Clicked" BackgroundColor="Transparent"  HorizontalOptions="StartAndExpand" VerticalOptions="Center" TextColor="#a7a9ac" />
-                    
-                    <Button Image="calendar_blue_sm.png" VerticalOptions="Center" BackgroundColor="#e0eefd" WidthRequest="38" HeightRequest="38" CornerRadius="21" Command="{Binding OnReplyEventTapped}"  HorizontalOptions="End"  />
-                    <Button Image="wrench_blue.png" VerticalOptions="Center" Command="{Binding OnReplyWorkOrderTapped}" HorizontalOptions="End" Margin="8,0,0,0" BackgroundColor="#e0eefd" WidthRequest="38" HeightRequest="38" CornerRadius="21"/>
+                    <Button Text="Type your reply..."   FontSize="Medium" Clicked="Handle_Clicked" IsVisible="{Binding CanReplyToComments}" BackgroundColor="Transparent"  HorizontalOptions="StartAndExpand" VerticalOptions="Center" TextColor="#a7a9ac" />
+                    <Button Image="calendar_blue_sm.png" Margin="0,2,0,0" VerticalOptions="Center" IsVisible="{Binding CanCreateWorkorderAndEvents}" BackgroundColor="#e0eefd" WidthRequest="38" HeightRequest="38" CornerRadius="21" Command="{Binding OnReplyEventTapped}"  HorizontalOptions="EndAndExpand"  />
+                    <Button Image="wrench_blue.png"  VerticalOptions="Center" IsVisible="{Binding CanCreateWorkorderAndEvents}" Command="{Binding OnReplyWorkOrderTapped}" HorizontalOptions="End" Margin="8,2,0,0" BackgroundColor="#e0eefd" WidthRequest="38" HeightRequest="38" CornerRadius="21"/>
             </StackLayout>
         </StackLayout>
     </Grid>
@@ -377,8 +372,8 @@
                      RelativeLayout.XConstraint="{ConstraintExpression Type=RelativeToParent, Property=Width,Factor=0,Constant=35}"
                      RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent, Property=Width,Factor=0.8,Constant=0}">
             <StackLayout HorizontalOptions="FillAndExpand" >
-                <Button Image="internal_open.png" ContentLayout="Left,12" Command="{Binding OnPublicTapped}" FontSize="Medium" Margin="22,16,0,12" HorizontalOptions="StartAndExpand" BackgroundColor="Transparent" Text="Reply to tenant" FontAttributes="Bold" TextColor="#318bfa" />
-                <BoxView HeightRequest="0.5" BackgroundColor="#e0e0e0" />
+                <Button IsVisible="{Binding CanSendPublicReply}" Image="internal_open.png" ContentLayout="Left,12" Command="{Binding OnPublicTapped}" FontSize="Medium" Margin="22,16,0,12" HorizontalOptions="StartAndExpand" BackgroundColor="Transparent" Text="Reply to tenant" FontAttributes="Bold" TextColor="#318bfa" />
+                <BoxView IsVisible="{Binding CanSendPublicReply}" HeightRequest="0.5" BackgroundColor="#e0e0e0" />
                 <Button Image="internal_closed.png" ContentLayout="Left,12" Command="{Binding OnInternalTapped}" FontSize="Medium" Margin="22,12,0,18" HorizontalOptions="StartAndExpand" BackgroundColor="Transparent" FontAttributes="Bold" Text="Reply to staff only" TextColor="Red" />
             </StackLayout>
         </Frame>
@@ -472,6 +467,5 @@
                 <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnCloseTimePickerTapped}" />
             </Grid.GestureRecognizers>
         </Grid>
-
     </RelativeLayout>  
 </ContentPage>

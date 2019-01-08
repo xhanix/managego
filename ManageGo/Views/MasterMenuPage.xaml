@@ -35,8 +35,8 @@
                     <Label Text="Home" TextColor="{StaticResource Grey-Dark-1}" FontSize="Medium"  VerticalOptions="CenterAndExpand" />
                     <Button Text="Home" Command="{Binding OnHomeTapped}" FontSize="Small" BackgroundColor="Transparent" TextColor="Transparent" HorizontalOptions="Fill"/>
                 </Grid>
-                <BoxView BackgroundColor="{StaticResource Grey-Light-2}"/>
-                <Grid Margin="0,0,4,0">
+                <BoxView BackgroundColor="{StaticResource Grey-Light-2}" IsVisible="{Binding PaymentsIsVisible}"/>
+                <Grid Margin="0,0,4,0" IsVisible="{Binding PaymentsIsVisible}">
                     <Label Text="Payments" TextColor="{StaticResource Grey-Dark-1}" FontSize="Medium"  VerticalOptions="CenterAndExpand" />
                     <Button Text="Payments" Command="{Binding PaymentsTapped}" FontSize="Small" BackgroundColor="Transparent" TextColor="Transparent" HorizontalOptions="Fill"/>
                 </Grid>
@@ -45,8 +45,8 @@
                     <Label Text="Bank transactions" TextColor="{StaticResource Grey-Dark-1}" FontSize="Medium"  VerticalOptions="CenterAndExpand" />
                     <Button Text="Bank transactions" Command="{Binding OnTransactionsTapped}" VerticalOptions="CenterAndExpand" FontSize="Small" BackgroundColor="Transparent" TextColor="Transparent"  HorizontalOptions="FillAndExpand"/>
                 </Grid>
-                <BoxView BackgroundColor="{StaticResource Grey-Light-2}"/>
-                <Grid Margin="0,0,4,0">
+                <BoxView IsVisible="{Binding MaintenanceIsVisible}" BackgroundColor="{StaticResource Grey-Light-2}"/>
+                <Grid Margin="0,0,4,0" IsVisible="{Binding MaintenanceIsVisible}">
                     <Label Text="Maintenance" TextColor="{StaticResource Grey-Dark-1}" FontSize="Medium"  VerticalOptions="CenterAndExpand" />
                     <Button Text="Maintenance" Command="{Binding OnMaintenanceTapped}" FontSize="Small" BackgroundColor="Transparent" TextColor="Transparent" HorizontalOptions="Fill"/>
                 </Grid>
@@ -65,8 +65,8 @@
                     <Label Text="Tenants" TextColor="{StaticResource Grey-Dark-1}" FontSize="Medium"  VerticalOptions="CenterAndExpand" />
                     <Button Text="Tenants" Command="{Binding OnTenantsTapped}" FontSize="Small" BackgroundColor="Transparent" TextColor="Transparent"  HorizontalOptions="Fill"/>
                 </Grid>
-                <BoxView BackgroundColor="{StaticResource Grey-Light-2}"/>
-                <Grid Margin="0,0,4,0">
+                <BoxView IsVisible="{Binding NotificationsIsVisible}" BackgroundColor="{StaticResource Grey-Light-2}"/>
+                <Grid Margin="0,0,4,0" IsVisible="{Binding NotificationsIsVisible}">
                     <Label Text="Notifications" TextColor="{StaticResource Grey-Dark-1}" FontSize="Medium"  VerticalOptions="CenterAndExpand" />
                     <Button Text="Notifications" Command="{Binding OnNotificationsTapped}" FontSize="Small" BackgroundColor="Transparent" TextColor="Transparent" HorizontalOptions="Fill"/>
                 </Grid>

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,8 +21,8 @@ namespace ManageGo.Services
         {
             //todo: may need to remove this at some point
 #if DEBUG
-            userName = "pmc@mobile.test";
-            password = "111111";
+            //  userName = "pmc@mobile.test";
+            //  password = "111111";
 #endif
 
             Dictionary<string, string> credentials = new Dictionary<string, string>
@@ -86,16 +85,26 @@ namespace ManageGo.Services
                 if (jResult.TryGetValue(APIkeys.Permissions.ToString(), out JObject permisions))
                 {
                     var perm = permisions.ToObject<LoggedInUserPermissions>();
+
+                    //reset the permissions on log in
+                    App.UserPermissions = UserPermissions.None;
                     if (perm.CanAccessPayments)
-                        App.UserPermissions = App.UserPermissions | UserPermissions.CanAccessPayments;
+                        App.UserPermissions |= UserPermissions.CanAccessPayments;
                     if (perm.CanAccessMaintenanceTickets)
-                        App.UserPermissions = App.UserPermissions | UserPermissions.CanAccessTickets;
-                    if (perm.CanAccessMailer)
-                        App.UserPermissions = App.UserPermissions | UserPermissions.CanAccessMailer;
+                        App.UserPermissions |= UserPermissions.CanAccessTickets;
                     if (perm.CanReplyPublicly)
-                        App.UserPermissions = App.UserPermissions | UserPermissions.CanReplyPublicly;
+                        App.UserPermissions |= UserPermissions.CanReplyPublicly;
+                    if (perm.CanReplyInternally)
+                        App.UserPermissions |= UserPermissions.CanReplyInternally;
                     if (perm.CanAccessTenants)
-                        App.UserPermissions = App.UserPermissions | UserPermissions.CanAccessTenants;
+                        App.UserPermissions |= UserPermissions.CanAccessTenants;
+                    if (perm.CanAddWorkordersAndEvents)
+                        App.UserPermissions |= UserPermissions.CanAddWorkordersAndEvents;
+                    if (perm.CanApproveNewTenantsUnits)
+                        App.UserPermissions |= UserPermissions.CanApproveNewTenantsUnits;
+                    if (perm.CanEditTicket)
+                        App.UserPermissions |= UserPermissions.CanEditTicketDetails;
+
                 }
             }
             return responseString;

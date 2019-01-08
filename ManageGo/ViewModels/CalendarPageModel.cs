@@ -67,23 +67,37 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand(async (par, tcs) =>
+                async void execute(object par, TaskCompletionSource<bool> tcs)
                 {
                     var calEvent = (Models.CalendarEvent)par;
                     var ticketId = calEvent.TicketID;
-                    // var ticket = await Services.DataAccess.GetTicketsAsync();
-                    var ticketDetails = await Services.DataAccess.GetTicketDetails(ticketId);
-                    var dic = new Dictionary<string, object>
-                        {
+                    try
+                    {
+                        var ticketDetails = await Services.DataAccess.GetTicketDetails(ticketId);
+                        var ticket = await Services.DataAccess.GetTicketsAsync(new Dictionary<string, object> {
+                        {"Page", 0 },
+                        {"PageSize", 1},
+                        {"Ticket", ticketId}
+                        });
+
+                        var dic = new Dictionary<string, object>
+                            {
                             {"TicketDetails", ticketDetails},
-                            {"TicketNumber", null},
-                            {"Address", null},
-                            {"TicketTitleText", null},
-                            {"Ticket", null}
-                        };
-                    await CoreMethods.PushPageModel<TicketDetailsPageModel>(dic, false, false);
+                            {"TicketNumber", ticket.First()?.TicketNumber},
+                            {"Address", ticket.First()?.Building.BuildingShortAddress},
+                            {"TicketTitleText", ticket.First()?.TicketSubject},
+                            {"Ticket", ticket.FirstOrDefault()}
+                            };
+
+                        await CoreMethods.PushPageModel<TicketDetailsPageModel>(dic, false, false);
+                    }
+                    catch (Exception ex)
+                    {
+                        await CoreMethods.DisplayAlert("Something went wrong!", $"Unable to get ticket. {ex.Message}", "DISMISS");
+                    }
                     tcs?.SetResult(true);
-                });
+                }
+                return new FreshAwaitCommand(execute);
             }
         }
 

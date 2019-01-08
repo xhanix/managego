@@ -13,7 +13,7 @@ namespace ManageGo
         public string UserLastName { get; set; }
         public string UserFullName => $"{UserFirstName} {UserLastName}".Trim();
         public List<int> Categories { get; set; }
-
+        public List<int> Buildings { get; set; }
         [JsonIgnore]
         public string UserEmailAddress { get; set; }
         [JsonIgnore, AlsoNotifyFor("CheckBoxImage")]
@@ -38,5 +38,7 @@ namespace ManageGo
                 });
             }
         }
+
+        public bool IsEnabled { get; internal set; } = true;
     }
 }

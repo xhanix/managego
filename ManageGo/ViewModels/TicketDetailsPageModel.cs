@@ -16,6 +16,13 @@ namespace ManageGo
     [AddINotifyPropertyChangedInterface]
     public class TicketDetailsPageModel : FreshBasePageModel
     {
+        #region Permissions
+        public bool CanSendPublicReply { get; private set; }
+        public bool CanReplyToComments { get; private set; }
+        public bool CanCreateWorkorderAndEvents { get; private set; }
+        public bool CanEditTicketDetails { get; private set; }
+        #endregion
+        #region Properties
         public bool SetFromTime { get; private set; }
         public bool SwitchingAmPam { get; private set; }
         public bool OldTimeIsPm { get; private set; }
@@ -199,6 +206,7 @@ namespace ManageGo
             }
         }
         public string ReplyTextBody { get; set; }
+        #endregion
         public override void Init(object initData)
         {
             base.Init(initData);
@@ -214,6 +222,10 @@ namespace ManageGo
             FromTime = normalizedTime.ToString("h:mm tt");
             ToTime = normalizedTime.AddHours(1).ToString("h:mm tt");
             PickedTimeIsAM = timeNow.Hour < 12;
+            CanSendPublicReply = App.UserPermissions.HasFlag(UserPermissions.CanReplyPublicly);
+            CanReplyToComments = App.UserPermissions.HasFlag(UserPermissions.CanReplyInternally);
+            CanCreateWorkorderAndEvents = App.UserPermissions.HasFlag(UserPermissions.CanAddWorkordersAndEvents);
+            CanEditTicketDetails = App.UserPermissions.HasFlag(UserPermissions.CanEditTicketDetails);
         }
 
 
@@ -338,7 +350,7 @@ namespace ManageGo
                     ReplyButtonIsVisible = !ReplyButtonIsVisible;
                     ShowingTicketDetails = !ShowingTicketDetails;
                     tcs?.SetResult(true);
-                });
+                }, () => CanEditTicketDetails);
             }
         }
 
@@ -587,9 +599,8 @@ namespace ManageGo
                     else
                         SendOptionsPupupIsVisible = !SendOptionsPupupIsVisible;
                     tcs?.SetResult(true);
-
                 }
-                return new FreshAwaitCommand(execute);
+                return new FreshAwaitCommand(execute, () => CanReplyToComments);
             }
         }
 
@@ -767,7 +778,7 @@ namespace ManageGo
                         tcs?.SetResult(true);
                     }
                 }
-                return new FreshAwaitCommand(execute);
+                return new FreshAwaitCommand(execute, () => CanCreateWorkorderAndEvents);
             }
         }
 
@@ -778,8 +789,7 @@ namespace ManageGo
                 async void execute(TaskCompletionSource<bool> tcs)
                 {
                     //send the created work order
-                    if (string.IsNullOrWhiteSpace(WorkOrderSummary) ||
-                                                                                                         string.IsNullOrWhiteSpace(WorkOrderDetail))
+                    if (string.IsNullOrWhiteSpace(WorkOrderSummary) || string.IsNullOrWhiteSpace(WorkOrderDetail))
                     {
                         await CoreMethods.DisplayAlert("ManageGo", "Please fill out the work order details before sending", "DISMISS");
                         tcs?.SetResult(true);
@@ -793,9 +803,7 @@ namespace ManageGo
                         {"SendToUsers", Users.Where(t=>t.IsSelected).Select(t=>t.UserID)},
                         {"SendToExternalContacts", ExternalContacts.Where(t=>t.IsSelected).Select(t=>t.ExternalID) },
                         {"SendToEmail", WorkOrderSendEmail}
-                                                                                                     };
-
-
+                    };
                     WorkOrderActionSheetIsVisible = false;
                     SendOptionsPupupIsVisible = false;
                     AttachActionSheetIsVisible = false;
@@ -842,7 +850,7 @@ namespace ManageGo
                     }
 
                 }
-                return new FreshAwaitCommand(execute);
+                return new FreshAwaitCommand(execute, () => CanCreateWorkorderAndEvents);
             }
         }
 
@@ -1377,7 +1385,7 @@ namespace ManageGo
                     ReplyButtonIsVisible = false;
                     WorkOrderActionSheetIsVisible = true;
                     tcs?.SetResult(true);
-                });
+                }, () => CanCreateWorkorderAndEvents);
             }
         }
 
@@ -1390,7 +1398,7 @@ namespace ManageGo
                     ReplyButtonIsVisible = false;
                     EventActionSheetIsVisible = true;
                     tcs?.SetResult(true);
-                });
+                }, () => CanCreateWorkorderAndEvents);
             }
         }
     }

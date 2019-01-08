@@ -88,8 +88,11 @@
         </StackLayout>
         <StackLayout BackgroundColor="{StaticResource Grey-Light-2}" Grid.Row="2">
             <!-- List of tickets -->
-            <ListView ItemsSource="{Binding FetchedTickets}" x:Name="MyListView" ItemAppearing="Handle_ItemAppearing" Margin="22,18,22,18" IsPullToRefreshEnabled="true" IsRefreshing="{Binding IsRefreshingList}" RefreshCommand="{Binding OnPulledToRefresh}" CachingStrategy="RecycleElement" SelectionMode="None" IsEnabled="{Binding ListIsEnabled}"  HasUnevenRows="true" VerticalOptions="Fill" BackgroundColor="Transparent" SeparatorVisibility="None" >
-            <ListView.ItemTemplate>
+            <controls:NestedListView ItemsSource="{Binding FetchedTickets}" x:Name="MyListView" ItemAppearing="Handle_ItemAppearing" Margin="22,18,22,18" IsPullToRefreshEnabled="true" IsRefreshing="{Binding IsRefreshingList}" RefreshCommand="{Binding OnPulledToRefresh}" SelectionMode="None" IsEnabled="{Binding ListIsEnabled}"  HasUnevenRows="true" VerticalOptions="Fill" BackgroundColor="Transparent" SeparatorVisibility="None" >
+                <x:Arguments>
+                    <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
+                </x:Arguments>
+                <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
                         <Frame HasShadow="false" Margin="0,0,0,12" Padding="14,6,14,6" BackgroundColor="White">
@@ -148,7 +151,7 @@
                     </ViewCell>
                 </DataTemplate>
             </ListView.ItemTemplate>
-        </ListView>
+        </controls:NestedListView>
         </StackLayout>
         <Frame IsVisible="{Binding IsLoading}" BackgroundColor="Transparent" Grid.Row="2" HasShadow="false"  VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand">
             <StackLayout>

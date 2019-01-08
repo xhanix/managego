@@ -7,10 +7,17 @@ namespace ManageGo
     public class MasterMenuPageModel : FreshBasePageModel
     {
         public bool HamburgerIsVisible { get; set; }
+        public bool PaymentsIsVisible { get; private set; }
+        public bool MaintenanceIsVisible { get; private set; }
+        public bool NotificationsIsVisible { get; private set; }
+
         internal event EventHandler<bool> OnLogout;
         public MasterMenuPageModel()
         {
             HamburgerIsVisible = true;
+            PaymentsIsVisible = App.UserPermissions.HasFlag(UserPermissions.CanAccessPayments);
+            MaintenanceIsVisible = App.UserPermissions.HasFlag(UserPermissions.CanAccessTickets);
+            NotificationsIsVisible = App.UserPermissions.HasFlag(UserPermissions.CanApproveNewTenantsUnits);
         }
 
         public FreshAwaitCommand OnSupportEmailTapped
@@ -63,7 +70,6 @@ namespace ManageGo
                     App.MasterDetailNav.SwitchSelectedRootPageModel<NotificationsPageModel>();
                     tcs?.SetResult(true);
                 });
-
             }
         }
 

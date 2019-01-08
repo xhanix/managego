@@ -241,12 +241,9 @@ namespace ManageGo
             get { return UnitOptionsVisible ? "chevron_down.png" : "chevron.png"; }
         }
 
-
-
-
-        public override void Init(object initData)
+        protected override void ViewIsAppearing(object sender, EventArgs e)
         {
-            base.Init(initData);
+            base.ViewIsAppearing(sender, e);
             Buildings = App.Buildings;
             Categories = App.Categories;
             Tags = App.Tags;
@@ -279,13 +276,90 @@ namespace ManageGo
                 });
             }
         }
+
+        void ClearCategorySelections()
+        {
+            foreach (var c in Categories)
+            {
+                c.IsSelected = false;
+            }
+        }
+
+        void EnableAllCategories()
+        {
+            foreach (var c in Categories)
+            {
+                c.IsEnabled = true;
+            }
+        }
+
+        void DisableAllCategories()
+        {
+            foreach (var c in Categories)
+            {
+                c.IsEnabled = false;
+            }
+        }
+
+        void ClearUserSelections()
+        {
+            foreach (var u in Users)
+            {
+                u.IsSelected = false;
+            }
+        }
+
+
+        void EnableAllUsers()
+        {
+            foreach (var u in Users)
+            {
+                u.IsEnabled = true;
+            }
+        }
+
+        void DisableAllUsers()
+        {
+            foreach (var u in Users)
+            {
+                u.IsEnabled = false;
+            }
+        }
+
+        public FreshAwaitCommand OnBackbuttonTapped
+        {
+            get
+            {
+                async void execute(TaskCompletionSource<bool> tcs)
+                {
+                    await CoreMethods.PopPageModel(modal: CurrentPage.Navigation.ModalStack.Contains(CurrentPage), animate: false);
+                    tcs?.SetResult(true);
+                }
+                return new FreshAwaitCommand(execute);
+            }
+        }
+
         public FreshAwaitCommand OnUserTapped
         {
             get
             {
-                return new FreshAwaitCommand((par, tcs) =>
+                async void execute(object par, TaskCompletionSource<bool> tcs)
                 {
                     var u = (User)par;
+                    if (!u.IsEnabled)
+                    {
+                        var result = await CoreMethods.DisplayAlert("ManageGo", $"{u.UserFullName} does not have access to the selected categories. Selecting this user will clear the selected categories.", $"Select {u.UserFullName}", "Cancel");
+                        if (!result)
+                        {
+                            tcs?.SetResult(true);
+                            return;
+                        }
+                        else
+                        {
+                            ClearCategorySelections();
+                            EnableAllUsers();
+                        }
+                    }
                     u.IsSelected = !u.IsSelected;
                     if (Users.Any(t => t.IsSelected == true))
                     {
@@ -294,12 +368,43 @@ namespace ManageGo
                         {
                             AssignedLabelText = AssignedLabelText + $", +{Users.Count(t => t.IsSelected) - 1} more";
                         }
+
+                        var allowedCategories = Categories.Select(c => c.CategoryID);
+
+                        if (Users.Any(t => t.IsSelected && (t.Categories is null || !t.Categories.Any())))
+                        {
+                            DisableAllCategories();
+
+                        }
+                        else
+                        {
+                            foreach (var user in Users.Where(user => user.IsSelected))
+                            {
+                                allowedCategories = allowedCategories.Intersect(user.Categories);
+                            }
+                            DisableAllCategories();
+                            if (allowedCategories.Any())
+                            {
+                                foreach (var c in Categories)
+                                {
+                                    if (allowedCategories.Contains(c.CategoryID))
+                                    {
+                                        c.IsEnabled = true;
+                                    }
+                                }
+                            }
+                        }
                     }
                     else
+                    {
+                        //no users are selected
                         AssignedLabelText = string.Empty;
-
+                        EnableAllCategories();
+                        EnableAllUsers();
+                    }
                     tcs?.SetResult(true);
-                });
+                }
+                return new FreshAwaitCommand(execute);
             }
         }
 
@@ -461,13 +566,29 @@ namespace ManageGo
                 });
             }
         }
+
         public FreshAwaitCommand OnCategoryTapped
         {
             get
             {
-                return new FreshAwaitCommand((par, tcs) =>
+                async void execute(object par, TaskCompletionSource<bool> tcs)
                 {
                     var cat = (Categories)par;
+                    if (!cat.IsEnabled)
+                    {
+                        var result = await CoreMethods.DisplayAlert("ManageGo", $"{cat.CategoryName} is not available to the selected users. Selecting this category will clear the selected users.", $"Select {cat.CategoryName}", "Cancel");
+                        if (!result)
+                        {
+                            tcs?.SetResult(true);
+                            return;
+                        }
+                        else
+                        {
+                            ClearUserSelections();
+                            EnableAllCategories();
+
+                        }
+                    }
                     cat.IsSelected = !cat.IsSelected;
                     if (Categories.Any(t => t.IsSelected == true))
                     {
@@ -478,15 +599,27 @@ namespace ManageGo
                             CategoryLabelText = CategoryLabelText + $", +{Categories.Count(t => t.IsSelected) - 1} more";
                             CategoryLabelColor = "#58595B";
                         }
+                        //selected categories
+                        DisableAllUsers();
+                        var selectedCats = Categories.Where(c => c.IsSelected).Select(c => c.CategoryID);
+                        foreach (User u in Users.Where(user => user.Categories != null))
+                        {
+                            if (u.Categories.Intersect(selectedCats).Any())
+                                u.IsEnabled = true;
+                        }
                     }
                     else
+                    {
+                        EnableAllUsers();
+                        EnableAllCategories();
                         CategoryLabelText = "Select";
+                    }
 
                     tcs?.SetResult(true);
-                });
+                }
+                return new FreshAwaitCommand(execute);
             }
         }
-
 
         public FreshAwaitCommand OnShowPriorityOptionsTapped
         {
@@ -631,6 +764,7 @@ namespace ManageGo
                     cts.Cancel();
                     cts = new CancellationTokenSource();
                     building.IsSelected = true;
+                    Users = App.Users.Where(user => user.Buildings.Contains(building.BuildingId)).ToList();
                     try
                     {
                         var buildingWithDetails = await Services.DataAccess.GetBuildingDetails(building.BuildingId);

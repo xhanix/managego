@@ -39,7 +39,7 @@
                 </Grid.RowDefinitions>
               <controls:CalendarView x:Name="CalView" Grid.Row="0" VerticalOptions="Start" HeightRequest="250"  SelectedDate="{Binding SelectedDate}" HighlightedDates="{Binding HighlightedDates}"  />
               <controls:NestedListView x:Name="CalEventList" Grid.Row="1" ItemsSource="{Binding CalendarEvents}" SelectionMode="None" HasUnevenRows="true" BackgroundColor="Transparent" SeparatorVisibility="None" Margin="22,18,22,18" >
-                     <x:Arguments>
+                    <x:Arguments>
                         <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
                     </x:Arguments>
                     <ListView.ItemTemplate>

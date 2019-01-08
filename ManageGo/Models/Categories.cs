@@ -27,6 +27,6 @@ namespace ManageGo
             }
         }
 
-
+        public bool IsEnabled { get; internal set; } = true;
     }
 }

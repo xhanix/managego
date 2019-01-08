@@ -21,6 +21,7 @@ namespace ManageGo
             this.BuildingId = (int)initData;
             BackbuttonIsVisible = true;
         }
+
         public FreshAwaitCommand OnBackbuttonTapped
         {
             get
@@ -33,6 +34,7 @@ namespace ManageGo
                 return new FreshAwaitCommand(execute);
             }
         }
+
         internal override async Task LoadData(bool refreshData = false, bool applyNewFilter = false)
         {
             HasLoaded = false;
