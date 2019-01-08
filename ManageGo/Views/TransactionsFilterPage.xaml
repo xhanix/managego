@@ -82,6 +82,9 @@
                     <StackLayout Grid.Column="1">
                         <Label Text="{Binding SelectedAccountString}" LineBreakMode="TailTruncation" TextColor="{StaticResource Grey-Light-1}" FontSize="Small"/>
                         <controls:NestedListView IsVisible="{Binding FilterAccountsExpanded}" ItemsSource="{Binding BankAccounts}" Margin="0,8,0,0" HasUnevenRows="true" SeparatorVisibility="None"  HeightRequest="150" SelectionMode="None">
+                            <x:Arguments>
+                                <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
+                            </x:Arguments>
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <ViewCell>

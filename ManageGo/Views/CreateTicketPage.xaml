@@ -124,7 +124,10 @@
                         <StackLayout IsVisible="{Binding AddressOptionsVisible}">
                             <BoxView HeightRequest="1" BackgroundColor="{StaticResource Grey-Light-2}" />
                             <controls:NestedListView  ItemsSource="{Binding Buildings}" VerticalOptions="Start" SeparatorVisibility="None" SelectionMode="None" HeightRequest="125" >
-                                 <ListView.ItemTemplate>
+                                <x:Arguments>
+                                    <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
+                                </x:Arguments>
+                                        <ListView.ItemTemplate>
                                     <DataTemplate>
                                         <ViewCell>
                                             <StackLayout Orientation="Horizontal" VerticalOptions="FillAndExpand" Padding="0,12,0,0">
@@ -153,7 +156,10 @@
                         <StackLayout IsVisible="{Binding UnitOptionsVisible}">
                             <BoxView HeightRequest="1" BackgroundColor="{StaticResource Grey-Light-2}" />
                             <controls:NestedListView  ItemsSource="{Binding Units}" VerticalOptions="Start" SeparatorVisibility="None" SelectionMode="None" HeightRequest="125" >
-                                 <ListView.ItemTemplate>
+                                 <x:Arguments>
+                                    <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
+                                </x:Arguments>
+                                    <ListView.ItemTemplate>
                                     <DataTemplate>
                                         <ViewCell>
                                             <StackLayout Orientation="Horizontal" VerticalOptions="FillAndExpand" Padding="0,12,0,0">
@@ -182,7 +188,10 @@
                         <StackLayout IsVisible="{Binding TenantOptionsVisible}">
                             <BoxView HeightRequest="1" BackgroundColor="{StaticResource Grey-Light-2}" />
                             <controls:NestedListView ItemsSource="{Binding Tenants}" VerticalOptions="Start" SeparatorVisibility="None" SelectionMode="None" HeightRequest="125" >
-                                 <ListView.ItemTemplate>
+                                <x:Arguments>
+                                    <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
+                                </x:Arguments>
+                                <ListView.ItemTemplate>
                                     <DataTemplate>
                                         <ViewCell>
                                             <StackLayout Orientation="Horizontal" VerticalOptions="FillAndExpand" Padding="0,12,0,0">
@@ -261,7 +270,10 @@
                         <StackLayout IsVisible="{Binding CategoryOptionsVisible}">
                             <BoxView HeightRequest="1" BackgroundColor="{StaticResource Grey-Light-2}" />
                             <controls:NestedListView  ItemsSource="{Binding Categories}" VerticalOptions="Start" SeparatorVisibility="None" SelectionMode="None" HeightRequest="125" >
-                                 <ListView.ItemTemplate>
+                                <x:Arguments>
+                                    <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
+                                </x:Arguments>
+                                <ListView.ItemTemplate>
                                     <DataTemplate>
                                         <ViewCell>
                                             <StackLayout Orientation="Horizontal" VerticalOptions="FillAndExpand" Padding="0,12,0,0">
@@ -290,7 +302,10 @@
                         <StackLayout IsVisible="{Binding TagOptionsVisible}">
                             <BoxView HeightRequest="1" BackgroundColor="{StaticResource Grey-Light-2}" />
                             <controls:NestedListView  ItemsSource="{Binding Tags}" VerticalOptions="Start" SeparatorVisibility="None" SelectionMode="None" HeightRequest="125" >
-                                 <ListView.ItemTemplate>
+                                <x:Arguments>
+                                    <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
+                                </x:Arguments>
+                                <ListView.ItemTemplate>
                                     <DataTemplate>
                                         <ViewCell>
                                             <StackLayout Orientation="Horizontal" VerticalOptions="FillAndExpand" Padding="0,12,0,0">
@@ -320,7 +335,10 @@
                         <StackLayout IsVisible="{Binding AssignedOptionsVisible}">
                             <BoxView HeightRequest="1" BackgroundColor="{StaticResource Grey-Light-2}" />
                             <controls:NestedListView  ItemsSource="{Binding Users}" VerticalOptions="Start" SeparatorVisibility="None" SelectionMode="None" HeightRequest="125" >
-                                 <ListView.ItemTemplate>
+                                <x:Arguments>
+                                    <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
+                                </x:Arguments>
+                                <ListView.ItemTemplate>
                                     <DataTemplate>
                                         <ViewCell>
                                             <StackLayout Orientation="Horizontal" VerticalOptions="FillAndExpand" Padding="0,12,0,0">

@@ -23,6 +23,9 @@
                     <StackLayout Grid.Column="1">
                         <Label Text="{Binding SelectedBuildingsString}" LineBreakMode="TailTruncation" TextColor="Gray" FontSize="Small"/>
                         <controls:NestedListView IsVisible="{Binding FilterBuildingsExpanded}" ItemsSource="{Binding Buildings}" Margin="0,8,0,0" HasUnevenRows="true" SeparatorVisibility="None"  HeightRequest="150" SelectionMode="None">
+                            <x:Arguments>
+                                <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
+                            </x:Arguments>
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <ViewCell>
@@ -101,6 +104,9 @@
                             </Image.GestureRecognizers>
                         </Label>
                         <controls:NestedListView IsVisible="{Binding FilterCategoriesExpanded}" ItemsSource="{Binding Categories}" Margin="0,8,0,0" HasUnevenRows="true" SeparatorVisibility="None"  HeightRequest="150" SelectionMode="None">
+                            <x:Arguments>
+                                <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
+                            </x:Arguments>
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <ViewCell>
@@ -138,6 +144,9 @@
                             </Label.GestureRecognizers>
                         </Label>
                         <controls:NestedListView IsVisible="{Binding FilterTagsExpanded}" ItemsSource="{Binding Tags}" Margin="0,8,0,0" HasUnevenRows="true" SeparatorVisibility="None"  HeightRequest="150" SelectionMode="None">
+                            <x:Arguments>
+                                <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
+                            </x:Arguments>
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <ViewCell>
@@ -240,6 +249,9 @@
                     <StackLayout Grid.Column="1">
                         <Label Text="{Binding SelectedUsersString}" LineBreakMode="TailTruncation" TextColor="Gray" FontSize="Small"/>
                         <controls:NestedListView IsVisible="{Binding FilterUsersExpanded}" ItemsSource="{Binding Users}" Margin="0,8,0,0" HasUnevenRows="true" SeparatorVisibility="None"  HeightRequest="150" SelectionMode="None">
+                            <x:Arguments>
+                                <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
+                            </x:Arguments>
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <ViewCell>

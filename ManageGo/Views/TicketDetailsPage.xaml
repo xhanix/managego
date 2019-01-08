@@ -101,7 +101,10 @@
                                                             <controls:SelectableLabel WidthRequest="{Binding PermittedEditorWidth,Source={x:Reference ThisPage}}" HorizontalOptions="Start" Text="{Binding AccessNote}" BackgroundColor="Transparent" TextColor="#58595b" FontSize="Medium" />
                                                         </StackLayout>
                                                          <controls:NestedListView ItemsSource="{Binding Files}"  SelectionMode="None" VerticalOptions="Start" BackgroundColor="Transparent" Margin="0" IsVisible="{Binding HasFiles}" SeparatorVisibility="None" HeightRequest="{Binding AttachedFilesListHeight}">
-                                                             <ListView.ItemTemplate>
+                                                            <x:Arguments>
+                                                                <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
+                                                            </x:Arguments>
+                                                            <ListView.ItemTemplate>
                                                                 <DataTemplate>
                                                                     <ViewCell>
                                                                             <Frame HasShadow="false" Margin="0,8,0,0" BackgroundColor="#f9fafb" Padding="4">
@@ -194,7 +197,10 @@
                     <BoxView x:Name="BottomOfClock" HeightRequest="0.75" BackgroundColor="#e0e0e0" Opacity="0.75" Margin="0,8,12,6"/>
                     <Label Text="Send to users:" Margin="0,8,0,0" TextColor="#5d5e60" FontAttributes="Bold" VerticalOptions="Start" VerticalTextAlignment="Start" />
                     <controls:NestedListView SeparatorVisibility="None" SelectionMode="None" ItemsSource="{Binding Users}" HeightRequest="75" VerticalOptions="Start">
-                      <ListView.ItemTemplate>
+                        <x:Arguments>
+                            <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
+                        </x:Arguments>
+                        <ListView.ItemTemplate>
                             <DataTemplate>
                                 <ViewCell>
                                     <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Orientation="Horizontal">
@@ -210,7 +216,10 @@
                     </controls:NestedListView>
                     <Label Text="External contacts" Margin="0,8,0,0" FontSize="Small" TextColor="#5d5e60"  VerticalOptions="Start" VerticalTextAlignment="Start" />
                     <controls:NestedListView SeparatorVisibility="None" SelectionMode="None" ItemsSource="{Binding ExternalContacts}" HeightRequest="75" VerticalOptions="Start">
-                      <ListView.ItemTemplate>
+                        <x:Arguments>
+                            <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
+                        </x:Arguments>
+                        <ListView.ItemTemplate>
                             <DataTemplate>
                                 <ViewCell>
                                     <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Orientation="Horizontal">
@@ -253,7 +262,10 @@
                     <BoxView HeightRequest="0.75" BackgroundColor="#e0e0e0" Opacity="0.75" Margin="0,8,12,6"/>
                     <Label Text="Send to users:" Margin="0,8,0,0" TextColor="#5d5e60" FontAttributes="Bold" VerticalOptions="Start" VerticalTextAlignment="Start" />
                     <controls:NestedListView SeparatorVisibility="None" SelectionMode="None" ItemsSource="{Binding Users}" HeightRequest="75" VerticalOptions="Start">
-                      <ListView.ItemTemplate>
+                        <x:Arguments>
+                            <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
+                        </x:Arguments>
+                            <ListView.ItemTemplate>
                             <DataTemplate>
                                 <ViewCell>
                                     <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Orientation="Horizontal">
@@ -302,6 +314,9 @@
                             <StackLayout Spacing="2" >
                             <controls:BorderlessEditor Margin="-3,0,0,0" x:Name="ReplyEditor" Grid.Row="0" Text="{Binding ReplyTextBody}"  Keyboard="Text" AutoSize="TextChanges"  Focused="Handle_Focused" Unfocused="Handle_Unfocused" Placeholder="Type your reply..." VerticalOptions="Start" />
                                 <controls:NestedListView VerticalOptions="Start" IsVisible="{Binding ReplyAttachedFilesIsVisible}" HeightRequest="{Binding ReplyAttachedFilesListHeight}" Grid.Row="1" SelectionMode="None" RowHeight="25" SeparatorVisibility="None" ItemsSource="{Binding CurrentReplyAttachments}" >
+                                <x:Arguments>
+                                    <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
+                                </x:Arguments>
                                 <ListView.ItemTemplate>
                                     <DataTemplate>  
                                         <ViewCell>

@@ -65,6 +65,9 @@
                     <StackLayout Grid.Column="1">
                         <Label Text="{Binding SelectedBuildingsString}" LineBreakMode="TailTruncation" TextColor="Gray" FontSize="Small"/>
                         <controls:NestedListView IsVisible="{Binding FilterBuildingsExpanded}" ItemsSource="{Binding Buildings}" Margin="0,8,0,0" HasUnevenRows="true" SeparatorVisibility="None"  HeightRequest="150" SelectionMode="None">
+                            <x:Arguments>
+                                <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
+                            </x:Arguments>
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <ViewCell>
@@ -102,6 +105,9 @@
                             </Image.GestureRecognizers>
                         </Label>
                         <controls:NestedListView IsVisible="{Binding FilterUnitsExpanded}" ItemsSource="{Binding Units}" Margin="0,8,0,0" HasUnevenRows="true" SeparatorVisibility="None"  HeightRequest="150" SelectionMode="None">
+                            <x:Arguments>
+                                <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
+                            </x:Arguments>
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <ViewCell>
@@ -139,6 +145,9 @@
                             </Image.GestureRecognizers>
                         </Label>
                         <controls:NestedListView IsVisible="{Binding FilterTenantsExpanded}" ItemsSource="{Binding Tenants}" Margin="0,8,0,0" HasUnevenRows="true" SeparatorVisibility="None"  HeightRequest="150" SelectionMode="None">
+                            <x:Arguments>
+                                <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
+                            </x:Arguments>
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <ViewCell>

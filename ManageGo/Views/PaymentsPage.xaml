@@ -72,40 +72,41 @@
                 <ContentView BackgroundColor="White" Content="{Binding PopContentView}" VerticalOptions="StartAndExpand"/>
             </StackLayout>
             <StackLayout BackgroundColor="{StaticResource Grey-Light-2}" Grid.Row="2">
-                <ListView ItemsSource="{Binding FetchedPayments}" 
+                <controls:NestedListView ItemsSource="{Binding FetchedPayments}" 
                           SelectionMode="None" HasUnevenRows="true" 
                           BackgroundColor="Transparent" 
                           IsPullToRefreshEnabled="true"
                           IsRefreshing="{Binding IsRefreshingList}"
                           RefreshCommand="{Binding OnPulledToRefresh}"
                           SeparatorVisibility="None" Margin="22,18,22,18" 
-                          CachingStrategy="RecycleElement">
+                          >
+                    <x:Arguments>
+                        <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
+                    </x:Arguments>
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
                                 <Frame HasShadow="false" BackgroundColor="White" Margin="0,0,0,12" Padding="14,6,14,6">
                                     <StackLayout Orientation="Horizontal" Margin="0,8,0,8" Spacing="22">
-                                        <Label Text="&#11044;" TextColor="{Binding StatusColor}" FontSize="Medium" HorizontalOptions="Center" Margin="8,0,0,0" VerticalTextAlignment="Center" VerticalOptions="StartAndExpand"/>
+                                        <Label Text="&#11044;" TextColor="{Binding StatusColor}" FontSize="Medium" HorizontalOptions="Center" Margin="8,0,0,0" VerticalTextAlignment="Start" VerticalOptions="FillAndExpand"/>
                                         <StackLayout HorizontalOptions="FillAndExpand">
                                             <StackLayout Orientation="Horizontal">
-                                                <Label VerticalTextAlignment="Center">
-                                                    <Label.FormattedText>
-                                                        <FormattedString>
-                                                            <Span Text="{Binding TotalAmountAndFees, StringFormat={StaticResource FormatDecimalToCurrency}}" FontSize="Medium" FontAttributes="Bold" TextColor="{StaticResource Grey-Mid-1}" />
-                                                        </FormattedString>
-                                                    </Label.FormattedText>
+                                                <Label Text="{Binding TotalAmountAndFees, StringFormat={StaticResource FormatDecimalToCurrency}}" FontSize="Medium" FontAttributes="Bold" TextColor="{StaticResource Grey-Mid-1}"  VerticalOptions="CenterAndExpand" />
+                                                <Label VerticalOptions="CenterAndExpand" Text="&#8226;" TextColor="{StaticResource Grey-Light-1}" >
+                                                    <Label.FontSize>
+                                                        <OnPlatform x:TypeArguments="x:Double">
+                                                            <OnPlatform.Platforms>
+                                                                <On Platform="iOS" Value="12" />
+                                                                <On Platform="Android" Value="18" />
+                                                            </OnPlatform.Platforms>
+                                                        </OnPlatform>
+                                                    </Label.FontSize>
                                                 </Label>
-                                                <Label VerticalTextAlignment="Center" >
-                                                    <Label.FormattedText>
-                                                        <FormattedString>
-                                                            <Span Text=" &#9679;  " FontSize="Micro" TextColor="{StaticResource Grey-Light-1}" />
-                                                            <Span Text="{Binding TransactionDate, StringFormat={StaticResource DateTimeToHeaderString}}" FontSize="Small" TextColor="{StaticResource Grey-Light-1}" />
-                                                        </FormattedString>
-                                                    </Label.FormattedText>
-                                                </Label>
+                                                <Label VerticalOptions="CenterAndExpand" Text="{Binding TransactionDate, StringFormat={StaticResource DateTimeToHeaderString}}" FontSize="Small" TextColor="{StaticResource Grey-Light-1}" />
+                                                       
                                                 <StackLayout Grid.Column="2" Padding="8,8,4,8" HorizontalOptions="EndAndExpand">
-                                                    <Image  Source="chevron_down.png" Rotation="0" IsVisible="{Binding DetailsShown, Converter={StaticResource InverseBoolConverter} }" VerticalOptions="Start" HorizontalOptions="End"/>
-                                                    <Image  Source="chevron_down.png" Rotation="180" IsVisible="{Binding DetailsShown}" VerticalOptions="Start" HorizontalOptions="End"/>
+                                                    <Image Source="chevron_down.png" Rotation="0" IsVisible="{Binding DetailsShown, Converter={StaticResource InverseBoolConverter} }" VerticalOptions="Start" HorizontalOptions="End"/>
+                                                    <Image Source="chevron_down.png" Rotation="180" IsVisible="{Binding DetailsShown}" VerticalOptions="Start" HorizontalOptions="End"/>
                                                 </StackLayout>
                                             </StackLayout>
                                             <BoxView HeightRequest="1" Margin="0,4,0,4" BackgroundColor="{StaticResource Grey-Light-2}" />
@@ -165,7 +166,7 @@
                             </ViewCell>
                         </DataTemplate>
                     </ListView.ItemTemplate>
-                </ListView>
+                </controls:NestedListView>
             </StackLayout>
              <Frame IsVisible="{Binding IsLoading}" 
                     Grid.Row="2" HasShadow="false" 

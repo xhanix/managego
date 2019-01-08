@@ -6,6 +6,11 @@ namespace ManageGo
     {
         None,
         CanAccessPayments,
-        CanAccessTickets
+        CanAccessTickets,
+        CanAccessTenants,
+        CanAccessMailer,
+        CanReplyPublicly,
+        IsLimitedToAssignedTickets
+
     }
 }

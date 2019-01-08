@@ -38,7 +38,10 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
               <controls:CalendarView x:Name="CalView" Grid.Row="0" VerticalOptions="Start" HeightRequest="250"  SelectedDate="{Binding SelectedDate}" HighlightedDates="{Binding HighlightedDates}"  />
-              <ListView x:Name="CalEventList" Grid.Row="1" ItemsSource="{Binding CalendarEvents}" SelectionMode="None" HasUnevenRows="true" BackgroundColor="Transparent" SeparatorVisibility="None" Margin="22,18,22,18" CachingStrategy="RecycleElement">
+              <controls:NestedListView x:Name="CalEventList" Grid.Row="1" ItemsSource="{Binding CalendarEvents}" SelectionMode="None" HasUnevenRows="true" BackgroundColor="Transparent" SeparatorVisibility="None" Margin="22,18,22,18" >
+                     <x:Arguments>
+                        <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
+                    </x:Arguments>
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
@@ -83,7 +86,7 @@
                             </ViewCell>
                         </DataTemplate>
                     </ListView.ItemTemplate>
-                </ListView>
+                </controls:NestedListView>
              <Frame IsVisible="{Binding IsLoading}" 
                     Grid.Row="1" HasShadow="false" 
                     BackgroundColor="Transparent" 

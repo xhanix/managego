@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
              xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core" 
              ios:Page.UseSafeArea="true"
-              xmlns:controls="clr-namespace:ManageGo.Controls"
+             xmlns:controls="clr-namespace:ManageGo.Controls"
              x:Name="ThisPage"
              xmlns:local="clr-namespace:ManageGo"
              x:Class="ManageGo.TransactionsPage">
@@ -109,7 +109,7 @@
                                                 <Label VerticalTextAlignment="Center">
                                                     <Label.FormattedText>
                                                         <FormattedString>
-                                                            <Span Text=" &#9679;  " FontSize="Micro" TextColor="{StaticResource Grey-Light-1}" />
+                                                            <Span Text=" &#8226;  " FontSize="Small" TextColor="{StaticResource Grey-Light-1}" />
                                                             <Span Text="{Binding TransactionDate, StringFormat={StaticResource DateTimeToHeaderString}}" FontSize="Small" TextColor="{StaticResource Grey-Light-1}" />
                                                         </FormattedString>
                                                     </Label.FormattedText>
@@ -134,6 +134,9 @@
                                                 <Label Text="Payments: " Margin="0,8,0,8" FontSize="Small" HorizontalOptions="Start" TextColor="{StaticResource Grey-Light-1}" />
                                                 <!-- list transaction payments -->
                                                 <controls:NestedListView ItemsSource="{Binding Payments}" HeightRequest="{Binding PaymentsListHeight}" SelectionMode="None" SeparatorVisibility="None" HasUnevenRows="true" >
+                                                    <x:Arguments>
+                                                        <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
+                                                    </x:Arguments>
                                                     <ListView.ItemTemplate>
                                                         <DataTemplate>
                                                             <ViewCell>

@@ -5,8 +5,9 @@ namespace ManageGo.Controls
 {
     public class NestedListView : ListView
     {
-        public NestedListView()
+        public NestedListView(ListViewCachingStrategy strategy) : base(strategy)
         {
+
         }
     }
 }

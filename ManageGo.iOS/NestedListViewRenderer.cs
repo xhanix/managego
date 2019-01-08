@@ -1,30 +1,23 @@
 ﻿using System;
-using Android.Content;
 using ManageGo.Controls;
-using ManageGo.Droid;
+using ManageGo.iOS;
 using Xamarin.Forms;
-using Xamarin.Forms.Platform.Android;
+using Xamarin.Forms.Platform.iOS;
+
 
 [assembly: ExportRenderer(typeof(NestedListView), typeof(NestedListViewRenderer))]
-namespace ManageGo.Droid
+namespace ManageGo.iOS
 {
     public class NestedListViewRenderer : ListViewRenderer
     {
-        public NestedListViewRenderer(Context context) : base(context)
-        {
-        }
-
         protected override void OnElementChanged(ElementChangedEventArgs<ListView> e)
         {
             base.OnElementChanged(e);
             if (e.NewElement != null)
             {
-                var listView = this.Control as Android.Widget.ListView;
-                listView.NestedScrollingEnabled = true;
-                listView.VerticalScrollBarEnabled = false;
+                var listView = this.Control as UIKit.UITableView;
+                listView.ShowsVerticalScrollIndicator = false;
             }
         }
-
     }
 }
-

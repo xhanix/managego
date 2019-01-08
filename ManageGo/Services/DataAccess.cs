@@ -41,6 +41,18 @@ namespace ManageGo.Services
             //get the result jtoken
             if (responseObject.TryGetValue("Result", out JToken result))
             {
+                if (result.ToObject<object>() is null)
+                {
+                    if (responseObject.TryGetValue("ErrorMessage", out JToken errorMsg))
+                    {
+                        throw new Exception(errorMsg.ToObject<string>());
+                    }
+                    else
+                    {
+                        throw new Exception("Unable to log in");
+                    }
+                }
+
                 //result is a dictionary of jobjects
                 var jResult = result.ToObject<Dictionary<string, JObject>>();
                 //get user-info
@@ -71,23 +83,23 @@ namespace ManageGo.Services
                     App.PMCName = pmcName;
                 }
                 //get Permissions
-                jResult.TryGetValue(APIkeys.Permissions.ToString(), out JObject permisions);
-                var permissionDic = permisions.ToObject<Dictionary<string, object>>();
-                if (permissionDic.TryGetValue(APIkeys.AccessToPayments.ToString(), out object ap)
-                    && ap is bool b && b)
+                if (jResult.TryGetValue(APIkeys.Permissions.ToString(), out JObject permisions))
                 {
-                    App.UserPermissions = App.UserPermissions | UserPermissions.CanAccessPayments;
-                }
-                if (permissionDic.TryGetValue(APIkeys.AccessToMaintenance.ToString(), out object at)
-                    && at is bool at1 && at1)
-                {
-                    App.UserPermissions = App.UserPermissions | UserPermissions.CanAccessTickets;
+                    var perm = permisions.ToObject<LoggedInUserPermissions>();
+                    if (perm.CanAccessPayments)
+                        App.UserPermissions = App.UserPermissions | UserPermissions.CanAccessPayments;
+                    if (perm.CanAccessMaintenanceTickets)
+                        App.UserPermissions = App.UserPermissions | UserPermissions.CanAccessTickets;
+                    if (perm.CanAccessMailer)
+                        App.UserPermissions = App.UserPermissions | UserPermissions.CanAccessMailer;
+                    if (perm.CanReplyPublicly)
+                        App.UserPermissions = App.UserPermissions | UserPermissions.CanReplyPublicly;
+                    if (perm.CanAccessTenants)
+                        App.UserPermissions = App.UserPermissions | UserPermissions.CanAccessTenants;
                 }
             }
-            Console.WriteLine(responseString);
             return responseString;
         }
-
 
 
         public static async Task ResetPassword(string userName)

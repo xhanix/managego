@@ -119,6 +119,7 @@
     <Compile Include="BorderlessEditor.cs" />
     <Compile Include="PicturePickerImplementation.cs" />
     <Compile Include="CustomSwitchRenderer.cs" />
+    <Compile Include="NestedListViewRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Resources\LaunchScreen.storyboard" />
