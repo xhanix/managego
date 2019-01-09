@@ -17,10 +17,7 @@ namespace ManageGo
     {
         [AlsoNotifyFor("PopUpBackgroundIsVisible")]
         public bool AttachActionSheetIsVisible { get; private set; }
-        public bool PopUpBackgroundIsVisible
-        {
-            get { return AttachActionSheetIsVisible; }
-        }
+        public bool PopUpBackgroundIsVisible => AttachActionSheetIsVisible;
         public List<Building> Buildings { get; private set; }
         [AlsoNotifyFor("MoreRowsOptionsRowIcon")]
         public bool ExtraDetailRowsAreVisible { get; private set; }
@@ -33,33 +30,21 @@ namespace ManageGo
         public string Comment { get; set; }
         public string Subject { get; set; }
 
-        public string AttachedFileName { get { return AttachedFile?.Name; } }
-        public bool HasAttachment { get { return AttachedFile != null; } }
+        public string AttachedFileName => AttachedFile?.Name;
+        public bool HasAttachment => AttachedFile != null;
         [AlsoNotifyFor("DueDateRowIcon")]
         public View DueDateCalendarView { get; private set; }
-        public string DueDateRowIcon
-        {
-            get { return DueDateCalendarView != null ? "chevron_down.png" : "chevron.png"; }
-        }
-        public string MoreRowsOptionsRowIcon
-        {
-            get { return ExtraDetailRowsAreVisible ? "chevron_down.png" : "chevron.png"; }
-        }
+        public string DueDateRowIcon => DueDateCalendarView != null ? "chevron_down.png" : "chevron.png";
+        public string MoreRowsOptionsRowIcon => ExtraDetailRowsAreVisible ? "chevron_down.png" : "chevron.png";
         CancellationTokenSource cts = new CancellationTokenSource();
         [AlsoNotifyFor("HasAttachment", "AttachedFileName")]
         private File AttachedFile { get; set; }
 
-        public FreshAwaitCommand OnShowMoreRowsTapped
-        {
-            get
-            {
-                return new FreshAwaitCommand((tcs) =>
-                {
-                    ExtraDetailRowsAreVisible = !ExtraDetailRowsAreVisible;
-                    tcs?.SetResult(true);
-                });
-            }
-        }
+        public FreshAwaitCommand OnShowMoreRowsTapped => new FreshAwaitCommand((tcs) =>
+                                                                       {
+                                                                           ExtraDetailRowsAreVisible = !ExtraDetailRowsAreVisible;
+                                                                           tcs?.SetResult(true);
+                                                                       });
 
         public FreshAwaitCommand OnCreateButtonTapped
         {
@@ -138,7 +123,7 @@ namespace ManageGo
         {
             get
             {
-                async void execute(System.Threading.Tasks.TaskCompletionSource<bool> tcs)
+                async void execute(TaskCompletionSource<bool> tcs)
                 {
                     await CoreMethods.PopPageModel();
                     tcs?.SetResult(true);
@@ -147,99 +132,68 @@ namespace ManageGo
             }
         }
 
-        public FreshAwaitCommand OnShowDueDateCalendarTapped
-        {
-            get
-            {
-                return new FreshAwaitCommand((tcs) =>
-                {
-                    if (DueDateCalendarView != null)
-                        DueDateCalendarView = null;
-                    else
-                    {
-                        var cal = new Controls.CalendarView();
-                        cal.HeightRequest = 240;
-                        DueDateCalendarView = cal;
-                        cal.AllowMultipleSelection = false;
-                        cal.OnSelectedDatesUpdate += (object sender, EventArgs e) =>
-                        {
-                            DueDate = cal.SelectedDate.ToString("MM/dd/yy");
-                        };
-                    }
-                    tcs?.SetResult(true);
-                });
-            }
-        }
+        public FreshAwaitCommand OnShowDueDateCalendarTapped => new FreshAwaitCommand((tcs) =>
+                                                                              {
+                                                                                  if (DueDateCalendarView != null)
+                                                                                      DueDateCalendarView = null;
+                                                                                  else
+                                                                                  {
+                                                                                      var cal = new Controls.CalendarView
+                                                                                      {
+                                                                                          HeightRequest = 240
+                                                                                      };
+                                                                                      DueDateCalendarView = cal;
+                                                                                      cal.AllowMultipleSelection = false;
+                                                                                      cal.OnSelectedDatesUpdate += (object sender, EventArgs e) =>
+                                                                                      {
+                                                                                          DueDate = cal.SelectedDate.ToString("MM/dd/yy");
+                                                                                      };
+                                                                                  }
+                                                                                  tcs?.SetResult(true);
+                                                                              });
 
         [AlsoNotifyFor("AssignedOptionsRowIcon")]
         public bool AssignedOptionsVisible { get; private set; }
         public string AssignedLabelText { get; private set; } = "Select";
-        public string AssignedOptionsRowIcon
-        {
-            get { return AssignedOptionsVisible ? "chevron_down.png" : "chevron.png"; }
-        }
+        public string AssignedOptionsRowIcon => AssignedOptionsVisible ? "chevron_down.png" : "chevron.png";
 
         [AlsoNotifyFor("TagOptionsRowIcon")]
         public bool TagOptionsVisible { get; private set; }
         public string TagLabelText { get; private set; } = "Select";
         public string TagLabelColor { get; private set; } = "#424242";
-        public string TagOptionsRowIcon
-        {
-            get { return TagOptionsVisible ? "chevron_down.png" : "chevron.png"; }
-        }
+        public string TagOptionsRowIcon => TagOptionsVisible ? "chevron_down.png" : "chevron.png";
         [AlsoNotifyFor("CategoryOptionsRowIcon")]
         public bool CategoryOptionsVisible { get; private set; }
         public string CategoryLabelText { get; private set; } = "Select";
         public string CategoryLabelColor { get; private set; } = "#424242";
-        public string CategoryOptionsRowIcon
-        {
-            get { return CategoryOptionsVisible ? "chevron_down.png" : "chevron.png"; }
-        }
+        public string CategoryOptionsRowIcon => CategoryOptionsVisible ? "chevron_down.png" : "chevron.png";
 
         [AlsoNotifyFor("AddressOptionsRowIcon")]
         public bool AddressOptionsVisible { get; private set; }
         public string AddressLabelText { get; private set; } = "Select";
-        public string AddressOptionsRowIcon
-        {
-            get { return AddressOptionsVisible ? "chevron_down.png" : "chevron.png"; }
-        }
+        public string AddressOptionsRowIcon => AddressOptionsVisible ? "chevron_down.png" : "chevron.png";
 
         [AlsoNotifyFor("PriorityOptionsRowIcon")]
         public bool PriorityOptionsVisible { get; private set; }
         [AlsoNotifyFor("PriorityLabelTextColor")]
         public string PriorityLabelText { get; private set; } = "Medium";
-        public string PriorityOptionsRowIcon
-        {
-            get { return PriorityOptionsVisible ? "chevron_down.png" : "chevron.png"; }
-        }
-        public string PriorityLabelTextColor
-        {
-            get
-            {
-                return PriorityLabelText.ToLower() == "low" ? "#949494" :
+        public string PriorityOptionsRowIcon => PriorityOptionsVisible ? "chevron_down.png" : "chevron.png";
+        public string PriorityLabelTextColor => PriorityLabelText.ToLower() == "low" ? "#949494" :
                     PriorityLabelText.ToLower() == "medium" ? "#e0a031" : "#E13D40";
-            }
-        }
-        public string LowPriorityRadioIcon { get { return PriorityLabelText.ToLower() == "low" ? "radio_selected.png" : "radio_unselected.png"; } }
-        public string MediumPriorityRadioIcon { get { return PriorityLabelText.ToLower() == "medium" ? "radio_selected.png" : "radio_unselected.png"; } }
-        public string HighPriorityRadioIcon { get { return PriorityLabelText.ToLower() == "high" ? "radio_selected.png" : "radio_unselected.png"; } }
+        public string LowPriorityRadioIcon => PriorityLabelText.ToLower() == "low" ? "radio_selected.png" : "radio_unselected.png";
+        public string MediumPriorityRadioIcon => PriorityLabelText.ToLower() == "medium" ? "radio_selected.png" : "radio_unselected.png";
+        public string HighPriorityRadioIcon => PriorityLabelText.ToLower() == "high" ? "radio_selected.png" : "radio_unselected.png";
 
 
         [AlsoNotifyFor("TenantOptionsRowIcon")]
         public bool TenantOptionsVisible { get; private set; }
         public string TenantLabelText { get; private set; } = "Select";
-        public string TenantOptionsRowIcon
-        {
-            get { return TenantOptionsVisible ? "chevron_down.png" : "chevron.png"; }
-        }
+        public string TenantOptionsRowIcon => TenantOptionsVisible ? "chevron_down.png" : "chevron.png";
 
         [AlsoNotifyFor("UnitOptionsRowIcon")]
         public bool UnitOptionsVisible { get; private set; }
         public string UnitLabelText { get; private set; } = "Select";
-        public string UnitOptionsRowIcon
-        {
-            get { return UnitOptionsVisible ? "chevron_down.png" : "chevron.png"; }
-        }
+        public string UnitOptionsRowIcon => UnitOptionsVisible ? "chevron_down.png" : "chevron.png";
 
         protected override void ViewIsAppearing(object sender, EventArgs e)
         {
@@ -265,17 +219,11 @@ namespace ManageGo
         }
 
 
-        public FreshAwaitCommand OnShowAssignedOptionsTapped
-        {
-            get
-            {
-                return new FreshAwaitCommand((tcs) =>
-                {
-                    AssignedOptionsVisible = !AssignedOptionsVisible;
-                    tcs?.SetResult(true);
-                });
-            }
-        }
+        public FreshAwaitCommand OnShowAssignedOptionsTapped => new FreshAwaitCommand((tcs) =>
+                                                                              {
+                                                                                  AssignedOptionsVisible = !AssignedOptionsVisible;
+                                                                                  tcs?.SetResult(true);
+                                                                              });
 
         void ClearCategorySelections()
         {
@@ -409,64 +357,40 @@ namespace ManageGo
         }
 
 
-        public FreshAwaitCommand OnShowTagOptionsTapped
-        {
-            get
-            {
-                return new FreshAwaitCommand((tcs) =>
-                {
-                    TagOptionsVisible = !TagOptionsVisible;
-                    tcs?.SetResult(true);
-                });
-            }
-        }
-        public FreshAwaitCommand OnTagTapped
-        {
-            get
-            {
-                return new FreshAwaitCommand((par, tcs) =>
-                {
-                    var tag = (Tags)par;
-                    tag.IsSelected = !tag.IsSelected;
-                    if (Tags.Any(t => t.IsSelected == true))
-                    {
-                        TagLabelText = Tags.First(t => t.IsSelected).TagName;
-                        TagLabelColor = "#" + Tags.First(t => t.IsSelected).Color;
-                        if (Tags.Count(t => t.IsSelected) > 1)
-                        {
-                            TagLabelText = TagLabelText + $", +{Tags.Count(t => t.IsSelected) - 1} more";
-                            TagLabelColor = "#58595B";
-                        }
-                    }
-                    else
-                        TagLabelText = string.Empty;
-                    tcs?.SetResult(true);
-                });
-            }
-        }
+        public FreshAwaitCommand OnShowTagOptionsTapped => new FreshAwaitCommand((tcs) =>
+                                                                         {
+                                                                             TagOptionsVisible = !TagOptionsVisible;
+                                                                             tcs?.SetResult(true);
+                                                                         });
+        public FreshAwaitCommand OnTagTapped => new FreshAwaitCommand((par, tcs) =>
+                                                              {
+                                                                  var tag = (Tags)par;
+                                                                  tag.IsSelected = !tag.IsSelected;
+                                                                  if (Tags.Any(t => t.IsSelected == true))
+                                                                  {
+                                                                      TagLabelText = Tags.First(t => t.IsSelected).TagName;
+                                                                      TagLabelColor = "#" + Tags.First(t => t.IsSelected).Color;
+                                                                      if (Tags.Count(t => t.IsSelected) > 1)
+                                                                      {
+                                                                          TagLabelText = TagLabelText + $", +{Tags.Count(t => t.IsSelected) - 1} more";
+                                                                          TagLabelColor = "#58595B";
+                                                                      }
+                                                                  }
+                                                                  else
+                                                                      TagLabelText = string.Empty;
+                                                                  tcs?.SetResult(true);
+                                                              });
 
-        public FreshAwaitCommand OnAttachButtonTapped
-        {
-            get
-            {
-                return new FreshAwaitCommand((tcs) =>
-                {
-                    AttachActionSheetIsVisible = true;
-                    tcs?.SetResult(true);
-                });
-            }
-        }
+        public FreshAwaitCommand OnAttachButtonTapped => new FreshAwaitCommand((tcs) =>
+                                                                       {
+                                                                           AttachActionSheetIsVisible = true;
+                                                                           tcs?.SetResult(true);
+                                                                       });
 
-        public FreshAwaitCommand OnRemoveAttachmentTapped
-        {
-            get
-            {
-                return new FreshAwaitCommand((tcs) =>
-                {
-                    AttachedFile = null;
-                });
-            }
-        }
+        public FreshAwaitCommand OnRemoveAttachmentTapped => new FreshAwaitCommand((tcs) =>
+                                                                           {
+                                                                               AttachedFile = null;
+                                                                           });
 
         public FreshAwaitCommand OnTakePhotoTapped
         {
@@ -479,7 +403,7 @@ namespace ManageGo
                         AttachActionSheetIsVisible = false;
                         await CoreMethods.PushPageModel<TakeVideoPageModel>(true, true, false);
                     }
-                    else if (numberOfTries >= 2)
+                    else if (NumberOfTries >= 2)
                     {
                         await CoreMethods.DisplayAlert("ManageGo", "Unable to take photo or video. You did not allow access to camera.", "DISMISS");
                     }
@@ -543,29 +467,17 @@ namespace ManageGo
         }
 
 
-        public FreshAwaitCommand OnBackgroundTapped
-        {
-            get
-            {
-                return new FreshAwaitCommand((tcs) =>
-                {
-                    AttachActionSheetIsVisible = false;
-                    tcs?.SetResult(true);
-                });
-            }
-        }
+        public FreshAwaitCommand OnBackgroundTapped => new FreshAwaitCommand((tcs) =>
+                                                                     {
+                                                                         AttachActionSheetIsVisible = false;
+                                                                         tcs?.SetResult(true);
+                                                                     });
 
-        public FreshAwaitCommand OnShowCategoryOptionsTapped
-        {
-            get
-            {
-                return new FreshAwaitCommand((tcs) =>
-                {
-                    CategoryOptionsVisible = !CategoryOptionsVisible;
-                    tcs?.SetResult(true);
-                });
-            }
-        }
+        public FreshAwaitCommand OnShowCategoryOptionsTapped => new FreshAwaitCommand((tcs) =>
+                                                                              {
+                                                                                  CategoryOptionsVisible = !CategoryOptionsVisible;
+                                                                                  tcs?.SetResult(true);
+                                                                              });
 
         public FreshAwaitCommand OnCategoryTapped
         {
@@ -576,7 +488,7 @@ namespace ManageGo
                     var cat = (Categories)par;
                     if (!cat.IsEnabled)
                     {
-                        var result = await CoreMethods.DisplayAlert("ManageGo", $"{cat.CategoryName} is not available to the selected users. Selecting this category will clear the selected users.", $"Select {cat.CategoryName}", "Cancel");
+                        var result = await CoreMethods.DisplayAlert("ManageGo", $"{cat.CategoryName} is not available to the assigned users. Selecting this category will clear the selected users.", $"Select {cat.CategoryName}", "Cancel");
                         if (!result)
                         {
                             tcs?.SetResult(true);
@@ -586,7 +498,6 @@ namespace ManageGo
                         {
                             ClearUserSelections();
                             EnableAllCategories();
-
                         }
                     }
                     cat.IsSelected = !cat.IsSelected;
@@ -611,46 +522,34 @@ namespace ManageGo
                     else
                     {
                         EnableAllUsers();
-                        EnableAllCategories();
+                        if (!Users.Any(user => user.IsSelected))
+                            EnableAllCategories();
                         CategoryLabelText = "Select";
                     }
-
                     tcs?.SetResult(true);
                 }
                 return new FreshAwaitCommand(execute);
             }
         }
 
-        public FreshAwaitCommand OnShowPriorityOptionsTapped
-        {
-            get
-            {
-                return new FreshAwaitCommand((tcs) =>
-                {
-                    PriorityOptionsVisible = !PriorityOptionsVisible;
-                    tcs?.SetResult(true);
-                });
-            }
-        }
+        public FreshAwaitCommand OnShowPriorityOptionsTapped => new FreshAwaitCommand((tcs) =>
+                                                                              {
+                                                                                  PriorityOptionsVisible = !PriorityOptionsVisible;
+                                                                                  tcs?.SetResult(true);
+                                                                              });
 
 
-        public FreshAwaitCommand OnSwitchPriorityTapped
-        {
-            get
-            {
-                return new FreshAwaitCommand((par, tcs) =>
-                {
-                    string text = (string)par;
-                    if (text == "low")
-                        PriorityLabelText = "Low";
-                    else if (text == "medium")
-                        PriorityLabelText = "Medium";
-                    else
-                        PriorityLabelText = "High";
-                    tcs?.SetResult(true);
-                });
-            }
-        }
+        public FreshAwaitCommand OnSwitchPriorityTapped => new FreshAwaitCommand((par, tcs) =>
+                                                                         {
+                                                                             string text = (string)par;
+                                                                             if (text == "low")
+                                                                                 PriorityLabelText = "Low";
+                                                                             else if (text == "medium")
+                                                                                 PriorityLabelText = "Medium";
+                                                                             else
+                                                                                 PriorityLabelText = "High";
+                                                                             tcs?.SetResult(true);
+                                                                         });
 
 
         public FreshAwaitCommand OnShowTenantOptionsTapped
@@ -679,23 +578,17 @@ namespace ManageGo
 
 
 
-        public FreshAwaitCommand OnTenantTapped
-        {
-            get
-            {
-                return new FreshAwaitCommand((par, tcs) =>
-                {
-                    var tenant = (Tenant)par;
-                    tenant.IsSelected = true;
-                    TenantLabelText = tenant.FullName;
-                    foreach (var t in Tenants.Where(t => t.IsSelected && t.TenantID != tenant.TenantID))
-                    {
-                        t.IsSelected = false;
-                    }
-                    tcs?.SetResult(true);
-                });
-            }
-        }
+        public FreshAwaitCommand OnTenantTapped => new FreshAwaitCommand((par, tcs) =>
+                                                                 {
+                                                                     var tenant = (Tenant)par;
+                                                                     tenant.IsSelected = true;
+                                                                     TenantLabelText = tenant.FullName;
+                                                                     foreach (var t in Tenants.Where(t => t.IsSelected && t.TenantID != tenant.TenantID))
+                                                                     {
+                                                                         t.IsSelected = false;
+                                                                     }
+                                                                     tcs?.SetResult(true);
+                                                                 });
 
 
         public FreshAwaitCommand OnShowUnitOptionsTapped
@@ -723,36 +616,24 @@ namespace ManageGo
         }
 
 
-        public FreshAwaitCommand OnUnitTapped
-        {
-            get
-            {
-                return new FreshAwaitCommand((par, tcs) =>
-                {
-                    var unit = (Unit)par;
-                    unit.IsSelected = true;
-                    UnitLabelText = unit.UnitName;
-                    Tenants = unit.Tenants;
-                    foreach (var u in Units.Where(t => t.IsSelected && t.UnitId != unit.UnitId))
-                    {
-                        u.IsSelected = false;
-                    }
-                    tcs?.SetResult(true);
-                });
-            }
-        }
+        public FreshAwaitCommand OnUnitTapped => new FreshAwaitCommand((par, tcs) =>
+                                                               {
+                                                                   var unit = (Unit)par;
+                                                                   unit.IsSelected = true;
+                                                                   UnitLabelText = unit.UnitName;
+                                                                   Tenants = unit.Tenants;
+                                                                   foreach (var u in Units.Where(t => t.IsSelected && t.UnitId != unit.UnitId))
+                                                                   {
+                                                                       u.IsSelected = false;
+                                                                   }
+                                                                   tcs?.SetResult(true);
+                                                               });
 
-        public FreshAwaitCommand OnShowAddressesOptionsTapped
-        {
-            get
-            {
-                return new FreshAwaitCommand((tcs) =>
-                {
-                    AddressOptionsVisible = !AddressOptionsVisible;
-                    tcs?.SetResult(true);
-                });
-            }
-        }
+        public FreshAwaitCommand OnShowAddressesOptionsTapped => new FreshAwaitCommand((tcs) =>
+                                                                               {
+                                                                                   AddressOptionsVisible = !AddressOptionsVisible;
+                                                                                   tcs?.SetResult(true);
+                                                                               });
 
         public FreshAwaitCommand OnBuildingTapped
         {
@@ -788,7 +669,7 @@ namespace ManageGo
             }
         }
 
-        public int numberOfTries { get; private set; }
+        public int NumberOfTries { get; private set; }
 
         private async Task<bool> CheckCameraPermissionsAsync()
         {
@@ -823,7 +704,7 @@ namespace ManageGo
                 {
                     if (await CoreMethods.DisplayAlert("ManageGo", "Please allow access to continue", "OK", "Cancel"))
                     {
-                        numberOfTries++;
+                        NumberOfTries++;
                         return await CheckCameraPermissionsAsync();
                     }
                     return false;

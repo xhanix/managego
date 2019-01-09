@@ -38,7 +38,17 @@ namespace ManageGo
                 });
             }
         }
+        private bool isEnabled = true;
 
-        public bool IsEnabled { get; internal set; } = true;
+        [JsonIgnore]
+        public bool IsEnabled
+        {
+            get { return isEnabled; }
+            internal set
+            {
+                isEnabled = value;
+                IsSelected &= value;
+            }
+        }
     }
 }

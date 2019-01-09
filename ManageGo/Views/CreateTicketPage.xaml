@@ -7,6 +7,9 @@
              xmlns:local="clr-namespace:ManageGo"
              xmlns:controls="clr-namespace:ManageGo.Controls"
              x:Class="ManageGo.CreateTicketPage">
+     <ContentPage.Resources>
+        <local:EnabledStateToTextColorConverter x:Key="EnabledStateToTextColorConverter" />
+    </ContentPage.Resources>
     <RelativeLayout x:Name="MyRelLayout">
         <Grid RowSpacing="0" 
               RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent, Property=Height,Factor=1,Constant=0}"
@@ -278,7 +281,7 @@
                                         <ViewCell>
                                             <StackLayout Orientation="Horizontal" VerticalOptions="FillAndExpand" Padding="0,12,0,0">
                                                 <Image Source="{Binding CheckBoxImage}" />
-                                                <Label Text="{Binding CategoryName}" VerticalOptions="CenterAndExpand" LineBreakMode="TailTruncation" FontSize="Small" />
+                                                <Label Text="{Binding CategoryName}" TextColor="{Binding IsEnabled,Converter={StaticResource EnabledStateToTextColorConverter}}" VerticalOptions="CenterAndExpand" LineBreakMode="TailTruncation" FontSize="Small" />
                                                 <StackLayout.GestureRecognizers>
                                                     <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding BindingContext.OnCategoryTapped, Source={x:Reference ThisView}}" CommandParameter="{Binding .}" />
                                                 </StackLayout.GestureRecognizers>
@@ -343,7 +346,7 @@
                                         <ViewCell>
                                             <StackLayout Orientation="Horizontal" VerticalOptions="FillAndExpand" Padding="0,12,0,0">
                                                 <Image Source="{Binding CheckBoxImage}" />
-                                                <Label Text="{Binding UserFullName}" VerticalOptions="CenterAndExpand" LineBreakMode="TailTruncation" FontSize="Small" />
+                                                <Label Text="{Binding UserFullName}" TextColor="{Binding IsEnabled,Converter={StaticResource EnabledStateToTextColorConverter}}" VerticalOptions="CenterAndExpand" LineBreakMode="TailTruncation" FontSize="Small" />
                                                 <StackLayout.GestureRecognizers>
                                                     <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding BindingContext.OnUserTapped, Source={x:Reference ThisView}}" CommandParameter="{Binding .}" />
                                                 </StackLayout.GestureRecognizers>
