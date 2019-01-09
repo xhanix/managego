@@ -14,7 +14,7 @@
         <StackLayout Orientation="Horizontal" Padding="8" HeightRequest="42">
             <Image Source="logo.png"  VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"/>
         </StackLayout>
-        <Label Text="Welcome" TextColor="{StaticResource Grey-Dark-1}" FontSize="Large" FontAttributes="Bold" HorizontalOptions="CenterAndExpand" />
+        <Label Text="Welcome" Style="{StaticResource PageTitle}" />
         <BoxView HeightRequest="1" Margin="0,8,0,8" BackgroundColor="{x:StaticResource Primary}" HorizontalOptions="FillAndExpand"/>
         <ScrollView BackgroundColor="#f9fafb" VerticalOptions="FillAndExpand">
             <StackLayout VerticalOptions="CenterAndExpand" Padding="53,0,52,0">
@@ -62,8 +62,7 @@
                RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height,Factor=0.2}"
                RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width, Factor=0.5}">
             <StackLayout VerticalOptions="CenterAndExpand">
-                <ActivityIndicator Color="White" IsRunning="{Binding IsVisible,Source={x:Reference WaitFrame}}" />
-                <Label Text="Checking credentials" HorizontalOptions="CenterAndExpand" TextColor="White" FontSize="Small"/>
+                <ActivityIndicator VerticalOptions="CenterAndExpand" Color="White" IsRunning="{Binding IsVisible,Source={x:Reference WaitFrame}}" />
             </StackLayout>
         </Frame>
         <Frame HasShadow="false" 

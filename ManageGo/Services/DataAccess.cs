@@ -336,6 +336,21 @@ namespace ManageGo.Services
             return await GetTicketsFromResponse(response);
         }
 
+        internal static async Task<List<MaintenanceTicket>> GetTickets(TicketRequest param)
+        {
+            if (TokenExpiry < DateTimeOffset.Now)
+                await Login();
+            var jsonString = JsonConvert.SerializeObject(param);
+            var content = new StringContent(jsonString, Encoding.UTF8, "application/json");//new FormUrlEncodedContent(filters);
+            var msg = new HttpRequestMessage(HttpMethod.Post, BaseUrl + APIpaths.tickets.ToString())
+            {
+                Content = content
+            };
+            var response = await client.SendAsync(msg);
+
+            return await GetTicketsFromResponse(response);
+        }
+
         public static async Task UpdateTicket(Dictionary<string, object> parameters)
         {
             if (TokenExpiry < DateTimeOffset.Now)

@@ -18,7 +18,7 @@
         </StackLayout>
         <ScrollView  VerticalOptions="FillAndExpand">
             <StackLayout Spacing="0">
-                <Label Text="Welcome"  FontAttributes="Bold" Margin="0,8,0,7" FontSize="Small" HorizontalTextAlignment="Center"/>
+                <Label Text="Welcome" Style="{StaticResource PageTitle}" Margin="0,8,0,7" />
                 <Image Source="dashboard_1.jpg" HorizontalOptions="Center" VerticalOptions="Start"/>
                 <StackLayout VerticalOptions="FillAndExpand" BackgroundColor="{StaticResource Grey-Light-2}">
                 <Frame IsVisible="{Binding UserCanViewPayments}" Margin="24,22,24,12" Padding="0,8,0,6" HasShadow="false">

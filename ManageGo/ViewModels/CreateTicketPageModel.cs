@@ -348,7 +348,8 @@ namespace ManageGo
                         //no users are selected
                         AssignedLabelText = string.Empty;
                         EnableAllCategories();
-                        EnableAllUsers();
+                        if (!Categories.Any(c => c.IsSelected))
+                            EnableAllUsers();
                     }
                     tcs?.SetResult(true);
                 }
@@ -515,9 +516,10 @@ namespace ManageGo
                         var selectedCats = Categories.Where(c => c.IsSelected).Select(c => c.CategoryID);
                         foreach (User u in Users.Where(user => user.Categories != null))
                         {
-                            if (u.Categories.Intersect(selectedCats).Any())
+                            if (u.Categories.Intersect(selectedCats).Count() == selectedCats.Count())
                                 u.IsEnabled = true;
                         }
+
                     }
                     else
                     {

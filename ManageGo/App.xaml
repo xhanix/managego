@@ -40,6 +40,13 @@
                 <Setter Property="TextColor" Value="#a7a9ac" />
             </Style>
             
+            <Style x:Key="PageTitle" TargetType="Label">
+                <Setter Property="TextColor" Value="{StaticResource Grey-Mid-1}" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="FontSize" Value="Medium" />
+                <Setter Property="HorizontalOptions" Value="CenterAndExpand" />
+                <Setter Property="HorizontalTextAlignment" Value="Center" />
+            </Style>
             
             <Style TargetType="Label">
                 <Style.Triggers>

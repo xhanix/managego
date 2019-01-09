@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace ManageGo
 {
@@ -18,7 +19,37 @@ namespace ManageGo
         public TicketStatus Status { get; set; }
         public IList<TicketPriorities> Priorities { get; set; }
         public string Search { get; set; }
+
+        [JsonIgnore]
+        public int NumberOfAppliedFilters
+        {
+            get
+            {
+                var n = 0;
+                if (Ticket != null)
+                    n++;
+                if (DateFrom != null)
+                    n++;
+                if (DateTo != null)
+                    n++;
+                if (DueDateFrom != null)
+                    n++;
+                if (DueDateTo != null)
+                    n++;
+                if (Buildings.Count > 0)
+                    n++;
+                if (Tags.Count > 0)
+                    n++;
+                if (Assigned.Count > 0)
+                    n++;
+                if (Status != TicketStatus.All)
+                    n++;
+                if (Priorities != null)
+                    n++;
+                if (!string.IsNullOrWhiteSpace(Search))
+                    n++;
+                return n;
+            }
+        }
     }
-
-
 }
