@@ -50,7 +50,7 @@
                     </Grid.ColumnDefinitions>
                    <StackLayout Grid.Column="0" HorizontalOptions="Center" Spacing="0" Orientation="Horizontal">
                         <Image Source="calendar_blue.png" VerticalOptions="Center" />
-                        <Label Text="{Binding CalendarButtonText}" VerticalOptions="Center" TextColor="{StaticResource Grey-Dark-1}" FontSize="Medium" Margin="4,0,0,0"/>
+                        <Label Text="{Binding CalendarButtonText}" VerticalOptions="Center" TextColor="{StaticResource Grey-Dark-1}" FontSize="Small" Margin="4,0,0,0"/>
                         <StackLayout.GestureRecognizers>
                             <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnFilterTapped}"/>
                         </StackLayout.GestureRecognizers>
@@ -58,7 +58,7 @@
                     <BoxView WidthRequest="1" Margin="0,4,0,4" HorizontalOptions="Start" Grid.Column="1" BackgroundColor="{StaticResource Grey-Mid-2}"/>
                     <StackLayout Grid.Column="2" HorizontalOptions="Center" Spacing="0" Orientation="Horizontal">
                         <Image Source="filter_blue.png" VerticalOptions="Center" />
-                        <Label Text="Filter" VerticalOptions="Center" TextColor="{StaticResource Grey-Dark-1}" FontSize="Medium" Margin="4,0,0,0"/>
+                        <Label Text="Filter" VerticalOptions="Center" TextColor="{StaticResource Grey-Dark-1}" FontSize="Small" Margin="4,0,0,0"/>
                         <Label Text="{Binding NumberOfAppliedFilters}" HorizontalOptions="Start" Margin="2,8,0,0" HorizontalTextAlignment="Start" FontSize="Small" TextColor="#318bfa"/>
                         <StackLayout.GestureRecognizers>
                             <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnFilterTapped}"/>
@@ -127,10 +127,6 @@
                                                 <Label Text="{Binding BankTransactionNumber}" Margin="4,0,0,0" VerticalOptions="CenterAndExpand" LineBreakMode="TailTruncation" FontSize="Small" TextColor="{StaticResource Grey-Light-1}" />
                                             </StackLayout>
                                             <StackLayout IsVisible="{Binding DetailsShown}" Padding="0,0,8,0" HorizontalOptions="FillAndExpand">
-                                                <StackLayout Orientation="Horizontal" Margin="0,8,0,0">
-                                                    <Label Text="Buildings: " FontSize="Small" HorizontalOptions="Start" TextColor="{StaticResource Grey-Light-1}" />
-                                                    <Label Text="{Binding BuildingsCount}" FontSize="Small" TextColor="{StaticResource Grey-Mid-2}" />
-                                                </StackLayout>
                                                 <Label Text="Payments: " Margin="0,8,0,8" FontSize="Small" HorizontalOptions="Start" TextColor="{StaticResource Grey-Light-1}" />
                                                 <!-- list transaction payments -->
                                                 <controls:NestedListView ItemsSource="{Binding Payments}" HeightRequest="{Binding PaymentsListHeight}" SelectionMode="None" SeparatorVisibility="None" HasUnevenRows="true" >
@@ -186,7 +182,7 @@
                          IsVisible="{Binding NothingFetched}" 
                     HorizontalOptions="CenterAndExpand">
                 <Label Text="Nothing to see here" HorizontalTextAlignment="Center" FontSize="Small" FontAttributes="Bold" TextColor="Gray"/>
-                <Label Text="Try a broadening your search" HorizontalTextAlignment="Center" FontSize="Small"  TextColor="Gray"/>
+                <Label Text="Try broadening your search" HorizontalTextAlignment="Center" FontSize="Small"  TextColor="Gray"/>
             </StackLayout>
         </Grid>
          <Grid

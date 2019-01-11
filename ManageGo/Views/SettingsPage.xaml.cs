@@ -19,6 +19,7 @@ namespace ManageGo
             ((SettingsPageModel)this.BindingContext).OnFieldLostFocus.Execute(entry.ClassId);
         }
 
+        
         void Handle_Tapped(object sender, TappedEventArgs e)
         {
             var name = (string)e.Parameter;
@@ -41,6 +42,11 @@ namespace ManageGo
                     break;
             }
 
+        }
+
+        private void Handle_Tapped(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
         }
     }
 }

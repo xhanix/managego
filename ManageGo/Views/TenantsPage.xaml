@@ -137,7 +137,7 @@
                          IsVisible="{Binding NothingFetched}" 
                     HorizontalOptions="CenterAndExpand">
                 <Label Text="Nothing to see here" HorizontalTextAlignment="Center" FontSize="Small" FontAttributes="Bold" TextColor="Gray"/>
-                <Label Text="Try a broadening your search" HorizontalTextAlignment="Center" FontSize="Small"  TextColor="Gray"/>
+                <Label Text="Try broadening your search" HorizontalTextAlignment="Center" FontSize="Small"  TextColor="Gray"/>
             </StackLayout>
         </Grid>
        

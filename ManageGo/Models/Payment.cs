@@ -21,7 +21,7 @@ namespace ManageGo.Models
         {
             get
             {
-                return Tenant.FullName + ", " + Building.BuildingShortAddress + ", " + Unit.UnitName;
+                return Tenant.FullName + ", " + Building?.BuildingShortAddress + ", " + Unit.UnitName;
             }
         }
     }

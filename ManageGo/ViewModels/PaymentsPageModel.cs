@@ -28,7 +28,7 @@ namespace ManageGo
             set
             {
                 fetchedPayments = value;
-                if (fetchedPayments != null && !fetchedPayments.Any())
+                if (fetchedPayments is null || !fetchedPayments.Any())
                     NothingFetched = true;
                 else
                     NothingFetched = false;
@@ -217,10 +217,6 @@ namespace ManageGo
                 FetchedPayments = null;
                 await CoreMethods.DisplayAlert("Something went wrong", "Unable to get payment records. Connect to network and try again", "Try again", "Dismiss");
             }
-            finally
-            {
-                NothingFetched = FetchedPayments is null || !FetchedPayments.Any();
-            }
         }
 
         public FreshAwaitCommand OnPulledToRefresh
@@ -303,15 +299,33 @@ namespace ManageGo
                     var building = (Building)par;
                     try
                     {
-
-                        var details = await Services.DataAccess.GetBuildingDetails(building.BuildingId);
-                        foreach (Building b in Buildings)
+                        building.IsSelected = !building.IsSelected;
+                        if (Buildings.Count(t => t.IsSelected) == 1)
                         {
-                            b.IsSelected = false;
+                            SelectedBuildingsString = Buildings.First(t => t.IsSelected).BuildingName;
+                            var details = await Services.DataAccess.GetBuildingDetails(Buildings.First(t => t.IsSelected).BuildingId);
+                            Units = details.Units;
                         }
-                        building.IsSelected = true;
-                        SelectedBuildingsString = building.BuildingName;
-                        Units = details.Units;
+                        else if (building.IsSelected && Buildings.Count(t => t.IsSelected) > 1)
+                        {
+                            SelectedBuildingsString = SelectedBuildingsString + ", +" + (Buildings.Count(t => t.IsSelected) - 1).ToString() + " more";
+                            Units?.Clear();
+                        }
+                        else if (!Buildings.Any(b => b.IsSelected))
+                        {
+                            Units?.Clear();
+                            SelectedBuildingsString = string.Empty;
+                        }
+
+
+                        if (Units != null && Units.Any(u => u.IsSelected))
+                        {
+                            foreach (var u in Units.Where(u => u.IsSelected))
+                            {
+                                u.IsSelected = false;
+                            }
+                        }
+                        FilterUnitsExpanded = false;
                         SelectedUnitString = string.Empty;
                     }
                     catch (Exception ex)
@@ -334,22 +348,41 @@ namespace ManageGo
                 async void execute(object par, TaskCompletionSource<bool> tcs)
                 {
                     var unit = (Unit)par;
-                    foreach (Unit u in Units)
-                    {
-                        u.IsSelected = false;
-                    }
-                    unit.IsSelected = true;
+                    unit.IsSelected = !unit.IsSelected;
                     SelectedUnitString = unit.UnitName;
-                    var dic = new Dictionary<string, object>
-                        {
-                        {"Units", Units.Where(t=>t.IsSelected).Select(t=>t.UnitId)}
-                        };
-                    SelectedTenantString = string.Empty;
-                    Tenants = await DataAccess.GetTenantsAsync(dic);
-                    if (!Tenants.Any())
+                    if (Units.Count(t => t.IsSelected) == 1)
                     {
-                        FilterTenantsExpanded = false;
+                        SelectedUnitString = Units.First(t => t.IsSelected).UnitName;
+                        var dic = new Dictionary<string, object>
+                        {
+                            {"Units", Units.Where(t=>t.IsSelected).Select(t=>t.UnitId)}
+                        };
+                        SelectedTenantString = string.Empty;
+                        Tenants = await DataAccess.GetTenantsAsync(dic);
                     }
+                    else if (unit.IsSelected && Buildings.Count(t => t.IsSelected) > 1)
+                    {
+                        SelectedUnitString = SelectedUnitString + ", +" + (Units.Count(t => t.IsSelected) - 1).ToString() + " more";
+                        Tenants?.Clear();
+                        SelectedTenantString = string.Empty;
+                    }
+                    else if (!Units.Any(b => b.IsSelected))
+                    {
+                        Tenants?.Clear();
+                        SelectedUnitString = string.Empty;
+                        SelectedTenantString = string.Empty;
+                    }
+
+
+                    if (Tenants != null && Tenants.Any(u => u.IsSelected))
+                    {
+                        foreach (var u in Tenants.Where(u => u.IsSelected))
+                        {
+                            u.IsSelected = false;
+                        }
+                    }
+
+
                     tcs?.SetResult(true);
                 }
                 return new FreshAwaitCommand(execute);
@@ -363,12 +396,19 @@ namespace ManageGo
                 void execute(object par, TaskCompletionSource<bool> tcs)
                 {
                     var tenant = (Tenant)par;
-                    foreach (Tenant t in Tenants)
+
+                    tenant.IsSelected = !tenant.IsSelected;
+                    if (Tenants.Count(t => t.IsSelected) == 1)
                     {
-                        t.IsSelected = false;
+                        SelectedTenantString = Tenants.First(t => t.IsSelected).FullName;
                     }
-                    tenant.IsSelected = true;
-                    SelectedTenantString = tenant.FullName;
+                    else if (Tenants.Count(t => t.IsSelected) > 1)
+                    {
+                        SelectedTenantString = SelectedTenantString + ", " + (Tenants.Count(t => t.IsSelected) - 1).ToString() + " more";
+                    }
+                    else
+                        SelectedTenantString = string.Empty;
+
                     tcs?.SetResult(true);
                 }
                 return new FreshAwaitCommand(execute);
@@ -442,47 +482,62 @@ namespace ManageGo
             {
                 async void execute(object parameter, TaskCompletionSource<bool> tcs)
                 {
+                    try
+                    {
 
-                    PopContentView = null;
-                    FilterSelectViewIsShown = false;
-                    Dictionary<string, object> paramDic = new Dictionary<string, object>();
-                    if (Buildings != null && Buildings.Any(f => f.IsSelected))
-                    {
-                        paramDic.Add("Buildings", Buildings.Where(f => f.IsSelected).Select(f => f.BuildingId));
-                    }
-                    if (Units != null && Units.Any(f => f.IsSelected))
-                    {
-                        paramDic.Add("Units", Units.Where(f => f.IsSelected).Select(f => f.UnitId));
-                    }
-                    if (Tenants != null && Tenants.Any(f => f.IsSelected))
-                    {
-                        paramDic.Add("Tenants", Tenants.Where(f => f.IsSelected).Select(f => f.TenantID));
-                    }
-                    if (FilteredAmountRange != null)
-                    {
-                        if (FilteredAmountRange.Item1 > 0)
+                        PopContentView = null;
+                        FilterSelectViewIsShown = false;
+                        Dictionary<string, object> paramDic = new Dictionary<string, object>();
+                        if (Buildings != null && Buildings.Any(f => f.IsSelected))
                         {
-                            paramDic.Add("AmountFrom", FilteredAmountRange.Item1);
+                            paramDic.Add("Buildings", Buildings.Where(f => f.IsSelected).Select(f => f.BuildingId));
                         }
-                        if (FilteredAmountRange.Item2 < 5000)
+                        if (Units != null && Units.Any(f => f.IsSelected))
                         {
-                            paramDic.Add("AmountTo", FilteredAmountRange.Item2);
+                            paramDic.Add("Units", Units.Where(f => f.IsSelected).Select(f => f.UnitId));
                         }
+                        if (Tenants != null && Tenants.Any(f => f.IsSelected))
+                        {
+                            paramDic.Add("Tenants", Tenants.Where(f => f.IsSelected).Select(f => f.TenantID));
+                        }
+                        if (FilteredAmountRange != null)
+                        {
+                            if (FilteredAmountRange.Item1 > 0)
+                            {
+                                paramDic.Add("AmountFrom", FilteredAmountRange.Item1);
+                            }
+                            if (FilteredAmountRange.Item2 < 5000)
+                            {
+                                paramDic.Add("AmountTo", FilteredAmountRange.Item2);
+                            }
+                        }
+                        if (!string.IsNullOrWhiteSpace(FilterKeywords))
+                        {
+                            paramDic.Add("Search", FilterKeywords);
+                        }
+                        paramDic.Add("DateFrom", FilterDueDate.StartDate);
+                        if (FilterDueDate.EndDate.HasValue)
+                        {
+                            paramDic.Add("DateTo", FilterDueDate.EndDate.Value);
+                        }
+                        FilterDictionary = paramDic;
+
+
+                        HasLoaded = false;
+                        FetchedPayments = await DataAccess.GetPaymentsAsync(paramDic);
+
                     }
-                    if (!string.IsNullOrWhiteSpace(FilterKeywords))
+                    catch (Exception ex)
                     {
-                        paramDic.Add("Search", FilterKeywords);
+                        await CoreMethods.DisplayAlert("Something went wrong", ex.Message, "DISMISS");
+                        APIhasFailed = true;
                     }
-                    paramDic.Add("DateFrom", FilterDueDate.StartDate);
-                    if (FilterDueDate.EndDate.HasValue)
+                    finally
                     {
-                        paramDic.Add("DateTo", FilterDueDate.EndDate.Value);
+                        HasLoaded = true;
+                        tcs?.SetResult(true);
                     }
-                    FilterDictionary = paramDic;
-                    HasLoaded = false;
-                    FetchedPayments = await DataAccess.GetPaymentsAsync(paramDic);
-                    HasLoaded = true;
-                    tcs?.SetResult(true);
+
                 }
                 return new FreshAwaitCommand(execute);
             }
@@ -563,35 +618,60 @@ namespace ManageGo
                     {
                         case "Status":
                             FilterStatusExpanded = !FilterStatusExpanded;
+                            FilterDueDateExpanded = false;
+                            FilterBuildingsExpanded = false;
+                            FilterUnitsExpanded = false;
+                            FilterTenantsExpanded = false;
                             break;
                         case "DueDates":
                             FilterDueDateExpanded = !FilterDueDateExpanded;
+                            FilterStatusExpanded = false;
+                            FilterBuildingsExpanded = false;
+                            FilterUnitsExpanded = false;
+                            FilterTenantsExpanded = false;
                             break;
                         case "Buildings":
                             FilterBuildingsExpanded = !FilterBuildingsExpanded;
+                            FilterDueDateExpanded = false;
+                            FilterStatusExpanded = false;
+                            FilterUnitsExpanded = false;
+                            FilterTenantsExpanded = false;
                             break;
                         case "Units":
-                            if (Buildings is null || !Buildings.Any(t => t.IsSelected))
+                            if (Buildings is null || !Buildings.Any(t => t.IsSelected) || Buildings.Count(b => b.IsSelected) > 1)
                             {
-                                await CoreMethods.DisplayAlert("ManageGo", "Select a building first", "DIMISS");
+                                await CoreMethods.DisplayAlert("ManageGo", "Select one building first.", "DIMISS");
+                            }
+                            else if (!Units.Any())
+                            {
+                                await CoreMethods.DisplayAlert("ManageGo", "No units in building.", "DIMISS");
                             }
                             else
                             {
                                 FilterUnitsExpanded = !FilterUnitsExpanded;
+                                FilterBuildingsExpanded = false;
+                                FilterDueDateExpanded = false;
+                                FilterStatusExpanded = false;
+                                FilterTenantsExpanded = false;
                             }
+
                             break;
                         case "Tenants":
                             if (Units is null || !Units.Any(t => t.IsSelected))
                             {
                                 await CoreMethods.DisplayAlert("ManageGo", "Select a unit first", "DIMISS");
                             }
-                            else if (Tenants != null && !Tenants.Any())
+                            else if (Tenants is null || !Tenants.Any())
                             {
-                                await CoreMethods.DisplayAlert("ManageGo", "Unit appears to be empty", "DIMISS");
+                                await CoreMethods.DisplayAlert("ManageGo", "No tenants in unit", "DIMISS");
                             }
                             else
                             {
                                 FilterTenantsExpanded = !FilterTenantsExpanded;
+                                FilterBuildingsExpanded = false;
+                                FilterDueDateExpanded = false;
+                                FilterStatusExpanded = false;
+                                FilterUnitsExpanded = false;
                             }
                             break;
                         default:

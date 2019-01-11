@@ -43,7 +43,7 @@
                                     <StackLayout Orientation="Horizontal" Spacing="17">
                                         <Image Source="building_grey.png" Margin="8,6,0,0" HorizontalOptions="Center" VerticalOptions="StartAndExpand"/>
                                         <StackLayout HorizontalOptions="FillAndExpand">
-                                            <Label Text="{Binding BuildingName}" FontSize="Medium" TextColor="{StaticResource Grey-Mid-1}" />
+                                            <Label Text="{Binding BuildingName}" FontSize="Medium" FontAttributes="Bold" TextColor="{StaticResource Grey-Mid-1}" />
                                             <BoxView HeightRequest="1" BackgroundColor="{StaticResource Grey-Light-2}" />
                                             <StackLayout Orientation="Horizontal" Spacing="4">
                                                 <StackLayout Orientation="Horizontal" VerticalOptions="CenterAndExpand" Spacing="2">

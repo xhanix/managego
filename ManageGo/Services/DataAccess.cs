@@ -504,6 +504,8 @@ namespace ManageGo.Services
             {
                 Content = content
             };
+
+
             var response = await client.SendAsync(msg);
             var responseString = await response.Content.ReadAsStringAsync();
             var dic = JObject.Parse(responseString);
@@ -512,6 +514,8 @@ namespace ManageGo.Services
                 return list.ToObject<List<Models.Payment>>();
             }
             throw new Exception("Unable to get payments");
+
+
 
         }
 

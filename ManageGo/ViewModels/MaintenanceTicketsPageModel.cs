@@ -6,7 +6,6 @@ using FreshMvvm;
 using Xamarin.Forms;
 using PropertyChanged;
 using System.Linq;
-using System.Collections.ObjectModel;
 using Xamarin.Essentials;
 using System.Threading;
 
