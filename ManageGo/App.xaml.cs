@@ -4,10 +4,11 @@ using System.IO;
 using System.Threading.Tasks;
 using FreshMvvm;
 using ManageGo.Models;
-using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
-
+using Microsoft.AppCenter;
+using Microsoft.AppCenter.Analytics;
+using Microsoft.AppCenter.Crashes;
 
 [assembly: XamlCompilation(XamlCompilationOptions.Compile)]
 namespace ManageGo
@@ -93,6 +94,9 @@ namespace ManageGo
         protected override void OnStart()
         {
             // Handle when your app starts
+            AppCenter.Start("android=817faa27-5418-4f2b-b55a-0013186c5482;" +
+                  "ios=575732ee-7291-4330-98b1-8f1c79713205;",
+                  typeof(Analytics), typeof(Crashes));
 
         }
 

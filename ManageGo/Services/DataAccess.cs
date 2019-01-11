@@ -496,7 +496,7 @@ namespace ManageGo.Services
 
 
         #region Payments
-        internal static async Task<List<Models.Payment>> GetPaymentsAsync(Dictionary<string, object> filtersDictionary)
+        internal static async Task<List<Models.Payment>> GetPaymentsAsync(PaymentsRequestParamContainer filtersDictionary)
         {
             var jsonString = JsonConvert.SerializeObject(filtersDictionary);
             var content = new StringContent(jsonString, Encoding.UTF8, "application/json");//new FormUrlEncodedContent(filters);

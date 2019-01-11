@@ -16,7 +16,11 @@ using Android.App;
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
 [assembly: UsesPermission(Android.Manifest.Permission.AccessNetworkState)]
-
+#if DEBUG
+[assembly: Application(Debuggable=true)]
+#else
+[assembly: Application(Debuggable = false)]
+#endif
 // Version information for an assembly consists of the following four values:
 //
 //      Major Version

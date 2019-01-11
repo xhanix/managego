@@ -7,13 +7,13 @@
              x:Class="ManageGo.TenantFilterSelectView">
      <ScrollView>
         <StackLayout Spacing="0">
-            <StackLayout Padding="21,17,21,17" Spacing="17">
-                <StackLayout Orientation="Horizontal">
+            <StackLayout Padding="21,17,21,17" Spacing="0">
+                <StackLayout Orientation="Horizontal" Padding="0,6">
                     <Image Source="search_grey" />
                     <local:CustomEntry Placeholder="Search tenant name..." Text="{Binding FilterKeywords}" FontSize="Small"  HorizontalOptions="FillAndExpand" />
                 </StackLayout>
                 <BoxView HeightRequest="1" BackgroundColor="Silver" HorizontalOptions="FillAndExpand" />
-                <Grid>
+                <Grid Padding="0,17">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="3*" />
@@ -48,7 +48,7 @@
                 </Grid>
                 <BoxView HeightRequest="1" BackgroundColor="Silver" HorizontalOptions="FillAndExpand" />
                 
-                <Grid>
+                <Grid Padding="0,17">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="3*" />
@@ -80,15 +80,14 @@
                             </ListView.ItemTemplate>
                         </controls:NestedListView>
                     </StackLayout>
-                    <Image Grid.Column="2" VerticalOptions="StartAndExpand" HorizontalOptions="EndAndExpand" Source="chevron_right.png" >
-                    <Image.GestureRecognizers>
+                    <Image Grid.Column="2" VerticalOptions="StartAndExpand" HorizontalOptions="EndAndExpand" Source="chevron_right.png" />
+                     <Grid.GestureRecognizers>
                         <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnExpandFilterTapped}" CommandParameter="Units" />
-                    </Image.GestureRecognizers>
-                    </Image>
+                    </Grid.GestureRecognizers>
                 </Grid>
                 <BoxView HeightRequest="1" BackgroundColor="Silver" HorizontalOptions="FillAndExpand" />
 
-                <Grid>
+                <Grid Padding="0,17">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="3*" />

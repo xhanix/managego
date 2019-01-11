@@ -11,6 +11,7 @@ using Xamarin.Forms;
 
 namespace ManageGo
 {
+    //todo add next page loading
     internal class PaymentsPageModel : BaseDetailPage
     {
         public View RangePickerView { get; set; }
@@ -19,8 +20,10 @@ namespace ManageGo
         [AlsoNotifyFor("NumberOfAppliedFilters")]
         Dictionary<string, object> FilterDictionary { get; set; }
         public bool IsRefreshingList { get; set; }
+        public PaymentsRequestParamContainer CurrentFilter { get; private set; }
         public bool FilterSelectViewIsShown { get; set; }
         public bool RangeSelectorIsShown { get; private set; }
+        Models.PaymentsRequestParamContainer ParameterItem { get; set; }
         List<Payment> fetchedPayments;
         public List<Payment> FetchedPayments
         {
@@ -45,11 +48,17 @@ namespace ManageGo
         {
             get
             {
-                return FilteredAmountRange is null ||
-                    (FilteredAmountRange.Item1 == 0 && FilteredAmountRange.Item2 == 5000) ?
-                    "All" : FilteredAmountRange.Item1.ToString("C0") + " - " +
-                    (FilteredAmountRange.Item2 == 5000 ? FilteredAmountRange.Item2.ToString("C0") + "+"
-                     : FilteredAmountRange.Item2.ToString("C0"));
+                if (FilteredAmountRange is null ||
+                    (FilteredAmountRange.Item1 == 0 && FilteredAmountRange.Item2 == 5000))
+                    return "All";
+                else
+                {
+                    var minVal = FilteredAmountRange.Item1 ?? 0;
+                    var maxVal = FilteredAmountRange.Item2 ?? 5000;
+                    return minVal.ToString("C0") + " - " +
+                       (maxVal == 5000 ? maxVal.ToString("C0") + "+" : FilteredAmountRange.Item2?.ToString("C0"));
+                }
+
             }
         }
         public string FilterKeywords { get; set; }
@@ -70,10 +79,10 @@ namespace ManageGo
         [AlsoNotifyFor("RefundedPaymentsCheckBoxImage", "SelectedStatusFlagsString")]
         public bool SelectedRefundedPaymentsFilter { get; private set; }
 
-        public Tuple<int, int> SelectedAmountRange { get; set; }
+        public Tuple<int?, int?> SelectedAmountRange { get; set; }
 
         [AlsoNotifyFor("FilterAmountString")]
-        private Tuple<int, int> FilteredAmountRange { get; set; }
+        private Tuple<int?, int?> FilteredAmountRange { get; set; }
 
 
         [AlsoNotifyFor("CalendarButtonText", "FilterDueDateString")]
@@ -89,12 +98,14 @@ namespace ManageGo
             }
         }
 
+        public DateRange SelectedDateRange { get; set; }
+
         public string FilterDueDateString
         {
             get
             {
                 return FilterDueDate != null ?
-                    FilterDueDate.EndDate.HasValue ? FilterDueDate.StartDate.ToShortDateString() + "-" + FilterDueDate.EndDate.Value.ToShortDateString()
+                    FilterDueDate.EndDate.HasValue ? FilterDueDate.StartDate.ToShortDateString() + " - " + FilterDueDate.EndDate.Value.ToShortDateString()
                                      :
                     FilterDueDate.StartDate.ToShortDateString() : "All";
             }
@@ -115,7 +126,7 @@ namespace ManageGo
                 return string.Join(", ", strings);
             }
         }
-        public string RangeSelectorMin { get { return SelectedAmountRange != null ? SelectedAmountRange.Item1.ToString("C0") : ""; } }
+        public string RangeSelectorMin { get { return SelectedAmountRange != null ? SelectedAmountRange.Item1?.ToString("C0") : ""; } }
         public string RangeSelectorMax
         {
             get
@@ -124,7 +135,7 @@ namespace ManageGo
                     return string.Empty;
                 else if (SelectedAmountRange.Item2 >= 5000)
                     return "$5,000+";
-                return SelectedAmountRange.Item2.ToString("C0");
+                return SelectedAmountRange.Item2?.ToString("C0");
             }
         }
 
@@ -198,17 +209,17 @@ namespace ManageGo
         {
             try
             {
-                Dictionary<string, object> parameters = new Dictionary<string, object>
-                    {
-                        { "PageSize", 50},
-                        { "Page", CurrentListPage},
-                        { "DateFrom",FilterDueDate.StartDate}
-                    };
+                ParameterItem = new PaymentsRequestParamContainer
+                {
+                    DateFrom = FilterDueDate.StartDate
+                };
+
                 if (FilterDueDate.EndDate.HasValue)
                 {
-                    parameters.Add("DateTo", FilterDueDate.EndDate.Value);
+                    ParameterItem.DateTo = FilterDueDate.EndDate.Value;
                 }
-                FetchedPayments = await DataAccess.GetPaymentsAsync(parameters);
+
+                FetchedPayments = await DataAccess.GetPaymentsAsync(ParameterItem);
                 HasLoaded = true;
             }
             catch
@@ -266,10 +277,14 @@ namespace ManageGo
                     }
                     else
                     {
+                        SelectedDateRange = new DateRange(FilterDueDate.StartDate, FilterDueDate.EndDate);
                         PopContentView = new Views.PaymentFilterView(this).Content;
                         // ListIsEnabled = false;
                     }
+
                     FilterSelectViewIsShown = !FilterSelectViewIsShown;
+                    if (FilterSelectViewIsShown)
+                        CurrentFilter = ParameterItem.Clone();
                     tcs?.SetResult(true);
                 });
             }
@@ -425,7 +440,7 @@ namespace ManageGo
                     if (FilteredAmountRange != null)
                         SelectedAmountRange = FilteredAmountRange;
                     else
-                        SelectedAmountRange = new Tuple<int, int>(0, 5000);
+                        SelectedAmountRange = new Tuple<int?, int?>(0, 5000);
                     RangePickerView = null;
                     tcs?.SetResult(true);
                 });
@@ -468,7 +483,7 @@ namespace ManageGo
             {
                 return new FreshAwaitCommand((par, tcs) =>
                 {
-                    FilteredAmountRange = new Tuple<int, int>(SelectedAmountRange.Item1, SelectedAmountRange.Item2);
+                    FilteredAmountRange = new Tuple<int?, int?>(SelectedAmountRange.Item1, SelectedAmountRange.Item2);
                     RangeSelectorIsShown = false;
                     RangePickerView = null;
                     tcs?.SetResult(true);
@@ -484,47 +499,58 @@ namespace ManageGo
                 {
                     try
                     {
-
+                        FilterDueDate = new DateRange(SelectedDateRange.StartDate, SelectedDateRange.EndDate);
                         PopContentView = null;
                         FilterSelectViewIsShown = false;
                         Dictionary<string, object> paramDic = new Dictionary<string, object>();
+                        ParameterItem = new PaymentsRequestParamContainer();
+
+
                         if (Buildings != null && Buildings.Any(f => f.IsSelected))
                         {
                             paramDic.Add("Buildings", Buildings.Where(f => f.IsSelected).Select(f => f.BuildingId));
+                            ParameterItem.Buildings = Buildings.Where(f => f.IsSelected).Select(f => f.BuildingId).ToList();
                         }
                         if (Units != null && Units.Any(f => f.IsSelected))
                         {
                             paramDic.Add("Units", Units.Where(f => f.IsSelected).Select(f => f.UnitId));
+                            ParameterItem.Units = Units.Where(f => f.IsSelected).Select(f => f.UnitId).ToList();
                         }
                         if (Tenants != null && Tenants.Any(f => f.IsSelected))
                         {
                             paramDic.Add("Tenants", Tenants.Where(f => f.IsSelected).Select(f => f.TenantID));
+                            ParameterItem.Tenants = Tenants.Where(f => f.IsSelected).Select(f => f.TenantID).ToList();
                         }
                         if (FilteredAmountRange != null)
                         {
                             if (FilteredAmountRange.Item1 > 0)
                             {
                                 paramDic.Add("AmountFrom", FilteredAmountRange.Item1);
+                                ParameterItem.AmountFrom = FilteredAmountRange.Item1;
                             }
                             if (FilteredAmountRange.Item2 < 5000)
                             {
                                 paramDic.Add("AmountTo", FilteredAmountRange.Item2);
+                                ParameterItem.AmountTo = FilteredAmountRange.Item2;
                             }
                         }
                         if (!string.IsNullOrWhiteSpace(FilterKeywords))
                         {
                             paramDic.Add("Search", FilterKeywords);
+                            ParameterItem.Search = FilterKeywords;
                         }
                         paramDic.Add("DateFrom", FilterDueDate.StartDate);
+                        ParameterItem.DateFrom = FilterDueDate.StartDate;
                         if (FilterDueDate.EndDate.HasValue)
                         {
                             paramDic.Add("DateTo", FilterDueDate.EndDate.Value);
+                            ParameterItem.DateTo = FilterDueDate.EndDate.Value;
                         }
                         FilterDictionary = paramDic;
 
-
+                        NothingFetched = false;
                         HasLoaded = false;
-                        FetchedPayments = await DataAccess.GetPaymentsAsync(paramDic);
+                        FetchedPayments = await DataAccess.GetPaymentsAsync(ParameterItem);
 
                     }
                     catch (Exception ex)
@@ -551,6 +577,48 @@ namespace ManageGo
                 {
                     PopContentView = null;
                     FilterSelectViewIsShown = false;
+                    if (CurrentFilter != null)
+                    {
+                        if (Buildings != null && CurrentFilter.Buildings != null)
+                        {
+                            foreach (var b in Buildings)
+                            {
+                                if (CurrentFilter.Buildings.Contains(b.BuildingId))
+                                    b.IsSelected = true;
+                                else
+                                    b.IsSelected = false;
+                            }
+                        }
+                        if (Units != null && CurrentFilter.Units != null)
+                        {
+                            foreach (var u in Units)
+                            {
+                                if (CurrentFilter.Units.Contains(u.UnitId))
+                                    u.IsSelected = false;
+                                else
+                                    u.IsSelected = false;
+                            }
+                        }
+                        if (Tenants != null && CurrentFilter.Tenants != null)
+                        {
+                            foreach (var t in Tenants)
+                            {
+                                if (CurrentFilter.Tenants.Contains(t.TenantID))
+                                    t.IsSelected = false;
+                                else
+                                    t.IsSelected = false;
+                            }
+                        }
+                        SelectedUnitString = string.Empty;
+                        SelectedTenantString = string.Empty;
+                        SelectedBuildingsString = string.Empty;
+                        FilterDueDate = new DateRange(CurrentFilter.DateFrom, CurrentFilter.DateTo);
+
+                        FilteredAmountRange = new Tuple<int?, int?>(CurrentFilter.AmountFrom, CurrentFilter.AmountTo);
+                        SelectedAmountRange = new Tuple<int?, int?>(CurrentFilter.AmountFrom, CurrentFilter.AmountTo);
+                        FilterKeywords = CurrentFilter.Search;
+
+                    }
                     tcs?.SetResult(true);
                 }));
             }
@@ -587,21 +655,18 @@ namespace ManageGo
                     }
                     SelectedUnitString = string.Empty;
                     SelectedTenantString = string.Empty;
+                    FilterDueDate = null;
                     SelectedBuildingsString = string.Empty;
                     FilteredAmountRange = null;
-                    SelectedAmountRange = new Tuple<int, int>(0, 5000);
+                    SelectedAmountRange = new Tuple<int?, int?>(0, 5000);
                     FilterKeywords = string.Empty;
-                    Dictionary<string, object> parameters = new Dictionary<string, object>
-                    {
-                        { "PageSize", 50},
-                        { "Page", CurrentListPage},
-                        { "DateFrom",FilterDueDate.StartDate}
-                    };
+                    ParameterItem = new PaymentsRequestParamContainer();
+                    ParameterItem.DateFrom = FilterDueDate.StartDate;
                     if (FilterDueDate.EndDate.HasValue)
                     {
-                        parameters.Add("DateTo", FilterDueDate.EndDate.Value);
+                        ParameterItem.DateTo = FilterDueDate.EndDate.Value;
                     }
-                    FetchedPayments = await DataAccess.GetPaymentsAsync(parameters);
+                    FetchedPayments = await DataAccess.GetPaymentsAsync(ParameterItem);
                     tcs?.SetResult(true);
                 }
                 return new FreshAwaitCommand(execute);

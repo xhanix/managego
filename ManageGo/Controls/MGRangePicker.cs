@@ -27,8 +27,8 @@ namespace ManageGo.Controls
         public bool MovingTopKnob { get; private set; }
         public bool MovingBottomKnob { get; private set; }
         public Tuple<float, float> TopKnobCenter { get; private set; }
-        private int RangeMax = 5000;
-        public int RangeMin { get; set; } = 0;
+        private int? RangeMax = 5000;
+        public int? RangeMin { get; set; } = 0;
 
         public Tuple<float, float> BottomKnobCenter { get; private set; }
         public double CanvasScale { get; private set; }
@@ -37,11 +37,11 @@ namespace ManageGo.Controls
         public string RangeMaxString { get; private set; } = "$5,000+";
         public string RangeMinString { get; private set; } = "$0";
 
-        public Tuple<int, int> SelectedRange
+        public Tuple<int?, int?> SelectedRange
         {
             get
             {
-                return (Tuple<int, int>)GetValue(SelectedRangeProperty);
+                return (Tuple<int?, int?>)GetValue(SelectedRangeProperty);
             }
             set
             {
@@ -50,11 +50,11 @@ namespace ManageGo.Controls
         }
 
         public static readonly BindableProperty SelectedRangeProperty =
-              BindableProperty.Create("SelectedRange", typeof(Tuple<int, int>), typeof(MGRangePicker), null, BindingMode.TwoWay, propertyChanged: (BindableObject bindable, object oldValue, object newValue) =>
+              BindableProperty.Create("SelectedRange", typeof(Tuple<int?, int?>), typeof(MGRangePicker), null, BindingMode.TwoWay, propertyChanged: (BindableObject bindable, object oldValue, object newValue) =>
               {
                   var control = (MGRangePicker)bindable;
-                  var _newVal = (Tuple<int, int>)newValue;
-                  var _oldVal = (Tuple<int, int>)oldValue;
+                  var _newVal = (Tuple<int?, int?>)newValue;
+                  var _oldVal = (Tuple<int?, int?>)oldValue;
 
               });
 
@@ -151,13 +151,15 @@ namespace ManageGo.Controls
                 // set the knob locations on first draw pass
                 // get y for top of line
                 if (SelectedRange is null)
-                    SelectedRange = new Tuple<int, int>(0, 5000);
-                var topSteps = (5000 - SelectedRange.Item2) / StepDollarValue;
-                var bottomSteps = SelectedRange.Item1 / StepDollarValue;
+                    SelectedRange = new Tuple<int?, int?>(0, 5000);
+                var maxValue = SelectedRange.Item2 ?? 5000;
+                var minValue = SelectedRange.Item1 ?? 0;
+                var topSteps = (5000 - maxValue) / StepDollarValue;
+                var bottomSteps = minValue / StepDollarValue;
                 TopKnobCenter = new Tuple<float, float>(halfWidth, 50 + (topSteps * StepSize));
                 BottomKnobCenter = new Tuple<float, float>(halfWidth, (info.Height - 50) - (bottomSteps * StepSize));
-                RangeMax = SelectedRange.Item2;
-                RangeMin = SelectedRange.Item1;
+                RangeMax = maxValue;
+                RangeMin = minValue;
             }
             else
             {
@@ -179,7 +181,7 @@ namespace ManageGo.Controls
                     if (topDollarValue - RangeMin >= StepDollarValue * 3)
                     {
                         TopKnobCenter = new Tuple<float, float>(halfWidth, 50 + (numOfSteps * StepSize));
-                        RangeMax = (int)Math.Max(RangeMin, topDollarValue);
+                        RangeMax = (int)Math.Max(RangeMin.Value, topDollarValue);
 
                         Console.WriteLine($"Max value: {RangeMax}");
 
@@ -196,15 +198,15 @@ namespace ManageGo.Controls
                     {
                         BottomKnobCenter = new Tuple<float, float>(halfWidth, info.Height - (numOfSteps * StepSize) - 50);
                         //get distance from topknobCenter to top of the view
-                        RangeMin = (int)Math.Min(RangeMax, bottomDollarValue);
+                        RangeMin = (int)Math.Min(RangeMax.Value, bottomDollarValue);
                         Console.WriteLine($"Min value: {RangeMin}");
 
                     }
                 }
-                SelectedRange = new Tuple<int, int>(RangeMin, RangeMax);
+                SelectedRange = new Tuple<int?, int?>(RangeMin, RangeMax);
             }
-            RangeMinString = RangeMin.ToString("C0");
-            RangeMaxString = RangeMax.ToString("C0") + (Math.Abs(RangeMax - 5000) < float.Epsilon ? "+" : "");
+            RangeMinString = RangeMin?.ToString("C0");
+            RangeMaxString = RangeMax?.ToString("C0") + (Math.Abs(RangeMax.Value - 5000) < float.Epsilon ? "+" : "");
             canvas.Clear();
             // draw line in between --order of drawing is important
             canvas.DrawLine(halfWidth, 50,

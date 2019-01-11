@@ -813,24 +813,66 @@ namespace ManageGo
                     {
                         case "DueDates":
                             FilterDueDateExpanded = !FilterDueDateExpanded;
+                            FilterUsersExpanded = false;
+                            FilterTagsExpanded = false;
+                            FilterCategoriesExpanded = false;
+                            FilterStatusExpanded = false;
+                            FilterPrioritiesExpanded = false;
+                            FilterBuildingsExpanded = false;
                             break;
                         case "Users":
                             FilterUsersExpanded = !FilterUsersExpanded;
+                            FilterDueDateExpanded = false;
+                            FilterTagsExpanded = false;
+                            FilterCategoriesExpanded = false;
+                            FilterStatusExpanded = false;
+                            FilterPrioritiesExpanded = false;
+                            FilterBuildingsExpanded = false;
                             break;
                         case "Tags":
                             FilterTagsExpanded = !FilterTagsExpanded;
+                            FilterUsersExpanded = false;
+                            FilterDueDateExpanded = false;
+                            FilterCategoriesExpanded = false;
+                            FilterStatusExpanded = false;
+                            FilterPrioritiesExpanded = false;
+                            FilterBuildingsExpanded = false;
                             break;
                         case "Categories":
                             FilterCategoriesExpanded = !FilterCategoriesExpanded;
+                            FilterTagsExpanded = false;
+                            FilterUsersExpanded = false;
+                            FilterDueDateExpanded = false;
+                            FilterStatusExpanded = false;
+                            FilterPrioritiesExpanded = false;
+                            FilterBuildingsExpanded = false;
                             break;
                         case "Status":
                             FilterStatusExpanded = !FilterStatusExpanded;
+                            FilterCategoriesExpanded = false;
+                            FilterTagsExpanded = false;
+                            FilterUsersExpanded = false;
+                            FilterDueDateExpanded = false;
+                            FilterPrioritiesExpanded = false;
+                            FilterBuildingsExpanded = false;
                             break;
                         case "Priority":
                             FilterPrioritiesExpanded = !FilterPrioritiesExpanded;
+                            FilterStatusExpanded = false;
+                            FilterCategoriesExpanded = false;
+                            FilterTagsExpanded = false;
+                            FilterUsersExpanded = false;
+                            FilterDueDateExpanded = false;
+                            FilterBuildingsExpanded = false;
                             break;
                         case "Buildings":
                             FilterBuildingsExpanded = !FilterBuildingsExpanded;
+                            FilterPrioritiesExpanded = false;
+                            FilterStatusExpanded = false;
+                            FilterCategoriesExpanded = false;
+                            FilterTagsExpanded = false;
+                            FilterUsersExpanded = false;
+                            FilterDueDateExpanded = false;
                             break;
                         default:
                             break;
