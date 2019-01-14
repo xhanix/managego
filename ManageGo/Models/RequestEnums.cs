@@ -4,9 +4,9 @@ namespace ManageGo
 
     public enum TicketPriorities
     {
-        Open,
-        Closed,
-        Unread,
+        Low,
+        Medium,
+        High,
     }
 
     public enum TicketStatus

@@ -156,7 +156,6 @@
         <Frame IsVisible="{Binding IsLoading}" BackgroundColor="Transparent" Grid.Row="2" HasShadow="false"  VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand">
             <StackLayout>
                 <ActivityIndicator Color="Gray" IsRunning="true" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" />
-                <Label Text="Searching..." FontSize="Small" HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center" TextColor="{StaticResource Grey-Dark-1}"/>
             </StackLayout>
         </Frame>
               <StackLayout Grid.Row="2" VerticalOptions="CenterAndExpand" 

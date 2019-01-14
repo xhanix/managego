@@ -74,10 +74,9 @@ namespace ManageGo
                     try
                     {
                         var ticketDetails = await Services.DataAccess.GetTicketDetails(ticketId);
-                        var ticket = await Services.DataAccess.GetTicketsAsync(new Dictionary<string, object> {
-                        {"Page", 0 },
-                        {"PageSize", 1},
-                        {"Ticket", ticketId}
+                        var ticket = await Services.DataAccess.GetTicketsAsync(new TicketRequestParamContainer
+                        {
+                            Ticket = ticketId
                         });
 
                         var dic = new Dictionary<string, object>
@@ -117,7 +116,7 @@ namespace ManageGo
             }
         }
 
-        internal override async Task LoadData(bool refreshData = false, bool applyNewFilter = false)
+        internal override async Task LoadData(bool refreshData = false, bool FetchNextPage = false)
         {
             HasLoaded = false;
             var dic = new Dictionary<string, object>

@@ -4,7 +4,7 @@ using PropertyChanged;
 
 namespace ManageGo
 {
-    [AddINotifyPropertyChangedInterface]
+    [AddINotifyPropertyChangedInterface, Serializable]
     public class Tags
     {
         public string TagName { get; set; }

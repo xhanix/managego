@@ -4,7 +4,7 @@ using PropertyChanged;
 
 namespace ManageGo
 {
-    [AddINotifyPropertyChangedInterface]
+    [AddINotifyPropertyChangedInterface, Serializable]
     public class Categories
     {
         public string CategoryName { get; set; }

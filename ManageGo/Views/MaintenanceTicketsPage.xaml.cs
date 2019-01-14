@@ -7,10 +7,12 @@ namespace ManageGo
 {
     public partial class MaintenanceTicketsPage : ContentPage
     {
+        public event EventHandler<MaintenanceTicket> OnTicketAppeared;
         public MaintenanceTicketsPage()
         {
             InitializeComponent();
             NavigationPage.SetHasNavigationBar(this, false);
+
 
         }
 
@@ -49,7 +51,7 @@ namespace ManageGo
 
         void Handle_ItemAppearing(object sender, ItemVisibilityEventArgs e)
         {
-            ((MaintenanceTicketsPageModel)this.BindingContext).OnItemAppeared((MaintenanceTicket)e.Item);
+            OnTicketAppeared?.Invoke(this, (MaintenanceTicket)e.Item);
         }
     }
 }

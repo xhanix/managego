@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using PropertyChanged;
 
 namespace ManageGo
 {
-    [AddINotifyPropertyChangedInterface]
+    [AddINotifyPropertyChangedInterface, Serializable]
     public class Unit
     {
         public int BuildingId { get; set; }

@@ -85,7 +85,7 @@ namespace ManageGo
                         App.MasterDetailNav.IsPresented = false;
                         model.NumberOfAppliedFilters = " ";
                         model.DateRange = null;
-                        model.FiltersDictionary = null;
+                        model.ParameterItem = null;
                         await model.LoadData(true, true);
                     }
                     else

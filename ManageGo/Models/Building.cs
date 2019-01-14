@@ -5,7 +5,7 @@ using PropertyChanged;
 
 namespace ManageGo
 {
-    [AddINotifyPropertyChangedInterface]
+    [AddINotifyPropertyChangedInterface, Serializable]
     public class Building : IComparable
     {
         public int BuildingId { get; set; }

@@ -309,7 +309,7 @@ namespace ManageGo.Services
 
         #region TICKETS
 
-        public static async Task<List<MaintenanceTicket>> GetTicketsAsync(Dictionary<string, object> filters)
+        internal static async Task<List<MaintenanceTicket>> GetTicketsAsync(TicketRequestParamContainer filters)
         {
             if (TokenExpiry < DateTimeOffset.Now)
                 await Login();
@@ -320,11 +320,10 @@ namespace ManageGo.Services
                 Content = content
             };
             var response = await client.SendAsync(msg);
-
             return await GetTicketsFromResponse(response);
         }
 
-        internal static async Task<List<MaintenanceTicket>> GetTickets(TicketRequest param)
+        internal static async Task<List<MaintenanceTicket>> GetTickets(TicketRequestParamContainer param)
         {
             if (TokenExpiry < DateTimeOffset.Now)
                 await Login();

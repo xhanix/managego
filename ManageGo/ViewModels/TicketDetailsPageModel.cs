@@ -917,14 +917,13 @@ namespace ManageGo
             base.ViewIsAppearing(sender, e);
             if (Data is null)
                 return;
-            Object _ticket = null;
             if (Data.TryGetValue("TicketNumber", out object ticketNumber))
-                TicketTitle = $"Ticket #{(string)ticketNumber}";
+                TicketTitle = $"Ticket T{(string)ticketNumber}";
             if (Data.TryGetValue("Address", out object address))
                 TicketAddress = (string)address;
             if (Data.TryGetValue("TicketTitleText", out object subject))
                 TicketTitleText = (string)subject;
-            Data.TryGetValue("Ticket", out _ticket);
+            Data.TryGetValue("Ticket", out object _ticket);
             if (Data.TryGetValue("TicketDetails", out object ticketDetails))
             {
                 TicketDetails = ticketDetails as TicketDetails;

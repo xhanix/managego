@@ -21,6 +21,31 @@ namespace ManageGo.Models
         public DateTime DateFrom { get; set; } = DateTime.Today;
         public DateTime? DateTo { get; set; }
 
+
+
+        [JsonIgnore]
+        public int NumberOfAppliedFilters
+        {
+            get
+            {
+                var n = 0;
+                if (Buildings != null)
+                    n++;
+                if (DateTo != null)
+                    n++;
+                if (AmountFrom != null)
+                    n++;
+                if (AmountTo != null)
+                    n++;
+                if (Tenants != null)
+                    n++;
+                if (Units != null)
+                    n++;
+                if (!string.IsNullOrWhiteSpace(Search))
+                    n++;
+                return n;
+            }
+        }
         public PaymentsRequestParamContainer Clone()
         {
             using (var ms = new MemoryStream())
