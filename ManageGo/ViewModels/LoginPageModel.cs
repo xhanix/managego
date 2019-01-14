@@ -6,6 +6,7 @@ using PropertyChanged;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AppCenter.Crashes;
 
 namespace ManageGo
 {
@@ -33,9 +34,11 @@ namespace ManageGo
         }
         [AlsoNotifyFor("AuthCheckBoxIcon")]
         public bool IsBiometricsEnabled { get; private set; }
-        public LoginPageModel()
+        protected override async void ViewIsAppearing(object sender, EventArgs e)
         {
-            var userName = Preferences.Get("UserName", "****");
+            base.ViewIsAppearing(sender, e);
+
+            var userName = await SecureStorage.GetAsync("UserName") ?? "****";
             userName = userName.Substring(0, Math.Min(userName.Length - 1, 4)) + "****";
             LocalAuthType authType = DependencyService.Get<ILocalAuthHelper>().GetLocalAuthType();
             var isBioLoginEnabled = Preferences.Get("IsBiometricAuthEnabled", false);
@@ -68,56 +71,59 @@ namespace ManageGo
                 }
                 else
                 {
-                    // we dont need to show this with the new API
+                    // we dont need to show this with the new iOS API
                     BioLoginButtonText = Device.RuntimePlatform ==
                     Device.iOS ? "Log in with Touch ID"
                                 : authType == LocalAuthType.NewAndroidBiometric ?
                                     "Log in with fingerprint" : $"Touch fingerprint sensor to log in as {userName}";
                     IsBioLoginVisible = true;
                 }
-                void onSuccess()
-                {
-                    async void action() =>
-                           await FinishLogin(isBiometricLogin: true);
-                    Device.BeginInvokeOnMainThread(action);
-                }
 
-                async void onFailure()
+                void onFailure()
                 {
                     //do nothing
                     // we dont need to show this with the new Android API 28
                     if (Device.RuntimePlatform == Device.Android && authType != LocalAuthType.NewAndroidBiometric)
                     {
-                        await CoreMethods.DisplayAlert("ManageGo", "Fingerpring authentication failed", "DISMISS");
+                        Device.BeginInvokeOnMainThread(async () =>
+                        {
+                            await CoreMethods.DisplayAlert("ManageGo", "Fingerpring authentication failed", "DISMISS");
+                        });
+
                     }
                 }
-                DependencyService.Get<ILocalAuthHelper>().Authenticate(userName, onSuccess, onFailure);
+                DependencyService.Get<ILocalAuthHelper>().Authenticate(userName, OnBiometricAuthSuccess, onFailure);
             }
 
+        }
+
+        private void OnBiometricAuthSuccess()
+        {
+
+            Device.BeginInvokeOnMainThread(async () =>
+            {
+                UserEmail = await SecureStorage.GetAsync("UserName");
+                UserPassword = await SecureStorage.GetAsync("Password");
+                await FinishLogin(isBiometricLogin: true);
+            }
+            );
         }
 
         public FreshAwaitCommand OnBioLoginButtonTapped
         {
             get
             {
-                return new FreshAwaitCommand((tcs) =>
+                return new FreshAwaitCommand(async (tcs) =>
                 {
                     if (Device.RuntimePlatform == Device.Android && DeviceInfo.Version < Version.Parse("9.0"))
                     {
                         return;
                     }
-                    void onSuccess()
-                    {
-                        Device.BeginInvokeOnMainThread(async () =>
-                            await FinishLogin(isBiometricLogin: true)
-                        );
-                    }
-                    void onFailure()
-                    {
-                        //do nothing
-                    }
-                    var userName = Preferences.Get("UserName", "****").Substring(0, 4) + "****";
-                    DependencyService.Get<ILocalAuthHelper>().Authenticate(userName, onSuccess, onFailure);
+
+
+                    var userName = await SecureStorage.GetAsync("UserName") ?? "****";
+                    userName = userName.Substring(0, 4) + "****";
+                    DependencyService.Get<ILocalAuthHelper>().Authenticate(userName, OnBiometricAuthSuccess, null);
                     tcs?.SetResult(true);
                 });
             }
@@ -148,8 +154,8 @@ namespace ManageGo
                 Preferences.Set("IsFirstLogin", false);
                 if (!isBiometricLogin)
                 {
-                    Preferences.Set("UserName", UserEmail);
-                    Preferences.Set("Password", UserPassword);
+                    await SecureStorage.SetAsync("UserName", UserEmail);
+                    await SecureStorage.SetAsync("Password", UserPassword);
                     Preferences.Set("IsBiometricAuthEnabled", IsBiometricsEnabled);
                 }
                 List<Task> tasks = new List<Task>();
@@ -168,6 +174,7 @@ namespace ManageGo
             }
             catch (Exception ex)
             {
+                Crashes.TrackError(ex);
                 await CoreMethods.DisplayAlert("ManageGo", ex.Message, "DISMISS");
             }
             finally

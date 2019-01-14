@@ -19,25 +19,15 @@ namespace ManageGo.Services
 
         public static async Task<object> Login(string userName = null, string password = null)
         {
-            //todo: may need to remove this at some point
-#if DEBUG
-            //  userName = "pmc@mobile.test";
-            //  password = "111111";
-#endif
-
             Dictionary<string, string> credentials = new Dictionary<string, string>
             {
                 { "login", userName },
                 { "password", password }
             };
-
-            //todo: fix error when user not found in release mode
             var content = new FormUrlEncodedContent(credentials);
             var response = await client.PostAsync(BaseUrl + APIpaths.authorize, content);
             var responseString = await response.Content.ReadAsStringAsync();
-            //create jobject from response
             var responseObject = JObject.Parse(responseString);
-            //get the result jtoken
             if (responseObject.TryGetValue("Result", out JToken result))
             {
                 if (result.ToObject<object>() is null)
@@ -51,8 +41,6 @@ namespace ManageGo.Services
                         throw new Exception("Unable to log in");
                     }
                 }
-
-                //result is a dictionary of jobjects
                 var jResult = result.ToObject<Dictionary<string, JObject>>();
                 //get user-info
                 if (jResult.TryGetValue(APIkeys.UserInfo.ToString(), out JObject userInfo))

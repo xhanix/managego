@@ -8,6 +8,7 @@ using PropertyChanged;
 using System.Linq;
 using Xamarin.Essentials;
 using System.Threading;
+using Microsoft.AppCenter.Crashes;
 
 namespace ManageGo
 {
@@ -348,8 +349,9 @@ namespace ManageGo
                     HasLoaded = true;
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                Crashes.TrackError(ex, new Dictionary<string, string> { { "Class", this.GetType().FullName } });
                 APIhasFailed = true;
                 FetchedTickets = null;
                 NothingFetched = true;
