@@ -92,6 +92,7 @@
                           IsRefreshing="{Binding IsRefreshingList}"
                           RefreshCommand="{Binding OnPulledToRefresh}"
                           SeparatorVisibility="None" Margin="22,18,22,18" 
+                                         ItemAppearing="Handle_ItemAppearing"
                           >
                     <x:Arguments>
                         <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>

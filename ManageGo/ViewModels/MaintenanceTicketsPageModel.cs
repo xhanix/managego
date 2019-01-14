@@ -263,13 +263,10 @@ namespace ManageGo
                     ParameterItem.Page++;
                     var nextPage = await Services.DataAccess.GetTicketsAsync(ParameterItem);
                     CanGetMorePages = nextPage.Count == ParameterItem.PageSize;
-                    Console.WriteLine($"Can get more pages: {CanGetMorePages}");
-                    Console.WriteLine($"Number of tickets before next page: {FetchedTickets.Count}");
                     foreach (var item in nextPage)
                     {
                         FetchedTickets.Add(item);
                     }
-                    Console.WriteLine($"Number of tickets after adding next page: {FetchedTickets.Count}");
                     var lastIdx = FetchedTickets.IndexOf(FetchedTickets.Last());
                     var index = Math.Floor(lastIdx / 2d);
                     var markedItem = FetchedTickets.ElementAt((int)index);

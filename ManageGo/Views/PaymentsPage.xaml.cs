@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ManageGo.Models;
 using Xamarin.Forms;
 
 namespace ManageGo
@@ -12,6 +13,8 @@ namespace ManageGo
             InitializeComponent();
             NavigationPage.SetHasNavigationBar(this, false);
         }
+
+        public event EventHandler<Payment> OnPaymentAppeared;
 
         protected override bool OnBackButtonPressed()
         {
@@ -50,6 +53,13 @@ namespace ManageGo
                 var row = p as ViewCell;
                 row.ForceUpdateSize();
             }
+        }
+
+
+
+        void Handle_ItemAppearing(object sender, ItemVisibilityEventArgs e)
+        {
+            OnPaymentAppeared?.Invoke(this, (Payment)e.Item);
         }
     }
 }

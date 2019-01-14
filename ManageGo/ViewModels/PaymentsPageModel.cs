@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CustomCalendar;
@@ -18,14 +19,15 @@ namespace ManageGo
         public View RangePickerView { get; set; }
         int CurrentListPage { get; set; } = 1;
         DateRange dateRange;
-
+        public bool CanGetMorePages { get; private set; }
+        public int LastLoadedItemId { get; private set; }
         public bool IsRefreshingList { get; set; }
         public PaymentsRequestParamContainer CurrentFilter { get; private set; }
         PaymentsRequestParamContainer ParameterItem { get; set; }
         public bool FilterSelectViewIsShown { get; set; }
         public bool RangeSelectorIsShown { get; private set; }
-        List<Payment> fetchedPayments;
-        public List<Payment> FetchedPayments
+        ObservableCollection<Payment> fetchedPayments;
+        public ObservableCollection<Payment> FetchedPayments
         {
             get { return fetchedPayments; }
             set
@@ -206,16 +208,29 @@ namespace ManageGo
 
         internal override async Task LoadData(bool refreshData = false, bool FetchNextPage = false)
         {
+            NothingFetched = false;
+            HasLoaded = false;
             try
             {
                 if (refreshData && ParameterItem != null)
                 {
-                    FetchedPayments = await DataAccess.GetPaymentsAsync(ParameterItem);
+                    ParameterItem.Page = 1;
+                    FetchedPayments = new ObservableCollection<Payment>(
+                         await DataAccess.GetPaymentsAsync(ParameterItem));
+                    CanGetMorePages = FetchedPayments.Count == ParameterItem.PageSize;
+
+
                 }
                 else if (FetchNextPage && ParameterItem != null)
                 {
                     ParameterItem.Page++;
-                    FetchedPayments = await DataAccess.GetPaymentsAsync(ParameterItem);
+                    var nextPage = await Services.DataAccess.GetPaymentsAsync(ParameterItem);
+                    CanGetMorePages = nextPage.Count == ParameterItem.PageSize;
+                    foreach (var item in nextPage)
+                    {
+                        FetchedPayments.Add(item);
+                    }
+
                 }
                 else
                 {
@@ -223,11 +238,20 @@ namespace ManageGo
                     {
                         DateFrom = FilterDueDate.StartDate
                     };
-                    if (FilterDueDate.EndDate.HasValue)
-                        ParameterItem.DateTo = FilterDueDate.EndDate.Value;
-                    FetchedPayments = await DataAccess.GetPaymentsAsync(ParameterItem);
-                    HasLoaded = true;
+                    ParameterItem.DateTo = FilterDueDate.EndDate;
+                    FetchedPayments = new ObservableCollection<Payment>(
+                           await DataAccess.GetPaymentsAsync(ParameterItem));
+                    CanGetMorePages = FetchedPayments.Count == ParameterItem.PageSize;
+
                 }
+                if (CanGetMorePages)
+                {
+                    var lastIdx = FetchedPayments.IndexOf(FetchedPayments.Last());
+                    var index = Math.Floor(lastIdx / 2d);
+                    var markedItem = FetchedPayments.ElementAt((int)index);
+                    LastLoadedItemId = markedItem.PaymentId;
+                }
+
             }
             catch (Exception ex)
             {
@@ -236,6 +260,29 @@ namespace ManageGo
                 FetchedPayments = null;
                 await CoreMethods.DisplayAlert("Something went wrong", "Unable to get payment records. Connect to network and try again", "Try again", "Dismiss");
             }
+            finally
+            {
+                HasLoaded = true;
+                if (FetchedPayments is null || !FetchedPayments.Any())
+                {
+                    NothingFetched = true;
+                }
+            }
+        }
+
+        public override void Init(object initData)
+        {
+            base.Init(initData);
+            async void p(object sender, Payment e)
+            {
+                var id = e.PaymentId;
+                if (id == LastLoadedItemId && CanGetMorePages)
+                {
+                    LastLoadedItemId = 0;
+                    await LoadData(refreshData: false, FetchNextPage: true);
+                }
+            }
+            ((PaymentsPage)this.CurrentPage).OnPaymentAppeared += p;
         }
 
         public FreshAwaitCommand OnPulledToRefresh
@@ -334,7 +381,7 @@ namespace ManageGo
 
         private async Task SetupFilterViewForSelectedUnits()
         {
-            if (Units.Count(t => t.IsSelected) == 1)
+            if (Units != null && Units.Count(t => t.IsSelected) == 1)
             {
                 SelectedUnitString = Units.First(t => t.IsSelected).UnitName;
                 var dic = new Dictionary<string, object>
@@ -344,13 +391,13 @@ namespace ManageGo
                 SelectedTenantString = string.Empty;
                 Tenants = await DataAccess.GetTenantsAsync(dic);
             }
-            else if (Units.Count(t => t.IsSelected) > 1)
+            else if (Units != null && Units.Count(t => t.IsSelected) > 1)
             {
                 SelectedUnitString = SelectedUnitString + ", +" + (Units.Count(t => t.IsSelected) - 1).ToString() + " more";
                 Tenants?.Clear();
                 SelectedTenantString = string.Empty;
             }
-            else if (!Units.Any(b => b.IsSelected))
+            else if (Units is null || !Units.Any(b => b.IsSelected))
             {
                 Tenants?.Clear();
                 SelectedUnitString = "Select";
@@ -360,9 +407,9 @@ namespace ManageGo
 
         private void SetupFilterViewForSelectedTenants()
         {
-            if (Tenants.Count(t => t.IsSelected) == 1)
+            if (Tenants != null && Tenants.Count(t => t.IsSelected) == 1)
                 SelectedTenantString = Tenants.First(t => t.IsSelected).FullName;
-            else if (Tenants.Count(t => t.IsSelected) > 1)
+            else if (Tenants != null && Tenants.Count(t => t.IsSelected) > 1)
                 SelectedTenantString = SelectedTenantString + ", " + (Tenants.Count(t => t.IsSelected) - 1).ToString() + " more";
             else
                 SelectedTenantString = string.Empty;
@@ -527,13 +574,10 @@ namespace ManageGo
                         }
                         if (!string.IsNullOrWhiteSpace(FilterKeywords))
                             ParameterItem.Search = FilterKeywords;
-
                         ParameterItem.DateFrom = FilterDueDate.StartDate;
-                        if (FilterDueDate.EndDate.HasValue)
-                            ParameterItem.DateTo = FilterDueDate.EndDate.Value;
-                        NothingFetched = false;
-                        HasLoaded = false;
-                        FetchedPayments = await DataAccess.GetPaymentsAsync(ParameterItem);
+                        ParameterItem.DateTo = FilterDueDate.EndDate;
+                        await LoadData(refreshData: true, FetchNextPage: false);
+
                     }
                     catch (Exception ex)
                     {
@@ -614,6 +658,7 @@ namespace ManageGo
                 async void execute(TaskCompletionSource<bool> tcs)
                 {
                     PopContentView = null;
+                    FilterSelectViewIsShown = false;
                     CurrentFilter = null;
                     if (Buildings != null)
                     {
@@ -649,7 +694,8 @@ namespace ManageGo
                     };
                     if (FilterDueDate.EndDate.HasValue)
                         ParameterItem.DateTo = FilterDueDate.EndDate.Value;
-                    FetchedPayments = await DataAccess.GetPaymentsAsync(ParameterItem);
+                    FetchedPayments = new ObservableCollection<Payment>(
+                     await DataAccess.GetPaymentsAsync(ParameterItem));
                     tcs?.SetResult(true);
                 }
                 return new FreshAwaitCommand(execute);
@@ -743,6 +789,7 @@ namespace ManageGo
                 return new FreshAwaitCommand(execute);
             }
         }
+
 
     }
 }
