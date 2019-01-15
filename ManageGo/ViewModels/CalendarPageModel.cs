@@ -74,7 +74,7 @@ namespace ManageGo
                     try
                     {
                         var ticketDetails = await Services.DataAccess.GetTicketDetails(ticketId);
-                        var ticket = await Services.DataAccess.GetTicketsAsync(new TicketRequestParamContainer
+                        var ticket = await Services.DataAccess.GetTicketsAsync(new TicketRequestItem
                         {
                             Ticket = ticketId
                         });

@@ -46,9 +46,6 @@ namespace ManageGo
                 MyListView.ScrollTo(((MaintenanceTicketsPageModel)BindingContext).FetchedTickets[0], ScrollToPosition.Start, false);
         }
 
-
-
-
         void Handle_ItemAppearing(object sender, ItemVisibilityEventArgs e)
         {
             OnTicketAppeared?.Invoke(this, (MaintenanceTicket)e.Item);

@@ -83,11 +83,15 @@
                 <ContentView BackgroundColor="White" Content="{Binding PopContentView}" VerticalOptions="StartAndExpand"/>
             </StackLayout>
             <StackLayout BackgroundColor="{StaticResource Grey-Light-2}" Grid.Row="2">
-                <ListView ItemsSource="{Binding FetchedTransactions}" 
+                <controls:NestedListView ItemsSource="{Binding FetchedTransactions}" 
                           SelectionMode="None" HasUnevenRows="true" 
                           BackgroundColor="Transparent" 
+                          ItemAppearing="Handle_ItemAppearing"
                           SeparatorVisibility="None" Margin="22,18,22,18" 
-                          CachingStrategy="RecycleElement">
+                          >
+                    <x:Arguments>
+                        <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
+                    </x:Arguments>
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
@@ -166,7 +170,7 @@
                             </ViewCell>
                         </DataTemplate>
                     </ListView.ItemTemplate>
-                </ListView>
+                </controls:NestedListView>
             </StackLayout>
              <Frame IsVisible="{Binding IsLoading}" 
                     Grid.Row="2" HasShadow="false" 

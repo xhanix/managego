@@ -309,7 +309,7 @@ namespace ManageGo.Services
 
         #region TICKETS
 
-        internal static async Task<List<MaintenanceTicket>> GetTicketsAsync(TicketRequestParamContainer filters)
+        internal static async Task<List<MaintenanceTicket>> GetTicketsAsync(TicketRequestItem filters)
         {
             if (TokenExpiry < DateTimeOffset.Now)
                 await Login();
@@ -323,7 +323,7 @@ namespace ManageGo.Services
             return await GetTicketsFromResponse(response);
         }
 
-        internal static async Task<List<MaintenanceTicket>> GetTickets(TicketRequestParamContainer param)
+        internal static async Task<List<MaintenanceTicket>> GetTickets(TicketRequestItem param)
         {
             if (TokenExpiry < DateTimeOffset.Now)
                 await Login();
@@ -483,7 +483,7 @@ namespace ManageGo.Services
 
 
         #region Payments
-        internal static async Task<List<Models.Payment>> GetPaymentsAsync(PaymentsRequestParamContainer filtersDictionary)
+        internal static async Task<List<Models.Payment>> GetPaymentsAsync(PaymentsRequestItem filtersDictionary)
         {
             var jsonString = JsonConvert.SerializeObject(filtersDictionary);
             var content = new StringContent(jsonString, Encoding.UTF8, "application/json");//new FormUrlEncodedContent(filters);
@@ -496,14 +496,14 @@ namespace ManageGo.Services
             var dic = JObject.Parse(responseString);
             if (dic.TryGetValue("Result", out JToken list))
             {
-                return list.ToObject<List<Models.Payment>>();
+                return list != null ? list.ToObject<List<Models.Payment>>() : new List<Payment>();
             }
             throw new Exception("Unable to get payments");
         }
 
-        internal static async Task<List<Models.BankTransaction>> GetTransactionsAsync(Dictionary<string, object> filtersDictionary)
+        internal static async Task<List<Models.BankTransaction>> GetTransactionsAsync(TransactionsRequestItem requestParameters)
         {
-            var jsonString = JsonConvert.SerializeObject(filtersDictionary);
+            var jsonString = JsonConvert.SerializeObject(requestParameters);
             var content = new StringContent(jsonString, Encoding.UTF8, "application/json");//new FormUrlEncodedContent(filters);
             var msg = new HttpRequestMessage(HttpMethod.Post, BaseUrl + APIpaths.BankTransactions.ToString())
             {
@@ -514,7 +514,7 @@ namespace ManageGo.Services
             var dic = JObject.Parse(responseString);
             if (dic.TryGetValue("Result", out JToken list))
             {
-                return list.ToObject<List<Models.BankTransaction>>();
+                return list != null ? list.ToObject<List<Models.BankTransaction>>() : new List<BankTransaction>();
             }
             throw new Exception("Unable to get payments");
         }

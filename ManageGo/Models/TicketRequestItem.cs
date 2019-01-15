@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 namespace ManageGo
 {
     [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore), Serializable]
-    internal class TicketRequestParamContainer
+    internal class TicketRequestItem
     {
         public int PageSize { get; set; } = 50;
         public int Page { get; set; } = 1;
@@ -57,14 +57,14 @@ namespace ManageGo
             }
         }
 
-        public TicketRequestParamContainer Clone()
+        public TicketRequestItem Clone()
         {
             using (var ms = new MemoryStream())
             {
                 var formatter = new BinaryFormatter();
                 formatter.Serialize(ms, this);
                 ms.Position = 0;
-                return (TicketRequestParamContainer)formatter.Deserialize(ms);
+                return (TicketRequestItem)formatter.Deserialize(ms);
             }
         }
     }

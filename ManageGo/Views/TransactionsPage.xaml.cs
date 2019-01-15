@@ -7,6 +7,7 @@ namespace ManageGo
 {
     public partial class TransactionsPage : ContentPage
     {
+        public event EventHandler<Models.BankTransaction> OnTransactionAppeared;
         public TransactionsPage()
         {
             InitializeComponent();
@@ -32,6 +33,12 @@ namespace ManageGo
                 var row = p as ViewCell;
                 row.ForceUpdateSize();
             }
+        }
+
+
+        void Handle_ItemAppearing(object sender, ItemVisibilityEventArgs e)
+        {
+            OnTransactionAppeared?.Invoke(this, (Models.BankTransaction)e.Item);
         }
     }
 }

@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 namespace ManageGo.Models
 {
     [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore), Serializable]
-    public class PaymentsRequestParamContainer
+    public class PaymentsRequestItem
     {
         public int PageSize { get; set; } = 50;
         public int Page { get; set; } = 1;
@@ -46,14 +46,14 @@ namespace ManageGo.Models
                 return n;
             }
         }
-        public PaymentsRequestParamContainer Clone()
+        public PaymentsRequestItem Clone()
         {
             using (var ms = new MemoryStream())
             {
                 var formatter = new BinaryFormatter();
                 formatter.Serialize(ms, this);
                 ms.Position = 0;
-                return (PaymentsRequestParamContainer)formatter.Deserialize(ms);
+                return (PaymentsRequestItem)formatter.Deserialize(ms);
             }
         }
 

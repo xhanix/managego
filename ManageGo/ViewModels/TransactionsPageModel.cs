@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CustomCalendar;
 using FreshMvvm;
 using ManageGo.Models;
 using ManageGo.Services;
+using Microsoft.AppCenter.Crashes;
 using PropertyChanged;
 using Xamarin.Forms;
 
@@ -18,20 +20,20 @@ namespace ManageGo
         public View RangePickerView { get; set; }
         public string FilterKeywords { get; set; }
         DateRange dateRange;
-        [AlsoNotifyFor("NumberOfAppliedFilters")]
-        Dictionary<string, object> FilterDictionary { get; set; }
+        public TransactionsRequestItem CurrentFilter { get; private set; }
+        public TransactionsRequestItem ParameterItem { get; set; }
         public bool FilterSelectViewIsShown { get; set; }
-        public List<BankTransaction> FetchedTransactions { get; set; }
+        public ObservableCollection<BankTransaction> FetchedTransactions { get; set; }
         public bool RangeSelectorIsShown { get; private set; }
         public List<BankAccount> BankAccounts { get; private set; }
-        public Tuple<int, int> SelectedAmountRange { get; set; }
+        public Tuple<int?, int?> SelectedAmountRange { get; set; }
         public bool BackbuttonIsVisible { get; set; }
         [AlsoNotifyFor("FilterAmountString")]
-        private Tuple<int, int> FilteredAmountRange { get; set; }
+        private Tuple<int?, int?> FilteredAmountRange { get; set; }
         public bool FilterAccountsExpanded { get; set; }
         public bool FilterDateRangeExpanded { get; set; }
         public View PopContentView { get; private set; }
-        public string NumberOfAppliedFilters => FilterDictionary is null || !FilterDictionary.Keys.Any() ? " " : $"{FilterDictionary.Keys.Count}";
+
         public string SelectedAccountString { get; private set; }
         [AlsoNotifyFor("CalendarButtonText")]
         public DateRange DateRange
@@ -46,7 +48,7 @@ namespace ManageGo
                 dateRange = value;
             }
         }
-        public string RangeSelectorMin { get { return SelectedAmountRange != null ? SelectedAmountRange.Item1.ToString("C0") : ""; } }
+        public string RangeSelectorMin { get { return SelectedAmountRange != null ? SelectedAmountRange.Item1?.ToString("C0") : ""; } }
         public string RangeSelectorMax
         {
             get
@@ -55,7 +57,7 @@ namespace ManageGo
                     return string.Empty;
                 else if (SelectedAmountRange.Item2 >= 5000)
                     return "$5,000+";
-                return SelectedAmountRange.Item2.ToString("C0");
+                return SelectedAmountRange.Item2?.ToString("C0");
             }
         }
 
@@ -63,11 +65,16 @@ namespace ManageGo
         {
             get
             {
-                return FilteredAmountRange is null ||
-                    (FilteredAmountRange.Item1 == 0 && FilteredAmountRange.Item2 == 5000) ?
-                    "All" : FilteredAmountRange.Item1.ToString("C0") + " - " +
-                    (FilteredAmountRange.Item2 == 5000 ? FilteredAmountRange.Item2.ToString("C0") + "+"
-                     : FilteredAmountRange.Item2.ToString("C0"));
+                if (FilteredAmountRange is null ||
+                    (FilteredAmountRange.Item1 == 0 && FilteredAmountRange.Item2 == 5000))
+                    return "All";
+                else
+                {
+                    var minVal = FilteredAmountRange.Item1 ?? 0;
+                    var maxVal = FilteredAmountRange.Item2 ?? 5000;
+                    return minVal.ToString("C0") + " - " +
+                       (maxVal == 5000 ? maxVal.ToString("C0") + "+" : FilteredAmountRange.Item2?.ToString("C0"));
+                }
             }
         }
 
@@ -89,46 +96,85 @@ namespace ManageGo
         {
             base.Init(initData);
             BankAccounts = App.BankAccounts;
+            async void p(object sender, BankTransaction e)
+            {
+                var id = e.Id;
+                if (id == LastLoadedItemId && CanGetMorePages)
+                {
+                    LastLoadedItemId = 0;
+                    await LoadData(refreshData: false, FetchNextPage: true);
+                }
+            }
+            ((TransactionsPage)this.CurrentPage).OnTransactionAppeared += p;
         }
 
         public bool NothingFetched { get; private set; }
 
-        internal override async Task LoadData(bool refreshData = false, bool applyNewFilter = false)
+        internal override async Task LoadData(bool refreshData = false, bool FetchNextPage = false)
         {
-
+            HasLoaded = false;
+            NothingFetched = false;
             try
             {
-                if (FilterDictionary is null || refreshData)
+                if (FetchNextPage && ParameterItem != null)
                 {
-                    Dictionary<string, object> parameters = new Dictionary<string, object>
+                    ParameterItem.Page++;
+                    var nextPage = await Services.DataAccess.GetTransactionsAsync(ParameterItem);
+                    if (nextPage != null)
                     {
-                        { "PageSize", 50},
-                        { "Page", CurrentListPage},
-                        { "DateFrom", DateRange.StartDate},
-                    };
-                    if (DateRange.EndDate.HasValue)
-                    {
-                        parameters.Add("DateTo", DateRange.EndDate.Value);
+                        foreach (var item in nextPage)
+                        {
+                            FetchedTransactions.Add(item);
+                        }
                     }
-                    FetchedTransactions = await Services.DataAccess.GetTransactionsAsync(parameters);
+                    CanGetMorePages = nextPage != null && nextPage.Count == ParameterItem.PageSize;
+                    var lastIdx = FetchedTransactions.IndexOf(FetchedTransactions.Last());
+                    var index = Math.Floor(lastIdx / 2d);
+                    var markedItem = FetchedTransactions.ElementAt((int)index);
+                    LastLoadedItemId = markedItem.Id;
                 }
                 else
                 {
-                    FetchedTransactions = await Services.DataAccess.GetTransactionsAsync(FilterDictionary);
+                    if (ParameterItem is null)
+                    {
+                        ParameterItem = new TransactionsRequestItem
+                        {
+                            DateFrom = DateRange.StartDate,
+                            DateTo = DateRange.EndDate
+                        };
+                    }
+                    if (refreshData)
+                        ParameterItem.Page = 1;
+
+                    // FetchedTickets is null on view init
+                    var fetchedTransactions = await Services.DataAccess.GetTransactionsAsync(ParameterItem);
+                    if (fetchedTransactions != null)
+                        FetchedTransactions = new ObservableCollection<BankTransaction>(fetchedTransactions);
+                    else
+                        FetchedTransactions = new ObservableCollection<BankTransaction>();
+                    CanGetMorePages = FetchedTransactions != null && FetchedTransactions.Count == ParameterItem.PageSize;
+                    if (FetchedTransactions.Any() && CanGetMorePages)
+                    {
+                        var lastIdx = FetchedTransactions.IndexOf(FetchedTransactions.Last());
+                        var index = Math.Floor(lastIdx / 2d);
+                        var markedItem = FetchedTransactions.ElementAt((int)index);
+                        LastLoadedItemId = markedItem.Id;
+                    }
+                    HasLoaded = true;
                 }
-                HasLoaded = true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Crashes.TrackError(ex);
                 APIhasFailed = true;
-                FetchedTransactions = (List<BankTransaction>)null;
-                await CoreMethods.DisplayAlert("Something went wrong", "Unable to get tickets. Connect to network and try again", "Try again", "Dismiss");
+                FetchedTransactions = null;
+                await CoreMethods.DisplayAlert("Something went wrong", $"Unable to get tickets. Message: {ex.Message}", "Try again", "Dismiss");
             }
             finally
             {
+                HasLoaded = true;
                 NothingFetched = FetchedTransactions is null || !FetchedTransactions.Any();
             }
-
         }
 
 
@@ -177,7 +223,7 @@ namespace ManageGo
             {
                 return new FreshAwaitCommand((par, tcs) =>
                 {
-                    FilteredAmountRange = new Tuple<int, int>(SelectedAmountRange.Item1, SelectedAmountRange.Item2);
+                    FilteredAmountRange = new Tuple<int?, int?>(SelectedAmountRange.Item1, SelectedAmountRange.Item2);
                     RangeSelectorIsShown = false;
                     RangePickerView = null;
                     tcs?.SetResult(true);
@@ -189,42 +235,26 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand(async (parameter, tcs) =>
+                async void execute(object parameter, TaskCompletionSource<bool> tcs)
                 {
-
                     PopContentView = null;
                     FilterSelectViewIsShown = false;
-                    Dictionary<string, object> paramDic = new Dictionary<string, object>();
-                    if (BankAccounts != null && BankAccounts.Any(f => f.IsSelected))
-                    {
-                        paramDic.Add("BankAccounts", BankAccounts.Where(f => f.IsSelected).Select(f => f.BankAccountID));
-                    }
-                    if (FilteredAmountRange != null)
-                    {
-                        if (FilteredAmountRange.Item1 > 0)
-                        {
-                            paramDic.Add("AmountFrom", FilteredAmountRange.Item1);
-                        }
-                        if (FilteredAmountRange.Item2 < 5000)
-                        {
-                            paramDic.Add("AmountTo", FilteredAmountRange.Item2);
-                        }
-                    }
+                    ParameterItem = new TransactionsRequestItem();
                     if (!string.IsNullOrWhiteSpace(FilterKeywords))
+                        ParameterItem.Search = FilterKeywords;
+                    else
                     {
-                        paramDic.Add("Search", FilterKeywords);
+                        if (BankAccounts != null && BankAccounts.Any(f => f.IsSelected))
+                            ParameterItem.BankAccounts = BankAccounts.Where(f => f.IsSelected).Select(f => f.BankAccountID).ToList();
+                        ParameterItem.AmountFrom = FilteredAmountRange?.Item1;
+                        ParameterItem.AmountTo = FilteredAmountRange?.Item2;
+                        ParameterItem.DateFrom = DateRange.StartDate;
+                        ParameterItem.DateTo = DateRange.EndDate;
                     }
-                    paramDic.Add("DateFrom", DateRange.StartDate);
-                    if (DateRange.EndDate.HasValue)
-                    {
-                        paramDic.Add("DateTo", DateRange.EndDate.Value);
-                    }
-                    FilterDictionary = paramDic;
-                    HasLoaded = false;
-                    FetchedTransactions = await DataAccess.GetTransactionsAsync(paramDic);
-                    HasLoaded = true;
+                    await LoadData(refreshData: true, FetchNextPage: false);
                     tcs?.SetResult(true);
-                });
+                }
+                return new FreshAwaitCommand(execute);
             }
         }
 
@@ -236,7 +266,8 @@ namespace ManageGo
                 {
                     PopContentView = null;
                     FilterSelectViewIsShown = false;
-                    FilterDictionary = null;
+                    ParameterItem = null;
+                    CurrentFilter = null;
                     DateRange = null;
                     if (BankAccounts != null)
                     {
@@ -247,19 +278,9 @@ namespace ManageGo
                     }
                     SelectedAccountString = string.Empty;
                     FilteredAmountRange = null;
-                    SelectedAmountRange = new Tuple<int, int>(0, 5000);
+                    SelectedAmountRange = new Tuple<int?, int?>(0, 5000);
                     FilterKeywords = string.Empty;
-                    Dictionary<string, object> parameters = new Dictionary<string, object>
-                    {
-                        { "PageSize", 50},
-                        { "Page", CurrentListPage},
-                        { "DateFrom",DateRange.StartDate}
-                    };
-                    if (DateRange.EndDate.HasValue)
-                    {
-                        parameters.Add("DateTo", DateRange.EndDate.Value);
-                    }
-                    FetchedTransactions = await DataAccess.GetTransactionsAsync(parameters);
+                    await LoadData();
                     tcs?.SetResult(true);
                 }
                 return new FreshAwaitCommand(execute);
@@ -274,6 +295,26 @@ namespace ManageGo
                 {
                     PopContentView = null;
                     FilterSelectViewIsShown = false;
+                    if (CurrentFilter != null)
+                    {
+                        if (BankAccounts != null && CurrentFilter.BankAccounts != null)
+                        {
+                            foreach (var b in BankAccounts)
+                            {
+                                if (CurrentFilter.BankAccounts.Contains(b.BankAccountID))
+                                    b.IsSelected = true;
+                                else
+                                    b.IsSelected = false;
+                            }
+                        }
+                        if (CurrentFilter.DateFrom.HasValue && CurrentFilter.DateTo.HasValue)
+                            DateRange = new DateRange(CurrentFilter.DateFrom.Value, CurrentFilter.DateTo.Value);
+                        else if (CurrentFilter.DateFrom.HasValue && !CurrentFilter.DateTo.HasValue)
+                            DateRange = new DateRange(CurrentFilter.DateFrom.Value);
+                        FilteredAmountRange = new Tuple<int?, int?>(CurrentFilter.AmountFrom, CurrentFilter.AmountTo);
+                        SelectedAmountRange = new Tuple<int?, int?>(CurrentFilter.AmountFrom, CurrentFilter.AmountTo);
+                        FilterKeywords = CurrentFilter.Search;
+                    }
                     tcs?.SetResult(true);
                 }));
             }
@@ -304,7 +345,7 @@ namespace ManageGo
                     if (FilteredAmountRange != null)
                         SelectedAmountRange = FilteredAmountRange;
                     else
-                        SelectedAmountRange = new Tuple<int, int>(0, 5000);
+                        SelectedAmountRange = new Tuple<int?, int?>(0, 5000);
                     RangePickerView = null;
                     tcs?.SetResult(true);
                 });
@@ -319,14 +360,11 @@ namespace ManageGo
                 return new FreshAwaitCommand((tcs) =>
                 {
                     if (FilterSelectViewIsShown)
-                    {
                         PopContentView = (View)null;
-                        //ListIsEnabled = true;
-                    }
                     else
                     {
+                        CurrentFilter = ParameterItem.Clone();
                         PopContentView = new Views.TransactionsFilterPage(this).Content;
-                        // ListIsEnabled = false;
                     }
                     FilterSelectViewIsShown = !FilterSelectViewIsShown;
                     tcs?.SetResult(true);
@@ -369,6 +407,7 @@ namespace ManageGo
             }
         }
 
-
+        public bool CanGetMorePages { get; private set; }
+        public int LastLoadedItemId { get; private set; }
     }
 }

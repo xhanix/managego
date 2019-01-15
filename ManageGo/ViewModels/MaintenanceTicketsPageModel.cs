@@ -18,8 +18,8 @@ namespace ManageGo
     {
         DateRange dateRange;
         public bool NothingFetched { get; private set; }
-        public TicketRequestParamContainer CurrentFilter { get; private set; }
-        public TicketRequestParamContainer ParameterItem { get; set; }
+        public TicketRequestItem CurrentFilter { get; private set; }
+        public TicketRequestItem ParameterItem { get; set; }
         public ObservableCollection<MaintenanceTicket> FetchedTickets { get; set; }
         public List<Building> Buildings { get; private set; }
 
@@ -262,11 +262,14 @@ namespace ManageGo
                 {
                     ParameterItem.Page++;
                     var nextPage = await Services.DataAccess.GetTicketsAsync(ParameterItem);
-                    CanGetMorePages = nextPage.Count == ParameterItem.PageSize;
-                    foreach (var item in nextPage)
+                    if (nextPage != null)
                     {
-                        FetchedTickets.Add(item);
+                        foreach (var item in nextPage)
+                        {
+                            FetchedTickets.Add(item);
+                        }
                     }
+                    CanGetMorePages = nextPage != null && nextPage.Count == ParameterItem.PageSize;
                     var lastIdx = FetchedTickets.IndexOf(FetchedTickets.Last());
                     var index = Math.Floor(lastIdx / 2d);
                     var markedItem = FetchedTickets.ElementAt((int)index);
@@ -276,21 +279,23 @@ namespace ManageGo
                 {
                     if (ParameterItem is null)
                     {
-                        ParameterItem = new TicketRequestParamContainer
+                        ParameterItem = new TicketRequestItem
                         {
                             Status = TicketStatus.Open,
                             DateFrom = DateRange.StartDate,
                             DateTo = DateRange.EndDate
                         };
                     }
-
                     if (refreshData)
                         ParameterItem.Page = 1;
 
                     // FetchedTickets is null on view init
-                    FetchedTickets = new ObservableCollection<MaintenanceTicket>(
-                         await Services.DataAccess.GetTicketsAsync(ParameterItem));
-                    CanGetMorePages = FetchedTickets.Count == ParameterItem.PageSize;
+                    var fetchedTickets = await Services.DataAccess.GetTicketsAsync(ParameterItem);
+                    if (fetchedTickets != null)
+                        FetchedTickets = new ObservableCollection<MaintenanceTicket>(fetchedTickets);
+                    else
+                        FetchedTickets = new ObservableCollection<MaintenanceTicket>();
+                    CanGetMorePages = FetchedTickets != null && FetchedTickets.Count == ParameterItem.PageSize;
                     if (FetchedTickets.Any() && CanGetMorePages)
                     {
                         var lastIdx = FetchedTickets.IndexOf(FetchedTickets.Last());
@@ -308,7 +313,7 @@ namespace ManageGo
                 APIhasFailed = true;
                 FetchedTickets = null;
                 NothingFetched = true;
-                if (await CoreMethods.DisplayAlert("Something went wrong", "Unable to get tickets. Connect to network and try again", "Try again", "Dismiss"))
+                if (await CoreMethods.DisplayAlert("Something went wrong", $"Unable to get tickets. Error Message: {ex.Message}", "Try again", "Dismiss"))
                 {
                     if (!this.IsLoading)
                         await this.LoadData();
@@ -639,7 +644,7 @@ namespace ManageGo
                 {
                     PopContentView = null;
                     FilterSelectViewIsShown = false;
-                    ParameterItem = new TicketRequestParamContainer();
+                    ParameterItem = new TicketRequestItem();
                     if (!string.IsNullOrWhiteSpace(FilterKeywords))
                         ParameterItem.Search = FilterKeywords;
                     else
@@ -780,7 +785,7 @@ namespace ManageGo
                         {
                             this.DateRange = cal.SelectedDates;
                             OnCalendarButtonTapped.Execute(null);
-                            ParameterItem = new TicketRequestParamContainer
+                            ParameterItem = new TicketRequestItem
                             {
                                 DateFrom = DateRange.StartDate,
                                 DateTo = DateRange.EndDate
@@ -921,7 +926,7 @@ namespace ManageGo
                 Categories = App.Categories;
                 Tags = App.Tags;
                 Users = App.Users;
-                ParameterItem = new TicketRequestParamContainer
+                ParameterItem = new TicketRequestItem
                 {
                     Buildings = new List<int> { buildingId },
                     Status = TicketStatus.Open

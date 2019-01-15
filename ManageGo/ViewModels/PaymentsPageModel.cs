@@ -22,8 +22,8 @@ namespace ManageGo
         public bool CanGetMorePages { get; private set; }
         public int LastLoadedItemId { get; private set; }
         public bool IsRefreshingList { get; set; }
-        public PaymentsRequestParamContainer CurrentFilter { get; private set; }
-        PaymentsRequestParamContainer ParameterItem { get; set; }
+        public PaymentsRequestItem CurrentFilter { get; private set; }
+        PaymentsRequestItem ParameterItem { get; set; }
         public bool FilterSelectViewIsShown { get; set; }
         public bool RangeSelectorIsShown { get; private set; }
         ObservableCollection<Payment> fetchedPayments;
@@ -215,9 +215,13 @@ namespace ManageGo
                 if (refreshData && ParameterItem != null)
                 {
                     ParameterItem.Page = 1;
-                    FetchedPayments = new ObservableCollection<Payment>(
-                         await DataAccess.GetPaymentsAsync(ParameterItem));
-                    CanGetMorePages = FetchedPayments.Count == ParameterItem.PageSize;
+                    ParameterItem.DateTo = FilterDueDate.EndDate;
+                    var fetchedTickets = await DataAccess.GetPaymentsAsync(ParameterItem);
+                    if (fetchedTickets != null)
+                        FetchedPayments = new ObservableCollection<Payment>(fetchedTickets);
+                    else
+                        FetchedPayments = new ObservableCollection<Payment>();
+                    CanGetMorePages = FetchedPayments != null && FetchedPayments.Count == ParameterItem.PageSize;
 
 
                 }
@@ -225,23 +229,25 @@ namespace ManageGo
                 {
                     ParameterItem.Page++;
                     var nextPage = await Services.DataAccess.GetPaymentsAsync(ParameterItem);
-                    CanGetMorePages = nextPage.Count == ParameterItem.PageSize;
+                    CanGetMorePages = nextPage != null && nextPage.Count == ParameterItem.PageSize;
                     foreach (var item in nextPage)
                     {
                         FetchedPayments.Add(item);
                     }
-
                 }
                 else
                 {
-                    ParameterItem = new PaymentsRequestParamContainer
+                    ParameterItem = new PaymentsRequestItem
                     {
                         DateFrom = FilterDueDate.StartDate
                     };
                     ParameterItem.DateTo = FilterDueDate.EndDate;
-                    FetchedPayments = new ObservableCollection<Payment>(
-                           await DataAccess.GetPaymentsAsync(ParameterItem));
-                    CanGetMorePages = FetchedPayments.Count == ParameterItem.PageSize;
+                    var fetchedTickets = await DataAccess.GetPaymentsAsync(ParameterItem);
+                    if (fetchedTickets != null)
+                        FetchedPayments = new ObservableCollection<Payment>(fetchedTickets);
+                    else
+                        FetchedPayments = new ObservableCollection<Payment>();
+                    CanGetMorePages = FetchedPayments != null && FetchedPayments.Count == ParameterItem.PageSize;
 
                 }
                 if (CanGetMorePages)
@@ -258,7 +264,7 @@ namespace ManageGo
                 Crashes.TrackError(ex);
                 APIhasFailed = true;
                 FetchedPayments = null;
-                await CoreMethods.DisplayAlert("Something went wrong", "Unable to get payment records. Connect to network and try again", "Try again", "Dismiss");
+                await CoreMethods.DisplayAlert("Something went wrong", $"Unable to get payment records. Message from server: {ex.Message}", "Try again", "Dismiss");
             }
             finally
             {
@@ -558,7 +564,7 @@ namespace ManageGo
                         FilterDueDate = new DateRange(SelectedDateRange.StartDate, SelectedDateRange.EndDate);
                         PopContentView = null;
                         FilterSelectViewIsShown = false;
-                        ParameterItem = new PaymentsRequestParamContainer();
+                        ParameterItem = new PaymentsRequestItem();
                         if (Buildings != null && Buildings.Any(f => f.IsSelected))
                             ParameterItem.Buildings = Buildings.Where(f => f.IsSelected).Select(f => f.BuildingId).ToList();
                         if (Units != null && Units.Any(f => f.IsSelected))
@@ -688,7 +694,7 @@ namespace ManageGo
                     FilteredAmountRange = null;
                     SelectedAmountRange = new Tuple<int?, int?>(0, 5000);
                     FilterKeywords = string.Empty;
-                    ParameterItem = new PaymentsRequestParamContainer
+                    ParameterItem = new PaymentsRequestItem
                     {
                         DateFrom = FilterDueDate.StartDate
                     };
