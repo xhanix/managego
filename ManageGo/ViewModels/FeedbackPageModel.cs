@@ -85,6 +85,7 @@ namespace ManageGo
                         }
                         Message = null;
                         await CoreMethods.DisplayAlert("Success!", "We received your feedback", "OK");
+                        await App.MasterDetailNav.SwitchSelectedRootPageModel<WelcomePageModel>();
                     }
                     catch (Exception ex)
                     {

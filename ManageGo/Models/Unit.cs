@@ -9,6 +9,10 @@ namespace ManageGo
     [AddINotifyPropertyChangedInterface, Serializable]
     public class Unit
     {
+        /// <summary>
+        /// Building Id not populated when getting units from BuildingDetails API call
+        /// </summary>
+        /// <value>The building identifier.</value>
         public int BuildingId { get; set; }
         public string Number { get; set; }
 

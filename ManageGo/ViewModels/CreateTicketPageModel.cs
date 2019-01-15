@@ -558,11 +558,13 @@ namespace ManageGo
         {
             get
             {
-                async void execute(System.Threading.Tasks.TaskCompletionSource<bool> tcs)
+                async void execute(TaskCompletionSource<bool> tcs)
                 {
+                    AddressOptionsVisible = false;
+                    UnitOptionsVisible = false;
                     if (Units is null || !Units.Any(t => t.IsSelected))
                     {
-                        await CoreMethods.DisplayAlert("Address not selected", "Select an address to pick a unit", "OK");
+                        await CoreMethods.DisplayAlert("Unit not selected", "Select a unit to see tenants.", "OK");
                     }
                     else if (Tenants is null || !Tenants.Any())
                     {
@@ -597,8 +599,10 @@ namespace ManageGo
         {
             get
             {
-                async void execute(System.Threading.Tasks.TaskCompletionSource<bool> tcs)
+                async void execute(TaskCompletionSource<bool> tcs)
                 {
+                    AddressOptionsVisible = false;
+                    TenantOptionsVisible = false;
                     if (!Buildings.Any(t => t.IsSelected))
                     {
                         await CoreMethods.DisplayAlert("Address not selected", "Select an address to pick a unit", "OK");
@@ -623,7 +627,9 @@ namespace ManageGo
                                                                    var unit = (Unit)par;
                                                                    unit.IsSelected = true;
                                                                    UnitLabelText = unit.UnitName;
+                                                                   TenantOptionsVisible = false;
                                                                    Tenants = unit.Tenants;
+                                                                   TenantLabelText = "Select";
                                                                    foreach (var u in Units.Where(t => t.IsSelected && t.UnitId != unit.UnitId))
                                                                    {
                                                                        u.IsSelected = false;
@@ -641,13 +647,19 @@ namespace ManageGo
         {
             get
             {
-                async void execute(object par, System.Threading.Tasks.TaskCompletionSource<bool> tcs)
+                async void execute(object par, TaskCompletionSource<bool> tcs)
                 {
                     var building = (Building)par;
-                    cts.Cancel();
+                    cts?.Cancel();
                     cts = new CancellationTokenSource();
                     building.IsSelected = true;
-                    Users = App.Users.Where(user => user.Buildings.Contains(building.BuildingId)).ToList();
+                    TenantOptionsVisible = false;
+                    Tenants = null;
+                    UnitOptionsVisible = false;
+                    Units = null;
+                    UnitLabelText = "Select";
+                    TenantLabelText = "Select";
+                    Users = App.Users.Where(user => user.Buildings != null && user.Buildings.Contains(building.BuildingId)).ToList();
                     try
                     {
                         var buildingWithDetails = await Services.DataAccess.GetBuildingDetails(building.BuildingId);

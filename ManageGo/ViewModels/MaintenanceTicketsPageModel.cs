@@ -255,7 +255,7 @@ namespace ManageGo
                 return;
             }
             NothingFetched = false;
-            HasLoaded = false;
+
             try
             {
                 if (FetchNextPage && ParameterItem != null)
@@ -277,6 +277,7 @@ namespace ManageGo
                 }
                 else
                 {
+                    HasLoaded = false;
                     if (ParameterItem is null)
                     {
                         ParameterItem = new TicketRequestItem
@@ -931,6 +932,12 @@ namespace ManageGo
                     Buildings = new List<int> { buildingId },
                     Status = TicketStatus.Open
                 };
+                NumberOfAppliedFilters = ParameterItem.NumberOfAppliedFilters.ToString();
+                var selectedBuildings = Buildings.Where(b => b.BuildingId == buildingId);
+                foreach (var b in selectedBuildings)
+                {
+                    b.IsSelected = true;
+                }
                 BackbuttonIsVisible = true;
             }
             async void p(object sender, MaintenanceTicket e)

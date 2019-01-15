@@ -52,7 +52,7 @@ namespace ManageGo
             {
                 return CommentType == CommentTypes.Management || CommentType == CommentTypes.Internal ||
                                                   CommentType == CommentTypes.Resident
-                                   ? new Thickness(0, 6, 0, 6) : new Thickness(22, 6, 22, 6);
+                                   ? new Thickness(0, 2, 0, 2) : new Thickness(22, 2, 22, 2);
 
             }
         }

@@ -11,6 +11,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="ManageGo.TicketDetailsPage">
      <ContentPage.Resources>
         <local:InverseBoolConverter x:Key="InverseBoolConverter" />
+        <local:StringToBoolConverter x:Key="StringToBoolConverter" />
     </ContentPage.Resources>
     <RelativeLayout x:Name="MyRelLayout">
      <Grid RowSpacing="0"
@@ -90,20 +91,20 @@
                                 <ViewCell>
                                    <StackLayout Orientation="Horizontal"  Margin="0,0,4,0">
                                         <StackLayout VerticalOptions="FillAndExpand" Margin="18,0,0,0">
-                                            <BoxView VerticalOptions="Start" HeightRequest="29.5" HorizontalOptions="Center"  BackgroundColor="{Binding TopSideLineColor}" Opacity="0.25" WidthRequest="2" />    
+                                            <BoxView VerticalOptions="Start" HeightRequest="25.5" HorizontalOptions="Center"  BackgroundColor="{Binding TopSideLineColor}" Opacity="0.25" WidthRequest="2" />    
                                             <Frame Padding="2" MinimumWidthRequest="6" WidthRequest="6" MinimumHeightRequest="6" HeightRequest="6" Margin="0,-8,0,0" CornerRadius="5" HasShadow="false" BorderColor="{Binding SideLineColor}" BackgroundColor="{Binding SideLineColor}" />
                                             <BoxView VerticalOptions="FillAndExpand" HorizontalOptions="Center" Margin="0,-16,0,0" BackgroundColor="{Binding SideLineColor}" Opacity="0.25" WidthRequest="2" />    
                                         </StackLayout>
                                         <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="Start" Spacing="0">
                                             <Frame WidthRequest="{Binding PermittedEditorWidth,Source={x:Reference ThisPage}}" HorizontalOptions="FillAndExpand" VerticalOptions="Start" x:Name="FrameContainer"  Padding="{Binding BubblePadding}" Margin="4,0,22,0" BackgroundColor="{Binding BubbleBackgroundColor}" HasShadow="false">
-                                                <StackLayout Margin="4,12,6,0">
-                                                        <Label Margin="0,0,0,8" FormattedText="{Binding FirstLineText}" VerticalTextAlignment="Center" LineBreakMode="MiddleTruncation" />
+                                                <StackLayout Margin="4,12,6,0" Spacing="0">
+                                                        <Label Margin="0,0,0,2" FormattedText="{Binding FirstLineText}" VerticalTextAlignment="Center" LineBreakMode="MiddleTruncation" />
                                                         <controls:SelectableLabel WidthRequest="{Binding PermittedEditorWidth,Source={x:Reference ThisPage}}" HorizontalOptions="Start"  BackgroundColor="Transparent" Text="{Binding SecondLineText,Mode=OneTime}"  TextColor="#58595b" FontSize="Medium" />
-                                                        <StackLayout Margin="0,0,0,4" Orientation="Horizontal">
+                                                        <StackLayout  Orientation="Horizontal">
                                                             <Image Source="pet_blue.png" IsVisible="{Binding HasPet}" VerticalOptions="StartAndExpand" Margin="0,2,12,0" />
-                                                            <controls:SelectableLabel WidthRequest="{Binding PermittedEditorWidth,Source={x:Reference ThisPage}}" HorizontalOptions="Start" Text="{Binding AccessNote}" BackgroundColor="Transparent" TextColor="#58595b" FontSize="Medium" />
+                                                            <controls:SelectableLabel IsVisible="{Binding AccessNote,Converter={StaticResource StringToBoolConverter}}" WidthRequest="{Binding PermittedEditorWidth,Source={x:Reference ThisPage}}" HorizontalOptions="Start" Text="{Binding AccessNote}" BackgroundColor="Transparent" TextColor="#58595b" FontSize="Medium" />
                                                         </StackLayout>
-                                                         <controls:NestedListView ItemsSource="{Binding Files}"  SelectionMode="None" VerticalOptions="Start" BackgroundColor="Transparent" Margin="0" IsVisible="{Binding HasFiles}" SeparatorVisibility="None" HeightRequest="{Binding AttachedFilesListHeight}">
+                                                         <controls:NestedListView ItemsSource="{Binding Files}"  SelectionMode="None" VerticalOptions="Start" BackgroundColor="Transparent" Margin="0,4,0,0" IsVisible="{Binding HasFiles}" SeparatorVisibility="None" HeightRequest="{Binding AttachedFilesListHeight}">
                                                             <x:Arguments>
                                                                 <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
                                                             </x:Arguments>
@@ -125,8 +126,8 @@
                                                         </controls:NestedListView>
                                                 </StackLayout>
                                             </Frame>
-                                            <Label Text="Internal" IsVisible="{Binding InternalLabelIsVisible}" FontSize="Small" Margin="10,4,0,0" TextColor="{Binding SideLineColor}" />
-                                            <BoxView IsVisible="{Binding IsNotTheLastComment}" HeightRequest="1" Opacity="0.25"  Margin="9,18,18,18" HorizontalOptions="FillAndExpand" BackgroundColor="#808285" />
+                                            <Label Text="Internal" IsVisible="{Binding InternalLabelIsVisible}" FontSize="Small" Margin="10,2,0,0" TextColor="{Binding SideLineColor}" />
+                                            <BoxView IsVisible="{Binding IsNotTheLastComment}" HeightRequest="1" Opacity="0.25"  Margin="9,12,18,9" HorizontalOptions="FillAndExpand" BackgroundColor="#808285" />
                                         </StackLayout>
                                     </StackLayout>
                             </ViewCell>

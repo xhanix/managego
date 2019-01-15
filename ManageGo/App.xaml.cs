@@ -27,6 +27,7 @@ namespace ManageGo
         internal static List<User> Users { get; set; }
         internal static List<ExternalContact> ExternalContacts { get; set; }
         internal FreshMasterDetailNavigationContainer MasterDetailContainer { get; private set; }
+
         public static bool MenuIsPresented
         {
             get

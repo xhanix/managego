@@ -285,9 +285,9 @@ namespace ManageGo.Services
             }
         }
 
-        internal static async Task<List<Tenant>> GetTenantsAsync(Dictionary<string, object> filtersDictionary)
+        internal static async Task<List<Tenant>> GetTenantsAsync(TenantRequestItem requestParameterItem)
         {
-            var jsonString = JsonConvert.SerializeObject(filtersDictionary);
+            var jsonString = JsonConvert.SerializeObject(requestParameterItem);
             var content = new StringContent(jsonString, Encoding.UTF8, "application/json");//new FormUrlEncodedContent(filters);
             var msg = new HttpRequestMessage(HttpMethod.Post, BaseUrl + APIpaths.Tenants.ToString())
             {

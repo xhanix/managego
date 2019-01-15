@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms" 
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+             x:Name="ThisPage"
              x:Class="ManageGo.UnitsListPage">
      <RelativeLayout>
         <Grid RowSpacing="0"
@@ -42,7 +43,6 @@
                             <ViewCell>
                                  <StackLayout Spacing="0" >
                                 <Frame HasShadow="false" BackgroundColor="White"  >
-                                   
                                     <Grid Margin="0,8,0,8">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="45" />
@@ -58,6 +58,9 @@
                                             </Label.FormattedText>
                                         </Label>
                                     </Grid>
+                                    <Frame.GestureRecognizers>
+                                            <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding BindingContext.OnShowTenantsTapped,Source={x:Reference ThisPage}}" CommandParameter="{Binding .}" />
+                                    </Frame.GestureRecognizers>
                                 </Frame>
                                 <BoxView HeightRequest="1"  BackgroundColor="{StaticResource Grey-Light-2}" />
 

@@ -209,11 +209,12 @@ namespace ManageGo
         internal override async Task LoadData(bool refreshData = false, bool FetchNextPage = false)
         {
             NothingFetched = false;
-            HasLoaded = false;
+
             try
             {
                 if (refreshData && ParameterItem != null)
                 {
+                    HasLoaded = false;
                     ParameterItem.Page = 1;
                     ParameterItem.DateTo = FilterDueDate.EndDate;
                     var fetchedTickets = await DataAccess.GetPaymentsAsync(ParameterItem);
@@ -237,6 +238,7 @@ namespace ManageGo
                 }
                 else
                 {
+                    HasLoaded = false;
                     ParameterItem = new PaymentsRequestItem
                     {
                         DateFrom = FilterDueDate.StartDate
@@ -390,12 +392,12 @@ namespace ManageGo
             if (Units != null && Units.Count(t => t.IsSelected) == 1)
             {
                 SelectedUnitString = Units.First(t => t.IsSelected).UnitName;
-                var dic = new Dictionary<string, object>
-                        {
-                            {"Units", Units.Where(t=>t.IsSelected).Select(t=>t.UnitId)}
-                        };
+                var par = new TenantRequestItem
+                {
+                    Units = Units.Where(t => t.IsSelected).Select(t => t.UnitId).ToList()
+                };
                 SelectedTenantString = string.Empty;
-                Tenants = await DataAccess.GetTenantsAsync(dic);
+                Tenants = await DataAccess.GetTenantsAsync(par);
             }
             else if (Units != null && Units.Count(t => t.IsSelected) > 1)
             {

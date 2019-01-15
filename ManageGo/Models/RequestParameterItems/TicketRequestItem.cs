@@ -47,7 +47,7 @@ namespace ManageGo
                     n++;
                 if (Assigned != null && Assigned.Any())
                     n++;
-                if (Status != TicketStatus.All)
+                if (Status != TicketStatus.Open)
                     n++;
                 if (Priorities != null)
                     n++;

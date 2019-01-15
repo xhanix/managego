@@ -7,6 +7,8 @@ using System.Linq;
 using FreshMvvm;
 using Xamarin.Essentials;
 using PropertyChanged;
+using System.Collections.ObjectModel;
+using Microsoft.AppCenter.Crashes;
 
 namespace ManageGo
 {
@@ -34,12 +36,13 @@ namespace ManageGo
         public bool HasPreExistingFilter { get; private set; }
         public List<Building> Buildings { get; set; }
         public List<Unit> Units { get; set; }
-        public List<Tenant> FetchedTenants { get; set; }
+        public ObservableCollection<Tenant> FetchedTenants { get; set; }
         private int LastLoadedItemId { get; set; }
         private int CurrentListPage { get; set; }
         private bool CanGetMorePages { get; set; }
-        public string NumberOfAppliedFilters { get; set; }
-        internal Dictionary<string, object> FiltersDictionary { get; set; }
+        public Models.TenantRequestItem CurrentFilter { get; private set; }
+        public Models.TenantRequestItem ParameterItem { get; set; }
+        public string NumberOfAppliedFilters { get; internal set; } = " ";
         [AlsoNotifyFor("FilterButtonIsEnabled")]
         public string SelectedBuildingsString { get; set; }
         [AlsoNotifyFor("FilterButtonIsEnabled")]
@@ -76,8 +79,8 @@ namespace ManageGo
         public override void Init(object initData)
         {
             base.Init(initData);
+            SelectedActiveTenantFilter = true;
             Buildings = App.Buildings;
-
             if (initData is Building building)
             {
                 HasPreExistingFilter = true;
@@ -86,10 +89,22 @@ namespace ManageGo
                 {
                     b.IsSelected = true;
                 }
-
-                FiltersDictionary = new Dictionary<string, object>
+                ParameterItem = new Models.TenantRequestItem
                 {
-                    { "Buildings", new List<int> { building.BuildingId }}
+                    Buildings = new List<int> { building.BuildingId }
+                };
+                BackbuttonIsVisible = true;
+            }
+            else if (initData is int buildingId && buildingId > 0)
+            {
+                HasPreExistingFilter = true;
+                foreach (Building b in Buildings.Where(t => t.BuildingId == buildingId))
+                {
+                    b.IsSelected = true;
+                }
+                ParameterItem = new Models.TenantRequestItem
+                {
+                    Buildings = new List<int> { buildingId }
                 };
                 BackbuttonIsVisible = true;
             }
@@ -108,66 +123,83 @@ namespace ManageGo
             }
         }
 
-        internal override async Task LoadData(bool refreshData = false, bool applyNewFilter = false)
+        internal override async Task LoadData(bool refreshData = false, bool FetchNextPage = false)
         {
-            if (!(FetchedTenants == null || refreshData))
-                return;
-            if (FiltersDictionary == null || refreshData)
-                FiltersDictionary = new Dictionary<string, object>()
-                    {
-                      { "PageSize", 30},
-                      { "Page", CurrentListPage }
-                    };
+            NothingFetched = false;
+            var selectedBuildingAddress = Buildings.Count(b => b.IsSelected) == 1 ? Buildings.First(b => b.IsSelected).BuildingName : null;
             try
             {
-                if (FetchedTenants == null || applyNewFilter || HasPreExistingFilter)
+                if (FetchNextPage && ParameterItem != null)
                 {
-                    List<Tenant> tenantsAsync = await DataAccess.GetTenantsAsync(FiltersDictionary);
-                    FetchedTenants = tenantsAsync;
-                    if (FetchedTenants.Any())
+                    ParameterItem.Page++;
+                    var nextPage = await DataAccess.GetTenantsAsync(ParameterItem);
+
+                    if (nextPage != null)
                     {
-                        double num = Math.Floor(FetchedTenants.IndexOf(FetchedTenants.Last<Tenant>()) / 2.0);
-                        Tenant tenant = FetchedTenants.ElementAt((int)num);
-                        LastLoadedItemId = tenant.TenantID;
+                        foreach (var item in nextPage)
+                        {
+                            if (!string.IsNullOrWhiteSpace(selectedBuildingAddress))
+                                item.FirstUnitAddress = selectedBuildingAddress;
+                            FetchedTenants.Add(item);
+                        }
                     }
-                    CanGetMorePages = FetchedTenants.Count == 30;
-                    if (Buildings.Any(t => t.IsSelected))
+                    CanGetMorePages = nextPage != null && nextPage.Count == ParameterItem.PageSize;
+                    var lastIdx = FetchedTenants.IndexOf(FetchedTenants.Last());
+                    var index = Math.Floor(lastIdx / 2d);
+                    var markedItem = FetchedTenants.ElementAt((int)index);
+                    LastLoadedItemId = markedItem.TenantID;
+                }
+                else
+                {
+                    HasLoaded = false;
+                    if (ParameterItem is null)
+                    {
+                        ParameterItem = new Models.TenantRequestItem();
+                    }
+                    if (refreshData)
+                        ParameterItem.Page = 1;
+                    List<Tenant> tenantsAsync = await DataAccess.GetTenantsAsync(ParameterItem);
+                    if (tenantsAsync != null)
+                        FetchedTenants = new ObservableCollection<Tenant>(tenantsAsync);
+                    else
+                        FetchedTenants = new ObservableCollection<Tenant>();
+                    if (FetchedTenants != null && FetchedTenants.Any() && !string.IsNullOrWhiteSpace(selectedBuildingAddress))
+                    {
+                        foreach (var t in FetchedTenants)
+                        {
+                            t.FirstUnitAddress = selectedBuildingAddress;
+                        }
+                    }
+
+                    CanGetMorePages = FetchedTenants != null && FetchedTenants.Count == ParameterItem.PageSize;
+                    if (FetchedTenants.Any() && CanGetMorePages)
+                    {
+                        var lastIdx = FetchedTenants.IndexOf(FetchedTenants.Last());
+                        var index = Math.Floor(lastIdx / 2d);
+                        var markedItem = FetchedTenants.ElementAt((int)index);
+                        LastLoadedItemId = markedItem.TenantID;
+                    }
+                    if (Buildings.Any(t => t.IsSelected) && Units is null)
                     {
                         var details = await DataAccess.GetBuildingDetails(Buildings.First(t => t.IsSelected).BuildingId);
                         SelectedBuildingsString = details.BuildingName;
                         Units = details.Units;
                     }
                 }
-                else
-                {
-                    List<Tenant> list = FetchedTenants.ToList<Tenant>();
-                    List<Tenant> tenantsAsync = await DataAccess.GetTenantsAsync(FiltersDictionary);
-                    CanGetMorePages = tenantsAsync.Count == 30;
-                    list.AddRange((IEnumerable<Tenant>)tenantsAsync);
-                    FetchedTenants = list;
-                    list = (List<Tenant>)null;
-                }
-                if (FetchedTenants.Count > 0 && CanGetMorePages)
-                {
-                    double num = Math.Floor(FetchedTenants.IndexOf(FetchedTenants.Last<Tenant>()) / 2.0);
-                    Tenant tenant = FetchedTenants.ElementAt<Tenant>((int)num);
-                    LastLoadedItemId = tenant.TenantID;
-
-                }
                 Buildings = App.Buildings;
                 ListIsEnabled = true;
-                Console.WriteLine(string.Format("Tenants Fetched: {0}", FetchedTenants.Count));
-                HasLoaded = true;
             }
-            catch
+            catch (Exception ex)
             {
+                Crashes.TrackError(ex);
                 APIhasFailed = true;
-                FetchedTenants = (List<Tenant>)null;
-                await CoreMethods.DisplayAlert("Something went wrong", "Unable to get tickets. Connect to network and try again", "Try again", "Dismiss");
+                FetchedTenants = null;
+                await CoreMethods.DisplayAlert("Something went wrong", $"Unable to get tickets. Message: {ex.Message}", "Try again", "Dismiss");
             }
             finally
             {
                 NothingFetched = !FetchedTenants.Any();
+                HasLoaded = true;
             }
         }
 
@@ -175,13 +207,62 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand((Action<TaskCompletionSource<bool>>)(tcs =>
+                async void execute(TaskCompletionSource<bool> tcs)
                 {
                     PopContentView = (View)null;
                     FilterSelectViewIsShown = false;
                     ListIsEnabled = true;
+                    Units = null;
+                    FilterUnitsExpanded = false;
+                    SelectedUnitString = "Select";
+                    if (CurrentFilter != null)
+                    {
+                        if (Buildings != null && CurrentFilter.Buildings != null)
+                        {
+                            foreach (var b in Buildings)
+                            {
+                                if (CurrentFilter.Buildings.Contains(b.BuildingId))
+                                    b.IsSelected = true;
+                                else
+                                    b.IsSelected = false;
+                            }
+                            if (Buildings.Count(b => b.IsSelected) == 1)
+                            {
+                                var details = await DataAccess.GetBuildingDetails(Buildings.First(b => b.IsSelected).BuildingId);
+                                Units = details.Units;
+                            }
+                        }
+                        if (Units != null && CurrentFilter.Units != null)
+                        {
+                            foreach (var u in Units)
+                            {
+                                if (CurrentFilter.Units.Contains(u.UnitId))
+                                    u.IsSelected = true;
+                                else
+                                    u.IsSelected = false;
+                            }
+                        }
+                        switch (CurrentFilter.Status)
+                        {
+                            case TenantStatus.Active:
+                                SelectedActiveTenantFilter = true;
+                                SelectedInActiveTenantFilter = false;
+                                break;
+                            case TenantStatus.Inactive:
+                                SelectedActiveTenantFilter = false;
+                                SelectedInActiveTenantFilter = true;
+                                break;
+                            case TenantStatus.All:
+                                SelectedActiveTenantFilter = true;
+                                SelectedInActiveTenantFilter = true;
+                                break;
+                        }
+
+                        FilterKeywords = CurrentFilter.Search;
+                    }
                     tcs?.SetResult(true);
-                }));
+                }
+                return new FreshAwaitCommand(execute);
             }
         }
 
@@ -189,7 +270,7 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand((Action<object, TaskCompletionSource<bool>>)((parameter, tcs) =>
+                return new FreshAwaitCommand(((parameter, tcs) =>
                 {
                     string str = (string)parameter;
                     if (!(str == "Active"))
@@ -207,56 +288,39 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand(async (parameter, tcs) =>
+                async void execute(object parameter, TaskCompletionSource<bool> tcs)
                 {
-
                     PopContentView = null;
-                    var numberOfFilters = 0;
                     FilterSelectViewIsShown = false;
-                    Dictionary<string, object> paramDic = new Dictionary<string, object>();
-                    if (Buildings != null && Buildings.Any(f => f.IsSelected))
-                    {
-                        paramDic.Add("Buildings", Buildings.Where(f => f.IsSelected).Select(f => f.BuildingId));
-                        numberOfFilters++;
-                    }
-                    if (Units != null && Units.Any(f => f.IsSelected))
-                    {
-                        paramDic.Add("Units", Units.Where(f => f.IsSelected).Select(f => f.UnitId));
-                        numberOfFilters++;
-                    }
-                    if (SelectedActiveTenantFilter && SelectedInActiveTenantFilter)
-                    {
-                        paramDic.Add("Status", 2);
-                    }
-                    else if (SelectedActiveTenantFilter)
-                    {
-                        paramDic.Add("Status", 0);
-                        numberOfFilters++;
-                    }
-                    else if (SelectedInActiveTenantFilter)
-                    {
-                        paramDic.Add("Status", 1);
-                        numberOfFilters++;
-                    }
+                    ParameterItem = new Models.TenantRequestItem();
+                    if (!string.IsNullOrWhiteSpace(FilterKeywords))
+                        ParameterItem.Search = FilterKeywords;
                     else
                     {
-                        paramDic.Add("Status", 2);
+                        if (Buildings != null && Buildings.Any(f => f.IsSelected))
+                            ParameterItem.Buildings = Buildings.Where(f => f.IsSelected).Select(f => f.BuildingId).ToList();
+                        if (Units != null && Units.Any(f => f.IsSelected))
+                        {
+                            ParameterItem.Units = Units.Where(f => f.IsSelected).Select(f => f.UnitId).ToList();
+                        }
+                        if (SelectedActiveTenantFilter && SelectedInActiveTenantFilter)
+                            ParameterItem.Status = TenantStatus.All;
+                        else if (SelectedActiveTenantFilter)
+                            ParameterItem.Status = TenantStatus.Active;
+                        else if (SelectedInActiveTenantFilter)
+                            ParameterItem.Status = TenantStatus.Inactive;
+                        else
+                            ParameterItem.Status = TenantStatus.All;
                     }
-                    NumberOfAppliedFilters = numberOfFilters > 0 ? $"{numberOfFilters}" : " ";
-                    FiltersDictionary = paramDic;
-                    HasLoaded = false;
-                    FetchedTenants = await Services.DataAccess.GetTenantsAsync(paramDic);
-                    ListIsEnabled = true;
-                    HasLoaded = true;
+
+                    NumberOfAppliedFilters = ParameterItem.NumberOfAppliedFilters > 0 ? ParameterItem.NumberOfAppliedFilters.ToString() : string.Empty;
+                    await LoadData(refreshData: true);
                     tcs?.SetResult(true);
-                }, (arg) => FilterButtonIsEnabled);
+                }
+                return new FreshAwaitCommand(execute, (arg) => FilterButtonIsEnabled);
             }
         }
-        protected override void ViewIsAppearing(object sender, EventArgs e)
-        {
-            base.ViewIsAppearing(sender, e);
-            Buildings = App.Buildings;
-        }
+
         protected override void ViewIsDisappearing(object sender, EventArgs e)
         {
             base.ViewIsDisappearing(sender, e);
@@ -267,14 +331,12 @@ namespace ManageGo
                     building.IsSelected = false;
                 }
             }
-            if (Units != null)
-            {
-                foreach (Unit unit in Units.Where((t => t.IsSelected)))
-                    unit.IsSelected = false;
-            }
+            Units = null;
+            FilterUnitsExpanded = false;
+            SelectedUnitString = "Select";
+            ParameterItem = null;
+            CurrentFilter = null;
             NumberOfAppliedFilters = " ";
-            SelectedActiveTenantFilter = true;
-            SelectedInActiveTenantFilter = true;
         }
 
         public async Task OnItemAppeared(Tenant tenant)
@@ -298,6 +360,7 @@ namespace ManageGo
                     }
                     else
                     {
+                        CurrentFilter = ParameterItem.Clone();
                         PopContentView = new TenantFilterSelectView(this).Content;
                         ListIsEnabled = false;
                     }
@@ -311,56 +374,20 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand(async (par, tcs) =>
+                void execute(object par, TaskCompletionSource<bool> tcs)
                 {
                     var contactMethod = (string)par;
                     if (contactMethod.Contains("@"))
                     {
-                        try
-                        {
-                            var message = new EmailMessage
-                            {
-                                Subject = string.Empty,
-                                Body = string.Empty,
-                                To = new List<string> { contactMethod },
-                                //Cc = ccRecipients,
-                                //Bcc = bccRecipients
-                            };
-                            await Email.ComposeAsync(message);
-                        }
-                        catch (FeatureNotSupportedException fbsEx)
-                        {
-                            // Email is not supported on this device
-                            await CoreMethods.DisplayAlert("Email not supported", fbsEx.Message, "DISMISS");
-                        }
-                        catch (Exception ex)
-                        {
-                            await CoreMethods.DisplayAlert("Unable to send email", ex.Message, "DISMISS");
-                        }
+                        Device.OpenUri(new Uri($"mailto:{contactMethod}"));
                     }
                     else
                     {
-                        try
-                        {
-                            PhoneDialer.Open(contactMethod);
-                        }
-                        catch (ArgumentNullException anEx)
-                        {
-                            // Number was null or white space
-                            await CoreMethods.DisplayAlert("Number was white space", anEx.Message, "DISMISS");
-                        }
-                        catch (FeatureNotSupportedException ex)
-                        {
-                            // Phone Dialer is not supported on this device.
-                            await CoreMethods.DisplayAlert("Phone Dialer not supported", ex.Message, "DISMISS");
-                        }
-                        catch (Exception ex)
-                        {
-                            await CoreMethods.DisplayAlert("Something went wrong", ex.Message, "DISMISS");
-                        }
+                        Device.OpenUri(new Uri($"tel:{contactMethod}"));
                     }
                     tcs?.SetResult(true);
-                });
+                }
+                return new FreshAwaitCommand(execute);
             }
         }
 
@@ -384,15 +411,19 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand(async (par, tcs) =>
+                async void execute(object par, TaskCompletionSource<bool> tcs)
                 {
                     switch ((string)par)
                     {
                         case "Status":
                             FilterStatusExpanded = !FilterStatusExpanded;
+                            FilterBuildingsExpanded = false;
+                            FilterUnitsExpanded = false;
                             break;
                         case "Buildings":
                             FilterBuildingsExpanded = !FilterBuildingsExpanded;
+                            FilterStatusExpanded = false;
+                            FilterUnitsExpanded = false;
                             break;
                         case "Units":
                             if (Buildings is null || !Buildings.Any(t => t.IsSelected))
@@ -403,12 +434,15 @@ namespace ManageGo
                             {
                                 FilterUnitsExpanded = !FilterUnitsExpanded;
                             }
+                            FilterBuildingsExpanded = false;
+                            FilterStatusExpanded = false;
                             break;
                         default:
                             break;
                     }
                     tcs?.SetResult(true);
-                });
+                }
+                return new FreshAwaitCommand(execute);
             }
         }
 
@@ -416,9 +450,12 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand(async (par, tcs) =>
+                async void execute(object par, TaskCompletionSource<bool> tcs)
                 {
                     var building = (Building)par;
+                    FilterUnitsExpanded = false;
+                    Units = null;
+                    SelectedUnitString = "Select";
                     try
                     {
                         var details = await DataAccess.GetBuildingDetails(building.BuildingId);
@@ -435,13 +472,15 @@ namespace ManageGo
                     }
                     catch (Exception ex)
                     {
+                        Crashes.TrackError(ex);
                         await CoreMethods.DisplayAlert("Something went wrong", ex.Message, "DISMISS");
                     }
                     finally
                     {
                         tcs?.SetResult(true);
                     }
-                });
+                }
+                return new FreshAwaitCommand(execute);
             }
 
         }
@@ -472,6 +511,8 @@ namespace ManageGo
                 {
                     PopContentView = null;
                     FilterSelectViewIsShown = false;
+                    CurrentFilter = null;
+                    ParameterItem = null;
                     await LoadData(true, false);
                     NumberOfAppliedFilters = string.Empty;
                     if (Buildings != null)
@@ -488,8 +529,7 @@ namespace ManageGo
                             b.IsSelected = false;
                         }
                     }
-                    SelectedActiveTenantFilter = false;
-                    SelectedInActiveTenantFilter = false;
+                    SelectedActiveTenantFilter = true;
                     tcs?.SetResult(true);
                 }
                 return new FreshAwaitCommand(execute);

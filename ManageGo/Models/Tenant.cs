@@ -18,35 +18,30 @@ namespace ManageGo
         public List<Unit> TenantUnits { get; set; }
 
         [JsonIgnore]
-        public string FullName { get { return TenantFirstName + " " + TenantLastName; } }
+        public string FullName => TenantFirstName + " " + TenantLastName;
 
+        private string firstUnitAddress;
         [JsonIgnore]
         public string FirstUnitAddress
         {
             get
             {
-                return TenantUnits != null && TenantUnits.Any(t => !string.IsNullOrWhiteSpace(t.UnitName)) ? TenantUnits.First(t => !string.IsNullOrWhiteSpace(t.UnitName)).ShortAddress : "[Address not available]";
+                if (!string.IsNullOrWhiteSpace(firstUnitAddress))
+                    return firstUnitAddress;
+                if (TenantUnits is null || !TenantUnits.Any())
+                    return "No units for tenant!";
+                return TenantUnits.First().ShortAddress;
             }
+            set => firstUnitAddress = value;
         }
         [JsonIgnore]
-        public string ShortDescription
-        {
-            get
-            {
-                return FullName + ", " + FirstUnitAddress;
-            }
-        }
+        public string ShortDescription => FullName + ", " + FirstUnitAddress;
+
         [JsonIgnore, AlsoNotifyFor("CheckBoxImage")]
         public bool IsSelected { get; set; }
 
         [JsonIgnore]
-        public string CheckBoxImage
-        {
-            get
-            {
-                return IsSelected ? "checked.png" : "unchecked.png";
-            }
-        }
+        public string CheckBoxImage => IsSelected ? "checked.png" : "unchecked.png";
 
 
         [JsonIgnore]

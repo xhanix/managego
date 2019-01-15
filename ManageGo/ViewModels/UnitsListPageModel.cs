@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FreshMvvm;
 using ManageGo.Services;
+using Microsoft.AppCenter.Crashes;
 
 namespace ManageGo
 {
@@ -35,18 +36,38 @@ namespace ManageGo
             }
         }
 
-        internal override async Task LoadData(bool refreshData = false, bool applyNewFilter = false)
+        public FreshAwaitCommand OnShowTenantsTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand(async (par, tcs) =>
+                {
+                    Unit unit = (Unit)par;
+                    await CoreMethods.PushPageModel<TenantsPageModel>(data: unit.BuildingId, modal: false);
+                    tcs?.SetResult(true);
+                });
+            }
+        }
+
+        internal override async Task LoadData(bool refreshData = false, bool FetchNextPage = false)
         {
             HasLoaded = false;
+            if (BuildingId == 0)
+                return;
             try
             {
                 Building buildingDetails = await DataAccess.GetBuildingDetails(BuildingId);
                 Units = buildingDetails.Units;
+                foreach (var u in Units)
+                {
+                    u.BuildingId = BuildingId;
+                }
                 BuildingName = buildingDetails.BuildingName;
                 HasLoaded = true;
             }
             catch (Exception ex)
             {
+                Crashes.TrackError(ex);
                 await CoreMethods.DisplayAlert("Something went wrong", ex.Message, "DISMISS");
                 APIhasFailed = true;
             }

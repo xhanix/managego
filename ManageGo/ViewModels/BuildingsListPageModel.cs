@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using FreshMvvm;
-using Xamarin.Forms;
 
 namespace ManageGo
 {
@@ -12,10 +9,10 @@ namespace ManageGo
         public List<Building> Buildings { get; set; }
         public bool IsShowingUnitsPage { get; set; }
         public bool IsSearching { get; set; }
-        internal override Task LoadData(bool refreshData = false, bool applyNewFilter = false)
+        internal override Task LoadData(bool refreshData = false, bool FetchNextPage = false)
         {
             this.Buildings = App.Buildings ?? new List<Building>();
-            return (Task)Task.FromResult<int>(0);
+            return Task.FromResult(0);
         }
 
         public FreshAwaitCommand OnTicketsTapped

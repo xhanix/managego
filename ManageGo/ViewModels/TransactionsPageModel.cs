@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using CustomCalendar;
 using FreshMvvm;
 using ManageGo.Models;
-using ManageGo.Services;
 using Microsoft.AppCenter.Crashes;
 using PropertyChanged;
 using Xamarin.Forms;
@@ -22,6 +22,7 @@ namespace ManageGo
         DateRange dateRange;
         public TransactionsRequestItem CurrentFilter { get; private set; }
         public TransactionsRequestItem ParameterItem { get; set; }
+        public string NumberOfAppliedFilters { get; internal set; } = " ";
         public bool FilterSelectViewIsShown { get; set; }
         public ObservableCollection<BankTransaction> FetchedTransactions { get; set; }
         public bool RangeSelectorIsShown { get; private set; }
@@ -112,7 +113,6 @@ namespace ManageGo
 
         internal override async Task LoadData(bool refreshData = false, bool FetchNextPage = false)
         {
-            HasLoaded = false;
             NothingFetched = false;
             try
             {
@@ -135,6 +135,7 @@ namespace ManageGo
                 }
                 else
                 {
+                    HasLoaded = false;
                     if (ParameterItem is null)
                     {
                         ParameterItem = new TransactionsRequestItem
@@ -160,7 +161,6 @@ namespace ManageGo
                         var markedItem = FetchedTransactions.ElementAt((int)index);
                         LastLoadedItemId = markedItem.Id;
                     }
-                    HasLoaded = true;
                 }
             }
             catch (Exception ex)
@@ -251,6 +251,7 @@ namespace ManageGo
                         ParameterItem.DateFrom = DateRange.StartDate;
                         ParameterItem.DateTo = DateRange.EndDate;
                     }
+                    NumberOfAppliedFilters = $"{ParameterItem.NumberOfAppliedFilters}";
                     await LoadData(refreshData: true, FetchNextPage: false);
                     tcs?.SetResult(true);
                 }
@@ -268,6 +269,7 @@ namespace ManageGo
                     FilterSelectViewIsShown = false;
                     ParameterItem = null;
                     CurrentFilter = null;
+                    NumberOfAppliedFilters = string.Empty;
                     DateRange = null;
                     if (BankAccounts != null)
                     {

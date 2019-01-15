@@ -130,6 +130,11 @@ namespace ManageGo
             {
                 async void execute(TaskCompletionSource<bool> tcs)
                 {
+                    if (string.IsNullOrWhiteSpace(UserEmail) || !UserEmail.Contains("@"))
+                    {
+                        await CoreMethods.DisplayAlert("Email not valid", "Please try again", "OK");
+                        return;
+                    }
                     await FinishLogin(isBiometricLogin: false);
                     tcs?.SetResult(true);
                 }
