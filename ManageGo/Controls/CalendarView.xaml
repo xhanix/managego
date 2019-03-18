@@ -43,7 +43,7 @@
             </Image>
             
             <Label x:Name="titleLabel" HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                    FontSize="Micro" FontAttributes="Bold" />
+                    FontSize="Small" FontAttributes="Bold" />
 
             <Image Source="chevron_right" VerticalOptions="Center" >
                 <Image.GestureRecognizers>

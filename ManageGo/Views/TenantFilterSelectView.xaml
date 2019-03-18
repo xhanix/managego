@@ -5,6 +5,9 @@
              xmlns:controls="clr-namespace:ManageGo.Controls"
              x:Name="ThisPage"
              x:Class="ManageGo.TenantFilterSelectView">
+    <ContentView.Resources>
+        <local:FilterFieldStringToColor x:Key="FilterFieldStringToColor" />
+    </ContentView.Resources>
      <ScrollView>
         <StackLayout Spacing="0">
             <StackLayout Padding="21,17,21,17" Spacing="0">
@@ -19,7 +22,7 @@
                         <ColumnDefinition Width="3*" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" Text="Building" TextColor="{StaticResource Grey-Mid-1}" FontSize="Small" />
+                    <Label Grid.Column="0" Text="Building" TextColor="{Binding SelectedBuildingsString,Converter={StaticResource FilterFieldStringToColor}}" FontSize="Small" />
                     <StackLayout Grid.Column="1">
                         <Label Text="{Binding SelectedBuildingsString}" LineBreakMode="TailTruncation" TextColor="Gray" FontSize="Small"/>
                         <controls:NestedListView IsVisible="{Binding FilterBuildingsExpanded}" ItemsSource="{Binding Buildings}" Margin="0,8,0,0" HasUnevenRows="true" SeparatorVisibility="None"  HeightRequest="150" SelectionMode="None">
@@ -54,7 +57,7 @@
                         <ColumnDefinition Width="3*" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" Text="Unit" TextColor="{StaticResource Grey-Mid-1}" FontSize="Small" />
+                    <Label Grid.Column="0" Text="Unit" TextColor="{Binding SelectedUnitString,Converter={StaticResource FilterFieldStringToColor}}" FontSize="Small" />
                     <StackLayout Grid.Column="1">
                         <Label Text="{Binding SelectedUnitString}" LineBreakMode="TailTruncation" TextColor="Gray" FontSize="Small">
                             <Image.GestureRecognizers>
@@ -93,7 +96,7 @@
                         <ColumnDefinition Width="3*" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" Text="Status" TextColor="{StaticResource Grey-Mid-1}" FontSize="Small" >
+                    <Label Grid.Column="0" Text="Status" TextColor="{Binding SelectedStatusFlagsString,Converter={StaticResource FilterFieldStringToColor}}" FontSize="Small" >
                         <Label.GestureRecognizers>
                             <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnExpandFilterTapped}" CommandParameter="Priority" />
                         </Label.GestureRecognizers>

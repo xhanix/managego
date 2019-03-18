@@ -86,7 +86,7 @@ namespace ManageGo
         private Tuple<int?, int?> FilteredAmountRange { get; set; }
 
 
-        [AlsoNotifyFor("CalendarButtonText", "FilterDueDateString")]
+        [AlsoNotifyFor("CalendarButtonText")]
         public DateRange FilterDueDate
         {
             get
@@ -99,18 +99,20 @@ namespace ManageGo
             }
         }
 
+        [AlsoNotifyFor("SelectedDateRangeString")]
         public DateRange SelectedDateRange { get; set; }
 
-        public string FilterDueDateString
+        public string SelectedDateRangeString
         {
             get
             {
-                return FilterDueDate != null ?
-                    FilterDueDate.EndDate.HasValue ? FilterDueDate.StartDate.ToShortDateString() + " - " + FilterDueDate.EndDate.Value.ToShortDateString()
+                return SelectedDateRange != null ?
+                    SelectedDateRange.EndDate.HasValue ? SelectedDateRange.StartDate.ToShortDateString() + " - " + SelectedDateRange.EndDate.Value.ToShortDateString()
                                      :
-                    FilterDueDate.StartDate.ToShortDateString() : "All";
+                    SelectedDateRange.StartDate.ToShortDateString() : "All";
             }
         }
+
         public string SelectedStatusFlagsString
         {
             get
@@ -760,13 +762,11 @@ namespace ManageGo
                             break;
                         case "Tenants":
                             if (Units is null || !Units.Any(t => t.IsSelected))
-                            {
                                 await CoreMethods.DisplayAlert("ManageGo", "Select a unit first", "DIMISS");
-                            }
+                            else if (Units != null && Units.Count(t => t.IsSelected) > 1)
+                                await CoreMethods.DisplayAlert("ManageGo", "Select one unit to see tenants.", "DIMISS");
                             else if (Tenants is null || !Tenants.Any())
-                            {
                                 await CoreMethods.DisplayAlert("ManageGo", "No tenants in unit", "DIMISS");
-                            }
                             else
                             {
                                 FilterTenantsExpanded = !FilterTenantsExpanded;

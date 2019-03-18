@@ -28,7 +28,11 @@ namespace ManageGo.Controls
         public DateRange SelectedDates
         {
             get => (DateRange)GetValue(SelectedDatesProperty);
-            set => SetValue(SelectedDatesProperty, value);
+            set
+            {
+                SetValue(SelectedDatesProperty, value);
+                this.UpdateHighlightedDates?.Invoke(value.GetDateRangeDates());
+            }
         }
 
         static void HandleSelectedDatesPropertyChanged(BindableObject bindable, object oldValue, object newValue)

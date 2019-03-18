@@ -32,15 +32,15 @@ namespace ManageGo
         int LastLoadedItemId { get; set; }
         bool CanGetMorePages { get; set; }
         #region filter view properties
-        [AlsoNotifyFor("LowPriorityCheckBoxImage", "SelectedPriorityString", "FilterPriorityTextColor")]
+        [AlsoNotifyFor("LowPriorityCheckBoxImage", "SelectedPriorityString")]
         public bool IsLowPriorityFilterSelected { get; private set; }
-        [AlsoNotifyFor("MediumPriorityCheckBoxImage", "SelectedPriorityString", "FilterPriorityTextColor")]
+        [AlsoNotifyFor("MediumPriorityCheckBoxImage", "SelectedPriorityString")]
         public bool IsMediumPriorityFilterSelected { get; private set; }
-        [AlsoNotifyFor("HighPriorityCheckBoxImage", "SelectedPriorityString", "FilterPriorityTextColor")]
+        [AlsoNotifyFor("HighPriorityCheckBoxImage", "SelectedPriorityString")]
         public bool IsHighPriorityFilterSelected { get; private set; }
-        [AlsoNotifyFor("OpenTicketFilterCheckBoxImage", "SelectedStatusFlagsString", "FilterStatusTextColor")]
+        [AlsoNotifyFor("OpenTicketFilterCheckBoxImage", "SelectedStatusFlagsString")]
         public bool SelectedOpenTicketsFilter { get; private set; }
-        [AlsoNotifyFor("ClosedTicketFilterCheckBoxImage", "SelectedStatusFlagsString", "FilterStatusTextColor")]
+        [AlsoNotifyFor("ClosedTicketFilterCheckBoxImage", "SelectedStatusFlagsString")]
         public bool SelectedClosedTicketsFilter { get; private set; }
         public string FilterKeywords { get; set; }
         public string ClosedTicketFilterCheckBoxImage
@@ -142,26 +142,6 @@ namespace ManageGo
         public bool FilterStatusExpanded { get; private set; }
         public bool FilterDueDateExpanded { get; private set; }
         public bool FilterUsersExpanded { get; private set; }
-        public string FilterBuildingTextColor
-        {
-            get => SelectedBuildingsString == "All" ? filterDefaultColor : filterSelectedColor;
-        }
-        public string FilterStatusTextColor
-        {
-            get => SelectedStatusFlagsString == "All" ? filterDefaultColor : filterSelectedColor;
-        }
-        public string FilterCategoryTextColor
-        {
-            get => SelectedCategoriesString == "All" ? filterDefaultColor : filterSelectedColor;
-        }
-        public string FilterTagsTextColor
-        {
-            get => SelectedTagsString == "All" ? filterDefaultColor : filterSelectedColor;
-        }
-        public string FilterPriorityTextColor
-        {
-            get => SelectedPriorityString == "All" ? filterDefaultColor : filterSelectedColor;
-        }
         public string FilterDueDateString
         {
             get
@@ -172,10 +152,7 @@ namespace ManageGo
                     FilterDueDate.StartDate.ToShortDateString() : "All";
             }
         }
-        public string FilterDueDateColor
-        {
-            get => FilterDueDate != null ? filterSelectedColor : filterDefaultColor;
-        }
+
         #endregion
         #region view properties
         [AlsoNotifyFor("AddNewButtonIsVisisble")]
@@ -191,12 +168,10 @@ namespace ManageGo
         {
             get => !(FilterSelectViewIsShown || CalendarIsShown);
         }
-        readonly string filterSelectedColor = "#8ad96b";
-        readonly string filterDefaultColor = "#aeb0b3";
         public View PopContentView { get; internal set; }
         #endregion
 
-        [AlsoNotifyFor("FilterDueDateString", "FilterDueDateColor")]
+        [AlsoNotifyFor("FilterDueDateString")]
         public DateRange FilterDueDate { get; set; }
 
 
@@ -449,7 +424,7 @@ namespace ManageGo
                     var building = parameter as Building;
                     building.IsSelected = !building.IsSelected;
                     RaisePropertyChanged("SelectedBuildingsString");
-                    RaisePropertyChanged("FilterBuildingTextColor");
+
                     tcs?.SetResult(true);
                 });
             }
@@ -479,7 +454,6 @@ namespace ManageGo
                     var category = parameter as Categories;
                     category.IsSelected = !category.IsSelected;
                     RaisePropertyChanged("SelectedCategoriesString");
-                    RaisePropertyChanged("FilterCategoryTextColor");
                     tcs?.SetResult(true);
                 });
             }
@@ -508,7 +482,6 @@ namespace ManageGo
                     var tag = parameter as Tags;
                     tag.IsSelected = !tag.IsSelected;
                     RaisePropertyChanged("SelectedTagsString");
-                    RaisePropertyChanged("FilterTagsTextColor");
                     tcs?.SetResult(true);
                 });
             }
@@ -559,7 +532,7 @@ namespace ManageGo
                         {
                             foreach (var c in Categories)
                             {
-                                if (CurrentFilter.Tags.Contains(c.CategoryID))
+                                if (CurrentFilter.Categories.Contains(c.CategoryID))
                                     c.IsSelected = true;
                                 else
                                     c.IsSelected = false;

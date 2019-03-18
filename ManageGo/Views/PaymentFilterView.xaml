@@ -6,6 +6,9 @@
     x:Name="ThisPage"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
     x:Class="ManageGo.Views.PaymentFilterView">
+    <ContentView.Resources>
+        <local:FilterFieldStringToColor x:Key="FilterFieldStringToColor" />
+    </ContentView.Resources>
         <ScrollView>
         <StackLayout Spacing="0">
             <StackLayout Padding="21,17,21,17" Spacing="0">
@@ -27,7 +30,7 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                   
-                    <Label Grid.Column="0" Grid.Row="0" Text="Date" VerticalOptions="EndAndExpand" TextColor="{StaticResource Grey-Mid-1}" FontSize="Small" />
+                    <Label Grid.Column="0" Grid.Row="0" Text="Date" VerticalOptions="EndAndExpand" TextColor="{Binding SelectedDateRangeString,Converter={StaticResource FilterFieldStringToColor}}" FontSize="Small" />
                     <Grid IsVisible="{Binding FilterDueDateExpanded}" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="auto" />
@@ -35,7 +38,7 @@
                         </Grid.RowDefinitions>
                         <controls:CalendarView Grid.Row="1" WidthRequest="490" SelectedDates="{Binding SelectedDateRange}" HeightRequest="245" AllowMultipleSelection="true"/>
                     </Grid>
-                    <Label Grid.Row="0" Grid.Column="1" VerticalOptions="EndAndExpand" Text="{Binding FilterDueDateString}" LineBreakMode="TailTruncation" TextColor="Gray" FontSize="Small" />
+                    <Label Grid.Row="0" Grid.Column="1" VerticalOptions="EndAndExpand" Text="{Binding SelectedDateRangeString}" LineBreakMode="TailTruncation" TextColor="Gray" FontSize="Small" />
                     <Image Grid.Column="2" Grid.Row="0" VerticalOptions="CenterAndExpand" HorizontalOptions="EndAndExpand" Source="chevron_right.png" />
                      <Grid.GestureRecognizers>
                         <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnExpandFilterTapped}" CommandParameter="DueDates" />
@@ -50,7 +53,7 @@
                         <ColumnDefinition Width="3*" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" Text="Building" TextColor="{StaticResource Grey-Mid-1}" FontSize="Small" />
+                    <Label Grid.Column="0" Text="Building" TextColor="{Binding SelectedBuildingsString,Converter={StaticResource FilterFieldStringToColor}}" FontSize="Small" />
                     <StackLayout Grid.Column="1">
                         <Label Text="{Binding SelectedBuildingsString}" LineBreakMode="TailTruncation" TextColor="Gray" FontSize="Small"/>
                         <controls:NestedListView IsVisible="{Binding FilterBuildingsExpanded}" ItemsSource="{Binding Buildings}" Margin="0,8,0,0" HasUnevenRows="true" SeparatorVisibility="None"  HeightRequest="150" SelectionMode="None">
@@ -86,7 +89,7 @@
                         <ColumnDefinition Width="3*" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" Text="Unit" TextColor="{StaticResource Grey-Mid-1}" FontSize="Small" />
+                    <Label Grid.Column="0" Text="Unit" TextColor="{Binding SelectedUnitString,Converter={StaticResource FilterFieldStringToColor}}" FontSize="Small" />
                     <StackLayout Grid.Column="1">
                         <Label Text="{Binding SelectedUnitString}" LineBreakMode="TailTruncation" TextColor="Gray" FontSize="Small" />
                         <controls:NestedListView IsVisible="{Binding FilterUnitsExpanded}" ItemsSource="{Binding Units}" Margin="0,8,0,0" HasUnevenRows="true" SeparatorVisibility="None"  HeightRequest="150" SelectionMode="None">
@@ -121,7 +124,7 @@
                         <ColumnDefinition Width="3*" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" Text="Tenants" TextColor="{StaticResource Grey-Mid-1}" FontSize="Small" />
+                    <Label Grid.Column="0" Text="Tenants" TextColor="{Binding SelectedTenantString,Converter={StaticResource FilterFieldStringToColor}}" FontSize="Small" />
                     <StackLayout Grid.Column="1">
                         <Label Text="{Binding SelectedTenantString}" LineBreakMode="TailTruncation" TextColor="Gray" FontSize="Small" />
                         <controls:NestedListView IsVisible="{Binding FilterTenantsExpanded}" ItemsSource="{Binding Tenants}" Margin="0,8,0,0" HasUnevenRows="true" SeparatorVisibility="None"  HeightRequest="150" SelectionMode="None">
@@ -156,7 +159,7 @@
                         <ColumnDefinition Width="3*" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" Text="Status" TextColor="{StaticResource Grey-Mid-1}" FontSize="Small" />
+                    <Label Grid.Column="0" Text="Status" TextColor="{Binding SelectedStatusFlagsString,Converter={StaticResource FilterFieldStringToColor}}" FontSize="Small" />
                     <StackLayout Grid.Column="1">
                         <Label Text="{Binding SelectedStatusFlagsString}" LineBreakMode="TailTruncation" TextColor="Gray" FontSize="Small" />
                         <StackLayout IsVisible="{Binding FilterStatusExpanded}">
@@ -207,7 +210,7 @@
                         <RowDefinition Height="auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
-                    <Label Grid.Column="0" Grid.Row="0" Text="Amount" TextColor="{StaticResource Grey-Mid-1}" FontSize="Small" />
+                    <Label Grid.Column="0" Grid.Row="0" Text="Amount" TextColor="{Binding FilterAmountString,Converter={StaticResource FilterFieldStringToColor}}" FontSize="Small" />
                     <Label Grid.Row="0" Grid.Column="1" Text="{Binding FilterAmountString}" LineBreakMode="TailTruncation" TextColor="Gray" FontSize="Small" />
                     <Image Grid.Column="2" Grid.Row="0" VerticalOptions="StartAndExpand" HorizontalOptions="EndAndExpand" Source="chevron_right.png" />
                     <Grid.GestureRecognizers>

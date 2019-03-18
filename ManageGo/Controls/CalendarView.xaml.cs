@@ -133,8 +133,9 @@ namespace ManageGo.Controls
 
         void Past30DaysButton_Tapped(object sender, EventArgs e)
         {
-            calendar.SelectedDates = new DateRange(DateTime.Now.AddDays(-30), DateTime.Now);
-            SelectedDates = new DateRange(DateTime.Now.AddDays(-30), DateTime.Now);
+            var dateRange = new DateRange(DateTime.Now.AddDays(-30), DateTime.Now);
+            calendar.SelectedDates = dateRange;
+            SelectedDates = dateRange;
             OnPresetRangeUpdate?.Invoke(sender, e);
         }
 

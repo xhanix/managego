@@ -19,6 +19,12 @@ namespace ManageGo.Services
 
         public static async Task<object> Login(string userName = null, string password = null)
         {
+
+#if DEBUG
+            userName = "pmc@mobile.test";
+            password = "111111";
+#endif
+
             Dictionary<string, string> credentials = new Dictionary<string, string>
             {
                 { "login", userName },

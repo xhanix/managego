@@ -398,7 +398,7 @@
             <StackLayout HorizontalOptions="FillAndExpand" >
                 <StackLayout Orientation="Horizontal" Margin="22,16,0,8">
                     <Image WidthRequest="47" HeightRequest="47" VerticalOptions="CenterAndExpand" Source="camera_1.png" />
-                    <Label FontSize="Large" VerticalOptions="CenterAndExpand"  HorizontalOptions="StartAndExpand" BackgroundColor="Transparent" Text="Take photo/video" TextColor="#318bfa" />
+                    <Label Text="Take photo/video" FontSize="Large" VerticalOptions="CenterAndExpand"  HorizontalOptions="StartAndExpand" BackgroundColor="Transparent"  TextColor="#318bfa" />
                 <StackLayout.GestureRecognizers>
                         <TapGestureRecognizer NumberOfTapsRequired="1"  Command="{Binding OnTakePhotoTapped}" />
                 </StackLayout.GestureRecognizers>

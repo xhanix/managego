@@ -176,6 +176,6 @@
             <Image.GestureRecognizers>
                 <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnAddButtonTapped}" />
             </Image.GestureRecognizers>
-            </Image>
+        </Image>
     </RelativeLayout>
 </ContentPage>

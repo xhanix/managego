@@ -5,6 +5,9 @@
              xmlns:controls="clr-namespace:ManageGo.Controls"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ManageGo.Views.TransactionsFilterPage">
+     <ContentView.Resources>
+        <local:FilterFieldStringToColor x:Key="FilterFieldStringToColor" />
+    </ContentView.Resources>
     <ScrollView>
         <StackLayout Spacing="0">
             <StackLayout Padding="21,17,21,17" Spacing="0">
@@ -26,15 +29,15 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                   
-                    <Label Grid.Column="0" Grid.Row="0" Text="Date" TextColor="{StaticResource Grey-Mid-1}" FontSize="Small" />
+                    <Label Grid.Column="0" Grid.Row="0" Text="Date" TextColor="{Binding CalendarButtonText,Converter={StaticResource FilterFieldStringToColor}}" FontSize="Small" />
                     <Grid IsVisible="{Binding FilterDateRangeExpanded}" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
-                        <controls:CalendarView Grid.Row="1" WidthRequest="490" SelectedDates="{Binding DateRange}" HeightRequest="245" AllowMultipleSelection="true"/>
+                        <controls:CalendarView Grid.Row="1" WidthRequest="490" SelectedDates="{Binding SelectedDateRange}" HeightRequest="245" AllowMultipleSelection="true"/>
                     </Grid>
-                    <Label Grid.Row="0" Grid.Column="1" Text="{Binding CalendarButtonText}" LineBreakMode="TailTruncation" TextColor="Gray" FontSize="Small">
+                    <Label Grid.Row="0" Grid.Column="1" Text="{Binding SelectedDateRangeString}" LineBreakMode="TailTruncation" TextColor="Gray" FontSize="Small">
                         <Label.GestureRecognizers>
                             <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnExpandFilterTapped}" CommandParameter="DueDates" />
                         </Label.GestureRecognizers>
@@ -57,7 +60,7 @@
                         <RowDefinition Height="auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
-                    <Label Grid.Column="0" Grid.Row="0" Text="Amount" TextColor="{StaticResource Grey-Mid-1}" FontSize="Small" />
+                    <Label Grid.Column="0" Grid.Row="0" Text="Amount" TextColor="{Binding FilterAmountString,Converter={StaticResource FilterFieldStringToColor}}" FontSize="Small" />
                     <Label Grid.Row="0" Grid.Column="1" Text="{Binding FilterAmountString}" LineBreakMode="TailTruncation" TextColor="Gray" FontSize="Small">
                         <Label.GestureRecognizers>
                             <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnExpandAmountFilterTapped}" CommandParameter="DueDates" />
@@ -76,7 +79,7 @@
                         <ColumnDefinition Width="3*" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" Text="Account" TextColor="{StaticResource Grey-Mid-1}" FontSize="Small" />
+                    <Label Grid.Column="0" Text="Account" TextColor="{Binding SelectedAccountString,Converter={StaticResource FilterFieldStringToColor}}" FontSize="Small" />
                     <StackLayout Grid.Column="1">
                         <Label Text="{Binding SelectedAccountString}" LineBreakMode="TailTruncation" TextColor="{StaticResource Grey-Light-1}" FontSize="Small"/>
                         <controls:NestedListView IsVisible="{Binding FilterAccountsExpanded}" ItemsSource="{Binding BankAccounts}" Margin="0,8,0,0" HasUnevenRows="true" SeparatorVisibility="None"  HeightRequest="150" SelectionMode="None">

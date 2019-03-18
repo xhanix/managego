@@ -27,7 +27,7 @@ namespace ManageGo
         public ObservableCollection<BankTransaction> FetchedTransactions { get; set; }
         public bool RangeSelectorIsShown { get; private set; }
         public List<BankAccount> BankAccounts { get; private set; }
-        public Tuple<int?, int?> SelectedAmountRange { get; set; }
+        public Tuple<int?, int?> SelectedAmountRange { get; set; } = new Tuple<int?, int?>(0, 5000);
         public bool BackbuttonIsVisible { get; set; }
         [AlsoNotifyFor("FilterAmountString")]
         private Tuple<int?, int?> FilteredAmountRange { get; set; }
@@ -49,6 +49,21 @@ namespace ManageGo
                 dateRange = value;
             }
         }
+
+        [AlsoNotifyFor("SelectedDateRangeString")]
+        public DateRange SelectedDateRange { get; set; }
+
+        public string SelectedDateRangeString
+        {
+            get
+            {
+                return SelectedDateRange != null ?
+                    SelectedDateRange.EndDate.HasValue ? SelectedDateRange.StartDate.ToShortDateString() + " - " + SelectedDateRange.EndDate.Value.ToShortDateString()
+                                     :
+                    SelectedDateRange.StartDate.ToShortDateString() : "All";
+            }
+        }
+
         public string RangeSelectorMin { get { return SelectedAmountRange != null ? SelectedAmountRange.Item1?.ToString("C0") : ""; } }
         public string RangeSelectorMax
         {
@@ -238,6 +253,7 @@ namespace ManageGo
                 async void execute(object parameter, TaskCompletionSource<bool> tcs)
                 {
                     PopContentView = null;
+                    DateRange = new DateRange(SelectedDateRange.StartDate, SelectedDateRange.EndDate);
                     FilterSelectViewIsShown = false;
                     ParameterItem = new TransactionsRequestItem();
                     if (!string.IsNullOrWhiteSpace(FilterKeywords))
@@ -365,6 +381,7 @@ namespace ManageGo
                         PopContentView = (View)null;
                     else
                     {
+                        SelectedDateRange = new DateRange(DateRange.StartDate, DateRange.EndDate);
                         CurrentFilter = ParameterItem.Clone();
                         PopContentView = new Views.TransactionsFilterPage(this).Content;
                     }
