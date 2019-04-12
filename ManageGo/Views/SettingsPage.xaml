@@ -29,9 +29,9 @@
       
     <Grid RowSpacing="22">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
-             <ColumnDefinition Width="auto" />
+             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <Label Grid.Column="0" VerticalOptions="Center" Grid.Row="0" Text="Name" TextColor="{StaticResource Grey-Light-1}" FontSize="Medium"/>
         <Label Grid.Column="0" VerticalOptions="Center" Grid.Row="1" Text="Email" TextColor="{StaticResource Grey-Light-1}" FontSize="Medium"/>
@@ -78,12 +78,12 @@
         <!--
                     <Switch Grid.Column="1" VerticalOptions="Center"  IsToggled="{Binding ApplicationsNotificationsIsOn}" Grid.Row="7" HorizontalOptions="EndAndExpand"/>
         -->
-        <Image Source="pencil_grey.png" Grid.Column="2" Grid.Row="0">
+        <Image Source="pencil_grey.png" ClassId="UserName" Grid.Column="2" Grid.Row="0">
             <Image.GestureRecognizers>
                 <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Handle_Tapped" Command="{Binding OnEditButtonTapped}" CommandParameter="UserName" />
             </Image.GestureRecognizers>
         </Image>
-        <Image Source="pencil_grey.png" Grid.Column="2" Grid.Row="1" >
+        <Image Source="pencil_grey.png" ClassId="Email" Grid.Column="2" Grid.Row="1" >
             <Image.GestureRecognizers>
                 <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Handle_Tapped" Command="{Binding OnEditButtonTapped}" CommandParameter="Email" />
             </Image.GestureRecognizers>

@@ -11,10 +11,15 @@ namespace ManageGo.Services
 {
     public static class DataAccess
     {
+#if DEBUG
         private const string BaseUrl = "https://ploop.dynamo-ny.com/api/pmc_v2/";
+#else
+        private const string BaseUrl = "https://portal.managego.com/api/pmc_v2/";
+#endif
         internal static readonly HttpClient client = new HttpClient();
         private static string AccessToken { get; set; }
-
+        private const string GoogleAppId = "4975375084449837166";
+        private const string AppleAppId = "";
         private static DateTimeOffset TokenExpiry { get; set; } = DateTimeOffset.FromUnixTimeSeconds(0);
 
         public static async Task<object> Login(string userName = null, string password = null)

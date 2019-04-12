@@ -19,10 +19,10 @@ namespace ManageGo
             ((SettingsPageModel)this.BindingContext).OnFieldLostFocus.Execute(entry.ClassId);
         }
 
-        
-        void Handle_Tapped(object sender, TappedEventArgs e)
+
+        void Handle_Tapped(object sender, EventArgs e)
         {
-            var name = (string)e.Parameter;
+            var name = ((Image)sender).ClassId;
             switch (name)
             {
                 case "UserName":
@@ -44,9 +44,6 @@ namespace ManageGo
 
         }
 
-        private void Handle_Tapped(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
-        }
+
     }
 }

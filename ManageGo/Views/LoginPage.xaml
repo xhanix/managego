@@ -85,7 +85,5 @@
                 </Frame>
             </StackLayout>
         </Frame>
-      
         </RelativeLayout>
-    
 </ContentPage>

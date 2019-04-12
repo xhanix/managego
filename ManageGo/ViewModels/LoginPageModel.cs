@@ -152,6 +152,7 @@ namespace ManageGo
                     throw new Exception("Not connected to Internet");
                 await Services.DataAccess.Login(UserEmail, UserPassword);
                 Preferences.Set("IsFirstLogin", false);
+#if !DEBUG
                 if (!isBiometricLogin)
                 {
                     //the values are encrypted, encryption key stored in keychain/key store
@@ -159,6 +160,7 @@ namespace ManageGo
                     await SecureStorage.SetAsync("Password", UserPassword);
                     Preferences.Set("IsBiometricAuthEnabled", IsBiometricsEnabled);
                 }
+#endif
                 List<Task> tasks = new List<Task>();
                 if (App.Buildings is null || !App.Buildings.Any())
                     tasks.Add(Services.DataAccess.GetBuildings());
