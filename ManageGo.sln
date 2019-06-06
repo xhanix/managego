@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManageGo.iOS", "ManageGo.iO
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManageGo", "ManageGo\ManageGo.csproj", "{53167476-5227-407E-B52C-E2F569F04033}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MGDataAccessLibrary", "MGDataAccessLibrary\MGDataAccessLibrary.csproj", "{B7AB562A-9569-457C-A6CB-773EF8D267FC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -67,6 +69,22 @@ Global
 		{53167476-5227-407E-B52C-E2F569F04033}.Ad-Hoc|iPhone.Build.0 = Debug|Any CPU
 		{53167476-5227-407E-B52C-E2F569F04033}.AppStore|iPhone.ActiveCfg = Debug|Any CPU
 		{53167476-5227-407E-B52C-E2F569F04033}.AppStore|iPhone.Build.0 = Debug|Any CPU
+		{B7AB562A-9569-457C-A6CB-773EF8D267FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7AB562A-9569-457C-A6CB-773EF8D267FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7AB562A-9569-457C-A6CB-773EF8D267FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7AB562A-9569-457C-A6CB-773EF8D267FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7AB562A-9569-457C-A6CB-773EF8D267FC}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{B7AB562A-9569-457C-A6CB-773EF8D267FC}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{B7AB562A-9569-457C-A6CB-773EF8D267FC}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{B7AB562A-9569-457C-A6CB-773EF8D267FC}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{B7AB562A-9569-457C-A6CB-773EF8D267FC}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{B7AB562A-9569-457C-A6CB-773EF8D267FC}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{B7AB562A-9569-457C-A6CB-773EF8D267FC}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{B7AB562A-9569-457C-A6CB-773EF8D267FC}.Release|iPhone.Build.0 = Release|Any CPU
+		{B7AB562A-9569-457C-A6CB-773EF8D267FC}.Ad-Hoc|iPhone.ActiveCfg = Release|Any CPU
+		{B7AB562A-9569-457C-A6CB-773EF8D267FC}.Ad-Hoc|iPhone.Build.0 = Release|Any CPU
+		{B7AB562A-9569-457C-A6CB-773EF8D267FC}.AppStore|iPhone.ActiveCfg = Release|Any CPU
+		{B7AB562A-9569-457C-A6CB-773EF8D267FC}.AppStore|iPhone.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection

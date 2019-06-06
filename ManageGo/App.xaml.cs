@@ -57,39 +57,42 @@ namespace ManageGo
 
         void Handle_OnSuccessfulLogin(object sender, bool e)
         {
-            MasterDetailNav = new FreshMasterDetailNavigationContainer();
-            MasterDetailNav.Init("");
-            var page = FreshPageModelResolver.ResolvePageModel<MasterMenuPageModel>();
-            ((MasterMenuPageModel)page.BindingContext).OnLogout += (_sender, _e) =>
+            Xamarin.Forms.Device.BeginInvokeOnMainThread(() =>
             {
-                var __page = FreshPageModelResolver.ResolvePageModel<LoginPageModel>();
-                MainPage = __page;
-                MasterDetailNav = null;
-                MasterDetailContainer = null;
-                ((LoginPageModel)__page.BindingContext).OnSuccessfulLogin += Handle_OnSuccessfulLogin;
-            };
-            page.Title = "Menu";
-            MasterDetailNav.Master = page;
-
-            MasterDetailNav.AddPage<WelcomePageModel>("Home", null);
-            MasterDetailNav.AddPage<MaintenanceTicketsPageModel>("Maintenance Tickets", null);
-            this.MainPage = MasterDetailNav;
-            MasterDetailContainer = MasterDetailNav;
-            MasterDetailNav.IsPresentedChanged += (_sender, _e) =>
-            {
-
-                if (_sender is FreshMasterDetailNavigationContainer)
+                MasterDetailNav = new FreshMasterDetailNavigationContainer();
+                MasterDetailNav.Init("");
+                var page = FreshPageModelResolver.ResolvePageModel<MasterMenuPageModel>();
+                ((MasterMenuPageModel)page.BindingContext).OnLogout += (_sender, _e) =>
                 {
-                    foreach (var _page in ((FreshMasterDetailNavigationContainer)_sender).Pages.Values)
+                    var __page = FreshPageModelResolver.ResolvePageModel<LoginPageModel>();
+                    MainPage = __page;
+                    MasterDetailNav = null;
+                    MasterDetailContainer = null;
+                    ((LoginPageModel)__page.BindingContext).OnSuccessfulLogin += Handle_OnSuccessfulLogin;
+                };
+                page.Title = "Menu";
+                MasterDetailNav.Master = page;
+
+                MasterDetailNav.AddPage<WelcomePageModel>("Home", null);
+                MasterDetailNav.AddPage<MaintenanceTicketsPageModel>("Maintenance Tickets", null);
+                this.MainPage = MasterDetailNav;
+                MasterDetailContainer = MasterDetailNav;
+                MasterDetailNav.IsPresentedChanged += (_sender, _e) =>
+                {
+
+                    if (_sender is FreshMasterDetailNavigationContainer)
                     {
-                        var nav = _page as NavigationPage;
-                        if (nav.CurrentPage is null || nav.CurrentPage.BindingContext is null)
-                            return;
-                        if (nav.CurrentPage.BindingContext is BaseDetailPage)
-                            (nav.CurrentPage.BindingContext as BaseDetailPage).HamburgerIsVisible = !MasterDetailNav.IsPresented;
+                        foreach (var _page in ((FreshMasterDetailNavigationContainer)_sender).Pages.Values)
+                        {
+                            var nav = _page as NavigationPage;
+                            if (nav.CurrentPage is null || nav.CurrentPage.BindingContext is null)
+                                return;
+                            if (nav.CurrentPage.BindingContext is BaseDetailPage)
+                                (nav.CurrentPage.BindingContext as BaseDetailPage).HamburgerIsVisible = !MasterDetailNav.IsPresented;
+                        }
                     }
-                }
-            };
+                };
+            });
         }
 
         protected override void OnStart()
@@ -110,6 +113,11 @@ namespace ManageGo
         {
             // Handle when your app resumes
         }
+    }
+    public interface IGoogleCloudMessagingHelper
+    {
+        void SubscribeToTopic(string topic);
+        void UnSubscribeFromTopics();
     }
     public interface ILocalAuthHelper
     {

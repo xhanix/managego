@@ -30,6 +30,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
 <RunCodeAnalysis>true</RunCodeAnalysis><LangVersion>Latest</LangVersion>
+<AndroidEnableMultiDex>true</AndroidEnableMultiDex>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType></DebugType>
@@ -42,21 +43,28 @@
     <AndroidLinkMode>SdkOnly</AndroidLinkMode>
 <RunCodeAnalysis>true</RunCodeAnalysis><AndroidCreatePackagePerAbi>true</AndroidCreatePackagePerAbi>
 <LangVersion>Latest</LangVersion>
+<AndroidSupportedAbis>armeabi-v7a;arm64-v8a</AndroidSupportedAbis>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Xamarin.Android.Support.Design" Version="28.0.0" />
-    <PackageReference Include="Xamarin.Android.Support.v7.AppCompat" Version="28.0.0" />
-    <PackageReference Include="Xamarin.Android.Support.v4" Version="28.0.0" />
-    <PackageReference Include="Xamarin.Android.Support.v7.CardView" Version="28.0.0" />
-    <PackageReference Include="Xamarin.Android.Support.v7.MediaRouter" Version="28.0.0" />
+    <PackageReference Include="Xamarin.Android.Support.Design" Version="28.0.0.1" />
+    <PackageReference Include="Xamarin.Android.Support.v7.AppCompat" Version="28.0.0.1" />
+    <PackageReference Include="Xamarin.Android.Support.v4" Version="28.0.0.1" />
+    <PackageReference Include="Xamarin.Android.Support.v7.CardView" Version="28.0.0.1" />
+    <PackageReference Include="Xamarin.Android.Support.v7.MediaRouter" Version="28.0.0.1" />
     <PackageReference Include="Xamarin.Android.Support.Annotations">
-      <Version>28.0.0</Version>
+      <Version>28.0.0.1</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.Android.Support.Compat">
-      <Version>28.0.0</Version>
+      <Version>28.0.0.1</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.Android.Support.CustomTabs">
-      <Version>28.0.0</Version>
+      <Version>28.0.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="Xamarin.Firebase.Messaging">
+      <Version>60.1142.1</Version>
+    </PackageReference>
+    <PackageReference Include="Xamarin.GooglePlayServices.Base">
+      <Version>60.1142.1</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
@@ -92,6 +100,9 @@
     <Compile Include="PicturePickerImplementation.cs" />
     <Compile Include="CustomSwitchRenderer.cs" />
     <Compile Include="SplashActivity.cs" />
+    <Compile Include="MyFirebaseIIDService.cs" />
+    <Compile Include="GoogleCloudMessagingHelper.cs" />
+    <Compile Include="MyFirebaseMessagingService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -361,6 +372,10 @@
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <GoogleServicesJson Include="google-services-test.json" />
+    <GoogleServicesJson Include="google-services.json" />
   </ItemGroup>
  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
  <Import Project="..\packages\Xamarin.Android.Support.Annotations.28.0.0\build\monoandroid90\Xamarin.Android.Support.Annotations.targets" Condition="Exists('..\packages\Xamarin.Android.Support.Annotations.28.0.0\build\monoandroid90\Xamarin.Android.Support.Annotations.targets')" />

@@ -1,0 +1,119 @@
+{
+  "project_info": {
+    "project_number": "348916857413",
+    "firebase_url": "https://mg-uat-64d49.firebaseio.com",
+    "project_id": "mg-uat-64d49",
+    "storage_bucket": "mg-uat-64d49.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:348916857413:android:959b302643674651",
+        "android_client_info": {
+          "package_name": "com.ManageGo.ManageGo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "348916857413-84568cdnrvd66i4b605rmason51jrbbv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3tmopsvcdIlT_O5jGAho1zrSsvduz6Gs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "348916857413-84568cdnrvd66i4b605rmason51jrbbv.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "348916857413-g9k94jatk0eq8cn09fb4lkg9okvbvjtv.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.dynamo-ny.mg-uat"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:348916857413:android:266f05e236ab1123",
+        "android_client_info": {
+          "package_name": "com.managego.tenant"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "348916857413-84568cdnrvd66i4b605rmason51jrbbv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3tmopsvcdIlT_O5jGAho1zrSsvduz6Gs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "348916857413-84568cdnrvd66i4b605rmason51jrbbv.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "348916857413-g9k94jatk0eq8cn09fb4lkg9okvbvjtv.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.dynamo-ny.mg-uat"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:348916857413:android:77e72574c93c5b68",
+        "android_client_info": {
+          "package_name": "com.managegoPMC2.tenant"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "348916857413-84568cdnrvd66i4b605rmason51jrbbv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3tmopsvcdIlT_O5jGAho1zrSsvduz6Gs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "348916857413-84568cdnrvd66i4b605rmason51jrbbv.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "348916857413-g9k94jatk0eq8cn09fb4lkg9okvbvjtv.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.dynamo-ny.mg-uat"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

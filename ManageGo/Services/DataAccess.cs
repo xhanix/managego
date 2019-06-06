@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ManageGo.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Xamarin.Forms;
 
 namespace ManageGo.Services
 {
@@ -22,91 +23,34 @@ namespace ManageGo.Services
         private const string AppleAppId = "";
         private static DateTimeOffset TokenExpiry { get; set; } = DateTimeOffset.FromUnixTimeSeconds(0);
 
-        public static async Task<object> Login(string userName = null, string password = null)
+        public static async Task Login(string userName = null, string password = null)
         {
-
-#if DEBUG
-            userName = "pmc@mobile.test";
-            password = "111111";
-#endif
-
-            Dictionary<string, string> credentials = new Dictionary<string, string>
-            {
-                { "login", userName },
-                { "password", password }
-            };
-            var content = new FormUrlEncodedContent(credentials);
-            var response = await client.PostAsync(BaseUrl + APIpaths.authorize, content);
-            var responseString = await response.Content.ReadAsStringAsync();
-            var responseObject = JObject.Parse(responseString);
-            if (responseObject.TryGetValue("Result", out JToken result))
-            {
-                if (result.ToObject<object>() is null)
-                {
-                    if (responseObject.TryGetValue("ErrorMessage", out JToken errorMsg))
-                    {
-                        throw new Exception(errorMsg.ToObject<string>());
-                    }
-                    else
-                    {
-                        throw new Exception("Unable to log in");
-                    }
-                }
-                var jResult = result.ToObject<Dictionary<string, JObject>>();
-                //get user-info
-                if (jResult.TryGetValue(APIkeys.UserInfo.ToString(), out JObject userInfo))
-                {
-                    App.UserInfo = userInfo.ToObject<Models.SignedInUserInfo>();
-                }
-                jResult.TryGetValue(APIkeys.PMCInfo.ToString(), out JObject pmcInfo);
-                //user info is a dictionary
-                var dic = userInfo.ToObject<Dictionary<string, string>>();
-                var pmcDic = pmcInfo.ToObject<Dictionary<string, string>>();
-                //get access token
-                if (dic.TryGetValue(APIkeys.AccessToken.ToString(), out string token))
-                {
-                    AccessToken = token;
-                    TokenExpiry = DateTimeOffset.Now.AddMinutes(60);
-                    client.DefaultRequestHeaders.Remove(APIkeys.AccessToken.ToString());
-                    client.DefaultRequestHeaders.Add(APIkeys.AccessToken.ToString(), AccessToken);
-                }
-                if (dic.TryGetValue(APIkeys.UserFirstName.ToString(), out string firstName)
-                    && dic.TryGetValue(APIkeys.UserLastName.ToString(), out string lastName))
-                {
-                    App.UserName = firstName + " " + lastName;
-                }
-
-                if (pmcDic.TryGetValue(APIkeys.PMCName.ToString(), out string pmcName))
-                {
-                    App.PMCName = pmcName;
-                }
-                //get Permissions
-                if (jResult.TryGetValue(APIkeys.Permissions.ToString(), out JObject permisions))
-                {
-                    var perm = permisions.ToObject<LoggedInUserPermissions>();
-
-                    //reset the permissions on log in
-                    App.UserPermissions = UserPermissions.None;
-                    if (perm.CanAccessPayments)
-                        App.UserPermissions |= UserPermissions.CanAccessPayments;
-                    if (perm.CanAccessMaintenanceTickets)
-                        App.UserPermissions |= UserPermissions.CanAccessTickets;
-                    if (perm.CanReplyPublicly)
-                        App.UserPermissions |= UserPermissions.CanReplyPublicly;
-                    if (perm.CanReplyInternally)
-                        App.UserPermissions |= UserPermissions.CanReplyInternally;
-                    if (perm.CanAccessTenants)
-                        App.UserPermissions |= UserPermissions.CanAccessTenants;
-                    if (perm.CanAddWorkordersAndEvents)
-                        App.UserPermissions |= UserPermissions.CanAddWorkordersAndEvents;
-                    if (perm.CanApproveNewTenantsUnits)
-                        App.UserPermissions |= UserPermissions.CanApproveNewTenantsUnits;
-                    if (perm.CanEditTicket)
-                        App.UserPermissions |= UserPermissions.CanEditTicketDetails;
-
-                }
-            }
-            return responseString;
+            var result = await MGDataAccessLibrary.BussinessLogic.UserProcessor.Login(userName, password);
+            AccessToken = result.UserInfo.AccessToken;
+            client.DefaultRequestHeaders.Remove("AccessToken");
+            client.DefaultRequestHeaders.Add("AccessToken", AccessToken);
+            var p = Device.RuntimePlatform.ToLower();
+            TokenExpiry = DateTimeOffset.Now.AddHours(1);
+            DependencyService.Get<IGoogleCloudMessagingHelper>().SubscribeToTopic($"{result.UserInfo.UserID}.{p}");
+            var perm = result.Permissions;
+            //reset the permissions on log in
+            App.UserPermissions = UserPermissions.None;
+            if (perm.CanAccessPayments)
+                App.UserPermissions |= UserPermissions.CanAccessPayments;
+            if (perm.CanAccessMaintenanceTickets)
+                App.UserPermissions |= UserPermissions.CanAccessTickets;
+            if (perm.CanReplyPublicly)
+                App.UserPermissions |= UserPermissions.CanReplyPublicly;
+            if (perm.CanReplyInternally)
+                App.UserPermissions |= UserPermissions.CanReplyInternally;
+            if (perm.CanAccessTenants)
+                App.UserPermissions |= UserPermissions.CanAccessTenants;
+            if (perm.CanAddWorkordersAndEvents)
+                App.UserPermissions |= UserPermissions.CanAddWorkordersAndEvents;
+            if (perm.CanApproveNewTenantsUnits)
+                App.UserPermissions |= UserPermissions.CanApproveNewTenantsUnits;
+            if (perm.CanEditTicket)
+                App.UserPermissions |= UserPermissions.CanEditTicketDetails;
         }
 
 

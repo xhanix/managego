@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using FreshMvvm;
+using Plugin.Permissions.Abstractions;
 using PropertyChanged;
 using Xamarin.Essentials;
 

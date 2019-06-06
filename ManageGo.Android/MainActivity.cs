@@ -15,6 +15,10 @@ using System.IO;
 using ManageGo.Services;
 using Android.Webkit;
 using Android.Provider;
+using Firebase.Messaging;
+using Firebase.Iid;
+using Android.Util;
+using Android.Gms.Common;
 
 namespace ManageGo.Droid
 {
@@ -37,12 +41,45 @@ namespace ManageGo.Droid
             base.OnCreate(savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
             CrossCurrentActivity.Current.Init(this, savedInstanceState);
+            if (Intent.Extras != null)
+            {
+                foreach (var key in Intent.Extras.KeySet())
+                {
+                    var value = Intent.Extras.GetString(key);
+                    //Log.Debug(TAG, "Key: {0} Value: {1}", key, value);
+                }
+            }
+            var result = IsPlayServicesAvailable();
+            CreateNotificationChannel();
             LoadApplication(new App());
+        }
+
+        void CreateNotificationChannel()
+        {
+            if (Build.VERSION.SdkInt < BuildVersionCodes.O)
+            {
+                // Notification channels are new in API 26 (and not a part of the
+                // support library). There is no need to create a notification
+                // channel on older versions of Android.
+                return;
+            }
+
+            var channel = new NotificationChannel(Guid.NewGuid().ToString(),
+                                                  "FCM Notifications",
+                                                  NotificationImportance.Default)
+            {
+
+                Description = "Firebase Cloud Messages appear in this channel"
+            };
+
+            var notificationManager = (NotificationManager)GetSystemService(Android.Content.Context.NotificationService);
+            notificationManager.CreateNotificationChannel(channel);
         }
 
         protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
         {
             base.OnActivityResult(requestCode, resultCode, data);
+
             if (requestCode == PickImageId)
             {
                 if ((resultCode == Result.Ok) && (data != null))
@@ -74,6 +111,29 @@ namespace ManageGo.Droid
             if (requestCode == 7890)
                 FingerPringPermissionsResultReady?.Invoke(this, grantResults.Any(t => t == Permission.Granted));
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+
+        public bool IsPlayServicesAvailable()
+        {
+            int resultCode = GoogleApiAvailability.Instance.IsGooglePlayServicesAvailable(this);
+            if (resultCode != ConnectionResult.Success)
+            {
+                if (GoogleApiAvailability.Instance.IsUserResolvableError(resultCode))
+                {
+                    var msg = GoogleApiAvailability.Instance.GetErrorString(resultCode);
+                }
+                else
+                {
+                    var msg = "This device is not supported";
+                    Finish();
+                }
+                return false;
+            }
+            else
+            {
+                var msg = "Google Play Services is available.";
+                return true;
+            }
         }
     }
 
