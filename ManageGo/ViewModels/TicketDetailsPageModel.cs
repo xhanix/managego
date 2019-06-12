@@ -300,16 +300,15 @@ namespace ManageGo
                         Dictionary<string, object> parameters = new Dictionary<string, object>
                         {
                             { "TicketID", TicketId },
-                            { "Categories", Categories.Where(t=>t.IsSelected) },
+                            { "Categories", Categories?.Where(t=>t.IsSelected) },
                             { "Status", TicketStatus },
                             { "Priority", ticketPriority },
                             { "TenantID", TicketTenant},
-                            { "UnitID", Unit.UnitId},
-                            { "Tags", Tags.Where(t=>t.IsSelected) },
-                            { "Assigned", Users.Where(t=>t.IsSelected) },
+                            { "UnitID", Unit?.UnitId},
+                            { "Tags", Tags?.Where(t=>t.IsSelected) },
+                            { "Assigned", Users?.Where(t=>t.IsSelected) },
                             { "BuildingID", BuildingId },
-                            { "Comment", TicketComment },
-
+                            { "Comment", TicketComment }
                         };
                         if (DateTime.TryParse(DueDate, out DateTime d))
                             parameters.Add("DueDate", d);

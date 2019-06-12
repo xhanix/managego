@@ -153,6 +153,8 @@
                                                                         </Label.FormattedText>
                                                                     </Label>
                                                                     <Label Text="{Binding ShortDescription}" Margin="0,4,0,0" VerticalOptions="Start" FontSize="Small" TextColor="{StaticResource Grey-Mid-1}" />
+                                                                    <Label Text="{Binding TransactionStatus}" IsVisible="{Binding ShowStatusText}" HorizontalTextAlignment="Start" FontSize="Small" TextColor="{StaticResource Red}" VerticalOptions="Center" />
+
                                                                     <BoxView HeightRequest="1" Margin="0,12,0,12" HorizontalOptions="FillAndExpand" BackgroundColor="{StaticResource Grey-Light-2}" />
                                                                   
                                                                 </StackLayout>

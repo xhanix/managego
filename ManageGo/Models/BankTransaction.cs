@@ -33,7 +33,7 @@ namespace ManageGo.Models
             }
         }
         public int TenantTransactionsCount { get; set; }
-        public List<PaymentBase> Payments { get; set; }
+        public List<Payment> Payments { get; set; }
 
         public string BuildingsCount
         {

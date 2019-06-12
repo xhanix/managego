@@ -283,6 +283,11 @@ namespace ManageGo
         public override void Init(object initData)
         {
             base.Init(initData);
+            if (initData is bool _isModal)
+            {
+                IsModal = _isModal;
+                HamburgerIsVisible = !IsModal;
+            }
             async void p(object sender, Payment e)
             {
                 var id = e.PaymentId;

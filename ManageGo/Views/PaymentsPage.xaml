@@ -36,7 +36,7 @@
                     HorizontalOptions="Start"
                     WidthRequest="42"
                     Rotation="180"
-                    IsVisible="{Binding BackbuttonIsVisible}"
+                    IsVisible="{Binding IsModal}"
                     VerticalOptions="CenterAndExpand"
                     Image="arrow_right.png" />
                 <Image Source="logo.png" Margin="-50,0,0,0" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"/>

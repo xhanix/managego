@@ -26,11 +26,17 @@ namespace ManageGo
             base.Init(initData);
             HamburgerIsVisible = true;
         }
+
+
         override internal async Task LoadData(bool refreshData = false, bool applyNewFilter = false)
         {
             if (cancellationTokenSource.IsCancellationRequested)
                 return;
-
+            App.CurrentPageModel = this;
+            if (App.HasPendingNotification)
+            {
+                await App.NotificationReceived(App.NotificationType, App.NotificationObject);
+            }
             await Services.DataAccess.GetDashboardAsync().ContinueWith(async (arg) =>
              {
                  if (arg.Status == TaskStatus.Faulted)

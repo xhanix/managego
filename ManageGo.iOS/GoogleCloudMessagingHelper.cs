@@ -16,12 +16,13 @@ namespace ManageGo.iOS
         public void SubscribeToTopic(string topic)
         {
             _topic = topic;
-            if (Xamarin.Essentials.Preferences.Get(topic, false))
-                return;
             try
             {
+                var oldSub = Xamarin.Essentials.Preferences.Get("subscribed", string.Empty);
+                if (!string.IsNullOrWhiteSpace(oldSub))
+                    Messaging.SharedInstance.Unsubscribe("/topics/" + oldSub);
                 Messaging.SharedInstance.Subscribe("/topics/" + topic);
-                Xamarin.Essentials.Preferences.Set(topic, true);
+                Xamarin.Essentials.Preferences.Set("subscribed", topic);
                 Console.WriteLine($"Subscribed to {topic}");
             }
             catch (NSErrorException ex)

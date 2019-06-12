@@ -13,6 +13,8 @@ namespace ManageGo
             NavigationPage.SetHasNavigationBar(this, false);
         }
 
+
+
         protected override bool OnBackButtonPressed()
         {
 

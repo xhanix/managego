@@ -271,9 +271,11 @@ namespace ManageGo
                         FetchedTickets = new ObservableCollection<MaintenanceTicket>(fetchedTickets);
                     else
                         FetchedTickets = new ObservableCollection<MaintenanceTicket>();
+
                     CanGetMorePages = FetchedTickets != null && FetchedTickets.Count == ParameterItem.PageSize;
                     if (FetchedTickets.Any() && CanGetMorePages)
                     {
+
                         var lastIdx = FetchedTickets.IndexOf(FetchedTickets.Last());
                         var index = Math.Floor(lastIdx / 2d);
                         var markedItem = FetchedTickets.ElementAt((int)index);
@@ -699,11 +701,11 @@ namespace ManageGo
                         var ticketDetails = await Services.DataAccess.GetTicketDetails(ticket.TicketId);
                         var dic = new Dictionary<string, object>
                             {
-                            {"TicketDetails", ticketDetails},
-                            {"TicketNumber", ticket.TicketNumber},
-                            {"Address", ticket.Building?.BuildingName + " #" + ticket.Unit?.UnitName},
-                            {"TicketTitleText", ticket.TicketSubject},
-                            {"Ticket", ticket}
+                                {"TicketDetails", ticketDetails},
+                                {"TicketNumber", ticket.TicketNumber},
+                                {"Address", ticket.Building?.BuildingName + " #" + ticket.Unit?.UnitName},
+                                {"TicketTitleText", ticket.TicketSubject},
+                                {"Ticket", ticket}
                             };
                         ShowingTicketDetails = true;
                         await CoreMethods.PushPageModel<TicketDetailsPageModel>(dic, false, false);
@@ -923,7 +925,6 @@ namespace ManageGo
                 }
             }
             ((MaintenanceTicketsPage)this.CurrentPage).OnTicketAppeared += p;
-
         }
 
         public override void ReverseInit(object returnedData)

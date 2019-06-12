@@ -33,12 +33,14 @@ namespace ManageGo.Models
         //public decimal Amount { get; set; }
         public decimal OtherFee { get; set; }
         public decimal TenantFee { get; set; }
+        [AlsoNotifyFor("ShowStatusText")]
         public decimal Total { get; set; }
         public decimal TotalAmountAndFees { get; set; }
         //public DateTime TransactionDate { get; set; }
         [AlsoNotifyFor("StatusColor")]
         public string TransactionStatus { get; set; }
         public string TransactionType { get; set; }
+        public bool ShowStatusText => Amount < 0;
         public string PaymentType { get; set; }
         public bool IsMarked { get; set; }
         public string PaymentNote { get; set; }
