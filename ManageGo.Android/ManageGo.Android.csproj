@@ -337,6 +337,7 @@
     <AndroidResource Include="Resources\drawable-hdpi\unchecked.png" />
     <AndroidResource Include="Resources\drawable\switch_track_custom.xml" />
     <AndroidResource Include="Resources\Color\color.xml" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\notification_icon.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\drawable\" />
@@ -374,7 +375,6 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <GoogleServicesJson Include="google-services-test.json" />
     <GoogleServicesJson Include="google-services.json" />
   </ItemGroup>
  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />

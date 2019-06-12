@@ -18,7 +18,8 @@ namespace ManageGo.Droid
         }
         void SendRegistrationToServer(string token)
         {
-            // Add custom implementation, as needed.
+            // Add custom implementation, as needed. 
         }
     }
 }
+

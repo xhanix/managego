@@ -20,10 +20,9 @@ namespace ManageGo.iOS
                 return;
             try
             {
-                Messaging.SharedInstance.Subscribe(topic);
+                Messaging.SharedInstance.Subscribe("/topics/" + topic);
                 Xamarin.Essentials.Preferences.Set(topic, true);
                 Console.WriteLine($"Subscribed to {topic}");
-
             }
             catch (NSErrorException ex)
             {
@@ -31,17 +30,16 @@ namespace ManageGo.iOS
             }
         }
 
+
+
         public void UnSubscribeFromTopics()
         {
             try
             {
                 if (string.IsNullOrWhiteSpace(_topic))
                     return;
-
-                Messaging.SharedInstance.Unsubscribe(_topic);
-
+                Messaging.SharedInstance.Unsubscribe("/topics/" + _topic);
                 Xamarin.Essentials.Preferences.Set(_topic, false);
-
                 Console.WriteLine($"Subscribed to {_topic}");
             }
             catch (NSErrorException ex)

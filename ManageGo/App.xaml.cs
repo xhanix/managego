@@ -28,6 +28,13 @@ namespace ManageGo
         internal static List<ExternalContact> ExternalContacts { get; set; }
         internal FreshMasterDetailNavigationContainer MasterDetailContainer { get; private set; }
 
+        public static void NotificationReceived(int type, int notificationObject)
+        {
+            //1
+            //5981
+            MasterDetailNav.SwitchSelectedRootPageModel<MaintenanceTicketsPageModel>();
+        }
+
         public static bool MenuIsPresented
         {
             get
@@ -114,16 +121,19 @@ namespace ManageGo
             // Handle when your app resumes
         }
     }
+
     public interface IGoogleCloudMessagingHelper
     {
         void SubscribeToTopic(string topic);
         void UnSubscribeFromTopics();
     }
+
     public interface ILocalAuthHelper
     {
         LocalAuthType GetLocalAuthType();
         void Authenticate(string userId, Action onSuccess, Action onFailure);
     }
+
     public interface IPicturePicker
     {
         Task<Tuple<Stream, string, Services.MGFileType>> GetImageStreamAsync();

@@ -11,5 +11,6 @@ namespace MGDataAccessLibrary.Models
         public bool PaymentPushNotification { get; set; }
         public bool MaintenancePushNotification { get; set; }
         public bool TenantPushNotification { get; set; }
+        public bool PushNotification { get; set; }
     }
 }

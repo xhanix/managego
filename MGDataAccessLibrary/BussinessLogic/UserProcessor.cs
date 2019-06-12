@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using MGDataAccessLibrary.Models;
 
 namespace MGDataAccessLibrary.BussinessLogic
 {
@@ -17,6 +18,11 @@ namespace MGDataAccessLibrary.BussinessLogic
             var res = await DataAccess.WebAPI.PostForm<Models.LoginRequest, Models.BaseApiResponse<Models.LoginResponse>>(request, DataAccess.ApiEndPoint.authorize, null);
             DataAccess.WebAPI.SetAuthToken(res.Result.UserInfo.AccessToken);
             return res.Result;
+        }
+
+        public static async Task UpdateUser(SignedInUserInfo userDetails)
+        {
+            var res = await DataAccess.WebAPI.PostForm<Models.SignedInUserInfo, Models.BaseApiResponse<string>>(userDetails, DataAccess.ApiEndPoint.UserSettings, null);
         }
     }
 }

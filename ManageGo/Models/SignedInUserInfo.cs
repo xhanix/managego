@@ -11,6 +11,7 @@ namespace ManageGo.Models
         public bool PaymentPushNotification { get; set; }
         public bool MaintenancePushNotification { get; set; }
         public bool TenantPushNotification { get; set; }
+        public bool PushNotification { get; set; }
         //todo get user display names
         //todo add rental applications notifications
     }

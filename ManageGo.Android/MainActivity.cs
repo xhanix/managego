@@ -29,7 +29,9 @@ namespace ManageGo.Droid
         public static MainActivity Current { private set; get; }
         public event EventHandler<bool> FingerPringPermissionsResultReady;
         public static readonly int PickImageId = 1000;
-
+        static readonly string TAG = "MainActivity";
+        internal static readonly string CHANNEL_ID = "my_notification_channel";
+        internal static readonly int NOTIFICATION_ID = 199;
         public TaskCompletionSource<string> PickImageTaskCompletionSource { set; get; }
         public TaskCompletionSource<Tuple<Stream, string, MGFileType>> PickMediaTaskCompletionSource { set; get; }
 
@@ -43,16 +45,13 @@ namespace ManageGo.Droid
             CrossCurrentActivity.Current.Init(this, savedInstanceState);
             if (Intent.Extras != null)
             {
-                foreach (var key in Intent.Extras.KeySet())
-                {
-                    var value = Intent.Extras.GetString(key);
-                    //Log.Debug(TAG, "Key: {0} Value: {1}", key, value);
-                }
+                App.NotificationReceived(Intent.Extras.GetInt("Type"), Intent.Extras.GetInt("NotificationObject"));
             }
             var result = IsPlayServicesAvailable();
             CreateNotificationChannel();
             LoadApplication(new App());
         }
+
 
         void CreateNotificationChannel()
         {
@@ -63,16 +62,12 @@ namespace ManageGo.Droid
                 // channel on older versions of Android.
                 return;
             }
-
-            var channel = new NotificationChannel(Guid.NewGuid().ToString(),
-                                                  "FCM Notifications",
-                                                  NotificationImportance.Default)
+            var channel = new NotificationChannel(CHANNEL_ID, "FCM Notifications", NotificationImportance.Default)
             {
-
                 Description = "Firebase Cloud Messages appear in this channel"
             };
 
-            var notificationManager = (NotificationManager)GetSystemService(Android.Content.Context.NotificationService);
+            var notificationManager = (NotificationManager)GetSystemService(NotificationService);
             notificationManager.CreateNotificationChannel(channel);
         }
 
@@ -101,6 +96,13 @@ namespace ManageGo.Droid
                 {
                     PickImageTaskCompletionSource?.SetResult(null);
                 }
+            }
+            else if (requestCode == NOTIFICATION_ID)
+            {
+                //user tapped on notification 
+                var type = data.GetIntExtra("Type", 0);
+                var notificationObject = data.GetIntExtra("NotificationObject", 0);
+                App.NotificationReceived(type, notificationObject);
             }
         }
 

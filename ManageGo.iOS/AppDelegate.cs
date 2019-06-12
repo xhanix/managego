@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Firebase.CloudMessaging;
 using Firebase.Core;
 using Foundation;
+using Newtonsoft.Json.Linq;
 using ObjCRuntime;
 using UIKit;
 using UserNotifications;
@@ -26,9 +28,6 @@ namespace ManageGo.iOS
         //
         // You have 17 seconds to return from this method, or iOS will terminate your application.
         //
-
-
-
         public override bool FinishedLaunching(UIApplication uiApplication, NSDictionary launchOptions)
         {
             global::Xamarin.Forms.Forms.Init();
@@ -71,10 +70,6 @@ namespace ManageGo.iOS
         public void DidReceiveRegistrationToken(Messaging messaging, string fcmToken)
         {
             Console.WriteLine($"Firebase registration token: {fcmToken}");
-
-            // TODO: If necessary send token to application server.
-            // Note: This callback is fired at each app startup and whenever a new token is generated.
-
         }
 
         public override void OnActivated(UIApplication uiApplication)
@@ -94,58 +89,34 @@ namespace ManageGo.iOS
             var token = deviceToken.Description.Replace("<", "").Replace(">", "").Replace(" ", "");
         }
 
-
-        public override void FailedToRegisterForRemoteNotifications(UIApplication application, NSError error)
+        [Export("userNotificationCenter:willPresentNotification:withCompletionHandler:")]
+        public void WillPresentNotification(UNUserNotificationCenter center, UNNotification notification, Action<UNNotificationPresentationOptions> completionHandler)
         {
-            new UIAlertView("Error registering push notifications", error.LocalizedDescription, null, "OK", null).Show();
-        }
+            //triggered when app is in foreground
+            var userInfo = notification.Request.Content.UserInfo;
 
+            completionHandler(UNNotificationPresentationOptions.Alert);
+
+        }
 
 
         public override void DidReceiveRemoteNotification(UIApplication application, NSDictionary userInfo, Action<UIBackgroundFetchResult> completionHandler)
         {
-            //  Messaging.SharedInstance.AppDidReceiveMessage(userInfo);
-
-            // Generate custom event
-            NSString[] keys = { new NSString("Event_type") };
-            NSObject[] values = { new NSString("Recieve_Notification") };
-            var parameters = NSDictionary<NSString, NSObject>.FromObjectsAndKeys(keys, values, keys.Length);
-
-
-            if (application.ApplicationState == UIApplicationState.Active)
-            {
-                System.Diagnostics.Debug.WriteLine(userInfo);
-
-            }
+            //triggered when user taps on notification
+            Console.WriteLine(userInfo.DebugDescription);
+            var dic = userInfo.ToDictionary(x => x.Key.ToString(), x => x.Value.ToString());
+            dic.TryGetValue("message", out string message);
+            var jobj = JObject.Parse(message);
+            var type = jobj.GetValue("Type").ToObject<Models.PushNotificationType>();
+            var notificationObject = jobj.GetValue("NotificationObject").ToObject<int>();
+            App.NotificationReceived((int)type, notificationObject);
         }
-
-        [Export("messaging:didReceiveMessage:")]
-        public void DidReceiveMessage(Messaging messaging, RemoteMessage remoteMessage)
-        {
-            // Handle Data messages for iOS 10 and above.
-            var alert = new UIAlertView("Title", "Message", null, "Cancel", "OK");
-            alert.Show();
-
-            // LogInformation(nameof(DidReceiveMessage), remoteMessage.AppData);
-        }
-
-
-
 
         public static void ShowMessage(string title, string message, UIViewController fromViewController, Action actionForOk = null)
         {
             var alert = UIAlertController.Create(title, message, UIAlertControllerStyle.Alert);
             alert.AddAction(UIAlertAction.Create("Ok", UIAlertActionStyle.Default, (obj) => actionForOk?.Invoke()));
             fromViewController.PresentViewController(alert, true, null);
-        }
-
-
-
-
-        private void debugAlert(string title, string message)
-        {
-            var alert = new UIAlertView(title ?? "Title", message ?? "Message", null, "Cancel", "OK");
-            alert.Show();
         }
     }
 }

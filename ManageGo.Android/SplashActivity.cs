@@ -15,7 +15,15 @@ namespace ManageGo.Droid
         public override void OnCreate(Bundle savedInstanceState, PersistableBundle persistentState)
         {
             base.OnCreate(savedInstanceState, persistentState);
+            if (Intent.Extras != null)
+            {
+                Console.WriteLine(Intent.Extras);
+            }
+        }
 
+        protected override void OnNewIntent(Intent intent)
+        {
+            base.OnNewIntent(intent);
         }
 
         public override void OnBackPressed()

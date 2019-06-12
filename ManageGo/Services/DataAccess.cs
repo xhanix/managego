@@ -26,12 +26,25 @@ namespace ManageGo.Services
         public static async Task Login(string userName = null, string password = null)
         {
             var result = await MGDataAccessLibrary.BussinessLogic.UserProcessor.Login(userName, password);
+            App.UserInfo = new SignedInUserInfo
+            {
+                AccessToken = result.UserInfo.AccessToken,
+                UserEmailAddress = result.UserInfo.UserEmailAddress,
+                UserFirstName = result.UserInfo.UserFirstName,
+                UserLastName = result.UserInfo.UserLastName,
+                TenantPushNotification = result.UserInfo.TenantPushNotification,
+                MaintenancePushNotification = result.UserInfo.MaintenancePushNotification,
+                PaymentPushNotification = result.UserInfo.PaymentPushNotification,
+                PushNotification = result.UserInfo.PushNotification,
+                UserID = result.UserInfo.UserID
+            };
             AccessToken = result.UserInfo.AccessToken;
             client.DefaultRequestHeaders.Remove("AccessToken");
             client.DefaultRequestHeaders.Add("AccessToken", AccessToken);
-            var p = Device.RuntimePlatform.ToLower();
             TokenExpiry = DateTimeOffset.Now.AddHours(1);
-            DependencyService.Get<IGoogleCloudMessagingHelper>().SubscribeToTopic($"{result.UserInfo.UserID}.{p}");
+            //subcribe to push notification
+            var platform = Device.RuntimePlatform.ToLower();
+            DependencyService.Get<IGoogleCloudMessagingHelper>().SubscribeToTopic($"{result.UserInfo.UserID}.{platform}");
             var perm = result.Permissions;
             //reset the permissions on log in
             App.UserPermissions = UserPermissions.None;

@@ -30,6 +30,7 @@ namespace ManageGo
             {
                 _pushNotificationsIsOn = value;
                 Preferences.Set("PushNotificationsIsOn", value);
+                SwitchToggled?.Invoke();
             }
         }
 
@@ -169,8 +170,7 @@ namespace ManageGo
             PaymentNotificationsIsOn = App.UserInfo.PaymentPushNotification;
             TenantsNotificationsIsOn = App.UserInfo.TenantPushNotification;
             MaintenanceNotificationsIsOn = App.UserInfo.MaintenancePushNotification;
-
-            PushNotificationsIsOn = Preferences.Get("PushNotificationsIsOn", true);
+            PushNotificationsIsOn = App.UserInfo.PushNotification;
             BiometricLoginIsOn = Preferences.Get("IsBiometricAuthEnabled", false);
 
             async void p() => await UpdateUserDetails();
@@ -218,21 +218,20 @@ namespace ManageGo
                 await CoreMethods.DisplayAlert("ManageGo", "Email not valid", "OK");
                 return;
             }
-
-            var dictionary = new Dictionary<string, object>
+            var userDetails = new MGDataAccessLibrary.Models.SignedInUserInfo
             {
-                {"UserFirstName", UserName.Split(' ').FirstOrDefault()},
-                {"UserLastName", UserName.Split(' ').LastOrDefault()},
-                //{"DisplayName", UserAlias},
-                {"UserEmailAddress", UserEmail},
-               // {"Password", UserPassword},
-                {"PaymentPushNotification", PaymentNotificationsIsOn},
-                {"MaintenancePushNotification", MaintenanceNotificationsIsOn},
-                {"TenantPushNotification", TenantsNotificationsIsOn}
+                UserFirstName = UserName.Split(' ').FirstOrDefault(),
+                UserLastName = UserName.Split(' ').LastOrDefault(),
+                UserEmailAddress = UserEmail,
+                PaymentPushNotification = PaymentNotificationsIsOn,
+                MaintenancePushNotification = MaintenanceNotificationsIsOn,
+                TenantPushNotification = TenantsNotificationsIsOn,
+                PushNotification = PushNotificationsIsOn
             };
+
             try
             {
-                await Services.DataAccess.UpdateUserInfo(dictionary);
+                await MGDataAccessLibrary.BussinessLogic.UserProcessor.UpdateUser(userDetails);
             }
             catch (Exception ex)
             {

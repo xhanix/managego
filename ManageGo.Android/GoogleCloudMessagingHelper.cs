@@ -16,7 +16,7 @@ namespace ManageGo.Droid
             _topic = topic;
             if (Xamarin.Essentials.Preferences.Get(topic, false))
                 return;
-            FirebaseMessaging.Instance.SubscribeToTopic(topic);
+            FirebaseMessaging.Instance.SubscribeToTopic("/topics/" + topic);
             Xamarin.Essentials.Preferences.Set(topic, true);
             //  FirebaseMessaging.Instance.Send(msg.Build());
 
@@ -29,7 +29,7 @@ namespace ManageGo.Droid
 
             if (string.IsNullOrWhiteSpace(_topic))
                 return;
-            FirebaseMessaging.Instance.UnsubscribeFromTopic(_topic);
+            FirebaseMessaging.Instance.UnsubscribeFromTopic("/topics/" + _topic);
             Xamarin.Essentials.Preferences.Set(_topic, false);
             Console.WriteLine($"Subscribed to {_topic}");
 

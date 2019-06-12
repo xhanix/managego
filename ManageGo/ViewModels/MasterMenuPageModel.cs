@@ -228,6 +228,7 @@ namespace ManageGo
                 return new FreshAwaitCommand((tcs) =>
                 {
                     Analytics.TrackEvent("Support logout menu tapped");
+                    DependencyService.Get<IGoogleCloudMessagingHelper>().UnSubscribeFromTopics();
                     OnLogout?.Invoke(this, true);
                 });
             }
