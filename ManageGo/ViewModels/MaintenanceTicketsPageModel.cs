@@ -230,7 +230,6 @@ namespace ManageGo
                 return;
             }
             NothingFetched = false;
-
             try
             {
                 if (FetchNextPage && ParameterItem != null)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Android.App;
 using Android.Content;
 using Android.Media;
@@ -45,14 +46,28 @@ namespace ManageGo.Droid
                 intent.PutExtra("NotificationObject", data.NotificationObject);
             }
             var pendingIntent = PendingIntent.GetActivity(this, MainActivity.NOTIFICATION_ID, intent, PendingIntentFlags.OneShot);
+
+
+            NotificationCompat.Builder groupBuilder =
+            new NotificationCompat.Builder(this, MainActivity.CHANNEL_ID)
+                    .SetContentTitle(messageTitle)
+                    .SetSmallIcon(Resource.Drawable.notification_icon)
+                    .SetContentText(messageBody)
+                    .SetGroupSummary(true)
+                    .SetGroup("com.ManageGo.ManageGo.test")
+                    .SetStyle(new NotificationCompat.BigTextStyle())
+                    .SetContentIntent(pendingIntent);
+
             var notificationBuilder = new NotificationCompat.Builder(this, MainActivity.CHANNEL_ID)
                 .SetSmallIcon(Resource.Drawable.notification_icon)
                 .SetContentTitle(messageTitle).SetContentText(messageBody)
                 .SetStyle(new NotificationCompat.BigTextStyle())
                 .SetAutoCancel(true)
+                .SetGroup("com.ManageGo.ManageGo.test")
                 .SetContentIntent(pendingIntent);
             var notificationManager = NotificationManagerCompat.From(this);
-            notificationManager.Notify(MainActivity.NOTIFICATION_ID, notificationBuilder.Build());
+            notificationManager.Notify(200, groupBuilder.Build());
+            notificationManager.Notify(Guid.NewGuid().GetHashCode(), notificationBuilder.Build());
         }
     }
 }

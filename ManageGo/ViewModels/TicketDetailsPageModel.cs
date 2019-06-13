@@ -794,7 +794,12 @@ namespace ManageGo
                         tcs?.SetResult(true);
                         return;
                     }
-
+                    else if (!Users.Where(t => t.IsSelected).Any())
+                    {
+                        await CoreMethods.DisplayAlert("ManageGo", "Please select a user", "DISMISS");
+                        tcs?.SetResult(true);
+                        return;
+                    }
                     var dic = new Dictionary<string, object> {
                         {"TicketID", TicketId},
                         {"Summary", WorkOrderSummary},
@@ -820,19 +825,22 @@ namespace ManageGo
                     try
                     {
                         await Services.DataAccess.SendNewWorkOurderAsync(dic);
-                        foreach (var user in Users.Where(t => t.IsSelected))
+                        if (AssignedUserIds != null && AssignedUserIds.Any())
                         {
-                            if (AssignedUserIds.Contains(user.UserID))
-                                user.IsSelected = true;
-                            else
-                                user.IsSelected = false;
-                        }
-                        foreach (var user in ExternalContacts.Where(t => t.IsSelected))
-                        {
-                            if (AssignedUserIds.Contains(user.ExternalID))
-                                user.IsSelected = true;
-                            else
-                                user.IsSelected = false;
+                            foreach (var user in Users.Where(t => t.IsSelected))
+                            {
+                                if (AssignedUserIds.Contains(user.UserID))
+                                    user.IsSelected = true;
+                                else
+                                    user.IsSelected = false;
+                            }
+                            foreach (var user in ExternalContacts.Where(t => t.IsSelected))
+                            {
+                                if (AssignedUserIds.Contains(user.ExternalID))
+                                    user.IsSelected = true;
+                                else
+                                    user.IsSelected = false;
+                            }
                         }
                         //clear the fields used for the workorder
                         WorkOrderSummary = null;
