@@ -35,7 +35,7 @@ namespace ManageGo
             App.CurrentPageModel = this;
             if (App.HasPendingNotification)
             {
-                await App.NotificationReceived(App.NotificationType, App.NotificationObject);
+                await App.NotificationReceived(App.NotificationType, App.NotificationObject, App.NotificationIsSummary);
             }
             await Services.DataAccess.GetDashboardAsync().ContinueWith(async (arg) =>
              {

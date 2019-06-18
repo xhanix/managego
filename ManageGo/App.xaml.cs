@@ -32,13 +32,14 @@ namespace ManageGo
         internal static int NotificationType { get; private set; }
         internal static int NotificationObject { get; private set; }
 
-        public static async Task NotificationReceived(int type, int notificationObject)
+        public static async Task NotificationReceived(int type, int notificationObject, bool isGroup)
         {
             if (CurrentPageModel is null)
             {
                 HasPendingNotification = true;
                 NotificationObject = notificationObject;
                 NotificationType = type;
+                NotificationIsSummary = isGroup;
                 return;
             }
             HasPendingNotification = false;
@@ -51,7 +52,13 @@ namespace ManageGo
                 case PushNotificationType.TicketAssigned:
                 case PushNotificationType.TicketReply:
                 case PushNotificationType.TicketReplyInternal:
-                    await ShowTicketNotification(notificationObject);
+                    if (!isGroup)
+                        await ShowTicketNotification(notificationObject);
+                    else
+                    {
+                        await CurrentPageModel.CurrentPage.Navigation.PopToRootAsync();
+                        await MasterDetailNav.SwitchSelectedRootPageModel<MaintenanceTicketsPageModel>();
+                    }
                     break;
                 case PushNotificationType.TenantAwaitingApproval:
                 case PushNotificationType.UnitAwaitingApproval:
@@ -100,6 +107,7 @@ namespace ManageGo
 
         public static List<BankAccount> BankAccounts { get; internal set; }
         internal static BaseDetailPage CurrentPageModel { get; set; }
+        public static bool NotificationIsSummary { get; internal set; }
 
         public App()
         {

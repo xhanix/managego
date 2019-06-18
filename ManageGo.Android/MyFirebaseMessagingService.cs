@@ -39,34 +39,53 @@ namespace ManageGo.Droid
         {
             var intent = new Intent(this, typeof(MainActivity));
 
-            intent.AddFlags(ActivityFlags.ClearTop);
+            intent.SetFlags(ActivityFlags.SingleTop);
             if (data != null)
             {
+                intent.PutExtra("IsGroup", 0);
                 intent.PutExtra("Type", data.Type);
                 intent.PutExtra("NotificationObject", data.NotificationObject);
             }
-            var pendingIntent = PendingIntent.GetActivity(this, MainActivity.NOTIFICATION_ID, intent, PendingIntentFlags.OneShot);
+            int uniqueInt = (int)(DateTime.Now.Millisecond & 0xfffffff);
+            var pendingIntent = PendingIntent.GetActivity(this, uniqueInt, intent, PendingIntentFlags.UpdateCurrent);
+
+
+            var _intent = new Intent(this, typeof(MainActivity));
+
+            _intent.SetFlags(ActivityFlags.SingleTop);
+            if (data != null)
+            {
+                _intent.PutExtra("IsGroup", 1);
+                _intent.PutExtra("Type", data.Type);
+                _intent.PutExtra("NotificationObject", data.NotificationObject);
+            }
+            uniqueInt = (int)(DateTime.Now.Millisecond & 0xfffffff);
+            var _pendingIntent = PendingIntent.GetActivity(this, uniqueInt, _intent, PendingIntentFlags.UpdateCurrent);
 
 
             NotificationCompat.Builder groupBuilder =
-            new NotificationCompat.Builder(this, MainActivity.CHANNEL_ID)
-                    .SetContentTitle(messageTitle)
-                    .SetSmallIcon(Resource.Drawable.notification_icon)
-                    .SetContentText(messageBody)
+                new NotificationCompat.Builder(this, MainActivity.CHANNEL_ID)
+                    .SetSmallIcon(Resource.Drawable.not_icon_white)
                     .SetGroupSummary(true)
-                    .SetGroup("com.ManageGo.ManageGo.test")
-                    .SetStyle(new NotificationCompat.BigTextStyle())
-                    .SetContentIntent(pendingIntent);
+                    .SetGroup($"com.ManageGo.ManageGo.{data.Type}")
+                    .SetStyle(new NotificationCompat.InboxStyle())
+                    .SetAutoCancel(true)
+                    .SetContentIntent(_pendingIntent);
 
             var notificationBuilder = new NotificationCompat.Builder(this, MainActivity.CHANNEL_ID)
-                .SetSmallIcon(Resource.Drawable.notification_icon)
+                .SetSmallIcon(Resource.Drawable.not_icon_white)
                 .SetContentTitle(messageTitle).SetContentText(messageBody)
                 .SetStyle(new NotificationCompat.BigTextStyle())
                 .SetAutoCancel(true)
-                .SetGroup("com.ManageGo.ManageGo.test")
+                .SetGroup($"com.ManageGo.ManageGo.{data.Type}")
                 .SetContentIntent(pendingIntent);
             var notificationManager = NotificationManagerCompat.From(this);
-            notificationManager.Notify(200, groupBuilder.Build());
+
+
+
+
+
+            notificationManager.Notify(data.Type, groupBuilder.Build());
             notificationManager.Notify(Guid.NewGuid().GetHashCode(), notificationBuilder.Build());
         }
     }

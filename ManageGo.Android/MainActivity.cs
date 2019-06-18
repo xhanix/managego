@@ -43,15 +43,21 @@ namespace ManageGo.Droid
             base.OnCreate(savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
             CrossCurrentActivity.Current.Init(this, savedInstanceState);
-            if (Intent.Extras != null)
-            {
-                App.NotificationReceived(Intent.Extras.GetInt("Type"), Intent.Extras.GetInt("NotificationObject"));
-            }
+
             var result = IsPlayServicesAvailable();
             CreateNotificationChannel();
             LoadApplication(new App());
         }
 
+        protected override async void OnNewIntent(Intent intent)
+        {
+            base.OnNewIntent(intent);
+            if (intent.Extras != null)
+            {
+                bool isGroup = intent.Extras.GetInt("IsGroup", 0) != 0;
+                await App.NotificationReceived(intent.Extras.GetInt("Type"), intent.Extras.GetInt("NotificationObject"), isGroup);
+            }
+        }
 
         void CreateNotificationChannel()
         {
@@ -97,13 +103,7 @@ namespace ManageGo.Droid
                     PickImageTaskCompletionSource?.SetResult(null);
                 }
             }
-            else if (requestCode == NOTIFICATION_ID)
-            {
-                //user tapped on notification 
-                var type = data.GetIntExtra("Type", 0);
-                var notificationObject = data.GetIntExtra("NotificationObject", 0);
-                App.NotificationReceived(type, notificationObject);
-            }
+
         }
 
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)

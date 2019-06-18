@@ -24,6 +24,7 @@ namespace ManageGo.iOS
                 Messaging.SharedInstance.Subscribe("/topics/" + topic);
                 Xamarin.Essentials.Preferences.Set("subscribed", topic);
                 Console.WriteLine($"Subscribed to {topic}");
+                _topic = topic;
             }
             catch (NSErrorException ex)
             {

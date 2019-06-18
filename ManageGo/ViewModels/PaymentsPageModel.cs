@@ -22,7 +22,10 @@ namespace ManageGo
         public bool CanGetMorePages { get; private set; }
         public int LastLoadedItemId { get; private set; }
         public bool IsRefreshingList { get; set; }
+        [AlsoNotifyFor("NumberOfAppliedFilters")]
         public PaymentsRequestItem CurrentFilter { get; private set; }
+        public string NumberOfAppliedFilters => CurrentFilter is null || CurrentFilter.NumberOfAppliedFilters == 0 ? " " : $"{CurrentFilter.NumberOfAppliedFilters}";
+
         PaymentsRequestItem ParameterItem { get; set; }
         public bool FilterSelectViewIsShown { get; set; }
         public bool RangeSelectorIsShown { get; private set; }
@@ -129,7 +132,7 @@ namespace ManageGo
                 return string.Join(", ", strings);
             }
         }
-        public string RangeSelectorMin { get { return SelectedAmountRange != null ? SelectedAmountRange.Item1?.ToString("C0") : ""; } }
+        public string RangeSelectorMin => SelectedAmountRange != null ? SelectedAmountRange.Item1?.ToString("C0") : "";
         public string RangeSelectorMax
         {
             get
@@ -144,15 +147,6 @@ namespace ManageGo
 
         public bool BackbuttonIsVisible { get; set; }
         public View PopContentView { get; private set; }
-        public string NumberOfAppliedFilters
-        {
-            get
-            {
-                return CurrentFilter is null ||
-                CurrentFilter.NumberOfAppliedFilters == 0 ? " " :
-                    $"{CurrentFilter.NumberOfAppliedFilters}";
-            }
-        }
 
         public string CalendarButtonText
         {
@@ -555,6 +549,7 @@ namespace ManageGo
                 return new FreshAwaitCommand((par, tcs) =>
                 {
                     FilteredAmountRange = new Tuple<int?, int?>(SelectedAmountRange.Item1, SelectedAmountRange.Item2);
+
                     RangeSelectorIsShown = false;
                     RangePickerView = null;
                     tcs?.SetResult(true);
@@ -589,8 +584,10 @@ namespace ManageGo
                         }
                         if (!string.IsNullOrWhiteSpace(FilterKeywords))
                             ParameterItem.Search = FilterKeywords;
+
                         ParameterItem.DateFrom = FilterDueDate.StartDate;
                         ParameterItem.DateTo = FilterDueDate.EndDate;
+                        CurrentFilter = ParameterItem;
                         await LoadData(refreshData: true, FetchNextPage: false);
 
                     }

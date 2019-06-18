@@ -26,7 +26,6 @@
     <StackLayout Padding="18,8,18,0">
         <Label  VerticalOptions="Center" Text="Profile"  TextColor="{StaticResource Grey-Mid-1}" FontSize="Medium" FontAttributes="Bold"/>
         <BoxView HeightRequest="1" Margin="0,12,0,12"  BackgroundColor="{StaticResource Grey-Light-1}" HorizontalOptions="FillAndExpand"/> 
-        <Button Text="test" Clicked="Handle_Clicked" />
     <Grid RowSpacing="22">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />

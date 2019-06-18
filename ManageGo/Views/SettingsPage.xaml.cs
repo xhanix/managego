@@ -44,10 +44,6 @@ namespace ManageGo
 
         }
 
-        //todo remove
-        void Handle_Clicked(object sender, System.EventArgs e)
-        {
-            App.NotificationReceived(1, 9999);
-        }
+
     }
 }

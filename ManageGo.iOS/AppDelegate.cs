@@ -109,7 +109,7 @@ namespace ManageGo.iOS
             var jobj = JObject.Parse(message);
             var type = jobj.GetValue("Type").ToObject<Models.PushNotificationType>();
             var notificationObject = jobj.GetValue("NotificationObject").ToObject<int>();
-            App.NotificationReceived((int)type, notificationObject);
+            App.NotificationReceived((int)type, notificationObject, false);
         }
 
         public static void ShowMessage(string title, string message, UIViewController fromViewController, Action actionForOk = null)

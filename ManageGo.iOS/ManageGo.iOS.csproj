@@ -387,6 +387,7 @@
     <BundleResource Include="Resources\checked.png" />
     <BundleResource Include="Resources\unchecked.png" />
     <BundleResource Include="GoogleService-Info.plist" />
+    <BundleResource Include="GoogleService-Info-3.plist" />
   </ItemGroup>
   <ItemGroup>
     <ITunesArtwork Include="iTunesArtwork%402x" />

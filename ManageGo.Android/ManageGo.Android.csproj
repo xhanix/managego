@@ -338,6 +338,13 @@
     <AndroidResource Include="Resources\drawable\switch_track_custom.xml" />
     <AndroidResource Include="Resources\Color\color.xml" />
     <AndroidResource Include="Resources\drawable-xxhdpi\notification_icon.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\notification_icon.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\notification_icon.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\notification_icon.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\not_icon_white.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\not_icon_white.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\not_icon_white.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\not_icon_white.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\drawable\" />
