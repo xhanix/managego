@@ -127,6 +127,7 @@
     <Compile Include="CustomSwitchRenderer.cs" />
     <Compile Include="NestedListViewRenderer.cs" />
     <Compile Include="GoogleCloudMessagingHelper.cs" />
+    <Compile Include="MGLabelRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Resources\LaunchScreen.storyboard" />

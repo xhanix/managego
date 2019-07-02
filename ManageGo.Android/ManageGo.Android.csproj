@@ -103,6 +103,7 @@
     <Compile Include="MyFirebaseIIDService.cs" />
     <Compile Include="GoogleCloudMessagingHelper.cs" />
     <Compile Include="MyFirebaseMessagingService.cs" />
+    <Compile Include="MGLabelRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

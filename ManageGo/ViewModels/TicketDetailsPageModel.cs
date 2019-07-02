@@ -10,6 +10,7 @@ using System.IO;
 using Plugin.FilePicker.Abstractions;
 using Plugin.FilePicker;
 using Plugin.Permissions;
+using System.Text;
 
 namespace ManageGo
 {
@@ -23,6 +24,11 @@ namespace ManageGo
         public bool CanEditTicketDetails { get; private set; }
         #endregion
         #region Properties
+        [AlsoNotifyFor("ShowAccessGranted")]
+        public bool IsAccessGranted { get; private set; }
+        public bool ShowAccessGranted => IsAccessGranted && !ShowingTicketDetails;
+        public string AccessPetText { get; private set; }
+        public string AccessGrantedTimesText { get; private set; }
         public bool SetFromTime { get; private set; }
         public bool SwitchingAmPam { get; private set; }
         public bool OldTimeIsPm { get; private set; }
@@ -105,6 +111,7 @@ namespace ManageGo
         public bool HasAccess { get; private set; }
         public bool HasWorkOrder { get; private set; }
         public bool HasEvent { get; private set; }
+        [AlsoNotifyFor("ShowAccessGranted")]
         public bool ShowingTicketDetails { get; private set; }
         public bool ReplyButtonIsVisible { get; private set; } = true;
         public bool ReplyBoxIsVisible { get; private set; }
@@ -989,20 +996,65 @@ namespace ManageGo
                 TenantName = string.IsNullOrWhiteSpace(tenantName) ? "Not Available" : tenantName;
                 DueDate = ticket.DueDate.HasValue ?
                     ticket.DueDate.Value.ToString("MM/dd/yy") : "Not Set";
-                if (ticketDetails is null)
+                if (ticketDetails is null && !string.IsNullOrWhiteSpace(TicketComment))
                 {
-                    if (!string.IsNullOrWhiteSpace(TicketComment))
-                        Comments.Insert(0, new Comments
-                        {
-                            CommentType = CommentTypes.Resident,
-                            Text = TicketComment,
-                            TopSideLineColor = "#00FFFFFF",
-                            IsNotTheLastComment = false,
-                            CommentCreateTime = ticket.TicketCreateTime.ToLongDateString(),
-                            HasPet = ticket.HasPet,
+                    Comments.Insert(0, new Comments
+                    {
+                        CommentType = CommentTypes.Resident,
+                        Text = TicketComment,
+                        TopSideLineColor = "#00FFFFFF",
+                        IsNotTheLastComment = false,
+                        CommentCreateTime = ticket.TicketCreateTime.ToLongDateString(),
+                        HasPet = ticket.HasPet,
 
-                            HasAccess = ticket.HasAccess
-                        });
+                        HasAccess = ticket.HasAccess
+                    });
+                }
+                else
+                {
+                    IsAccessGranted = true;//ticketDetails.IsAccessGranted;
+                    ticketDetails.AccessGrantedObject = new Models.AccessGrantedObject();
+                    if (IsAccessGranted)
+                    {
+                        switch (ticketDetails.AccessGrantedObject.PetInUnit)
+                        {
+                            case 0:
+                                AccessPetText = string.Empty;
+                                break;
+                            case 1:
+                                AccessPetText = "Pets in unit: Small pet";
+                                break;
+                            case 2:
+                                AccessPetText = "Pets in unit: Large pet";
+                                break;
+                        }
+
+                        AccessPetText = "Pets in unit: Small pet";
+                        var list = new List<Models.AccessGrantedDates>();
+                        list.Add(new Models.AccessGrantedDates { DateTimeStart = DateTime.Now, DateTimeEnd = DateTime.Now.AddHours(4) });
+                        list.Add(new Models.AccessGrantedDates { DateTimeStart = DateTime.Now, DateTimeEnd = DateTime.Now.AddHours(4) });
+                        list.Add(new Models.AccessGrantedDates { DateTimeStart = DateTime.Now, DateTimeEnd = DateTime.Now.AddHours(4) });
+
+                        ticketDetails.AccessGrantedObject.Dates = list;
+                        if (ticketDetails.AccessGrantedObject.Dates is null || !ticketDetails.AccessGrantedObject.Dates.Any())
+                        {
+                            if (string.IsNullOrWhiteSpace(ticketDetails.AccessGrantedObject.Note) || string.IsNullOrWhiteSpace(ticketDetails.AccessGrantedObject.CustomDescription))
+                                AccessGrantedTimesText = "Access anytime";
+                            else
+                                AccessGrantedTimesText = ticketDetails.AccessGrantedObject.Note + " " + ticketDetails.AccessGrantedObject.CustomDescription;
+                        }
+                        else
+                        {
+                            StringBuilder sb = new StringBuilder();
+                            foreach (var date in TicketDetails.AccessGrantedObject.Dates)
+                            {
+                                var tring = $"{date.DateTimeStart.ToString("MMM dd, yyyy")} - {date.DateTimeStart.ToString("h:mm tt")} - {date.DateTimeEnd.ToString("h:mm tt")}{Environment.NewLine}";
+                                sb.Append(tring);
+                            }
+                            sb.Append(AccessPetText);
+                            AccessGrantedTimesText = sb.ToString();
+                        }
+                    }
                 }
             }
             if (ticketDetails is null)
@@ -1529,6 +1581,8 @@ namespace ManageGo
                 }, () => CanCreateWorkorderAndEvents);
             }
         }
+
+
     }
 }
 
