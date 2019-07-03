@@ -346,6 +346,9 @@
     <AndroidResource Include="Resources\drawable-xhdpi\not_icon_white.png" />
     <AndroidResource Include="Resources\drawable-xxhdpi\not_icon_white.png" />
     <AndroidResource Include="Resources\drawable-xxxhdpi\not_icon_white.png" />
+    <AndroidResource Include="Resources\mipmap-xxhdpi\check%403x.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\check.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\check.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\drawable\" />

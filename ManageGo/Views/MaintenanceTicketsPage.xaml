@@ -1,77 +1,53 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" 
-             xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core" 
-             ios:Page.UseSafeArea="true"
-             xmlns:local="clr-namespace:ManageGo"
-             BackgroundColor="White"
-             x:Name="ThisPage"
-             xmlns:controls="clr-namespace:ManageGo.Controls"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="ManageGo.MaintenanceTicketsPage">
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core" ios:Page.UseSafeArea="true" xmlns:local="clr-namespace:ManageGo" BackgroundColor="White" x:Name="ThisPage" xmlns:controls="clr-namespace:ManageGo.Controls" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="ManageGo.MaintenanceTicketsPage">
     <ContentPage.Resources>
         <local:InverseBoolConverter x:Key="InverseBoolConverter" />
         <local:StringToBoolConverter x:Key="StringToBoolConverter" />
     </ContentPage.Resources>
     <RelativeLayout>
-        <Grid RowSpacing="0"
-              RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent,
-                             Property=Height, Factor=1, Constant=0}"
-              RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent,
-                             Property=Width, Factor=1, Constant=0}" >
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto" />
-            <RowDefinition Height="auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <StackLayout Grid.Row="0" Orientation="Horizontal" Padding="8" HeightRequest="42">
-            <Button BackgroundColor="Transparent"
-                    Command="{Binding OnMasterMenuTapped}"
-                    HorizontalOptions="Start"
-                    WidthRequest="42"
-                    IsVisible="{Binding HamburgerIsVisible}"
-                    VerticalOptions="CenterAndExpand"
-                    Image="nav_menu_icon.png" />
-            <Button BackgroundColor="Transparent"
-                Command="{Binding OnBackbuttonTapped}"
-                HorizontalOptions="Start"
-                WidthRequest="42"
-                Rotation="180"
-                IsVisible="{Binding BackbuttonIsVisible}"
-                VerticalOptions="CenterAndExpand"
-                Image="arrow_right.png" />
-            <Image Source="logo.png" Margin="-42,0,0,0" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"/>
-        </StackLayout>
-        <StackLayout Spacing="0" Grid.Row="1">
-            <Label Text="Tickets"  Margin="0,8,0,7"  Style="{StaticResource PageTitle}"/>
-            <BoxView HeightRequest="1" BackgroundColor="{StaticResource Grey-Light-2}"/>
-            <Grid VerticalOptions="FillAndExpand" MinimumHeightRequest="50" HeightRequest="50">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="1" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <StackLayout Grid.Column="0" HorizontalOptions="Center" Spacing="0" Orientation="Horizontal">
+        <Grid RowSpacing="0" RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height, Factor=1}" RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width, Factor=1}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <StackLayout Grid.Row="0" Orientation="Horizontal" Padding="8" HeightRequest="42">
+                <Button BackgroundColor="Transparent" Command="{Binding OnMasterMenuTapped}" HorizontalOptions="Start" WidthRequest="42" IsVisible="{Binding HamburgerIsVisible}" VerticalOptions="CenterAndExpand" Image="nav_menu_icon.png" />
+                <Button BackgroundColor="Transparent" Command="{Binding OnBackbuttonTapped}" HorizontalOptions="Start" WidthRequest="42" Rotation="180" IsVisible="{Binding BackbuttonIsVisible}" VerticalOptions="CenterAndExpand" Image="arrow_right.png" />
+                <Image Source="logo.png" Margin="-42,0,0,0" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" />
+            </StackLayout>
+            <StackLayout Spacing="0" Grid.Row="1">
+                <Label Text="Tickets" Margin="0,8,0,7" Style="{StaticResource PageTitle}" />
+                <BoxView HeightRequest="1" BackgroundColor="{StaticResource Grey-Light-2}" />
+                <Grid VerticalOptions="FillAndExpand" MinimumHeightRequest="50" HeightRequest="50">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="1" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <StackLayout Grid.Column="0" HorizontalOptions="Center" Spacing="0" Orientation="Horizontal">
                         <Image Source="calendar_blue.png" VerticalOptions="Center" />
-                        <Label Text="{Binding CalendarButtonText}" VerticalOptions="Center" TextColor="{StaticResource Grey-Dark-1}" FontSize="Small" Margin="4,0,0,0"/>
+                        <Label Text="{Binding CalendarButtonText}" VerticalOptions="Center" TextColor="{StaticResource Grey-Dark-1}" FontSize="Small" Margin="4,0,0,0" />
                         <StackLayout.GestureRecognizers>
-                            <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnCalendarButtonTapped}"/>
+                            <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnCalendarButtonTapped}" />
                         </StackLayout.GestureRecognizers>
                     </StackLayout>
-                    <BoxView WidthRequest="1" Margin="0,4,0,4" HorizontalOptions="Start" Grid.Column="1" BackgroundColor="{StaticResource Grey-Mid-2}"/>
+                    <BoxView WidthRequest="1" Margin="0,4,0,4" HorizontalOptions="Start" Grid.Column="1" BackgroundColor="{StaticResource Grey-Mid-2}" />
                     <StackLayout Grid.Column="2" HorizontalOptions="Center" Spacing="0" Orientation="Horizontal">
                         <Image Source="filter_blue.png" VerticalOptions="Center" />
-                        <Label Text="Filter" VerticalOptions="Center" TextColor="{StaticResource Grey-Dark-1}" FontSize="Small" Margin="4,0,0,0"/>
-                        <Label Text="{Binding NumberOfAppliedFilters}" HorizontalOptions="Start" Margin="2,8,0,0" HorizontalTextAlignment="Start" FontSize="Small" TextColor="#318bfa"/>
+                        <Label Text="Filter" VerticalOptions="Center" TextColor="{StaticResource Grey-Dark-1}" FontSize="Small" Margin="4,0,0,0" />
+                        <Label Text="{Binding NumberOfAppliedFilters}" HorizontalOptions="Start" Margin="2,8,0,0" HorizontalTextAlignment="Start" FontSize="Small" TextColor="#318bfa" />
                         <StackLayout.GestureRecognizers>
-                            <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnFilterTapped}"/>
+                            <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnFilterTapped}" />
                         </StackLayout.GestureRecognizers>
-                </StackLayout>
-            </Grid>
-            <BoxView BackgroundColor="#ebebeb" HeightRequest="1"/>
-            <BoxView BackgroundColor="#f7f9fa" HeightRequest="2"/>
-            <StackLayout IsVisible="{Binding FilterSelectViewIsShown}" MinimumHeightRequest="75">
+                    </StackLayout>
+                </Grid>
+                <BoxView BackgroundColor="#ebebeb" HeightRequest="1" />
+                <BoxView BackgroundColor="#f7f9fa" HeightRequest="2" />
+                <StackLayout IsVisible="{Binding FilterSelectViewIsShown}" MinimumHeightRequest="75">
                     <Grid Padding="14,12,18,8">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="auto" />
@@ -80,99 +56,91 @@
                         </Grid.ColumnDefinitions>
                         <Button Grid.Column="0" FontSize="Small" TextColor="{StaticResource Grey-Mid-1}" Text="Reset" Command="{Binding OnResetFiltersButtonTapped}" BackgroundColor="Transparent" HorizontalOptions="EndAndExpand" />
                         <Button Grid.Column="1" FontSize="Medium" TextColor="White" Text="Apply filters" CornerRadius="21" Command="{Binding OnApplyFiltersTapped}" BackgroundColor="{StaticResource Primary}" HorizontalOptions="FillAndExpand" Padding="18,0,18,0" />
-                        <Button Grid.Column="2" FontSize="Small" TextColor="{StaticResource Grey-Mid-1}" Text="Cancel" Command="{Binding OnCloseFliterViewTapped}" BackgroundColor="Transparent" HorizontalOptions="EndAndExpand"/>
+                        <Button Grid.Column="2" FontSize="Small" TextColor="{StaticResource Grey-Mid-1}" Text="Cancel" Command="{Binding OnCloseFliterViewTapped}" BackgroundColor="Transparent" HorizontalOptions="EndAndExpand" />
                     </Grid>
                     <BoxView HeightRequest="1" VerticalOptions="Center" BackgroundColor="{StaticResource Grey-Light-2}" Grid.ColumnSpan="2" />
+                </StackLayout>
+                <ContentView BackgroundColor="White" Content="{Binding PopContentView}" VerticalOptions="StartAndExpand" />
             </StackLayout>
-            <ContentView BackgroundColor="White" Content="{Binding PopContentView}" VerticalOptions="StartAndExpand"/>
-        </StackLayout>
-        <StackLayout BackgroundColor="{StaticResource Grey-Light-2}" Grid.Row="2">
-            <!-- List of tickets -->
-            <controls:NestedListView ItemsSource="{Binding FetchedTickets}" x:Name="MyListView" ItemAppearing="Handle_ItemAppearing" Margin="22,18,22,18" IsPullToRefreshEnabled="true" IsRefreshing="{Binding IsRefreshingList}" RefreshCommand="{Binding OnPulledToRefresh}" SelectionMode="None" IsEnabled="{Binding ListIsEnabled}"  HasUnevenRows="true" VerticalOptions="Fill" BackgroundColor="Transparent" SeparatorVisibility="None" >
-                <x:Arguments>
-                    <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
-                </x:Arguments>
-                <ListView.ItemTemplate>
-                <DataTemplate>
-                    <ViewCell>
-                        <Frame HasShadow="false" Margin="0,0,0,12" Padding="14,6,14,6" BackgroundColor="White">
-                            <Grid Margin="0,8,0,8">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="7*" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <StackLayout Grid.Column="0"  HorizontalOptions="Start" VerticalOptions="StartAndExpand">
-                                    <Grid HorizontalOptions="Start" >
-                                        <Grid.RowDefinitions>
-                                             <RowDefinition Height="auto" />
-                                             <RowDefinition Height="auto" />
-                                             <RowDefinition Height="auto" />
-                                             <RowDefinition Height="auto" />
-                                        </Grid.RowDefinitions>
-                                        <Image HorizontalOptions="CenterAndExpand" Margin="0,3,0,0" Grid.Row="0" Source="{Binding CommentImage}" />
-                                        <Label Text="{Binding NumberOfRepliesString}" FontSize="Micro" VerticalOptions="CenterAndExpand" Margin="0,3,0,4" HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center" Grid.Row="0" TextColor="White"  />
-                                        <Image HorizontalOptions="CenterAndExpand" IsVisible="{Binding HasAccess}" Grid.Row="1" Source="key_blue.png" />
-                                        <Image HorizontalOptions="CenterAndExpand" IsVisible="{Binding HasEvent}" Grid.Row="2" Source="calendar_blue_sm.png" />
-                                        <Image HorizontalOptions="CenterAndExpand" IsVisible="{Binding HasWorkorder}" Grid.Row="3" Source="wrench_blue.png" />
+            <Grid BackgroundColor="{StaticResource Grey-Light-2}" Grid.Row="2">
+                <!-- List of tickets -->
+                <controls:NestedListView ItemsSource="{Binding FetchedTickets}" x:Name="MyListView" ItemAppearing="Handle_ItemAppearing" Margin="22,18,22,18" IsPullToRefreshEnabled="true" IsRefreshing="{Binding IsRefreshingList}" RefreshCommand="{Binding OnPulledToRefresh}" SelectionMode="None" IsEnabled="{Binding ListIsEnabled}" HasUnevenRows="true"
+                    VerticalOptions="Fill" BackgroundColor="Transparent" SeparatorVisibility="None">
+                    <x:Arguments>
+                        <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
+                    </x:Arguments>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <Frame HasShadow="false" Margin="0,0,0,12" Padding="14,6,14,6" BackgroundColor="White">
+                                    <Grid Margin="0,8,0,8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="7*" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <StackLayout Grid.Column="0" HorizontalOptions="Start" VerticalOptions="StartAndExpand">
+                                            <Grid HorizontalOptions="Start">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="auto" />
+                                                    <RowDefinition Height="auto" />
+                                                    <RowDefinition Height="auto" />
+                                                    <RowDefinition Height="auto" />
+                                                </Grid.RowDefinitions>
+                                                <Image HorizontalOptions="CenterAndExpand" Margin="0,3,0,0" Grid.Row="0" Source="{Binding CommentImage}" />
+                                                <Label Text="{Binding NumberOfRepliesString}" FontSize="Micro" VerticalOptions="CenterAndExpand" Margin="0,3,0,4" HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center" Grid.Row="0" TextColor="White" />
+                                                <Image HorizontalOptions="CenterAndExpand" IsVisible="{Binding HasAccess}" Grid.Row="1" Source="key_blue.png" />
+                                                <Image HorizontalOptions="CenterAndExpand" IsVisible="{Binding HasEvent}" Grid.Row="2" Source="calendar_blue_sm.png" />
+                                                <Image HorizontalOptions="CenterAndExpand" IsVisible="{Binding HasWorkorder}" Grid.Row="3" Source="wrench_blue.png" />
+                                            </Grid>
+                                        </StackLayout>
+                                        <StackLayout Grid.Column="1" Spacing="8" HorizontalOptions="FillAndExpand" VerticalOptions="CenterAndExpand">
+                                            <Label VerticalOptions="StartAndExpand" TextColor="{StaticResource Grey-Mid-1}" Text="{Binding TicketSubject}" FontSize="Medium" FontAttributes="Bold" LineBreakMode="TailTruncation" />
+                                            <StackLayout Orientation="Horizontal">
+                                                <Label Text="{Binding FormattedDate}" FontSize="Small" TextColor="{StaticResource Grey-Light-1}" VerticalTextAlignment="Center" VerticalOptions="Center" />
+                                                <Label Text="•" IsVisible="{Binding Category,Converter={StaticResource StringToBoolConverter}}" TextColor="{StaticResource Grey-Light-1}" FontSize="Small" VerticalTextAlignment="Center" VerticalOptions="Center" />
+                                                <Label Text="{Binding Category}" FontSize="Small" VerticalTextAlignment="Center" TextColor="{StaticResource Grey-Light-1}" VerticalOptions="Center" />
+                                            </StackLayout>
+                                            <BoxView BackgroundColor="{StaticResource Grey-Light-2}" HeightRequest="1" HorizontalOptions="FillAndExpand" />
+                                            <StackLayout Orientation="Horizontal" Margin="0">
+                                                <Image Source="profile_grey.png" VerticalOptions="CenterAndExpand" HorizontalOptions="Start" />
+                                                <Label Text="{Binding TenantDetails}" LineBreakMode="MiddleTruncation" VerticalTextAlignment="Center" VerticalOptions="CenterAndExpand" FontSize="Small" TextColor="{StaticResource Grey-Light-1}" />
+                                            </StackLayout>
+                                            <StackLayout Orientation="Horizontal" VerticalOptions="StartAndExpand" IsVisible="{Binding FirstCommentShown}">
+                                                <Image Source="chat_grey.png" Margin="0,5,0,0" VerticalOptions="Start" HorizontalOptions="Start" />
+                                                <Label Text="{Binding FirstComment}" LineBreakMode="WordWrap" FontSize="Small" TextColor="{StaticResource Grey-Light-1}" />
+                                            </StackLayout>
+                                            <Button Text="View ticket" IsVisible="{Binding FirstCommentShown}" InputTransparent="true" HorizontalOptions="StartAndExpand" FontSize="Small" TextColor="{StaticResource Primary}" BackgroundColor="Transparent" />
+                                        </StackLayout>
+                                        <StackLayout Grid.Column="2" Padding="8,8,4,8" VerticalOptions="StartAndExpand">
+                                            <Image Source="chevron_down.png" Rotation="0" IsVisible="{Binding FirstCommentShown, Converter={StaticResource InverseBoolConverter} }" VerticalOptions="Start" HorizontalOptions="End" />
+                                            <Image Source="chevron_down.png" Rotation="180" IsVisible="{Binding FirstCommentShown}" VerticalOptions="Start" HorizontalOptions="End" />
+                                            <StackLayout.GestureRecognizers>
+                                                <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding BindingContext.ShowDetails,Source={x:Reference ThisPage}}" CommandParameter="{Binding .}" Tapped="Handle_Tapped" />
+                                            </StackLayout.GestureRecognizers>
+                                        </StackLayout>
+                                        <Grid.GestureRecognizers>
+                                            <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding BindingContext.OnItemTapped,Source={x:Reference ThisPage}}" CommandParameter="{Binding .}" />
+                                        </Grid.GestureRecognizers>
                                     </Grid>
-                                </StackLayout>
-                                <StackLayout Grid.Column="1" Spacing="8" HorizontalOptions="FillAndExpand" VerticalOptions="CenterAndExpand">
-                                    <Label VerticalOptions="StartAndExpand" TextColor="{StaticResource Grey-Mid-1}" Text="{Binding TicketSubject}" FontSize="Medium" FontAttributes="Bold" LineBreakMode="TailTruncation" />
-                                    <StackLayout Orientation="Horizontal">
-                                        <Label Text="{Binding FormattedDate}" FontSize="Small" TextColor="{StaticResource Grey-Light-1}" VerticalTextAlignment="Center" VerticalOptions="Center" />
-                                        <Label Text="•" IsVisible="{Binding Category,Converter={StaticResource StringToBoolConverter}}" TextColor="{StaticResource Grey-Light-1}" FontSize="Small" VerticalTextAlignment="Center" VerticalOptions="Center"/>
-                                        <Label Text="{Binding Category}" FontSize="Small" VerticalTextAlignment="Center" TextColor="{StaticResource Grey-Light-1}" VerticalOptions="Center"/>
-                                    </StackLayout>
-                                    <BoxView BackgroundColor="{StaticResource Grey-Light-2}" HeightRequest="1" HorizontalOptions="FillAndExpand" />
-                                    <StackLayout Orientation="Horizontal" Margin="0">
-                                        <Image Source="profile_grey.png"  VerticalOptions="CenterAndExpand" HorizontalOptions="Start"/>
-                                        <Label Text="{Binding TenantDetails}" LineBreakMode="MiddleTruncation" VerticalTextAlignment="Center" VerticalOptions="CenterAndExpand" FontSize="Small" TextColor="{StaticResource Grey-Light-1}" />
-                                    </StackLayout>
-                                    <StackLayout Orientation="Horizontal" VerticalOptions="StartAndExpand" IsVisible="{Binding FirstCommentShown}">
-                                        <Image Source="chat_grey.png" Margin="0,5,0,0" VerticalOptions="Start" HorizontalOptions="Start" />
-                                        <Label Text="{Binding FirstComment}" LineBreakMode="WordWrap"  FontSize="Small" TextColor="{StaticResource Grey-Light-1}" />
-                                    </StackLayout>
-                                    <Button Text="View ticket" IsVisible="{Binding FirstCommentShown}" InputTransparent="true" HorizontalOptions="StartAndExpand" FontSize="Small" TextColor="{StaticResource Primary}" BackgroundColor="Transparent"/>
-                                </StackLayout>
-                                <StackLayout Grid.Column="2" Padding="8,8,4,8" VerticalOptions="StartAndExpand">
-                                    <Image Source="chevron_down.png" Rotation="0" IsVisible="{Binding FirstCommentShown, Converter={StaticResource InverseBoolConverter} }" VerticalOptions="Start" HorizontalOptions="End"/>
-                                    <Image Source="chevron_down.png" Rotation="180" IsVisible="{Binding FirstCommentShown}" VerticalOptions="Start" HorizontalOptions="End"/>
-                                    <StackLayout.GestureRecognizers>
-                                        <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding BindingContext.ShowDetails,Source={x:Reference ThisPage}}"  CommandParameter="{Binding .}" Tapped="Handle_Tapped" />
-                                    </StackLayout.GestureRecognizers>
-                                </StackLayout>
-                                     <Grid.GestureRecognizers>
-                                        <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding BindingContext.OnItemTapped,Source={x:Reference ThisPage}}" CommandParameter="{Binding .}" />
-                                    </Grid.GestureRecognizers>
-                            </Grid>  
-                           
-                        </Frame>
-                    </ViewCell>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </controls:NestedListView>
-        </StackLayout>
-        <Frame IsVisible="{Binding IsLoading}" BackgroundColor="Transparent" Grid.Row="2" HasShadow="false"  VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand">
-            <StackLayout>
-                <ActivityIndicator Color="Gray" IsRunning="true" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" />
+                                </Frame>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </controls:NestedListView>
+            </Grid>
+            <Frame IsVisible="{Binding IsLoading}" BackgroundColor="Transparent" Grid.Row="2" HasShadow="false" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand">
+                <StackLayout>
+                    <ActivityIndicator Color="Gray" IsRunning="true" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" />
+                </StackLayout>
+            </Frame>
+            <StackLayout Grid.Row="2" VerticalOptions="CenterAndExpand" IsVisible="{Binding NothingFetched}" HorizontalOptions="CenterAndExpand">
+                <Label Text="Nothing to see here" HorizontalTextAlignment="Center" FontSize="Small" FontAttributes="Bold" TextColor="Gray" />
+                <Label Text="Try broadening your search" HorizontalTextAlignment="Center" FontSize="Small" TextColor="Gray" />
             </StackLayout>
-        </Frame>
-              <StackLayout Grid.Row="2" VerticalOptions="CenterAndExpand" 
-                         IsVisible="{Binding NothingFetched}" 
-                    HorizontalOptions="CenterAndExpand">
-                <Label Text="Nothing to see here" HorizontalTextAlignment="Center" FontSize="Small" FontAttributes="Bold" TextColor="Gray"/>
-                <Label Text="Try broadening your search" HorizontalTextAlignment="Center" FontSize="Small"  TextColor="Gray"/>
-            </StackLayout>
-    </Grid>
+        </Grid>
         <!-- button for creating new ticket -->
-        <Image Source="plus_1_1.png" 
-               x:Name="AddNewTicketButton"
-               IsVisible="{Binding AddNewButtonIsVisisble}"
-               RelativeLayout.XConstraint="{ConstraintExpression Type=RelativeToParent,
-                             Property=Width, Factor=1, Constant=-90}" 
-               RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent,
-                             Property=Height, Factor=1, Constant=-90}">
+        <Image Source="plus_1_1.png" x:Name="AddNewTicketButton" IsVisible="{Binding AddNewButtonIsVisisble}" RelativeLayout.XConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width, Factor=1, Constant=-90}" RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height, Factor=1, Constant=-90}">
             <Image.GestureRecognizers>
                 <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnAddButtonTapped}" />
             </Image.GestureRecognizers>

@@ -16,6 +16,7 @@
     <Folder Include="Controls\" />
     <Folder Include="Models\" />
     <Folder Include="Models\RequestParameterItems\" />
+    <Folder Include="Converters\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Services.cs" />

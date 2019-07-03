@@ -24,6 +24,7 @@ namespace ManageGo
         public bool CanEditTicketDetails { get; private set; }
         #endregion
         #region Properties
+        public bool AccessGrantIsExpanded { get; set; } = true;
         [AlsoNotifyFor("ShowAccessGranted")]
         public bool IsAccessGranted { get; private set; }
         public bool ShowAccessGranted => IsAccessGranted && !ShowingTicketDetails;
@@ -263,6 +264,18 @@ namespace ManageGo
                     PopContentView = null;
                     ShowingTicketDetails = false;
                     ReplyButtonIsVisible = true;
+                    tcs?.SetResult(true);
+                });
+            }
+        }
+
+        public FreshAwaitCommand OnAccessGrantPanelTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((tcs) =>
+                {
+                    AccessGrantIsExpanded = !AccessGrantIsExpanded;
                     tcs?.SetResult(true);
                 });
             }
@@ -1012,8 +1025,7 @@ namespace ManageGo
                 }
                 else
                 {
-                    IsAccessGranted = true;//ticketDetails.IsAccessGranted;
-                    ticketDetails.AccessGrantedObject = new Models.AccessGrantedObject();
+                    IsAccessGranted = ticketDetails.IsAccessGranted;
                     if (IsAccessGranted)
                     {
                         switch (ticketDetails.AccessGrantedObject.PetInUnit)
@@ -1029,19 +1041,12 @@ namespace ManageGo
                                 break;
                         }
 
-                        AccessPetText = "Pets in unit: Small pet";
-                        var list = new List<Models.AccessGrantedDates>();
-                        list.Add(new Models.AccessGrantedDates { DateTimeStart = DateTime.Now, DateTimeEnd = DateTime.Now.AddHours(4) });
-                        list.Add(new Models.AccessGrantedDates { DateTimeStart = DateTime.Now, DateTimeEnd = DateTime.Now.AddHours(4) });
-                        list.Add(new Models.AccessGrantedDates { DateTimeStart = DateTime.Now, DateTimeEnd = DateTime.Now.AddHours(4) });
-
-                        ticketDetails.AccessGrantedObject.Dates = list;
                         if (ticketDetails.AccessGrantedObject.Dates is null || !ticketDetails.AccessGrantedObject.Dates.Any())
                         {
-                            if (string.IsNullOrWhiteSpace(ticketDetails.AccessGrantedObject.Note) || string.IsNullOrWhiteSpace(ticketDetails.AccessGrantedObject.CustomDescription))
+                            if (string.IsNullOrWhiteSpace(ticketDetails.AccessGrantedObject.CustomDescription))
                                 AccessGrantedTimesText = "Access anytime";
                             else
-                                AccessGrantedTimesText = ticketDetails.AccessGrantedObject.Note + " " + ticketDetails.AccessGrantedObject.CustomDescription;
+                                AccessGrantedTimesText = ticketDetails.AccessGrantedObject.CustomDescription;
                         }
                         else
                         {

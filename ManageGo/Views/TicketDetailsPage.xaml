@@ -4,6 +4,7 @@
     <ContentPage.Resources>
         <local:InverseBoolConverter x:Key="InverseBoolConverter" />
         <local:StringToBoolConverter x:Key="StringToBoolConverter" />
+        <local:ToggleToChevronRotationConverter x:Key="ToggleToChevronRotationConverter" />
     </ContentPage.Resources>
     <RelativeLayout x:Name="MyRelLayout">
         <Grid RowSpacing="0" RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent, Property=Height,Factor=1,Constant=0}" RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent, Property=Width,Factor=1,Constant=0}">
@@ -47,12 +48,14 @@
                 </StackLayout>
                 <StackLayout BackgroundColor="#f4f4f4" Padding="36,10,18,10" IsVisible="{Binding ShowAccessGranted}">
                     <StackLayout Orientation="Horizontal" Spacing="8">
+                        <Image Source="check.png" WidthRequest="15" HeightRequest="15" />
                         <Label Text="Access Granted" TextColor="{StaticResource Grey-Mid-1}" FontSize="Medium" />
-                        <Image Source="chevron.png" Rotation="90" />
+                        <Image Source="chevron.png" Rotation="{Binding AccessGrantIsExpanded,Converter={StaticResource ToggleToChevronRotationConverter}}" />
                     </StackLayout>
-                    <StackLayout>
-                        <local:MGLabel LineSpacing="1.5" Text="{Binding AccessGrantedTimesText}" TextColor="{StaticResource Grey-Mid-1}" FontSize="Small" />
-                    </StackLayout>
+                    <local:MGLabel Margin="25,0,0,0" LineSpacing="1.5" Text="{Binding AccessGrantedTimesText}" IsVisible="{Binding AccessGrantIsExpanded}" TextColor="{StaticResource Grey-Mid-1}" FontSize="Small" />
+                    <StackLayout.GestureRecognizers>
+                        <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnAccessGrantPanelTapped}" />
+                    </StackLayout.GestureRecognizers>
                 </StackLayout>
                 <StackLayout IsVisible="{Binding ShowingTicketDetails}" MinimumHeightRequest="75">
                     <Grid Padding="14,8,18,8">
