@@ -232,8 +232,17 @@ namespace ManageGo
             NothingFetched = false;
             try
             {
-                if (FetchNextPage && ParameterItem != null)
+                if (FetchNextPage)
                 {
+                    if (ParameterItem is null)
+                    {
+                        ParameterItem = new TicketRequestItem
+                        {
+                            Status = TicketStatus.Open,
+                            DateFrom = DateRange.StartDate,
+                            DateTo = DateRange.EndDate
+                        };
+                    }
                     ParameterItem.Page++;
                     var nextPage = await Services.DataAccess.GetTicketsAsync(ParameterItem);
                     if (nextPage != null)
@@ -258,7 +267,7 @@ namespace ManageGo
                         {
                             Status = TicketStatus.Open,
                             DateFrom = DateRange.StartDate,
-                            DateTo = DateRange.EndDate
+                            DateTo = DateRange.EndDate,
                         };
                     }
                     if (refreshData)
@@ -271,8 +280,8 @@ namespace ManageGo
                     else
                         FetchedTickets = new ObservableCollection<MaintenanceTicket>();
 
-                    CanGetMorePages = FetchedTickets != null && FetchedTickets.Count == ParameterItem.PageSize;
-                    if (FetchedTickets.Any() && CanGetMorePages)
+                    CanGetMorePages = FetchedTickets != null && FetchedTickets.Count == ParameterItem?.PageSize;
+                    if (FetchedTickets != null && FetchedTickets.Any() && CanGetMorePages)
                     {
 
                         var lastIdx = FetchedTickets.IndexOf(FetchedTickets.Last());
@@ -299,7 +308,7 @@ namespace ManageGo
             finally
             {
                 HasLoaded = true;
-                if (!FetchedTickets.Any())
+                if (FetchedTickets is null || !FetchedTickets.Any())
                 {
                     NothingFetched = true;
                 }

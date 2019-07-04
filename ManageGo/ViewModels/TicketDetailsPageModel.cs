@@ -1044,9 +1044,9 @@ namespace ManageGo
                         if (ticketDetails.AccessGrantedObject.Dates is null || !ticketDetails.AccessGrantedObject.Dates.Any())
                         {
                             if (string.IsNullOrWhiteSpace(ticketDetails.AccessGrantedObject.CustomDescription))
-                                AccessGrantedTimesText = "Access anytime";
+                                AccessGrantedTimesText = $"Access anytime{Environment.NewLine}{AccessPetText}";
                             else
-                                AccessGrantedTimesText = ticketDetails.AccessGrantedObject.CustomDescription;
+                                AccessGrantedTimesText = ticketDetails.AccessGrantedObject.CustomDescription + $"{Environment.NewLine}{AccessPetText}";
                         }
                         else
                         {
