@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             BackgroundColor="White"
+             x:Class="ManageGo.UpdatePage">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Image Grid.Row="0"
+               Margin="0,8,0,0"
+               Source="logo.png"
+               VerticalOptions="Start"
+               HorizontalOptions="CenterAndExpand" />
+        <StackLayout Spacing="25"
+                     Grid.Row="1"
+                     VerticalOptions="Center">
+            <Label Text="It's time to update"
+                   FontSize="Medium"
+                   HorizontalTextAlignment="Center"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource Grey-Dark-1}" />
+            <Label Text="Please update your app to the latest&#10;to take advantage of new&#10;features and bug fixes."
+                   FontSize="Medium"
+                   HorizontalTextAlignment="Center"
+                   TextColor="{StaticResource Grey-Mid-1}" />
+            <Frame BackgroundColor="#e0eefd"
+                   HorizontalOptions="Center"
+                   WidthRequest="150"
+                   CornerRadius="25"
+                   Margin="0,18,0,0"
+                   Padding="25,8,25,8"
+                   HasShadow="False">
+                <Label Text="Update"
+                       HorizontalTextAlignment="Center"
+                       TextColor="{StaticResource Primary}"
+                       FontSize="Medium" />
+                <Frame.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding OnUpdateButtonTapped}" />
+                </Frame.GestureRecognizers>
+            </Frame>
+            <Frame BackgroundColor="Transparent"
+                   HorizontalOptions="Center"
+                   WidthRequest="150"
+                   CornerRadius="25"
+                   Padding="25,8,25,8"
+                   HasShadow="False">
+
+                <Label Text="Remind me later"
+                       HorizontalTextAlignment="Center"
+                       TextColor="{StaticResource Grey-Mid-1}"
+                       FontSize="Medium" />
+
+                <Frame.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding OnBackButtonTapped}" />
+                </Frame.GestureRecognizers>
+
+            </Frame>
+        </StackLayout>
+    </Grid>
+</ContentPage>

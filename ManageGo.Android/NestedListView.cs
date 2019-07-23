@@ -1,5 +1,6 @@
 ﻿using System;
 using Android.Content;
+using Android.Views;
 using ManageGo.Controls;
 using ManageGo.Droid;
 using Xamarin.Forms;
@@ -22,6 +23,7 @@ namespace ManageGo.Droid
                 var listView = this.Control as Android.Widget.ListView;
                 listView.NestedScrollingEnabled = true;
                 listView.VerticalScrollBarEnabled = false;
+                listView.SetFriction(ViewConfiguration.ScrollFriction * 2);
             }
         }
 

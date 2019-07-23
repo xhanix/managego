@@ -21,6 +21,7 @@ namespace ManageGo
         internal static UserPermissions UserPermissions { get; set; }
         internal static string UserName { get; set; }
         internal static string PMCName { get; set; }
+        internal DateTimeOffset LastVersionCheckTime { get; set; } = DateTimeOffset.MinValue;
         internal static SignedInUserInfo UserInfo { get; set; }
         internal static List<Building> Buildings { get; set; }
         internal static List<Categories> Categories { get; set; }
@@ -31,7 +32,7 @@ namespace ManageGo
         internal static bool HasPendingNotification { get; private set; }
         internal static int NotificationType { get; private set; }
         internal static int NotificationObject { get; private set; }
-
+        internal event EventHandler OnAppStarted;
         public static async Task NotificationReceived(int type, int notificationObject, bool isGroup)
         {
             if (CurrentPageModel is null)
@@ -108,6 +109,7 @@ namespace ManageGo
         public static List<BankAccount> BankAccounts { get; internal set; }
         internal static BaseDetailPage CurrentPageModel { get; set; }
         public static bool NotificationIsSummary { get; internal set; }
+        public bool LoggedIn { get; private set; }
 
         public App()
         {
@@ -115,13 +117,39 @@ namespace ManageGo
             Tags = new List<Tags>();
             Users = new List<User>();
             Categories = new List<Categories>();
+
             var page = FreshPageModelResolver.ResolvePageModel<LoginPageModel>();
-            MainPage = page;
+            var navContainer = new FreshNavigationContainer(page);
+            MainPage = navContainer;
             ((LoginPageModel)page.BindingContext).OnSuccessfulLogin += Handle_OnSuccessfulLogin;
+            OnAppStarted += App_OnAppStarted;
+        }
+
+        private async void App_OnAppStarted(object sender, EventArgs e)
+        {
+            var lastTimeCheck = Xamarin.Essentials.Preferences.Get("LastVersionCheck", DateTime.MinValue);
+            if (lastTimeCheck == DateTime.MinValue || DateTime.Now >= lastTimeCheck.AddMinutes(10))
+            {
+                Xamarin.Essentials.Preferences.Set("LastVersionCheck", DateTime.Now);
+                MGDataAccessLibrary.DevicePlatform plaform =
+                    Xamarin.Forms.Device.RuntimePlatform == Xamarin.Forms.Device.iOS ?
+                    MGDataAccessLibrary.DevicePlatform.iOS : MGDataAccessLibrary.DevicePlatform.Android;
+                var currentVer = int.Parse(Xamarin.Essentials.VersionTracking.CurrentVersion.Replace(".", ""));
+                var needsUpdate = await MGDataAccessLibrary.BussinessLogic.AppVersionProcessor.AppNeedsUpdate(currentVer, plaform);
+                if (needsUpdate)
+                {
+                    var updatedPage = FreshPageModelResolver.ResolvePageModel<UpdatePageModel>();
+                    if (!LoggedIn)
+                        await ((MainPage as FreshNavigationContainer))?.PushPage(updatedPage, new UpdatePageModel(), modal: true);
+                    else
+                        await ((MainPage as FreshMasterDetailNavigationContainer))?.PushPage(updatedPage, new UpdatePageModel(), modal: true);
+                }
+            }
         }
 
         void Handle_OnSuccessfulLogin(object sender, bool e)
         {
+            LoggedIn = true;
             void action()
             {
                 MasterDetailNav = new FreshMasterDetailNavigationContainer();
@@ -173,17 +201,19 @@ namespace ManageGo
             AppCenter.Start("android=817faa27-5418-4f2b-b55a-0013186c5482;" +
                   "ios=575732ee-7291-4330-98b1-8f1c79713205;",
                   typeof(Analytics), typeof(Crashes));
-
+            OnAppStarted?.Invoke(this, EventArgs.Empty);
         }
 
         protected override void OnSleep()
         {
             // Handle when your app sleeps
+
         }
 
         protected override void OnResume()
         {
             // Handle when your app resumes
+            OnAppStarted?.Invoke(this, EventArgs.Empty);
         }
     }
 
@@ -202,6 +232,11 @@ namespace ManageGo
     public interface IPicturePicker
     {
         Task<Tuple<Stream, string, Services.MGFileType>> GetImageStreamAsync();
+    }
+
+    public interface IAppStoreOpener
+    {
+        void OpenAppStore();
     }
 
 }

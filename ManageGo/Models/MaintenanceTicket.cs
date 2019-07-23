@@ -25,6 +25,7 @@ namespace ManageGo
         public bool HasEvent { get; set; }
         public bool HasPet { get; set; }
         public bool HasAccess { get; set; }
+        public bool NeedReply { get; set; }
         public List<int> Assigned { get; set; }
         public List<MaintenanceTicketComment> Comments { get; set; }
         [JsonIgnore]

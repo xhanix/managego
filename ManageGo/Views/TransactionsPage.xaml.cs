@@ -40,5 +40,11 @@ namespace ManageGo
         {
             OnTransactionAppeared?.Invoke(this, (Models.BankTransaction)e.Item);
         }
+
+        internal void DataLoaded()
+        {
+            TransactionsList.HasUnevenRows = !TransactionsList.HasUnevenRows;
+            TransactionsList.HasUnevenRows = !TransactionsList.HasUnevenRows;
+        }
     }
 }

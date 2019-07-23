@@ -5,9 +5,9 @@ using Xamarin.Forms;
 
 namespace ManageGo
 {
-    public partial class LoginPage : ContentPage
+    public partial class UpdatePage : ContentPage
     {
-        public LoginPage()
+        public UpdatePage()
         {
             InitializeComponent();
             NavigationPage.SetHasNavigationBar(this, false);

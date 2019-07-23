@@ -9,5 +9,10 @@ namespace ManageGo.Controls
         {
 
         }
+
+        public NestedListView()
+        {
+
+        }
     }
 }

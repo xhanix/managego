@@ -55,11 +55,21 @@ namespace ManageGo
             }
         }
 
-
-
         void Handle_ItemAppearing(object sender, ItemVisibilityEventArgs e)
         {
             OnPaymentAppeared?.Invoke(this, (Payment)e.Item);
+        }
+
+        public void DataLoaded()
+        {
+            PaymentsList.HasUnevenRows = !PaymentsList.HasUnevenRows;
+            PaymentsList.HasUnevenRows = !PaymentsList.HasUnevenRows;
+        }
+
+
+        internal void ScrollToFirst(Object item)
+        {
+            PaymentsList.ScrollTo(item, ScrollToPosition.MakeVisible, false);
         }
     }
 }

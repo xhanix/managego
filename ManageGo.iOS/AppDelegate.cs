@@ -5,6 +5,7 @@ using System.Linq;
 using Firebase.CloudMessaging;
 using Firebase.Core;
 using Foundation;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ObjCRuntime;
 using UIKit;
@@ -18,9 +19,6 @@ namespace ManageGo.iOS
     [Register("AppDelegate")]
     public partial class AppDelegate : global::Xamarin.Forms.Platform.iOS.FormsApplicationDelegate, IUNUserNotificationCenterDelegate, IMessagingDelegate
     {
-
-
-
         //
         // This method is invoked when the application has loaded and is ready to run. In this 
         // method you should instantiate the window, load the UI into it and then make the window
@@ -36,7 +34,7 @@ namespace ManageGo.iOS
             if (UIDevice.CurrentDevice.CheckSystemVersion(10, 0))
             {
 
-                UNUserNotificationCenter.Current.Delegate = this;
+                UNUserNotificationCenter.Current.Delegate = (AppDelegate)UIApplication.SharedApplication.Delegate;
                 UNUserNotificationCenter.Current.RequestAuthorization(UNAuthorizationOptions.Alert | UNAuthorizationOptions.Sound | UNAuthorizationOptions.Sound,
                                                                         (granted, error) =>
                                                                         {
@@ -49,7 +47,6 @@ namespace ManageGo.iOS
                 var pushSettings = UIUserNotificationSettings.GetSettingsForTypes(
                         UIUserNotificationType.Alert | UIUserNotificationType.Badge | UIUserNotificationType.Sound,
                         new NSSet());
-
                 UIApplication.SharedApplication.RegisterUserNotificationSettings(pushSettings);
                 UIApplication.SharedApplication.RegisterForRemoteNotifications();
             }
@@ -60,9 +57,7 @@ namespace ManageGo.iOS
             }
             Messaging.SharedInstance.Delegate = this;
             Messaging.SharedInstance.ShouldEstablishDirectChannel = true;
-
             Messaging.SharedInstance.AutoInitEnabled = true;
-
             return base.FinishedLaunching(uiApplication, launchOptions);
         }
 
@@ -94,22 +89,22 @@ namespace ManageGo.iOS
         {
             //triggered when app is in foreground
             var userInfo = notification.Request.Content.UserInfo;
-
+            //userInfo.NotificationObject
             completionHandler(UNNotificationPresentationOptions.Alert);
-
         }
 
 
         public override void DidReceiveRemoteNotification(UIApplication application, NSDictionary userInfo, Action<UIBackgroundFetchResult> completionHandler)
         {
             //triggered when user taps on notification
-            Console.WriteLine(userInfo.DebugDescription);
-            var dic = userInfo.ToDictionary(x => x.Key.ToString(), x => x.Value.ToString());
-            dic.TryGetValue("message", out string message);
-            var jobj = JObject.Parse(message);
-            var type = jobj.GetValue("Type").ToObject<Models.PushNotificationType>();
-            var notificationObject = jobj.GetValue("NotificationObject").ToObject<int>();
-            App.NotificationReceived((int)type, notificationObject, false);
+            var aps = userInfo["aps"] as NSDictionary;
+            var type = aps["category"] as NSString;
+            var notifObject = userInfo["NotificationObject"] as NSString;
+            if (int.TryParse(notifObject, out int objectId))
+            {
+                var _type = Enum.Parse<Models.PushNotificationType>(type);
+                App.NotificationReceived((int)_type, objectId, false).ConfigureAwait(false);
+            }
         }
 
         public static void ShowMessage(string title, string message, UIViewController fromViewController, Action actionForOk = null)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -16,7 +17,9 @@ namespace MGDataAccessLibrary.DataAccess
 #endif
         static WebAPI()
         {
+
             WebClient = new HttpClient { BaseAddress = new Uri(BaseUrl) };
+
         }
 
         internal static async Task<T2> PostItem<T1, T2>(T1 item, ApiEndPoint enpoint, string subpath = null)
@@ -67,6 +70,24 @@ namespace MGDataAccessLibrary.DataAccess
             }
         }
 
+        internal static async Task<string> Get(string url)
+        {
+            try
+            {
+                CacheControlHeaderValue cacheControl = new CacheControlHeaderValue();
+                cacheControl.NoCache = true;
+                cacheControl.MustRevalidate = true;
+                WebClient.DefaultRequestHeaders.CacheControl = cacheControl;
+                var result = await WebClient.GetStringAsync(url);
+                // WebClient.DefaultRequestHeaders.CacheControl.NoCache = false;
+                return result;
+            }
+            catch (Exception)
+            {
+                return string.Empty;
+            }
+        }
+
         internal static async Task<T2> PostForm<T1, T2>(T1 item, ApiEndPoint enpoint, string subpath = null)
         {
             var myContent = new FormUrlEncodedContent(item.ToKeyValue());
@@ -87,12 +108,5 @@ namespace MGDataAccessLibrary.DataAccess
                 }
             }
         }
-
-
     }
-
-
-
-
-
 }

@@ -19,9 +19,10 @@ namespace ManageGo.Services
 #endif
         internal static readonly HttpClient client = new HttpClient();
         private static string AccessToken { get; set; }
-        private const string GoogleAppId = "4975375084449837166";
-        private const string AppleAppId = "";
+
         private static DateTimeOffset TokenExpiry { get; set; } = DateTimeOffset.FromUnixTimeSeconds(0);
+
+
 
         public static async Task Login(string userName = null, string password = null)
         {
@@ -44,7 +45,7 @@ namespace ManageGo.Services
             TokenExpiry = DateTimeOffset.Now.AddHours(1);
             //subcribe to push notification
             var platform = Device.RuntimePlatform.ToLower();
-            DependencyService.Get<IGoogleCloudMessagingHelper>().SubscribeToTopic($"{result.UserInfo.UserID}.{platform}");
+            DependencyService.Get<IGoogleCloudMessagingHelper>().SubscribeToTopic($"{result.UserInfo.UserID}");
             var perm = result.Permissions;
             //reset the permissions on log in
             App.UserPermissions = UserPermissions.None;
@@ -302,7 +303,6 @@ namespace ManageGo.Services
                 Content = content
             };
             var response = await client.SendAsync(msg);
-
             return await GetTicketsFromResponse(response);
         }
 

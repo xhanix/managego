@@ -83,7 +83,7 @@ namespace ManageGo
         [AlsoNotifyFor("RefundedPaymentsCheckBoxImage", "SelectedStatusFlagsString")]
         public bool SelectedRefundedPaymentsFilter { get; private set; }
 
-        public Tuple<int?, int?> SelectedAmountRange { get; set; }
+        public Tuple<int?, int?> SelectedAmountRange { get; set; } = new Tuple<int?, int?>(0, 5000);
 
         [AlsoNotifyFor("FilterAmountString")]
         private Tuple<int?, int?> FilteredAmountRange { get; set; }
@@ -255,7 +255,7 @@ namespace ManageGo
                     var markedItem = FetchedPayments.ElementAt((int)index);
                     LastLoadedItemId = markedItem.PaymentId;
                 }
-
+                ((PaymentsPage)CurrentPage).DataLoaded();
             }
             catch (Exception ex)
             {
@@ -340,6 +340,8 @@ namespace ManageGo
                     {
                         SelectedDateRange = new DateRange(FilterDueDate.StartDate, FilterDueDate.EndDate);
                         PopContentView = new Views.PaymentFilterView(this).Content;
+                        if (FetchedPayments.Any())
+                            ((PaymentsPage)CurrentPage).ScrollToFirst(FetchedPayments.First());
                         // ListIsEnabled = false;
                     }
                     FilterSelectViewIsShown = !FilterSelectViewIsShown;

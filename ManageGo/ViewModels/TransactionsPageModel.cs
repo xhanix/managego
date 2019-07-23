@@ -177,6 +177,7 @@ namespace ManageGo
                         LastLoadedItemId = markedItem.Id;
                     }
                 }
+                ((TransactionsPage)CurrentPage).DataLoaded();
             }
             catch (Exception ex)
             {
