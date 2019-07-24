@@ -102,6 +102,7 @@ namespace ManageGo
         {
             async void action()
             {
+
                 HiddenEmail = await SecureStorage.GetAsync("UserName");
                 HiddenPassword = await SecureStorage.GetAsync("Password");
                 await FinishLogin(isBiometricLogin: true, useHiddenField: true);
@@ -256,6 +257,7 @@ namespace ManageGo
                 return new FreshAwaitCommand((tcs) =>
                 {
                     IsBiometricsEnabled = !IsBiometricsEnabled;
+                    Preferences.Set("IsBiometricAuthEnabled", IsBiometricsEnabled);
                     tcs?.SetResult(true);
                 });
             }

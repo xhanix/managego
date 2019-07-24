@@ -45,7 +45,6 @@ namespace ManageGo
                 _biometricLoginIsOn = value;
                 Preferences.Set("IsBiometricAuthEnabled", value);
             }
-
         }
 
         public bool PaymentNotificationsIsOn

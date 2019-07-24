@@ -20,7 +20,7 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>MinimumOSVersion</key>
-	<string>11.0</string>
+	<string>11.4</string>
 	<key>CFBundleDisplayName</key>
 	<string>ManageGo</string>
 	<key>CFBundleIdentifier</key>
@@ -61,7 +61,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>1.0.0</string>
 	<key>CFBundleVersion</key>
-	<string>1.0</string>
+	<string>1.2</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>ManageGo needs access to location to function.</string>
 	<key>NSLocationWhenInUseUsageDescription </key>

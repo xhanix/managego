@@ -15,14 +15,14 @@ namespace MGDataAccessLibrary.BussinessLogic
             password = "111111";
 #endif
             var request = new Models.LoginRequest { Login = userName, Password = password };
-            var res = await DataAccess.WebAPI.PostForm<Models.LoginRequest, Models.BaseApiResponse<Models.LoginResponse>>(request, DataAccess.ApiEndPoint.authorize, null);
-            DataAccess.WebAPI.SetAuthToken(res.Result.UserInfo.AccessToken);
-            return res.Result;
+            var res = await DataAccess.WebAPI.PostForm<Models.LoginRequest, Models.LoginResponse>(request, DataAccess.ApiEndPoint.authorize, null);
+            DataAccess.WebAPI.SetAuthToken(res.UserInfo.AccessToken);
+            return res;
         }
 
         public static async Task UpdateUser(SignedInUserInfo userDetails)
         {
-            var res = await DataAccess.WebAPI.PostForm<Models.SignedInUserInfo, Models.BaseApiResponse<string>>(userDetails, DataAccess.ApiEndPoint.UserSettings, null);
+            var res = await DataAccess.WebAPI.PostForm<Models.SignedInUserInfo, string>(userDetails, DataAccess.ApiEndPoint.UserSettings, null);
         }
     }
 }
