@@ -376,15 +376,20 @@
                                                              VerticalOptions="Start"
                                                              HorizontalOptions="FillAndExpand"
                                                              BackgroundColor="{StaticResource Key=Grey-Light-2}" />
-                                                    <StackLayout Orientation="Horizontal"
-                                                                 IsVisible="{Binding PaymentNote,Converter={StaticResource StringToBoolConverter}}">
-                                                        <Label Text="Payment note: "
+                                                    <Grid IsVisible="{Binding PaymentNote,Converter={StaticResource StringToBoolConverter}}">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto" />
+                                                            <ColumnDefinition Width="*" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <Label Text="Payment note:"
+                                                               Grid.Column="0"
                                                                TextColor="{StaticResource Grey-Light-1}"
                                                                FontSize="Small" />
                                                         <Label Text="{Binding PaymentNote}"
+                                                               Grid.Column="1"
                                                                FontSize="Small"
                                                                TextColor="{StaticResource Grey-Mid-1}" />
-                                                    </StackLayout>
+                                                    </Grid>
                                                 </StackLayout>
                                             </StackLayout>
                                         </Grid>

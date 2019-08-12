@@ -19,6 +19,8 @@ namespace ManageGo
             ReplyBox.HeightRequest = ReplyBoxHeigh;
         }
 
+
+
         protected override void OnSizeAllocated(double width, double height)
         {
             base.OnSizeAllocated(width, height);
@@ -26,6 +28,8 @@ namespace ManageGo
             PageWidth = width * 0.7;
             PermittedEditorWidth = PageWidth + 20;
         }
+
+
 
         protected override bool OnBackButtonPressed()
         {

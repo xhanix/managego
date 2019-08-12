@@ -22,7 +22,6 @@ namespace ManageGo
         public TicketRequestItem ParameterItem { get; set; }
         public ObservableCollection<MaintenanceTicket> FetchedTickets { get; set; }
         public List<Building> Buildings { get; private set; }
-
         [AlsoNotifyFor("SelectedCategoriesString")]
         public List<Categories> Categories { get; private set; }
         [AlsoNotifyFor("SelectedTagsString")]
@@ -644,7 +643,7 @@ namespace ManageGo
                         else if (SelectedClosedTicketsFilter)
                             ParameterItem.Status = TicketStatus.Closed;
                         else
-                            ParameterItem.Status = TicketStatus.All;
+                            ParameterItem.Status = TicketStatus.Open;
                         if (IsLowPriorityFilterSelected || IsMediumPriorityFilterSelected || IsHighPriorityFilterSelected)
                         {
                             List<TicketPriorities> priorities = new List<TicketPriorities>();
@@ -658,7 +657,8 @@ namespace ManageGo
                         }
                         if (Users != null && Users.Any(t => t.IsSelected))
                             ParameterItem.Assigned = Users.Where(t => t.IsSelected).Select(t => t.UserID).ToList();
-
+                        if (Categories != null && Categories.Any(t => t.IsSelected))
+                            ParameterItem.Categories = Categories.Where(t => t.IsSelected).Select(t => t.CategoryID).ToList();
                         ParameterItem.DateFrom = this.DateRange.StartDate;
                         if (this.DateRange.EndDate.HasValue)
                             ParameterItem.DateTo = this.DateRange.EndDate.Value;
@@ -668,7 +668,7 @@ namespace ManageGo
                             ParameterItem.DateTo = FilterDueDate.EndDate ?? FilterDueDate.StartDate;
                         }
                     }
-                    NumberOfAppliedFilters = $"{ParameterItem.NumberOfAppliedFilters}";
+                    NumberOfAppliedFilters = ParameterItem.NumberOfAppliedFilters == 0 ? "" : $"{ParameterItem.NumberOfAppliedFilters}";
                     NothingFetched = false;
                     HasLoaded = false;
                     FetchedTickets = new ObservableCollection<MaintenanceTicket>();
@@ -880,6 +880,7 @@ namespace ManageGo
         protected override void ViewIsDisappearing(object sender, EventArgs e)
         {
             base.ViewIsDisappearing(sender, e);
+            App.MasterDetailNav.IsGestureEnabled = true;
             if (!ShowingTicketDetails)
             {
                 FilterDueDate = null;
@@ -922,6 +923,7 @@ namespace ManageGo
                     b.IsSelected = true;
                 }
                 BackbuttonIsVisible = true;
+                App.MasterDetailNav.IsGestureEnabled = false;
             }
             async void p(object sender, MaintenanceTicket e)
             {

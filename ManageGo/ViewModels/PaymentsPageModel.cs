@@ -750,7 +750,7 @@ namespace ManageGo
                             {
                                 await CoreMethods.DisplayAlert("ManageGo", "Select one building first.", "DIMISS");
                             }
-                            else if (!Units.Any())
+                            else if (Units is null || !Units.Any())
                             {
                                 await CoreMethods.DisplayAlert("ManageGo", "No units in building.", "DIMISS");
                             }

@@ -6,7 +6,7 @@ namespace CustomCalendar
 {
     public delegate void CurrentMonthYearHandler(DateTime date);
     public delegate void DateRangeHandler(DateRange dates);
-
+    [Serializable]
     public class DateRange
     {
         List<DateTime> _dates;

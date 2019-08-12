@@ -73,7 +73,7 @@ namespace ManageGo
                     }
                     try
                     {
-                        await Services.DataAccess.ApproveItem(item);
+                        await MGDataAccessLibrary.BussinessLogic.NotificatinsProcessor.RespondToNotification(item.LeaseID, true);
                         FetchedNotifications.Remove(item);
                     }
                     catch (Exception ex)

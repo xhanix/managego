@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using CustomCalendar;
 using Newtonsoft.Json;
 
 namespace ManageGo.Models
@@ -17,7 +19,8 @@ namespace ManageGo.Models
         public string Search { get; set; }
         public DateTime? DateFrom { get; set; }
         public DateTime? DateTo { get; set; }
-
+        [JsonIgnore, IgnoreDataMember]
+        DateRange DefaultDateRange => new DateRange(DateTime.Today, DateTime.Today.AddDays(-30));
 
         [JsonIgnore]
         public int NumberOfAppliedFilters
@@ -25,21 +28,22 @@ namespace ManageGo.Models
             get
             {
                 var n = 0;
-                if (BankAccounts != null)
+                if (BankAccounts != null && BankAccounts.Count > 0)
                     n++;
-                if (DateFrom != null)
+                if ((DateFrom != null && DateFrom.Value.Date != DefaultStartDate.Date) || (DateTo != null && DateTo.Value.Date != DefaultToDate.Date))
                     n++;
-                if (DateTo != null)
-                    n++;
-                if (AmountFrom != null)
-                    n++;
-                if (AmountTo != null)
+                if ((AmountFrom != null && AmountFrom > 0) || (AmountTo != null && AmountTo < 5000))
                     n++;
                 if (!string.IsNullOrWhiteSpace(Search))
-                    n++;
+                    n = 1;
                 return n;
             }
         }
+        [JsonIgnore, IgnoreDataMember]
+        public DateTime DefaultStartDate => DefaultDateRange.StartDate;
+
+        [JsonIgnore, IgnoreDataMember]
+        public DateTime DefaultToDate => DefaultDateRange.EndDate.Value;
 
         public TransactionsRequestItem Clone()
         {

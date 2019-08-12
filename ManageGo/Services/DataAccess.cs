@@ -75,8 +75,9 @@ namespace ManageGo.Services
                 { "PMCUserEmailAddress", userName }
             };
             var content = new FormUrlEncodedContent(credentials);
-            var response = await client.PostAsync(BaseUrl + APIpaths.authorize.ToString(), content);
-            var responseString = await response.Content.ReadAsStringAsync();
+            var response = await client.PostAsync(BaseUrl + APIpaths.ResetPassword.ToString(), content);
+            if (!response.IsSuccessStatusCode)
+                throw new Exception("Unable to send request. Please try again later.");
         }
 
         #region MAINTENANCE OBJECT - CATEGORIES
@@ -134,22 +135,7 @@ namespace ManageGo.Services
             }
             throw new Exception("Unable to get notifications");
         }
-        public static async Task ApproveItem(PendingApprovalItem item)
-        {
-            var param = new Dictionary<string, object> {
-                { "LeaseID", item.LeaseID },
-                { "Action", true}
-            };
-            var jsonString = JsonConvert.SerializeObject(param);
-            var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
-            var response = await client.PostAsync(BaseUrl + APIpaths.PendingApprovalAction.ToString(), content);
-            var responseString = await response.Content.ReadAsStringAsync();
-            var dic = JObject.Parse(responseString);
-            if (((string)dic["Result"]).ToLower() != "success")
-            {
-                throw new Exception((string)dic["ErrorMessage"]);
-            }
-        }
+
         #endregion
 
 
@@ -357,21 +343,7 @@ namespace ManageGo.Services
             return responseObject.TryGetValue("Result", out JToken result) ? (int)result["CommentID"] : 0;
         }
 
-        public static async Task<int> SendNewEventAsync(Dictionary<string, object> parameters)
-        {
-            if (TokenExpiry < DateTimeOffset.Now)
-                await Login();
-            var jsonString = JsonConvert.SerializeObject(parameters);
-            var content = new StringContent(jsonString, Encoding.UTF8, "application/json");//new FormUrlEncodedContent(filters);
-            var msg = new HttpRequestMessage(HttpMethod.Post, BaseUrl + APIpaths.CreateEvent.ToString())
-            {
-                Content = content
-            };
-            var response = await client.SendAsync(msg);
-            var responseString = await response.Content.ReadAsStringAsync();
-            JObject responseObject = JObject.Parse(responseString);
-            return responseObject.TryGetValue("Result", out JToken result) ? (int)result["EventID"] : 0;
-        }
+
 
         public static async Task<int> SendNewWorkOurderAsync(Dictionary<string, object> parameters)
         {

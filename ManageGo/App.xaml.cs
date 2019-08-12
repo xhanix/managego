@@ -117,7 +117,6 @@ namespace ManageGo
             Tags = new List<Tags>();
             Users = new List<User>();
             Categories = new List<Categories>();
-
             var page = FreshPageModelResolver.ResolvePageModel<LoginPageModel>();
             var navContainer = new FreshNavigationContainer(page);
             MainPage = navContainer;

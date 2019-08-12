@@ -116,7 +116,7 @@ namespace ManageGo
             {
                 async void execute(TaskCompletionSource<bool> tcs)
                 {
-                    await CoreMethods.PopPageModel(modal: CurrentPage.Navigation.ModalStack.Contains(CurrentPage), animate: false);
+                    await CoreMethods.PopPageModel(modal: CurrentPage.Navigation.ModalStack.Contains(CurrentPage), animate: true);
                     tcs?.SetResult(true);
                 }
                 return new FreshAwaitCommand(execute);
@@ -321,9 +321,16 @@ namespace ManageGo
             }
         }
 
+        protected override void ViewIsAppearing(object sender, EventArgs e)
+        {
+            base.ViewIsAppearing(sender, e);
+            App.MasterDetailNav.IsGestureEnabled = false;
+        }
+
         protected override void ViewIsDisappearing(object sender, EventArgs e)
         {
             base.ViewIsDisappearing(sender, e);
+            App.MasterDetailNav.IsGestureEnabled = true;
             if (Buildings != null)
             {
                 foreach (Building building in Buildings.Where(t => t.IsSelected))

@@ -264,10 +264,11 @@
                                             <StackLayout Orientation="Horizontal"
                                                          Margin="0">
                                                 <Image Source="profile_grey.png"
-                                                       VerticalOptions="CenterAndExpand"
+                                                       VerticalOptions="Start"
+                                                       Margin="0,2,0,0"
                                                        HorizontalOptions="Start" />
                                                 <Label Text="{Binding TenantDetails}"
-                                                       LineBreakMode="MiddleTruncation"
+                                                       LineBreakMode="WordWrap"
                                                        VerticalTextAlignment="Center"
                                                        VerticalOptions="CenterAndExpand"
                                                        FontSize="Small"

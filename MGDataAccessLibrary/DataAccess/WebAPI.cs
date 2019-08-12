@@ -38,8 +38,10 @@ namespace MGDataAccessLibrary.DataAccess
                 }
                 else
                 {
-                    var result = await response.Content.ReadAsObjectAsync<T2>();
-                    return result;
+                    var result = await response.Content.ReadAsObjectAsync<Models.BaseApiResponse<T2>>();
+                    if (result.Status == Models.ResponseStatus.Error)
+                        throw new Exception(result.ErrorMessage);
+                    return result.Result;
                 }
             }
         }

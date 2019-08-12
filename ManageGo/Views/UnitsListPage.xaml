@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core"
              ios:Page.UseSafeArea="true"
+             xmlns:controls="clr-namespace:ManageGo.Controls"
              x:Name="ThisPage"
              x:Class="ManageGo.UnitsListPage">
     <RelativeLayout>
@@ -58,13 +59,15 @@
             </StackLayout>
             <StackLayout BackgroundColor="{StaticResource Grey-Light-2}"
                          Grid.Row="2">
-                <ListView ItemsSource="{Binding Units}"
-                          SelectionMode="None"
-                          HasUnevenRows="true"
-                          BackgroundColor="White"
-                          SeparatorVisibility="None"
-                          Margin="22,18,22,18"
-                          CachingStrategy="RecycleElement">
+                <controls:NestedListView ItemsSource="{Binding Units}"
+                                         SelectionMode="None"
+                                         HasUnevenRows="true"
+                                         BackgroundColor="White"
+                                         SeparatorVisibility="None"
+                                         Margin="22,18,22,18">
+                    <x:Arguments>
+                        <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
+                    </x:Arguments>
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
@@ -111,7 +114,8 @@
                             </ViewCell>
                         </DataTemplate>
                     </ListView.ItemTemplate>
-                </ListView>
+                </controls:NestedListView>
+
             </StackLayout>
             <Frame IsVisible="{Binding IsLoading}"
                    Grid.Row="2"

@@ -742,16 +742,18 @@ namespace ManageGo
                         return;
                     }
 
-                    var dic = new Dictionary<string, object> {
-                        {"TicketID", TicketId},
-                        {"Note", EventSummary},
-                        {"Title", EventSummary},
-                        {"EventDate", SelectedEventDate},
-                        {"TimeFrom", _timeFrom.ToString("HHmm")},
-                        {"TimeTo", _timeTo.ToString("HHmm")},
-                        {"SendToUsers", Users.Where(t=>t.IsSelected).Select(t=>t.UserID)},
-                        {"SendToExternalContacts", ExternalContacts.Where(t=>t.IsSelected).Select(t=>t.ExternalID) },
-                                                                                                 };
+                    var newEvent = new MGDataAccessLibrary.Models.EventCreateItem
+                    {
+                        TicketID = TicketId,
+                        Note = EventSummary,
+                        Title = EventSummary,
+                        EventDate = SelectedEventDate,
+                        TimeFrom = _timeFrom.ToString("HHmm"),
+                        TimeTo = _timeTo.ToString("HHmm"),
+                        SendToUsers = Users.Where(t => t.IsSelected).Select(t => t.UserID),
+                        SendToExternalContacts = ExternalContacts.Where(t => t.IsSelected).Select(t => t.ExternalID)
+                    };
+
                     WorkOrderActionSheetIsVisible = false;
                     EventActionSheetIsVisible = false;
                     SendOptionsPupupIsVisible = false;
@@ -768,7 +770,7 @@ namespace ManageGo
                     RaisePropertyChanged("Comments");
                     try
                     {
-                        await Services.DataAccess.SendNewEventAsync(dic);
+                        await MGDataAccessLibrary.BussinessLogic.TicketsProcessor.CreateEvent(newEvent);
                         foreach (var user in Users.Where(t => t.IsSelected))
                         {
                             if (AssignedUserIds.Contains(user.UserID))
@@ -942,6 +944,7 @@ namespace ManageGo
         protected override void ViewIsAppearing(object sender, EventArgs e)
         {
             base.ViewIsAppearing(sender, e);
+            App.MasterDetailNav.IsGestureEnabled = false;
             if (Data is null)
                 return;
             if (Data.TryGetValue("TicketNumber", out object ticketNumber))
@@ -1199,6 +1202,13 @@ namespace ManageGo
                 }
                 return new FreshAwaitCommand(execute);
             }
+        }
+
+        protected override void ViewIsDisappearing(object sender, EventArgs e)
+        {
+            App.MasterDetailNav.IsGestureEnabled = true;
+            base.ViewIsDisappearing(sender, e);
+
         }
 
         void ClearCategorySelections()

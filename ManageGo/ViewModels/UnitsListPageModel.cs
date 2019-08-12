@@ -23,13 +23,25 @@ namespace ManageGo
             BackbuttonIsVisible = true;
         }
 
+        protected override void ViewIsAppearing(object sender, EventArgs e)
+        {
+            base.ViewIsAppearing(sender, e);
+            App.MasterDetailNav.IsGestureEnabled = false;
+        }
+
+        protected override void ViewIsDisappearing(object sender, EventArgs e)
+        {
+            base.ViewIsDisappearing(sender, e);
+            App.MasterDetailNav.IsGestureEnabled = true;
+        }
+
         public FreshAwaitCommand OnBackbuttonTapped
         {
             get
             {
                 async void execute(TaskCompletionSource<bool> tcs)
                 {
-                    await CoreMethods.PopPageModel(modal: CurrentPage.Navigation.ModalStack.Contains(CurrentPage), animate: false);
+                    await CoreMethods.PopPageModel(modal: CurrentPage.Navigation.ModalStack.Contains(CurrentPage), animate: true);
                     tcs?.SetResult(true);
                 }
                 return new FreshAwaitCommand(execute);
