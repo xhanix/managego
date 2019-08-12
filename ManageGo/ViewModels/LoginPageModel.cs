@@ -17,7 +17,6 @@ namespace ManageGo
         public bool ResetPasswordViewIsVisible { get; private set; }
         public string BioLoginButtonText { get; private set; }
         public bool IsLoggingIn { get; private set; }
-
         internal event EventHandler<bool> OnSuccessfulLogin;
         public string AuthString { get; private set; }
         [AlsoNotifyFor("LoginButtonBgColor")]
@@ -36,6 +35,14 @@ namespace ManageGo
         }
         [AlsoNotifyFor("AuthCheckBoxIcon")]
         public bool IsBiometricsEnabled { get; private set; }
+
+        public override void Init(object initData)
+        {
+            base.Init(initData);
+            if (initData is bool userLoggedOut)
+                UserLoggedOut = true;
+        }
+
         protected override async void ViewIsAppearing(object sender, EventArgs e)
         {
             base.ViewIsAppearing(sender, e);
@@ -93,9 +100,9 @@ namespace ManageGo
                         Device.BeginInvokeOnMainThread(action);
                     }
                 }
-                DependencyService.Get<ILocalAuthHelper>().Authenticate(userName, OnBiometricAuthSuccess, onFailure);
+                if (!UserLoggedOut)
+                    DependencyService.Get<ILocalAuthHelper>().Authenticate(userName, OnBiometricAuthSuccess, onFailure);
             }
-
         }
 
         private void OnBiometricAuthSuccess()
@@ -143,6 +150,19 @@ namespace ManageGo
                 }
                 return new FreshAwaitCommand(execute,
                         () => !string.IsNullOrWhiteSpace(UserEmail) && !string.IsNullOrWhiteSpace(UserPassword));
+            }
+        }
+
+        public FreshAwaitCommand OnContactUsButtonTapped
+        {
+            get
+            {
+
+                return new FreshAwaitCommand((tcs) =>
+                {
+                    Device.OpenUri(new Uri($"mailto:sales@managego.com"));
+                    tcs?.SetResult(true);
+                });
             }
         }
 
@@ -263,6 +283,6 @@ namespace ManageGo
             }
         }
 
-
+        public bool UserLoggedOut { get; private set; }
     }
 }

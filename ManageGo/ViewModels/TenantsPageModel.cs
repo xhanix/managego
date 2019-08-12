@@ -9,6 +9,7 @@ using Xamarin.Essentials;
 using PropertyChanged;
 using System.Collections.ObjectModel;
 using Microsoft.AppCenter.Crashes;
+using Microsoft.AppCenter.Analytics;
 
 namespace ManageGo
 {
@@ -390,6 +391,7 @@ namespace ManageGo
                     }
                     else
                     {
+                        Analytics.TrackEvent("Tapped on Tenant Phone Number");
                         Device.OpenUri(new Uri($"tel:{contactMethod}"));
                     }
                     tcs?.SetResult(true);
@@ -435,7 +437,7 @@ namespace ManageGo
                         case "Units":
                             if (Buildings is null || !Buildings.Any(t => t.IsSelected))
                             {
-                                await CoreMethods.DisplayAlert("ManageGo", "Select a building first", "DIMISS");
+                                await CoreMethods.DisplayAlert("ManageGo", "Select a building first", "Dismiss");
                             }
                             else
                             {

@@ -365,7 +365,7 @@
                          BackgroundColor="Silver"
                          HorizontalOptions="FillAndExpand" />
                 <!-- Due Date -->
-                <Grid Padding="0,17">
+                <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="3*" />
@@ -375,11 +375,19 @@
                         <RowDefinition Height="auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
-                    <Label Grid.Column="0"
-                           Grid.Row="0"
-                           Text="Due date"
-                           TextColor="{Binding FilterDueDateString,Converter={StaticResource FilterFieldStringToColor}}"
-                           FontSize="Small" />
+                    <StackLayout Padding="0,17"
+                                 Grid.Column="0"
+                                 Grid.Row="0">
+                        <Label
+                            Text="Due date"
+                            TextColor="{Binding FilterDueDateString,Converter={StaticResource FilterFieldStringToColor}}"
+                            FontSize="Small" />
+                        <StackLayout.GestureRecognizers>
+                            <TapGestureRecognizer NumberOfTapsRequired="1"
+                                                  Command="{Binding OnExpandFilterTapped}"
+                                                  CommandParameter="DueDates" />
+                        </StackLayout.GestureRecognizers>
+                    </StackLayout>
                     <Grid IsVisible="{Binding FilterDueDateExpanded}"
                           Grid.Column="0"
                           Grid.Row="1"
@@ -394,28 +402,36 @@
                                                HeightRequest="245"
                                                AllowMultipleSelection="true" />
                     </Grid>
-                    <Label Grid.Row="0"
-                           Grid.Column="1"
-                           Text="{Binding FilterDueDateString}"
-                           LineBreakMode="TailTruncation"
-                           TextColor="Gray"
-                           FontSize="Small">
-                        <Label.GestureRecognizers>
+                    <StackLayout Padding="0,17"
+                                 Grid.Row="0"
+                                 Grid.Column="1">
+                        <Label
+                            Text="{Binding FilterDueDateString}"
+                            LineBreakMode="TailTruncation"
+                            TextColor="Gray"
+                            FontSize="Small">
+
+                        </Label>
+                        <StackLayout.GestureRecognizers>
                             <TapGestureRecognizer NumberOfTapsRequired="1"
                                                   Command="{Binding OnExpandFilterTapped}"
                                                   CommandParameter="DueDates" />
-                        </Label.GestureRecognizers>
-                    </Label>
-                    <Image Grid.Column="2"
-                           Grid.Row="0"
-                           VerticalOptions="StartAndExpand"
-                           HorizontalOptions="EndAndExpand"
-                           Source="chevron_right.png" />
-                    <Grid.GestureRecognizers>
-                        <TapGestureRecognizer NumberOfTapsRequired="1"
-                                              Command="{Binding OnExpandFilterTapped}"
-                                              CommandParameter="DueDates" />
-                    </Grid.GestureRecognizers>
+                        </StackLayout.GestureRecognizers>
+                    </StackLayout>
+                    <StackLayout Padding="0,17"
+                                 Grid.Column="2"
+                                 Grid.Row="0">
+                        <Image
+                            VerticalOptions="StartAndExpand"
+                            HorizontalOptions="EndAndExpand"
+                            Source="chevron_right.png" />
+                        <StackLayout.GestureRecognizers>
+                            <TapGestureRecognizer NumberOfTapsRequired="1"
+                                                  Command="{Binding OnExpandFilterTapped}"
+                                                  CommandParameter="DueDates" />
+                        </StackLayout.GestureRecognizers>
+                    </StackLayout>
+
                 </Grid>
 
                 <BoxView HeightRequest="1"

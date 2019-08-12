@@ -112,6 +112,9 @@
                                HorizontalOptions="CenterAndExpand"
                                TextColor="{x:StaticResource Primary}"
                                FontSize="Small" />
+                        <StackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding OnContactUsButtonTapped}" />
+                        </StackLayout.GestureRecognizers>
                     </StackLayout>
                 </StackLayout>
             </ScrollView>

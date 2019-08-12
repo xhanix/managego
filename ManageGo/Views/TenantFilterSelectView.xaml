@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:ManageGo"
              xmlns:controls="clr-namespace:ManageGo.Controls"
@@ -8,35 +8,60 @@
     <ContentView.Resources>
         <local:FilterFieldStringToColor x:Key="FilterFieldStringToColor" />
     </ContentView.Resources>
-     <ScrollView>
+    <ScrollView>
         <StackLayout Spacing="0">
-            <StackLayout Padding="21,17,21,17" Spacing="0">
-                <StackLayout Orientation="Horizontal" Padding="0,6">
+            <StackLayout Padding="21,17,21,17"
+                         Spacing="0">
+                <StackLayout Orientation="Horizontal"
+                             Padding="0,6">
                     <Image Source="search_grey" />
-                    <local:CustomEntry Placeholder="Search tenant name..." Text="{Binding FilterKeywords}" FontSize="Small"  HorizontalOptions="FillAndExpand" />
+                    <local:CustomEntry Placeholder="Search tenant name..."
+                                       Text="{Binding FilterKeywords}"
+                                       FontSize="Small"
+                                       HorizontalOptions="FillAndExpand" />
                 </StackLayout>
-                <BoxView HeightRequest="1" BackgroundColor="Silver" HorizontalOptions="FillAndExpand" />
+                <BoxView HeightRequest="1"
+                         BackgroundColor="Silver"
+                         HorizontalOptions="FillAndExpand" />
                 <Grid Padding="0,17">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="3*" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" Text="Building" TextColor="{Binding SelectedBuildingsString,Converter={StaticResource FilterFieldStringToColor}}" FontSize="Small" />
+                    <Label Grid.Column="0"
+                           Text="Building"
+                           TextColor="{Binding SelectedBuildingsString,Converter={StaticResource FilterFieldStringToColor}}"
+                           FontSize="Small" />
                     <StackLayout Grid.Column="1">
-                        <Label Text="{Binding SelectedBuildingsString}" LineBreakMode="TailTruncation" TextColor="Gray" FontSize="Small"/>
-                        <controls:NestedListView IsVisible="{Binding FilterBuildingsExpanded}" ItemsSource="{Binding Buildings}" Margin="0,8,0,0" HasUnevenRows="true" SeparatorVisibility="None"  HeightRequest="150" SelectionMode="None">
+                        <Label Text="{Binding SelectedBuildingsString}"
+                               LineBreakMode="TailTruncation"
+                               TextColor="Gray"
+                               FontSize="Small" />
+                        <controls:NestedListView IsVisible="{Binding FilterBuildingsExpanded}"
+                                                 ItemsSource="{Binding Buildings}"
+                                                 Margin="0,8,0,0"
+                                                 HasUnevenRows="true"
+                                                 SeparatorVisibility="None"
+                                                 HeightRequest="150"
+                                                 SelectionMode="None">
                             <x:Arguments>
                                 <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
                             </x:Arguments>
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <ViewCell>
-                                        <StackLayout Orientation="Horizontal" Margin="0,12,0,0">
+                                        <StackLayout Orientation="Horizontal"
+                                                     Margin="0,12,0,0">
                                             <Image Source="{Binding CheckBoxImage}" />
-                                            <Label Text="{Binding BuildingName}" VerticalOptions="CenterAndExpand" LineBreakMode="TailTruncation" FontSize="Small" />
+                                            <Label Text="{Binding BuildingName}"
+                                                   VerticalOptions="CenterAndExpand"
+                                                   LineBreakMode="TailTruncation"
+                                                   FontSize="Small" />
                                             <StackLayout.GestureRecognizers>
-                                                <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding BindingContext.OnBuildingTapped, Source={x:Reference ThisPage}}" CommandParameter="{Binding .}" />
+                                                <TapGestureRecognizer NumberOfTapsRequired="1"
+                                                                      Command="{Binding BindingContext.OnBuildingTapped, Source={x:Reference ThisPage}}"
+                                                                      CommandParameter="{Binding .}" />
                                             </StackLayout.GestureRecognizers>
                                         </StackLayout>
                                     </ViewCell>
@@ -44,51 +69,19 @@
                             </ListView.ItemTemplate>
                         </controls:NestedListView>
                     </StackLayout>
-                    <Image VerticalOptions="StartAndExpand" Grid.Column="2" HorizontalOptions="EndAndExpand" Source="chevron_right.png" />
+                    <Image VerticalOptions="StartAndExpand"
+                           Grid.Column="2"
+                           HorizontalOptions="EndAndExpand"
+                           Source="chevron_right.png" />
                     <Grid.GestureRecognizers>
-                        <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnExpandFilterTapped}" CommandParameter="Buildings" />
+                        <TapGestureRecognizer NumberOfTapsRequired="1"
+                                              Command="{Binding OnExpandFilterTapped}"
+                                              CommandParameter="Buildings" />
                     </Grid.GestureRecognizers>
                 </Grid>
-                <BoxView HeightRequest="1" BackgroundColor="Silver" HorizontalOptions="FillAndExpand" />
-                
-                <Grid Padding="0,17">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="3*" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" Text="Unit" TextColor="{Binding SelectedUnitString,Converter={StaticResource FilterFieldStringToColor}}" FontSize="Small" />
-                    <StackLayout Grid.Column="1">
-                        <Label Text="{Binding SelectedUnitString}" LineBreakMode="TailTruncation" TextColor="Gray" FontSize="Small">
-                            <Image.GestureRecognizers>
-                                <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnExpandFilterTapped}" CommandParameter="Units" />
-                            </Image.GestureRecognizers>
-                        </Label>
-                        <controls:NestedListView IsVisible="{Binding FilterUnitsExpanded}" ItemsSource="{Binding Units}" Margin="0,8,0,0" HasUnevenRows="true" SeparatorVisibility="None"  HeightRequest="150" SelectionMode="None">
-                            <x:Arguments>
-                                <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
-                            </x:Arguments>
-                            <ListView.ItemTemplate>
-                                <DataTemplate>
-                                    <ViewCell>
-                                        <StackLayout Orientation="Horizontal" VerticalOptions="FillAndExpand" Padding="0,12,0,0">
-                                            <Image Source="{Binding CheckBoxImage}" />
-                                            <Label Text="{Binding UnitName}" VerticalOptions="CenterAndExpand" LineBreakMode="TailTruncation" FontSize="Small" />
-                                            <StackLayout.GestureRecognizers>
-                                                <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding BindingContext.OnUnitTapped, Source={x:Reference ThisPage}}" CommandParameter="{Binding .}" />
-                                            </StackLayout.GestureRecognizers>
-                                        </StackLayout>
-                                    </ViewCell>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </controls:NestedListView>
-                    </StackLayout>
-                    <Image Grid.Column="2" VerticalOptions="StartAndExpand" HorizontalOptions="EndAndExpand" Source="chevron_right.png" />
-                     <Grid.GestureRecognizers>
-                        <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnExpandFilterTapped}" CommandParameter="Units" />
-                    </Grid.GestureRecognizers>
-                </Grid>
-                <BoxView HeightRequest="1" BackgroundColor="Silver" HorizontalOptions="FillAndExpand" />
+                <BoxView HeightRequest="1"
+                         BackgroundColor="Silver"
+                         HorizontalOptions="FillAndExpand" />
 
                 <Grid Padding="0,17">
                     <Grid.ColumnDefinitions>
@@ -96,33 +89,125 @@
                         <ColumnDefinition Width="3*" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" Text="Status" TextColor="{Binding SelectedStatusFlagsString,Converter={StaticResource FilterFieldStringToColor}}" FontSize="Small" >
-                        <Label.GestureRecognizers>
-                            <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnExpandFilterTapped}" CommandParameter="Priority" />
-                        </Label.GestureRecognizers>
-                        </Label>
+                    <Label Grid.Column="0"
+                           Text="Unit"
+                           TextColor="{Binding SelectedUnitString,Converter={StaticResource FilterFieldStringToColor}}"
+                           FontSize="Small" />
                     <StackLayout Grid.Column="1">
-                        <Label Text="{Binding SelectedStatusFlagsString}" LineBreakMode="TailTruncation" TextColor="Gray" FontSize="Small"/>
+                        <Label Text="{Binding SelectedUnitString}"
+                               LineBreakMode="TailTruncation"
+                               TextColor="Gray"
+                               FontSize="Small">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer NumberOfTapsRequired="1"
+                                                      Command="{Binding OnExpandFilterTapped}"
+                                                      CommandParameter="Units" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                        <controls:NestedListView IsVisible="{Binding FilterUnitsExpanded}"
+                                                 ItemsSource="{Binding Units}"
+                                                 Margin="0,8,0,0"
+                                                 HasUnevenRows="true"
+                                                 SeparatorVisibility="None"
+                                                 HeightRequest="150"
+                                                 SelectionMode="None">
+                            <x:Arguments>
+                                <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
+                            </x:Arguments>
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <ViewCell>
+                                        <StackLayout Orientation="Horizontal"
+                                                     VerticalOptions="FillAndExpand"
+                                                     Padding="0,12,0,0">
+                                            <Image Source="{Binding CheckBoxImage}" />
+                                            <Label Text="{Binding UnitName}"
+                                                   VerticalOptions="CenterAndExpand"
+                                                   LineBreakMode="TailTruncation"
+                                                   FontSize="Small" />
+                                            <StackLayout.GestureRecognizers>
+                                                <TapGestureRecognizer NumberOfTapsRequired="1"
+                                                                      Command="{Binding BindingContext.OnUnitTapped, Source={x:Reference ThisPage}}"
+                                                                      CommandParameter="{Binding .}" />
+                                            </StackLayout.GestureRecognizers>
+                                        </StackLayout>
+                                    </ViewCell>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </controls:NestedListView>
+                    </StackLayout>
+                    <Image Grid.Column="2"
+                           VerticalOptions="StartAndExpand"
+                           HorizontalOptions="EndAndExpand"
+                           Source="chevron_right.png" />
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer NumberOfTapsRequired="1"
+                                              Command="{Binding OnExpandFilterTapped}"
+                                              CommandParameter="Units" />
+                    </Grid.GestureRecognizers>
+                </Grid>
+                <BoxView HeightRequest="1"
+                         BackgroundColor="Silver"
+                         HorizontalOptions="FillAndExpand" />
+
+                <Grid Padding="0,17">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="3*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0"
+                           Text="Status"
+                           TextColor="{Binding SelectedStatusFlagsString,Converter={StaticResource FilterFieldStringToColor}}"
+                           FontSize="Small">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer NumberOfTapsRequired="1"
+                                                  Command="{Binding OnExpandFilterTapped}"
+                                                  CommandParameter="Priority" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                    <StackLayout Grid.Column="1">
+                        <Label Text="{Binding SelectedStatusFlagsString}"
+                               LineBreakMode="TailTruncation"
+                               TextColor="Gray"
+                               FontSize="Small" />
                         <StackLayout IsVisible="{Binding FilterStatusExpanded}">
-                            <StackLayout Orientation="Horizontal" Margin="0,12,0,0">
+                            <StackLayout Orientation="Horizontal"
+                                         Margin="0,12,0,0">
                                 <Image Source="{Binding ActiveTenantCheckBoxImage}" />
-                                <Label Text="Active" VerticalOptions="CenterAndExpand" LineBreakMode="TailTruncation" FontSize="Small" />
+                                <Label Text="Active"
+                                       VerticalOptions="CenterAndExpand"
+                                       LineBreakMode="TailTruncation"
+                                       FontSize="Small" />
                                 <StackLayout.GestureRecognizers>
-                                    <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding SetFilterStatus}" CommandParameter="Active" />
+                                    <TapGestureRecognizer NumberOfTapsRequired="1"
+                                                          Command="{Binding SetFilterStatus}"
+                                                          CommandParameter="Active" />
                                 </StackLayout.GestureRecognizers>
                             </StackLayout>
-                            <StackLayout Orientation="Horizontal" Margin="0,12,0,0">
+                            <StackLayout Orientation="Horizontal"
+                                         Margin="0,12,0,0">
                                 <Image Source="{Binding InActiveTenantCheckBoxImage}" />
-                                <Label Text="Inactive" VerticalOptions="CenterAndExpand" LineBreakMode="TailTruncation" FontSize="Small" />
+                                <Label Text="Inactive"
+                                       VerticalOptions="CenterAndExpand"
+                                       LineBreakMode="TailTruncation"
+                                       FontSize="Small" />
                                 <StackLayout.GestureRecognizers>
-                                    <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding SetFilterStatus}" CommandParameter="Inactive" />
+                                    <TapGestureRecognizer NumberOfTapsRequired="1"
+                                                          Command="{Binding SetFilterStatus}"
+                                                          CommandParameter="Inactive" />
                                 </StackLayout.GestureRecognizers>
                             </StackLayout>
                         </StackLayout>
                     </StackLayout>
-                    <Image Grid.Column="2" VerticalOptions="StartAndExpand" HorizontalOptions="EndAndExpand" Source="chevron_right.png" />
+                    <Image Grid.Column="2"
+                           VerticalOptions="StartAndExpand"
+                           HorizontalOptions="EndAndExpand"
+                           Source="chevron_right.png" />
                     <Grid.GestureRecognizers>
-                        <TapGestureRecognizer NumberOfTapsRequired="1" Command="{Binding OnExpandFilterTapped}" CommandParameter="Status" />
+                        <TapGestureRecognizer NumberOfTapsRequired="1"
+                                              Command="{Binding OnExpandFilterTapped}"
+                                              CommandParameter="Status" />
                     </Grid.GestureRecognizers>
                 </Grid>
             </StackLayout>

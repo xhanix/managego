@@ -15,7 +15,6 @@ namespace ManageGo
 {
     internal class TransactionsPageModel : BaseDetailPage
     {
-
         int CurrentListPage { get; set; } = 1;
         public View RangePickerView { get; set; }
         public string FilterKeywords { get; set; }
@@ -385,6 +384,7 @@ namespace ManageGo
                         SelectedDateRange = new DateRange(DateRange.StartDate, DateRange.EndDate);
                         CurrentFilter = ParameterItem.Clone();
                         PopContentView = new Views.TransactionsFilterPage(this).Content;
+                        SelectedAmountRange = new Tuple<int?, int?>(0, 5000);
                     }
                     FilterSelectViewIsShown = !FilterSelectViewIsShown;
                     tcs?.SetResult(true);

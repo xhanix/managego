@@ -238,7 +238,7 @@ namespace ManageGo
             }
         }
 
-        internal override Task LoadData(bool refreshData = false, bool applyNewFilter = false)
+        internal override Task LoadData(bool refreshData = false, bool FetchNextPage = false)
         {
             return new Task(() => { });
         }
@@ -247,7 +247,7 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand(async (par, tcs) =>
+                async void execute(object par, TaskCompletionSource<bool> tcs)
                 {
                     var name = (string)par;
                     switch (name)
@@ -269,7 +269,8 @@ namespace ManageGo
                     }
                     tcs?.SetResult(true);
                     await UpdateUserDetails();
-                });
+                }
+                return new FreshAwaitCommand(execute);
             }
         }
 

@@ -96,7 +96,7 @@ namespace ManageGo
             catch (Exception ex)
             {
                 APIhasFailed = true;
-                await CoreMethods.DisplayAlert("Something went wrong!", ex.Message, "DIMISS");
+                await CoreMethods.DisplayAlert("Something went wrong!", ex.Message, "Dismiss");
             }
             finally
             {

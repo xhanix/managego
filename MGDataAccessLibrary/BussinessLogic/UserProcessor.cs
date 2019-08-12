@@ -11,7 +11,7 @@ namespace MGDataAccessLibrary.BussinessLogic
         public static async Task<Models.LoginResponse> Login(string userName, string password)
         {
 #if DEBUG
-            userName = "pmc@mobile.tes";
+            userName = "pmc@mobile.test";
             password = "111111";
 #endif
             var request = new Models.LoginRequest { Login = userName, Password = password };

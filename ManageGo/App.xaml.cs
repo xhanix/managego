@@ -156,7 +156,7 @@ namespace ManageGo
                 var page = FreshPageModelResolver.ResolvePageModel<MasterMenuPageModel>();
                 ((MasterMenuPageModel)page.BindingContext).OnLogout += (_sender, _e) =>
                 {
-                    var __page = FreshPageModelResolver.ResolvePageModel<LoginPageModel>();
+                    var __page = FreshPageModelResolver.ResolvePageModel<LoginPageModel>(true);
                     MainPage = __page;
                     MasterDetailNav = null;
                     MasterDetailContainer = null;

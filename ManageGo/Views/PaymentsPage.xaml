@@ -11,11 +11,12 @@
     <ContentPage.Resources>
         <local:InverseBoolConverter x:Key="InverseBoolConverter" />
         <local:StringToBoolConverter x:Key="StringToBoolConverter" />
+        <local:PaymentStatusOverwrite x:Key="PaymentStatusOverwrite" />
     </ContentPage.Resources>
     <RelativeLayout>
         <Grid RowSpacing="0"
-              RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent,&#xA;                             Property=Height, Factor=1, Constant=0}"
-              RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent,&#xA;                             Property=Width, Factor=1, Constant=0}">
+              RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height, Factor=1, Constant=0}"
+              RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width, Factor=1, Constant=0}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
@@ -365,7 +366,7 @@
                                                                FontSize="Small"
                                                                HorizontalOptions="Start"
                                                                VerticalOptions="Center" />
-                                                        <Label Text="{Binding TransactionStatus}"
+                                                        <Label Text="{Binding TransactionStatus,Converter={StaticResource PaymentStatusOverwrite}}"
                                                                HorizontalTextAlignment="Start"
                                                                FontSize="Small"
                                                                TextColor="{StaticResource Grey-Mid-1}"

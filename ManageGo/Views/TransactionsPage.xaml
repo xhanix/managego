@@ -9,6 +9,7 @@
              x:Class="ManageGo.TransactionsPage">
     <ContentPage.Resources>
         <local:InverseBoolConverter x:Key="InverseBoolConverter" />
+        <local:PaymentStatusOverwrite x:Key="PaymentStatusOverwrite" />
     </ContentPage.Resources>
     <RelativeLayout>
         <Grid RowSpacing="0"
@@ -299,7 +300,7 @@
                                                                            VerticalOptions="Start"
                                                                            FontSize="Small"
                                                                            TextColor="{StaticResource Grey-Mid-1}" />
-                                                                    <Label Text="{Binding TransactionStatus}"
+                                                                    <Label Text="{Binding TransactionStatus,Converter={StaticResource PaymentStatusOverwrite}}"
                                                                            IsVisible="{Binding ShowStatusText}"
                                                                            HorizontalTextAlignment="Start"
                                                                            FontSize="Small"
@@ -313,7 +314,7 @@
                                                                                FontSize="Small"
                                                                                HorizontalOptions="Start"
                                                                                VerticalOptions="Center" />
-                                                                        <Label Text="{Binding TransactionStatus}"
+                                                                        <Label Text="{Binding TransactionStatus,Converter={StaticResource PaymentStatusOverwrite}}"
                                                                                HorizontalTextAlignment="Start"
                                                                                FontSize="Small"
                                                                                TextColor="{StaticResource Grey-Mid-1}"

@@ -17,9 +17,7 @@ namespace MGDataAccessLibrary.DataAccess
 #endif
         static WebAPI()
         {
-
             WebClient = new HttpClient { BaseAddress = new Uri(BaseUrl) };
-
         }
 
         internal static async Task<T2> PostItem<T1, T2>(T1 item, ApiEndPoint enpoint, string subpath = null)

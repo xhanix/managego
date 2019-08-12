@@ -135,18 +135,25 @@
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json">
       <Visible>false</Visible>
     </ImageAsset>
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\icon_40.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\icon_60.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\icon_58.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\icon_87.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\icon_80.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\icon_180.png" />
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\icon_76.png" />
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\icon_152.png" />
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\icon_167.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\app_icon_1024-01.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon40x40%403x.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\AppIcon60x60%402x.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\58.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\87.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\60.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\40.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\80.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\120.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\120-1.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\180.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\40-1.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\58-1.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\40-2.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\80-1.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\1024.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\180-1.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\120-2.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\87-1.png" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

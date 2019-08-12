@@ -748,11 +748,11 @@ namespace ManageGo
                         case "Units":
                             if (Buildings is null || !Buildings.Any(t => t.IsSelected) || Buildings.Count(b => b.IsSelected) > 1)
                             {
-                                await CoreMethods.DisplayAlert("ManageGo", "Select one building first.", "DIMISS");
+                                await CoreMethods.DisplayAlert("ManageGo", "Select one building first.", "Dismiss");
                             }
                             else if (Units is null || !Units.Any())
                             {
-                                await CoreMethods.DisplayAlert("ManageGo", "No units in building.", "DIMISS");
+                                await CoreMethods.DisplayAlert("ManageGo", "No units in building.", "Dismiss");
                             }
                             else
                             {
@@ -766,11 +766,11 @@ namespace ManageGo
                             break;
                         case "Tenants":
                             if (Units is null || !Units.Any(t => t.IsSelected))
-                                await CoreMethods.DisplayAlert("ManageGo", "Select a unit first", "DIMISS");
+                                await CoreMethods.DisplayAlert("ManageGo", "Select a unit first", "Dismiss");
                             else if (Units != null && Units.Count(t => t.IsSelected) > 1)
-                                await CoreMethods.DisplayAlert("ManageGo", "Select one unit to see tenants.", "DIMISS");
+                                await CoreMethods.DisplayAlert("ManageGo", "Select one unit to see tenants.", "Dismiss");
                             else if (Tenants is null || !Tenants.Any())
-                                await CoreMethods.DisplayAlert("ManageGo", "No tenants in unit", "DIMISS");
+                                await CoreMethods.DisplayAlert("ManageGo", "No tenants in unit", "Dismiss");
                             else
                             {
                                 FilterTenantsExpanded = !FilterTenantsExpanded;
