@@ -3,11 +3,12 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using MGDataAccessLibrary.Models;
 using Newtonsoft.Json;
 
 namespace MGDataAccessLibrary.DataAccess
 {
-    internal static class WebAPI
+    public static class WebAPI
     {
         private static HttpClient WebClient { get; set; }
 #if DEBUG
@@ -15,13 +16,23 @@ namespace MGDataAccessLibrary.DataAccess
 #else
         private const string BaseUrl = "https://portal.managego.com/api/pmc_v2/";
 #endif
+        private static DateTimeOffset TokenExpiry { get; set; } = default;
+        private static string UserName { get; set; }
+        private static string Password { get; set; }
+
         static WebAPI()
         {
             WebClient = new HttpClient { BaseAddress = new Uri(BaseUrl) };
         }
 
-        internal static async Task<T2> PostItem<T1, T2>(T1 item, ApiEndPoint enpoint, string subpath = null)
+        public static async Task<T2> PostItem<T1, T2>(T1 item, ApiEndPoint enpoint, string subpath = null)
         {
+            if (TokenExpiry != default && TokenExpiry < DateTimeOffset.Now)
+            {
+                Console.WriteLine("**** Re -logged in ****");
+                TokenExpiry = default;
+                await BussinessLogic.UserProcessor.Login(UserName, password: Password);
+            }
             var myContent = JsonConvert.SerializeObject(item);
             var content = new StringContent(myContent, Encoding.UTF8, "application/json");
             var path = enpoint.ToString();
@@ -36,22 +47,37 @@ namespace MGDataAccessLibrary.DataAccess
                 }
                 else
                 {
-                    var result = await response.Content.ReadAsObjectAsync<Models.BaseApiResponse<T2>>();
-                    if (result.Status == Models.ResponseStatus.Error)
-                        throw new Exception(result.ErrorMessage);
-                    return result.Result;
+                    var result = await response.Content.ReadAsApiResponseForType<T2>(requestBody: myContent);
+                    return result;
                 }
             }
         }
 
-        internal static void SetAuthToken(string accessToken)
+        internal static void SetCredentials(LoginRequest request)
+        {
+            UserName = request.Login;
+            Password = request.Password;
+        }
+
+        public static void SetAuthToken(string accessToken)
         {
             WebClient.DefaultRequestHeaders.Remove("AccessToken");
             WebClient.DefaultRequestHeaders.Add("AccessToken", accessToken);
+#if DEBUG
+            TokenExpiry = DateTimeOffset.Now.AddMinutes(1);
+#else
+            TokenExpiry = DateTimeOffset.Now.AddMinutes(50);
+#endif
         }
 
-        internal static async Task<T> PostRequest<T>(ApiEndPoint enpoint, string subpath = null)
+        public static async Task<T> PostRequest<T>(ApiEndPoint enpoint, string subpath = null)
         {
+            if (TokenExpiry != default && TokenExpiry < DateTimeOffset.Now)
+            {
+                TokenExpiry = default;
+                Console.WriteLine("**** Re -logged in ****");
+                await BussinessLogic.UserProcessor.Login(UserName, password: Password);
+            }
             var path = enpoint.ToString();
             if (!string.IsNullOrWhiteSpace(subpath))
                 path = path + @"/" + subpath;
@@ -64,15 +90,22 @@ namespace MGDataAccessLibrary.DataAccess
                 }
                 else
                 {
-                    var result = await response.Content.ReadAsObjectAsync<Models.BaseApiResponse<T>>();
-                    if (result.Status == Models.ResponseStatus.Error)
-                        throw new Exception(result.ErrorMessage);
-                    return result.Result;
+                    var result = await response.Content.ReadAsApiResponseForType<T>(requestBody: path);
+                    return result;
                 }
             }
         }
 
-        internal static async Task<string> Get(string url)
+        public static async Task<HttpResponseMessage> SendFeedBack(string feedback)
+        {
+
+            var content = new StringContent(feedback
+                , encoding: Encoding.UTF8,
+                mediaType: "application/json");
+            return await WebClient.PostAsync("https://inject.socketlabs.com/api/v1/email", content);
+        }
+
+        public static async Task<string> Get(string url)
         {
             try
             {
@@ -90,8 +123,14 @@ namespace MGDataAccessLibrary.DataAccess
             }
         }
 
-        internal static async Task<T2> PostForm<T1, T2>(T1 item, ApiEndPoint enpoint, string subpath = null)
+        public static async Task<T2> PostForm<T1, T2>(T1 item, ApiEndPoint enpoint, string subpath = null)
         {
+            if (TokenExpiry != default && TokenExpiry < DateTimeOffset.Now)
+            {
+                Console.WriteLine("**** Re -logged in ****");
+                TokenExpiry = default;
+                await BussinessLogic.UserProcessor.Login(UserName, password: Password);
+            }
             var myContent = new FormUrlEncodedContent(item.ToKeyValue());
             var path = enpoint.ToString();
             if (!string.IsNullOrWhiteSpace(subpath))

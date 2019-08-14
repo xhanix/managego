@@ -60,7 +60,7 @@
             </StackLayout>
             <StackLayout BackgroundColor="{StaticResource Grey-Light-2}"
                          Grid.Row="2">
-                <control:NestedListView ItemsSource="{Binding FetchedNotifications}"
+                <control:NestedListView x:Name="MyListView"
                                         SelectionMode="None"
                                         HasUnevenRows="true"
                                         BackgroundColor="Transparent"

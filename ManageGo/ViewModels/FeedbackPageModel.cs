@@ -74,10 +74,7 @@ namespace ManageGo
 
                     try
                     {
-                        var content = new StringContent(stringToSend
-                            , encoding: Encoding.UTF8,
-                            mediaType: "application/json");
-                        var response = await Services.DataAccess.client.PostAsync("https://inject.socketlabs.com/api/v1/email", content);
+                        var response = await MGDataAccessLibrary.DataAccess.WebAPI.SendFeedBack(feedback: stringToSend);
                         var responseString = await response.Content.ReadAsStringAsync();
                         if (response.StatusCode != System.Net.HttpStatusCode.OK)
                         {

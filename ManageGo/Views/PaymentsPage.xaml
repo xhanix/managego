@@ -153,17 +153,17 @@
             </StackLayout>
             <StackLayout BackgroundColor="{StaticResource Grey-Light-2}"
                          Grid.Row="2">
-                <controls:NestedListView ItemsSource="{Binding FetchedPayments}"
-                                         SelectionMode="None"
-                                         HasUnevenRows="true"
-                                         BackgroundColor="Transparent"
-                                         IsPullToRefreshEnabled="true"
-                                         IsRefreshing="{Binding IsRefreshingList}"
-                                         RefreshCommand="{Binding OnPulledToRefresh}"
-                                         SeparatorVisibility="None"
-                                         Margin="22,18,22,18"
-                                         x:Name="PaymentsList"
-                                         ItemAppearing="Handle_ItemAppearing">
+                <controls:CustomListView
+                    SelectionMode="None"
+                    HasUnevenRows="true"
+                    BackgroundColor="Transparent"
+                    IsPullToRefreshEnabled="true"
+                    IsRefreshing="{Binding IsRefreshingList}"
+                    RefreshCommand="{Binding OnPulledToRefresh}"
+                    SeparatorVisibility="None"
+                    Margin="22,18,22,18"
+                    x:Name="PaymentsList"
+                    ItemAppearing="Handle_ItemAppearing">
                     <x:Arguments>
                         <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
                     </x:Arguments>
@@ -405,7 +405,7 @@
                             </ViewCell>
                         </DataTemplate>
                     </ListView.ItemTemplate>
-                </controls:NestedListView>
+                </controls:CustomListView>
             </StackLayout>
             <Frame IsVisible="{Binding IsLoading}"
                    Grid.Row="2"

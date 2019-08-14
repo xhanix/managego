@@ -12,22 +12,19 @@ namespace MGDataAccessLibrary
 {
     public static class Extensions
     {
-        public static async Task<Models.BaseApiResponse<T>> ReadAsApiResponseForType<T>(this HttpContent content, string nodeName = null)
+        public static async Task<T> ReadAsApiResponseForType<T>(this HttpContent content, string requestBody, string nodeName = null)
         {
             var responseString = await content.ReadAsStringAsync();
             if (string.IsNullOrWhiteSpace(responseString))
                 return default;
-            var j = JObject.Parse(responseString);
-            if (j["Status"].ToObject<Models.ResponseStatus>() == Models.ResponseStatus.Error)
+            var j = JsonConvert.DeserializeObject<Models.BaseApiResponse<T>>(responseString);
+            if (j.Status == Models.ResponseStatus.Error)
             {
-                return j.ToObject<Models.BaseApiResponse<T>>();
+                throw new Exception("Server error message: (" + j.ErrorMessage + ") App request: (" + requestBody + ")");
             }
-            var _j = j["Result"].ToObject<T>();
-            return new Models.BaseApiResponse<T>
-            {
-                Result = _j
-            };
+            return j.Result;
         }
+
         public static async Task<T> ReadAsObjectAsync<T>(this HttpContent content, string nodeName = null)
         {
             var responseString = await content.ReadAsStringAsync();

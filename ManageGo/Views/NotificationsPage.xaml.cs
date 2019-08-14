@@ -11,6 +11,7 @@ namespace ManageGo
         {
             InitializeComponent();
             NavigationPage.SetHasNavigationBar(this, false);
+            MyListView.ItemsSource = null;
         }
 
 
@@ -33,6 +34,22 @@ namespace ManageGo
                 var row = p as ViewCell;
                 row.ForceUpdateSize();
             }
+        }
+
+        public void DataLoaded()
+        {
+            if (this.BindingContext != null)
+            {
+                MyListView.ItemsSource = ((NotificationsPageModel)BindingContext).FetchedNotifications;
+            }
+            MyListView.HasUnevenRows = !MyListView.HasUnevenRows;
+            MyListView.HasUnevenRows = !MyListView.HasUnevenRows;
+        }
+
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+            MyListView.ItemsSource = null;
         }
 
     }

@@ -20,6 +20,9 @@ namespace ManageGo
         }
 
 
+
+
+
         void Handle_Tapped(object sender, EventArgs e)
         {
             var name = ((Image)sender).ClassId;

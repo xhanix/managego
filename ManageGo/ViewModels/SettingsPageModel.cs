@@ -9,6 +9,7 @@ using Xamarin.Essentials;
 
 namespace ManageGo
 {
+    [AddINotifyPropertyChangedInterface]
     internal class SettingsPageModel : BaseDetailPage
     {
         private bool _applicationsNotificationsIsOn;
@@ -45,6 +46,12 @@ namespace ManageGo
                 _biometricLoginIsOn = value;
                 Preferences.Set("IsBiometricAuthEnabled", value);
             }
+        }
+
+        protected override void ViewIsAppearing(object sender, EventArgs e)
+        {
+            base.ViewIsAppearing(sender, e);
+
         }
 
         public bool PaymentNotificationsIsOn

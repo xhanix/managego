@@ -11,6 +11,7 @@ using Plugin.FilePicker.Abstractions;
 using Plugin.FilePicker;
 using Plugin.Permissions;
 using System.Text;
+using Microsoft.AppCenter.Crashes;
 
 namespace ManageGo
 {
@@ -66,7 +67,7 @@ namespace ManageGo
         public string DueDate { get; private set; } = String.Empty;
         public List<Categories> Categories { get; private set; }
         public List<Tags> Tags { get; private set; }
-        int TicketStatus { get; set; }
+        TicketStatus TicketStatus { get; set; }
         public double ReplyAttachedFilesListHeight { get { return CurrentReplyAttachments is null || !CurrentReplyAttachments.Any() ? 0 : CurrentReplyAttachments.Count * 28; } }
 
         public string PriorityOptionsRowIcon
@@ -291,7 +292,7 @@ namespace ManageGo
                     var result = await CoreMethods.DisplayActionSheet($"Do you want to close {TicketTitle}?", "Cancel", "Close Ticket");
                     if (result == "Close Ticket")
                     {
-                        TicketStatus = 1;
+                        TicketStatus = TicketStatus.Closed;
                         OnSaveEditsTapped.Execute(null);
                         OnHideDetailsTapped.Execute(null);
                         await CoreMethods.PopPageModel(data: CurrentTicket, modal: false);
@@ -308,31 +309,32 @@ namespace ManageGo
             {
                 async void execute(TaskCompletionSource<bool> tcs)
                 {
-                    PopContentView = null;
-                    ReplyButtonIsVisible = true;
-                    var ticketPriority = 2;
+                    OnHideDetailsTapped.Execute(null);
+                    var ticketPriority = TicketPriorities.Medium;
                     if (PriorityLabelText.ToLower() == "low")
-                        ticketPriority = 0;
-                    else if (PriorityLabelText.ToLower() == "medium")
-                        ticketPriority = 1;
+                        ticketPriority = TicketPriorities.Low;
+                    else if (PriorityLabelText.ToLower() == "high")
+                        ticketPriority = TicketPriorities.High;
+                    var requestItem = new Models.UpdateTicketRequestItem
+                    {
+                        Priority = ticketPriority,
+                        TicketID = TicketId,
+                        Categories = Categories?.Where(t => t.IsSelected).Select(t => t.CategoryID),
+                        Status = TicketStatus,
+                        TenantID = TicketTenant,
+                        UnitID = Unit?.UnitId,
+                        Tags = Tags?.Where(t => t.IsSelected).Select(t => t.TagID),
+                        Assigned = Users?.Where(t => t.IsSelected).Select(t => t.UserID),
+                        BuildingID = BuildingId,
+                        Comment = TicketComment,
+                        DueDate = null
+                    };
                     try
                     {
-                        Dictionary<string, object> parameters = new Dictionary<string, object>
-                        {
-                            { "TicketID", TicketId },
-                            { "Categories", Categories?.Where(t=>t.IsSelected) },
-                            { "Status", TicketStatus },
-                            { "Priority", ticketPriority },
-                            { "TenantID", TicketTenant},
-                            { "UnitID", Unit?.UnitId},
-                            { "Tags", Tags?.Where(t=>t.IsSelected) },
-                            { "Assigned", Users?.Where(t=>t.IsSelected) },
-                            { "BuildingID", BuildingId },
-                            { "Comment", TicketComment }
-                        };
+
                         if (DateTime.TryParse(DueDate, out DateTime d))
-                            parameters.Add("DueDate", d);
-                        await Services.DataAccess.UpdateTicket(parameters);
+                            requestItem.DueDate = d;
+                        await Services.DataAccess.UpdateTicket(requestItem);
                     }
                     catch (Exception ex)
                     {
@@ -751,7 +753,9 @@ namespace ManageGo
                         TimeFrom = _timeFrom.ToString("HHmm"),
                         TimeTo = _timeTo.ToString("HHmm"),
                         SendToUsers = Users.Where(t => t.IsSelected).Select(t => t.UserID),
-                        SendToExternalContacts = ExternalContacts.Where(t => t.IsSelected).Select(t => t.ExternalID)
+                        SendToExternalContacts = ExternalContacts.Where(t => t.IsSelected).Select(t => t.ExternalID),
+                        SendToEmail = WorkOrderSendEmail,
+                        SendToTenant = new List<int> { TicketTenant },
                     };
 
                     WorkOrderActionSheetIsVisible = false;
@@ -773,17 +777,11 @@ namespace ManageGo
                         await MGDataAccessLibrary.BussinessLogic.TicketsProcessor.CreateEvent(newEvent);
                         foreach (var user in Users.Where(t => t.IsSelected))
                         {
-                            if (AssignedUserIds.Contains(user.UserID))
-                                user.IsSelected = true;
-                            else
-                                user.IsSelected = false;
+                            user.IsSelected = AssignedUserIds != null && AssignedUserIds.Contains(user.UserID);
                         }
                         foreach (var user in ExternalContacts.Where(t => t.IsSelected))
                         {
-                            if (AssignedUserIds.Contains(user.ExternalID))
-                                user.IsSelected = true;
-                            else
-                                user.IsSelected = false;
+                            user.IsSelected = AssignedUserIds != null && AssignedUserIds.Contains(user.ExternalID);
                         }
                         //clear the fields used for the workorder
                         EventSummary = null;
@@ -792,6 +790,7 @@ namespace ManageGo
                     }
                     catch (Exception ex)
                     {
+                        Crashes.TrackError(ex);
                         await CoreMethods.DisplayAlert("Something went wrong", ex.Message, "DISMISS");
                     }
                     finally
@@ -822,14 +821,18 @@ namespace ManageGo
                         tcs?.SetResult(true);
                         return;
                     }
-                    var dic = new Dictionary<string, object> {
-                        {"TicketID", TicketId},
-                        {"Summary", WorkOrderSummary},
-                        {"Details", WorkOrderDetail},
-                        {"SendToUsers", Users.Where(t=>t.IsSelected).Select(t=>t.UserID)},
-                        {"SendToExternalContacts", ExternalContacts.Where(t=>t.IsSelected).Select(t=>t.ExternalID) },
-                        {"SendToEmail", WorkOrderSendEmail}
+
+                    var item = new Models.CreateWorkorderRequestItem
+                    {
+                        TicketID = TicketId,
+                        SendToUsers = Users.Where(t => t.IsSelected).Select(t => t.UserID),
+                        Details = WorkOrderDetail,
+                        Summary = WorkOrderSummary,
+                        SendToEmail = WorkOrderSendEmail,
+                        SendToExternalContacts = ExternalContacts.Where(t => t.IsSelected).Select(t => t.ExternalID)
                     };
+
+
                     WorkOrderActionSheetIsVisible = false;
                     SendOptionsPupupIsVisible = false;
                     AttachActionSheetIsVisible = false;
@@ -846,7 +849,7 @@ namespace ManageGo
                     RaisePropertyChanged("Comments");
                     try
                     {
-                        await Services.DataAccess.SendNewWorkOurderAsync(dic);
+                        await Services.DataAccess.SendNewWorkOurderAsync(item);
                         if (AssignedUserIds != null && AssignedUserIds.Any())
                         {
                             foreach (var user in Users.Where(t => t.IsSelected))
@@ -871,6 +874,7 @@ namespace ManageGo
                     }
                     catch (Exception ex)
                     {
+                        Crashes.TrackError(ex);
                         await CoreMethods.DisplayAlert("Something went wrong", ex.Message, "DISMISS");
                     }
                     finally
@@ -929,6 +933,7 @@ namespace ManageGo
                     }
                     catch (Exception ex)
                     {
+                        Crashes.TrackError(ex);
                         await CoreMethods.DisplayAlert("Something went wrong", ex.Message, "DISMISS");
                     }
                     finally
@@ -1206,7 +1211,8 @@ namespace ManageGo
 
         protected override void ViewIsDisappearing(object sender, EventArgs e)
         {
-            App.MasterDetailNav.IsGestureEnabled = true;
+            if (App.MasterDetailNav != null)
+                App.MasterDetailNav.IsGestureEnabled = true;
             base.ViewIsDisappearing(sender, e);
 
         }

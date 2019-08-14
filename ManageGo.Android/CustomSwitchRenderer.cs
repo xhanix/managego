@@ -51,12 +51,12 @@ namespace ManageGo.Droid
         {
             base.OnElementChanged(e);
 
-            if (e.OldElement != null || e.NewElement == null)
+            if (e.NewElement is null || Control is null)
                 return;
-            var view = (CustomSwitch)Element;
+            var view = (CustomSwitch)e.NewElement;
 
             Control.SetTrackResource(Resource.Drawable.switch_track_custom);
-            Control.SetOnCheckedChangeListener(new CheckedChangedListener());
+            Control.SetOnCheckedChangeListener(new CheckedChangedListener(e.NewElement));
             Control.ThumbDrawable.SetColorFilter(Android.Graphics.Color.White, PorterDuff.Mode.SrcAtop);
             if (Control.Checked)
                 Control.TrackDrawable.SetColorFilter(new Android.Graphics.Color(37, 206, 4), PorterDuff.Mode.SrcOver);
@@ -67,8 +67,15 @@ namespace ManageGo.Droid
 
     public class CheckedChangedListener : Java.Lang.Object, CompoundButton.IOnCheckedChangeListener
     {
+        Xamarin.Forms.Switch _owner;
+
+        public CheckedChangedListener(Xamarin.Forms.Switch owner)
+        {
+            _owner = owner;
+        }
         public void OnCheckedChanged(CompoundButton buttonView, bool isChecked)
         {
+            this._owner.IsToggled = isChecked;
             var control = (Android.Widget.Switch)buttonView;
             //  buttonView.SetOutlineSpotShadowColor(Android.Graphics.Color.Red);
             // ((Android.Widget.Switch)buttonView).TrackDrawable.SetTint(Android.Resource.Color.Black);

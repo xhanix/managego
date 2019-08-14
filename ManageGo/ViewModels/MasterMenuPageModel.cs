@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using FreshMvvm;
 using Microsoft.AppCenter.Analytics;
 using Xamarin.Forms;
@@ -86,7 +87,8 @@ namespace ManageGo
                 async void execute(System.Threading.Tasks.TaskCompletionSource<bool> tcs)
                 {
                     Analytics.TrackEvent("Support maintenance menu tapped");
-
+                    if (!App.MasterDetailNav.Pages.ContainsKey("Maintenance Tickets"))
+                        App.MasterDetailNav.AddPage<MaintenanceTicketsPageModel>("Maintenance Tickets");
                     if (App.MasterDetailNav.Detail is NavigationPage
                     && ((NavigationPage)App.MasterDetailNav.Detail).CurrentPage.GetModel() is MaintenanceTicketsPageModel model)
                     {
@@ -194,16 +196,18 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand((tcs) =>
+                async void execute(TaskCompletionSource<bool> tcs)
                 {
-                    Analytics.TrackEvent("Support payments menu tapped");
 
+                    //allow the side menu animation to completed
+                    Analytics.TrackEvent("Support payments menu tapped");
                     if (!App.MasterDetailNav.Pages.ContainsKey("Payments"))
                         App.MasterDetailNav.AddPage<PaymentsPageModel>("Payments");
-                    App.MasterDetailNav.SwitchSelectedRootPageModel<PaymentsPageModel>();
+                    await App.MasterDetailNav.SwitchSelectedRootPageModel<PaymentsPageModel>();
                     App.MenuIsPresented = false;
                     tcs?.SetResult(true);
-                });
+                }
+                return new FreshAwaitCommand(execute);
             }
         }
 

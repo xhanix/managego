@@ -52,5 +52,21 @@ namespace ManageGo
             }
             return true;
         }
+
+        public void DataLoaded()
+        {
+            if (this.BindingContext != null)
+            {
+                TenantsListView.ItemsSource = ((TenantsPageModel)BindingContext).FetchedTenants;
+            }
+            TenantsListView.HasUnevenRows = !TenantsListView.HasUnevenRows;
+            TenantsListView.HasUnevenRows = !TenantsListView.HasUnevenRows;
+        }
+
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+            TenantsListView.ItemsSource = null;
+        }
     }
 }

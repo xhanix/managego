@@ -12,6 +12,7 @@ namespace ManageGo
         internal override Task LoadData(bool refreshData = false, bool FetchNextPage = false)
         {
             this.Buildings = App.Buildings ?? new List<Building>();
+            ((BuildingsListPage)CurrentPage).DataLoaded();
             return Task.FromResult(0);
         }
 

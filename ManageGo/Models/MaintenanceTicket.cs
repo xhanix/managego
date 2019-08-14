@@ -62,12 +62,8 @@ namespace ManageGo
         }
         [JsonIgnore]
         public string TenantDetails
-        {
-            get
-            {
-                return Tenant == null ? "" : $"{Tenant.TenantFirstName} {Tenant.TenantLastName}{Environment.NewLine}{Environment.NewLine}{Building?.BuildingName} #{Unit?.UnitName}";
-            }
-        }
+            => Tenant == null ? "" : $"{Tenant.TenantFirstName} {Tenant.TenantLastName}{Environment.NewLine}{Environment.NewLine}{Building?.BuildingName} #{Unit?.UnitName}";
+
         [JsonIgnore]
         public bool FirstCommentShown { get; set; }
 

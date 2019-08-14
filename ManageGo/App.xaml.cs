@@ -76,7 +76,7 @@ namespace ManageGo
             try
             {
                 var ticketDetails = await Services.DataAccess.GetTicketDetails(ticketId);
-                var tickets = await Services.DataAccess.GetTickets(new TicketRequestItem { Ticket = ticketId });
+                var tickets = await Services.DataAccess.GetTicketsAsync(new TicketRequestItem { Ticket = ticketId });
                 var ticket = tickets.FirstOrDefault();
                 var dic = new Dictionary<string, object>
                             {
@@ -164,6 +164,7 @@ namespace ManageGo
                 };
                 page.Title = "Menu";
                 MasterDetailNav.Master = page;
+                MasterDetailNav.MasterBehavior = MasterBehavior.Popover;
                 MasterDetailNav.AddPage<WelcomePageModel>("Home", null);
                 CurrentPageModel = MasterDetailNav.Pages.Values.First().BindingContext as BaseDetailPage;
                 MasterDetailNav.AddPage<MaintenanceTicketsPageModel>("Maintenance Tickets", null);

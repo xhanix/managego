@@ -20,7 +20,7 @@ namespace ManageGo.Models
         public string Search { get; set; }
         public DateTime DateFrom { get; set; } = DateTime.Today;
         public DateTime? DateTo { get; set; }
-
+        public IEnumerable<PaymentStatuses> PaymentStatuses { get; set; }
 
 
         [JsonIgnore]

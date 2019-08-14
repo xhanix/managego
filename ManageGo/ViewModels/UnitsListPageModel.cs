@@ -32,7 +32,8 @@ namespace ManageGo
         protected override void ViewIsDisappearing(object sender, EventArgs e)
         {
             base.ViewIsDisappearing(sender, e);
-            App.MasterDetailNav.IsGestureEnabled = true;
+            if (App.MasterDetailNav != null)
+                App.MasterDetailNav.IsGestureEnabled = true;
         }
 
         public FreshAwaitCommand OnBackbuttonTapped

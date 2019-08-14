@@ -397,9 +397,9 @@
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
                         <controls:CalendarView Grid.Row="1"
-                                               WidthRequest="490"
-                                               SelectedDates="{Binding FilterDueDate}"
                                                HeightRequest="245"
+                                               SelectedDates="{Binding FilterDueDate}"
+                                               WidthRequest="310"
                                                AllowMultipleSelection="true" />
                     </Grid>
                     <StackLayout Padding="0,17"

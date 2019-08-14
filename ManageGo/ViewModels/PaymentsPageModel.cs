@@ -122,11 +122,11 @@ namespace ManageGo
             {
                 List<string> strings = new List<string>();
                 if (SelectedSentPaymentsFilter)
-                    strings.Add("Sent");
+                    strings.Add("Submitted");
                 if (SelectedReceivedPaymentsFilter)
                     strings.Add("Received");
                 if (SelectedReversedPaymentsFilter)
-                    strings.Add("Reveresed");
+                    strings.Add("Reversed");
                 if (SelectedRefundedPaymentsFilter)
                     strings.Add("Refunded");
                 return string.Join(", ", strings);
@@ -205,14 +205,13 @@ namespace ManageGo
         internal override async Task LoadData(bool refreshData = false, bool FetchNextPage = false)
         {
             NothingFetched = false;
-
             try
             {
                 if (refreshData && ParameterItem != null)
                 {
                     HasLoaded = false;
                     ParameterItem.Page = 1;
-                    ParameterItem.DateTo = FilterDueDate.EndDate;
+                    ParameterItem.DateTo = FilterDueDate.EndDate ?? FilterDueDate.StartDate.AddDays(1);
                     var fetchedTickets = await DataAccess.GetPaymentsAsync(ParameterItem);
                     if (fetchedTickets != null)
                         FetchedPayments = new ObservableCollection<Payment>(fetchedTickets);
@@ -226,7 +225,7 @@ namespace ManageGo
                 {
                     ParameterItem.Page++;
                     var nextPage = await Services.DataAccess.GetPaymentsAsync(ParameterItem);
-                    CanGetMorePages = nextPage != null && nextPage.Count == ParameterItem.PageSize;
+                    CanGetMorePages = nextPage != null && nextPage.Count() == ParameterItem.PageSize;
                     foreach (var item in nextPage)
                     {
                         FetchedPayments.Add(item);
@@ -242,7 +241,9 @@ namespace ManageGo
                     ParameterItem.DateTo = FilterDueDate.EndDate;
                     var fetchedTickets = await DataAccess.GetPaymentsAsync(ParameterItem);
                     if (fetchedTickets != null)
+                    {
                         FetchedPayments = new ObservableCollection<Payment>(fetchedTickets);
+                    }
                     else
                         FetchedPayments = new ObservableCollection<Payment>();
                     CanGetMorePages = FetchedPayments != null && FetchedPayments.Count == ParameterItem.PageSize;
@@ -282,6 +283,8 @@ namespace ManageGo
                 IsModal = _isModal;
                 HamburgerIsVisible = !IsModal;
             }
+            else
+                HamburgerIsVisible = true;
             async void p(object sender, Payment e)
             {
                 var id = e.PaymentId;
@@ -334,13 +337,15 @@ namespace ManageGo
                     if (FilterSelectViewIsShown)
                     {
                         PopContentView = (View)null;
+                        App.MasterDetailNav.IsGestureEnabled = true;
                         //ListIsEnabled = true;
                     }
                     else
                     {
+                        App.MasterDetailNav.IsGestureEnabled = false;
                         SelectedDateRange = new DateRange(FilterDueDate.StartDate, FilterDueDate.EndDate);
                         PopContentView = new Views.PaymentFilterView(this).Content;
-                        if (FetchedPayments.Any())
+                        if (FetchedPayments != null && FetchedPayments.Any())
                             ((PaymentsPage)CurrentPage).ScrollToFirst(FetchedPayments.First());
                         // ListIsEnabled = false;
                     }
@@ -400,7 +405,7 @@ namespace ManageGo
                     Units = Units.Where(t => t.IsSelected).Select(t => t.UnitId).ToList()
                 };
                 SelectedTenantString = string.Empty;
-                Tenants = await DataAccess.GetTenantsAsync(par);
+                Tenants = (await DataAccess.GetTenantsAsync(par)).ToList();
             }
             else if (Units != null && Units.Count(t => t.IsSelected) > 1)
             {
@@ -586,7 +591,17 @@ namespace ManageGo
                         }
                         if (!string.IsNullOrWhiteSpace(FilterKeywords))
                             ParameterItem.Search = FilterKeywords;
-
+                        List<Models.PaymentStatuses> statuses = new List<PaymentStatuses>();
+                        if (SelectedReceivedPaymentsFilter)
+                            statuses.Add(PaymentStatuses.Received);
+                        if (SelectedRefundedPaymentsFilter)
+                            statuses.Add(PaymentStatuses.Refunded);
+                        if (SelectedReversedPaymentsFilter)
+                            statuses.Add(PaymentStatuses.Reveresed);
+                        if (SelectedSentPaymentsFilter)
+                            statuses.Add(PaymentStatuses.Sent);
+                        if (statuses.Any())
+                            ParameterItem.PaymentStatuses = statuses;
                         ParameterItem.DateFrom = FilterDueDate.StartDate;
                         ParameterItem.DateTo = FilterDueDate.EndDate;
                         CurrentFilter = ParameterItem;
@@ -673,7 +688,6 @@ namespace ManageGo
                 {
                     PopContentView = null;
                     FilterSelectViewIsShown = false;
-                    CurrentFilter = null;
                     if (Buildings != null)
                     {
                         foreach (var b in Buildings)
@@ -695,6 +709,10 @@ namespace ManageGo
                             b.IsSelected = false;
                         }
                     }
+                    SelectedReceivedPaymentsFilter = false;
+                    SelectedRefundedPaymentsFilter = false;
+                    SelectedSentPaymentsFilter = false;
+                    SelectedReversedPaymentsFilter = false;
                     SelectedUnitString = "Select";
                     SelectedTenantString = "Select";
                     FilterDueDate = null;
@@ -702,14 +720,9 @@ namespace ManageGo
                     FilteredAmountRange = null;
                     SelectedAmountRange = new Tuple<int?, int?>(0, 5000);
                     FilterKeywords = string.Empty;
-                    ParameterItem = new PaymentsRequestItem
-                    {
-                        DateFrom = FilterDueDate.StartDate
-                    };
-                    if (FilterDueDate.EndDate.HasValue)
-                        ParameterItem.DateTo = FilterDueDate.EndDate.Value;
-                    FetchedPayments = new ObservableCollection<Payment>(
-                     await DataAccess.GetPaymentsAsync(ParameterItem));
+                    ParameterItem = null;
+                    CurrentFilter = null;
+                    await LoadData();
                     tcs?.SetResult(true);
                 }
                 return new FreshAwaitCommand(execute);

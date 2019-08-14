@@ -5,10 +5,10 @@ using Xamarin.Forms;
 using Xamarin.Forms.Platform.iOS;
 
 
-[assembly: ExportRenderer(typeof(NestedListView), typeof(NestedListViewRenderer))]
+[assembly: ExportRenderer(typeof(CustomListView), typeof(CustomListViewRenderer))]
 namespace ManageGo.iOS
 {
-    public class NestedListViewRenderer : ListViewRenderer
+    public class CustomListViewRenderer : ListViewRenderer
     {
         protected override void OnElementChanged(ElementChangedEventArgs<ListView> e)
         {

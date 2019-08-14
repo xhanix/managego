@@ -101,6 +101,7 @@ namespace ManageGo
             finally
             {
                 HasLoaded = true;
+                ((NotificationsPage)CurrentPage).DataLoaded();
             }
         }
     }

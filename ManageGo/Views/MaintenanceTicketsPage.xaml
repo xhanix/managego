@@ -155,19 +155,19 @@
             <Grid BackgroundColor="{StaticResource Grey-Light-2}"
                   Grid.Row="2">
                 <!-- List of tickets -->
-                <controls:NestedListView ItemsSource="{Binding FetchedTickets}"
-                                         x:Name="MyListView"
-                                         ItemAppearing="Handle_ItemAppearing"
-                                         Margin="22,18,22,18"
-                                         IsPullToRefreshEnabled="true"
-                                         IsRefreshing="{Binding IsRefreshingList}"
-                                         RefreshCommand="{Binding OnPulledToRefresh}"
-                                         SelectionMode="None"
-                                         IsEnabled="{Binding ListIsEnabled}"
-                                         HasUnevenRows="true"
-                                         VerticalOptions="Fill"
-                                         BackgroundColor="Transparent"
-                                         SeparatorVisibility="None">
+                <controls:CustomListView
+                    x:Name="MyListView"
+                    ItemAppearing="Handle_ItemAppearing"
+                    Margin="22,18,22,18"
+                    IsPullToRefreshEnabled="true"
+                    IsRefreshing="{Binding IsRefreshingList}"
+                    RefreshCommand="{Binding OnPulledToRefresh}"
+                    SelectionMode="None"
+                    IsEnabled="{Binding ListIsEnabled}"
+                    HasUnevenRows="true"
+                    VerticalOptions="Fill"
+                    BackgroundColor="Transparent"
+                    SeparatorVisibility="None">
                     <x:Arguments>
                         <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
                     </x:Arguments>
@@ -261,16 +261,15 @@
                                             <BoxView BackgroundColor="{StaticResource Grey-Light-2}"
                                                      HeightRequest="1"
                                                      HorizontalOptions="FillAndExpand" />
-                                            <StackLayout Orientation="Horizontal"
-                                                         Margin="0">
-                                                <Image Source="profile_grey.png"
+                                            <StackLayout Margin="0">
+                                                <Image Grid.Column="0"
+                                                       Source="profile_grey.png"
                                                        VerticalOptions="Start"
                                                        Margin="0,2,0,0"
                                                        HorizontalOptions="Start" />
-                                                <Label Text="{Binding TenantDetails}"
+                                                <Label Grid.Column="1"
+                                                       Text="{Binding TenantDetails}"
                                                        LineBreakMode="WordWrap"
-                                                       VerticalTextAlignment="Center"
-                                                       VerticalOptions="CenterAndExpand"
                                                        FontSize="Small"
                                                        TextColor="{StaticResource Grey-Light-1}" />
                                             </StackLayout>
@@ -324,7 +323,7 @@
                             </ViewCell>
                         </DataTemplate>
                     </ListView.ItemTemplate>
-                </controls:NestedListView>
+                </controls:CustomListView>
             </Grid>
             <Frame IsVisible="{Binding IsLoading}"
                    BackgroundColor="Transparent"

@@ -58,52 +58,37 @@ namespace ManageGo
                         tcs?.SetResult(true);
                         return;
                     }
-                    if (Units is null || !Units.Any(t => t.IsSelected))
+                    if (Units is null || !Units.Any(t => t.IsSelected) || Tenants is null || !Tenants.Any(t => t.IsSelected))
                     {
-                        await CoreMethods.DisplayAlert("Cannot create ticket", "Please select building and unit", "OK");
+                        await CoreMethods.DisplayAlert("Cannot create ticket", "Please select building, unit and tenant", "OK");
                         tcs?.SetResult(true);
                         return;
                     }
-                    var ticketPriority = 2;
+
+                    var ticketPriority = TicketPriorities.Medium;
                     if (PriorityLabelText.ToLower() == "low")
-                        ticketPriority = 0;
-                    else if (PriorityLabelText.ToLower() == "medium")
-                        ticketPriority = 1;
+                        ticketPriority = TicketPriorities.Low;
+                    else if (PriorityLabelText.ToLower() == "high")
+                        ticketPriority = TicketPriorities.High;
                     try
                     {
-                        Dictionary<string, object> parameters = new Dictionary<string, object>
-                           {
-                            { "BuildingID", Buildings.First(t=>t.IsSelected).BuildingId },
-                            { "UnitID", Units.First(t=>t.IsSelected).UnitId},
-                            { "Status", 0 },
-                            { "Priority", ticketPriority },
-                            { "Subject", Subject },
-                            { "Comment", Comment },
-                           };
-                        if (DateTime.TryParse(DueDate, out DateTime d))
-                            parameters.Add("DueDate", d);
-                        if (Tenants != null && Tenants.Any(t => t.IsSelected))
+                        var item = new MGDataAccessLibrary.Models.CreateTicketRequestItem
                         {
-                            parameters.Add("TenantID", Tenants.First(t => t.IsSelected).TenantID);
-                        }
-                        if (Categories != null && Categories.Any(t => t.IsSelected))
-                        {
-                            parameters.Add("Categories", Categories.Where(t => t.IsSelected).Select(t => t.CategoryID));
-                        }
-                        if (Tags != null && Tags.Any(t => t.IsSelected))
-                        {
-                            parameters.Add("Tags", Tags.Where(t => t.IsSelected).Select(t => t.TagID));
-                        }
-                        if (Users != null && Users.Any(t => t.IsSelected))
-                        {
-                            parameters.Add("Assigned", Users.Where(t => t.IsSelected).Select(t => t.UserID));
-                        }
-                        if (AttachedFile != null)
-                        {
-                            parameters.Add("FileName", AttachedFile.Name);
-                            parameters.Add("File", AttachedFile.Content);
-                        }
-                        await Services.DataAccess.CreateTicket(parameters);
+                            BuildingID = Buildings.First(t => t.IsSelected).BuildingId,
+                            UnitID = Units.First(t => t.IsSelected).UnitId,
+                            Status = (int)TicketStatus.Open,
+                            Priority = (int)ticketPriority,
+                            Subject = Subject,
+                            Comment = Comment,
+                            DueDate = null,
+                            TenantID = Tenants.First(t => t.IsSelected).TenantID,
+                            Categories = Categories?.Where(t => t.IsSelected).Select(t => t.CategoryID),
+                            Tags = Tags?.Where(t => t.IsSelected).Select(t => t.TagID),
+                            Assigned = Users?.Where(t => t.IsSelected).Select(t => t.UserID),
+                            FileName = AttachedFile?.Name,
+                            File = AttachedFile?.Content
+                        };
+                        await Services.DataAccess.CreateTicket(item);
                         await CoreMethods.PopPageModel(data: true);
                     }
                     catch (Exception ex)

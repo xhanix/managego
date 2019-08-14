@@ -12,7 +12,7 @@ namespace ManageGo
     [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore), Serializable]
     internal class TicketRequestItem
     {
-        public int PageSize { get; set; } = 50;
+        public int PageSize { get; set; } = 25;
         public int Page { get; set; } = 1;
         public int? Ticket { get; set; }
         public DateTime? DateFrom { get; set; }
@@ -23,7 +23,7 @@ namespace ManageGo
         public IList<int> Tags { get; set; }
         public IList<int> Assigned { get; set; }
         public IList<int> Categories { get; set; }
-        public TicketStatus? Status { get; set; }
+        public TicketStatus? TicketStatus { get; set; }
         public IList<TicketPriorities> Priorities { get; set; }
         public string Search { get; set; }
         [JsonIgnore, IgnoreDataMember]
@@ -56,7 +56,7 @@ namespace ManageGo
                     n++;
                 if (Assigned != null && Assigned.Any())
                     n++;
-                if (Status != TicketStatus.Open)
+                if (TicketStatus != ManageGo.TicketStatus.Open)
                     n++;
                 if (Priorities != null)
                     n++;

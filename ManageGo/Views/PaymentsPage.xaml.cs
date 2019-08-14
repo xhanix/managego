@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using ManageGo.Models;
 using Xamarin.Forms;
 
@@ -12,7 +13,10 @@ namespace ManageGo
         {
             InitializeComponent();
             NavigationPage.SetHasNavigationBar(this, false);
+
         }
+
+
 
         public event EventHandler<Payment> OnPaymentAppeared;
 
@@ -60,8 +64,28 @@ namespace ManageGo
             OnPaymentAppeared?.Invoke(this, (Payment)e.Item);
         }
 
+        protected override async void OnAppearing()
+        {
+            base.OnAppearing();
+            ///await Task.Delay(250);
+
+
+        }
+
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+            PaymentsList.ItemsSource = null;
+        }
+
         public void DataLoaded()
         {
+            if (this.BindingContext != null)
+            {
+
+                PaymentsList.ItemsSource = ((PaymentsPageModel)BindingContext).FetchedPayments;
+            }
+
             PaymentsList.HasUnevenRows = !PaymentsList.HasUnevenRows;
             PaymentsList.HasUnevenRows = !PaymentsList.HasUnevenRows;
         }

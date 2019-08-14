@@ -127,7 +127,7 @@ namespace ManageGo
         internal override async Task LoadData(bool refreshData = false, bool FetchNextPage = false)
         {
             NothingFetched = false;
-            var selectedBuildingAddress = Buildings.Count(b => b.IsSelected) == 1 ? Buildings.First(b => b.IsSelected).BuildingName : null;
+            var selectedBuildingAddress = Buildings?.Count(b => b.IsSelected) == 1 ? Buildings.First(b => b.IsSelected).BuildingName : null;
             try
             {
                 if (FetchNextPage && ParameterItem != null)
@@ -144,7 +144,7 @@ namespace ManageGo
                             FetchedTenants.Add(item);
                         }
                     }
-                    CanGetMorePages = nextPage != null && nextPage.Count == ParameterItem.PageSize;
+                    CanGetMorePages = nextPage != null && nextPage.Count() == ParameterItem.PageSize;
                     var lastIdx = FetchedTenants.IndexOf(FetchedTenants.Last());
                     var index = Math.Floor(lastIdx / 2d);
                     var markedItem = FetchedTenants.ElementAt((int)index);
@@ -159,7 +159,7 @@ namespace ManageGo
                     }
                     if (refreshData)
                         ParameterItem.Page = 1;
-                    List<Tenant> tenantsAsync = await DataAccess.GetTenantsAsync(ParameterItem);
+                    List<Tenant> tenantsAsync = (await DataAccess.GetTenantsAsync(ParameterItem)).ToList();
                     if (tenantsAsync != null)
                         FetchedTenants = new ObservableCollection<Tenant>(tenantsAsync);
                     else
@@ -201,6 +201,7 @@ namespace ManageGo
             {
                 NothingFetched = !FetchedTenants.Any();
                 HasLoaded = true;
+                ((TenantsPage)CurrentPage).DataLoaded();
             }
         }
 
@@ -331,7 +332,8 @@ namespace ManageGo
         protected override void ViewIsDisappearing(object sender, EventArgs e)
         {
             base.ViewIsDisappearing(sender, e);
-            App.MasterDetailNav.IsGestureEnabled = true;
+            if (App.MasterDetailNav != null)
+                App.MasterDetailNav.IsGestureEnabled = true;
             if (Buildings != null)
             {
                 foreach (Building building in Buildings.Where(t => t.IsSelected))

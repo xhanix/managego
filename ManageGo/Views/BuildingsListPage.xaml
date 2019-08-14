@@ -52,7 +52,7 @@
             </StackLayout>
             <StackLayout BackgroundColor="{StaticResource Grey-Light-2}"
                          Grid.Row="2">
-                <controls:NestedListView ItemsSource="{Binding Buildings}"
+                <controls:CustomListView x:Name="MyListView"
                                          SelectionMode="None"
                                          HasUnevenRows="true"
                                          BackgroundColor="Transparent"
@@ -141,7 +141,7 @@
                             </ViewCell>
                         </DataTemplate>
                     </ListView.ItemTemplate>
-                </controls:NestedListView>
+                </controls:CustomListView>
             </StackLayout>
             <Frame IsVisible="{Binding IsSearching}"
                    Grid.Row="2"

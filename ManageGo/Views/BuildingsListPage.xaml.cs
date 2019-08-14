@@ -32,5 +32,21 @@ namespace ManageGo
             }
             return true;
         }
+
+
+        public void DataLoaded()
+        {
+            if (this.BindingContext != null)
+            {
+                MyListView.ItemsSource = ((BuildingsListPageModel)BindingContext).Buildings;
+            }
+
+        }
+
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+            MyListView.ItemsSource = null;
+        }
     }
 }

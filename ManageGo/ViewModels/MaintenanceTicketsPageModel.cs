@@ -223,7 +223,7 @@ namespace ManageGo
 
         internal override async Task LoadData(bool refreshData = false, bool FetchNextPage = false)
         {
-            if (ShowingTicketDetails)
+            if (ShowingTicketDetails && !RequestedTicketDetails)
             {
                 ShowingTicketDetails = false;
                 return;
@@ -237,7 +237,7 @@ namespace ManageGo
                     {
                         ParameterItem = new TicketRequestItem
                         {
-                            Status = TicketStatus.Open,
+                            TicketStatus = TicketStatus.Open,
                             DateFrom = DateRange.StartDate,
                             DateTo = DateRange.EndDate
                         };
@@ -248,10 +248,12 @@ namespace ManageGo
                     {
                         foreach (var item in nextPage)
                         {
+                            if (FetchedTickets is null)
+                                FetchedTickets = new ObservableCollection<MaintenanceTicket>();
                             FetchedTickets.Add(item);
                         }
                     }
-                    CanGetMorePages = nextPage != null && nextPage.Count == ParameterItem.PageSize;
+                    CanGetMorePages = nextPage != null && nextPage.Count() == ParameterItem.PageSize;
                     var lastIdx = FetchedTickets.IndexOf(FetchedTickets.Last());
                     var index = Math.Floor(lastIdx / 2d);
                     var markedItem = FetchedTickets.ElementAt((int)index);
@@ -264,7 +266,7 @@ namespace ManageGo
                     {
                         ParameterItem = new TicketRequestItem
                         {
-                            Status = TicketStatus.Open,
+                            TicketStatus = TicketStatus.Open,
                             DateFrom = DateRange.StartDate,
                             DateTo = DateRange.EndDate,
                         };
@@ -290,17 +292,19 @@ namespace ManageGo
                     }
                     ListIsEnabled = true;
                     HasLoaded = true;
+
                 }
+                 ((MaintenanceTicketsPage)CurrentPage).DataLoaded();
             }
             catch (Exception ex)
             {
-                Crashes.TrackError(ex, new Dictionary<string, string> { { "Class", this.GetType().FullName } });
+                Crashes.TrackError(ex, new Dictionary<string, string> { { "Class", GetType().FullName } });
                 APIhasFailed = true;
-                FetchedTickets = null;
+                FetchedTickets = new ObservableCollection<MaintenanceTicket>();
                 NothingFetched = true;
                 if (await CoreMethods.DisplayAlert("Something went wrong", $"Unable to get tickets. Error Message: {ex.Message}", "Try again", "Dismiss"))
                 {
-                    if (!this.IsLoading)
+                    if (!IsLoading)
                         await this.LoadData();
                 }
             }
@@ -410,11 +414,13 @@ namespace ManageGo
                     {
                         PopContentView = null;
                         ListIsEnabled = true;
+                        App.MasterDetailNav.IsGestureEnabled = true;
                     }
                     else
                     {
+                        App.MasterDetailNav.IsGestureEnabled = false;
                         var _view = new TicketFilterSelectView(bindingContext: this);
-                        CurrentFilter = ParameterItem.Clone();
+                        CurrentFilter = ParameterItem?.Clone();
                         PopContentView = _view.Content;
                         ListIsEnabled = false;
                     }
@@ -561,10 +567,10 @@ namespace ManageGo
                             DateRange = new DateRange(CurrentFilter.DateFrom.Value, CurrentFilter.DateTo.Value);
                         else if (CurrentFilter.DateFrom.HasValue && !CurrentFilter.DateTo.HasValue)
                             DateRange = new DateRange(CurrentFilter.DateFrom.Value);
-                        if (CurrentFilter.Status.HasValue)
+                        if (CurrentFilter.TicketStatus.HasValue)
                         {
-                            SelectedOpenTicketsFilter = CurrentFilter.Status.Value == TicketStatus.Open;
-                            SelectedClosedTicketsFilter = CurrentFilter.Status.Value == TicketStatus.Closed;
+                            SelectedOpenTicketsFilter = CurrentFilter.TicketStatus.Value == TicketStatus.Open;
+                            SelectedClosedTicketsFilter = CurrentFilter.TicketStatus.Value == TicketStatus.Closed;
                         }
 
                         FilterKeywords = CurrentFilter.Search;
@@ -637,13 +643,13 @@ namespace ManageGo
                         if (Tags != null && Tags.Any(f => f.IsSelected))
                             ParameterItem.Tags = Tags.Where(t => t.IsSelected).Select(t => t.TagID).ToList();
                         if (SelectedOpenTicketsFilter && SelectedClosedTicketsFilter)
-                            ParameterItem.Status = TicketStatus.All;
+                            ParameterItem.TicketStatus = TicketStatus.All;
                         else if (SelectedOpenTicketsFilter)
-                            ParameterItem.Status = TicketStatus.Open;
+                            ParameterItem.TicketStatus = TicketStatus.Open;
                         else if (SelectedClosedTicketsFilter)
-                            ParameterItem.Status = TicketStatus.Closed;
+                            ParameterItem.TicketStatus = TicketStatus.Closed;
                         else
-                            ParameterItem.Status = TicketStatus.Open;
+                            ParameterItem.TicketStatus = TicketStatus.Open;
                         if (IsLowPriorityFilterSelected || IsMediumPriorityFilterSelected || IsHighPriorityFilterSelected)
                         {
                             List<TicketPriorities> priorities = new List<TicketPriorities>();
@@ -689,6 +695,7 @@ namespace ManageGo
                         else
                             NothingFetched = false;
                         ListIsEnabled = true;
+                        ((MaintenanceTicketsPage)CurrentPage).DataLoaded();
                         tcs?.SetResult(true);
                     }
                 }
@@ -703,6 +710,7 @@ namespace ManageGo
                 async void execute(object item, TaskCompletionSource<bool> tcs)
                 {
                     var ticket = (MaintenanceTicket)item;
+                    RequestedTicketDetails = true;
                     //get ticket details
                     try
                     {
@@ -739,6 +747,7 @@ namespace ManageGo
                 {
                     if (!CalendarIsShown)
                     {
+                        App.MasterDetailNav.IsGestureEnabled = false;
                         StackLayout container = new StackLayout { Spacing = 0 };
                         Grid buttonContainer = new Grid { Padding = new Thickness(8, 8, 8, 12) };
                         var cancelButton = new Button
@@ -787,6 +796,7 @@ namespace ManageGo
                     }
                     else
                     {
+                        App.MasterDetailNav.IsGestureEnabled = true;
                         PopContentView = null;
                         ListIsEnabled = true;
                     }
@@ -876,11 +886,13 @@ namespace ManageGo
         }
 
         public bool ShowingTicketDetails { get; private set; }
+        public bool RequestedTicketDetails { get; private set; }
 
         protected override void ViewIsDisappearing(object sender, EventArgs e)
         {
             base.ViewIsDisappearing(sender, e);
-            App.MasterDetailNav.IsGestureEnabled = true;
+            if (App.MasterDetailNav != null)
+                App.MasterDetailNav.IsGestureEnabled = true;
             if (!ShowingTicketDetails)
             {
                 FilterDueDate = null;
@@ -914,7 +926,7 @@ namespace ManageGo
                 ParameterItem = new TicketRequestItem
                 {
                     Buildings = new List<int> { buildingId },
-                    Status = TicketStatus.Open
+                    TicketStatus = TicketStatus.Open
                 };
                 NumberOfAppliedFilters = ParameterItem.NumberOfAppliedFilters.ToString();
                 var selectedBuildings = Buildings.Where(b => b.BuildingId == buildingId);
@@ -948,6 +960,7 @@ namespace ManageGo
             else if (returnedData is bool && (bool)returnedData && FetchedTickets != null)
             {
                 OnPulledToRefresh.Execute(null);
+
             }
         }
         private async Task ShowNoInternetView()

@@ -28,7 +28,7 @@ namespace ManageGo
         }
 
 
-        override internal async Task LoadData(bool refreshData = false, bool applyNewFilter = false)
+        override internal async Task LoadData(bool refreshData = false, bool FetchNextPage = false)
         {
             if (cancellationTokenSource.IsCancellationRequested)
                 return;
@@ -37,54 +37,32 @@ namespace ManageGo
             {
                 await App.NotificationReceived(App.NotificationType, App.NotificationObject, App.NotificationIsSummary);
             }
-            await Services.DataAccess.GetDashboardAsync().ContinueWith(async (arg) =>
-             {
-                 if (arg.Status == TaskStatus.Faulted)
-                 {
-                     await ShowNoInternetView();
-                 }
-                 else if (arg.Status == TaskStatus.RanToCompletion)
-                 {
-                     HasLoaded = true;
-                     APIhasFailed = false;
-                     var result = arg.Result;
-                     if (result.TryGetValue(APIkeys.TotalPaymentsThisWeek.ToString(), out string p)
-                         && double.TryParse(p, out double numVal))
-                     {
-                         TotalPaymentsThisWeek = numVal.ToString("c2");
-                     }
-                     if (result.TryGetValue(APIkeys.TotalPaymentsThisMonth.ToString(), out string pm)
-                        && double.TryParse(pm, out double numValp))
-                     {
-                         TotalPaymentsThisMonth = numValp.ToString("c2");
-                     }
-                     if (result.TryGetValue(APIkeys.NumberOfOpenTickets.ToString(), out string t))
-                     {
-                         TotalOpenTickets = t;
-                     }
-                     if (result.TryGetValue(APIkeys.NumberOfTicketsWithNoReplay.ToString(), out string ut))
-                     {
-                         TotalUnreadTickets = ut;
-                     }
+            try
+            {
+                var dashData = await Services.DataAccess.GetDashboardAsync();
+                TotalPaymentsThisWeek = dashData.TotalPaymentsThisWeek.ToString("c2");
+                TotalPaymentsThisMonth = dashData.TotalPaymentsThisMonth.ToString("c2");
+                TotalOpenTickets = dashData.NumberOfOpenTickets.ToString();
+                TotalUnreadTickets = dashData.NumberOfTicketsWithNoReplay.ToString();
 
-                     UserCanViewPayments =
-                         (App.UserPermissions &
-                          UserPermissions.CanAccessPayments) == UserPermissions.CanAccessPayments;
+                UserCanViewPayments = (App.UserPermissions &
+                     UserPermissions.CanAccessPayments) == UserPermissions.CanAccessPayments;
 
-                     UserCanViewTickets =
-                          (App.UserPermissions &
-                           UserPermissions.CanAccessTickets) == UserPermissions.CanAccessTickets;
+                UserCanViewTickets = (App.UserPermissions &
+                      UserPermissions.CanAccessTickets) == UserPermissions.CanAccessTickets;
 
-                     UserName = App.UserName;
-                     PMCName = App.PMCName;
-                 }
-
-             });
-
-
+                UserName = App.UserName;
+                PMCName = App.PMCName;
+                HasLoaded = true;
+                APIhasFailed = false;
+            }
+            catch (Exception)
+            {
+                await ShowNoInternetView();
+                APIhasFailed = true;
+            }
 
         }
-
 
 
         private async Task ShowNoInternetView()

@@ -191,7 +191,7 @@
                            CornerRadius="5"
                            HasShadow="false"
                            Padding="0,0,8,0">
-                        <controls:NestedListView ItemsSource="{Binding Comments}"
+                        <controls:CustomListView ItemsSource="{Binding Comments}"
                                                  IsRefreshing="{Binding IsBusy,Mode=OneWay}"
                                                  ItemAppearing="Handle_ItemAppearing"
                                                  x:Name="MyListView"
@@ -325,7 +325,7 @@
                                     </ViewCell>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
-                        </controls:NestedListView>
+                        </controls:CustomListView>
                     </Frame>
                 </Grid>
                 <Image Source="gradient.png"
