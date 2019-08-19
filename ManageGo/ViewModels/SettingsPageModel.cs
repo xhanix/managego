@@ -6,6 +6,7 @@ using Xamarin.Forms;
 using System.Linq;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
+using Microsoft.AppCenter.Crashes;
 
 namespace ManageGo
 {
@@ -48,10 +49,36 @@ namespace ManageGo
             }
         }
 
-        protected override void ViewIsAppearing(object sender, EventArgs e)
+        protected override async void ViewIsAppearing(object sender, EventArgs e)
         {
             base.ViewIsAppearing(sender, e);
-
+            try
+            {
+                var result = await MGDataAccessLibrary.BussinessLogic.UserProcessor.LoginWithExistingCredentials();
+                App.UserInfo = new Models.SignedInUserInfo
+                {
+                    AccessToken = result.UserInfo.AccessToken,
+                    UserEmailAddress = result.UserInfo.UserEmailAddress,
+                    UserFirstName = result.UserInfo.UserFirstName,
+                    UserLastName = result.UserInfo.UserLastName,
+                    TenantPushNotification = result.UserInfo.TenantPushNotification,
+                    MaintenancePushNotification = result.UserInfo.MaintenancePushNotification,
+                    PaymentPushNotification = result.UserInfo.PaymentPushNotification,
+                    PushNotification = result.UserInfo.PushNotification,
+                    UserID = result.UserInfo.UserID
+                };
+                UserName = App.UserInfo.UserFirstName + " " + App.UserInfo.UserLastName;
+                UserEmail = App.UserInfo.UserEmailAddress;
+                PaymentNotificationsIsOn = App.UserInfo.PaymentPushNotification;
+                TenantsNotificationsIsOn = App.UserInfo.TenantPushNotification;
+                MaintenanceNotificationsIsOn = App.UserInfo.MaintenancePushNotification;
+                PushNotificationsIsOn = App.UserInfo.PushNotification;
+                BiometricLoginIsOn = Preferences.Get("IsBiometricAuthEnabled", false);
+            }
+            catch (Exception ex)
+            {
+                Crashes.TrackError(ex);
+            }
         }
 
         public bool PaymentNotificationsIsOn
@@ -171,14 +198,16 @@ namespace ManageGo
         {
             base.Init(initData);
             HamburgerIsVisible = true;
-            UserName = App.UserInfo.UserFirstName + " " + App.UserInfo.UserLastName;
-            UserEmail = App.UserInfo.UserEmailAddress;
-            PaymentNotificationsIsOn = App.UserInfo.PaymentPushNotification;
-            TenantsNotificationsIsOn = App.UserInfo.TenantPushNotification;
-            MaintenanceNotificationsIsOn = App.UserInfo.MaintenancePushNotification;
-            PushNotificationsIsOn = App.UserInfo.PushNotification;
-            BiometricLoginIsOn = Preferences.Get("IsBiometricAuthEnabled", false);
-
+            if (App.UserInfo != null)
+            {
+                UserName = App.UserInfo.UserFirstName + " " + App.UserInfo.UserLastName;
+                UserEmail = App.UserInfo.UserEmailAddress;
+                PaymentNotificationsIsOn = App.UserInfo.PaymentPushNotification;
+                TenantsNotificationsIsOn = App.UserInfo.TenantPushNotification;
+                MaintenanceNotificationsIsOn = App.UserInfo.MaintenancePushNotification;
+                PushNotificationsIsOn = App.UserInfo.PushNotification;
+                BiometricLoginIsOn = Preferences.Get("IsBiometricAuthEnabled", false);
+            }
             async void p() => await UpdateUserDetails();
             SwitchToggled += p;
         }
@@ -234,7 +263,6 @@ namespace ManageGo
                 TenantPushNotification = TenantsNotificationsIsOn,
                 PushNotification = PushNotificationsIsOn
             };
-
             try
             {
                 await MGDataAccessLibrary.BussinessLogic.UserProcessor.UpdateUser(userDetails);
@@ -280,8 +308,6 @@ namespace ManageGo
                 return new FreshAwaitCommand(execute);
             }
         }
-
-
     }
 }
 

@@ -41,7 +41,7 @@
     <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
 <RunCodeAnalysis>true</RunCodeAnalysis><AndroidCreatePackagePerAbi>true</AndroidCreatePackagePerAbi>
 <LangVersion>Latest</LangVersion>
-<AndroidSupportedAbis>armeabi-v7a;arm64-v8a</AndroidSupportedAbis>
+<AndroidSupportedAbis>arm64-v8a</AndroidSupportedAbis>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Xamarin.Android.Support.Design" Version="28.0.0.1" />
@@ -378,10 +378,6 @@
       <Generator></Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable-hdpi\ic_launcher.png">
-      <SubType></SubType>
-      <Generator></Generator>
-    </AndroidResource>
-    <AndroidResource Include="Resources\drawable\ic_launcher.png">
       <SubType></SubType>
       <Generator></Generator>
     </AndroidResource>

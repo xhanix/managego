@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using MGDataAccessLibrary.Models;
 
 namespace MGDataAccessLibrary.BussinessLogic
@@ -24,6 +21,11 @@ namespace MGDataAccessLibrary.BussinessLogic
         public static async Task UpdateUser(SignedInUserInfo userDetails)
         {
             var res = await DataAccess.WebAPI.PostItem<Models.SignedInUserInfo, string>(userDetails, DataAccess.ApiEndPoint.UserSettings, null);
+        }
+
+        public static async Task<LoginResponse> LoginWithExistingCredentials()
+        {
+            return await DataAccess.WebAPI.RefreshAccessTokenWithtoken();
         }
     }
 }

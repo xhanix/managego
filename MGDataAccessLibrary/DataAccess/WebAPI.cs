@@ -17,12 +17,26 @@ namespace MGDataAccessLibrary.DataAccess
         private const string BaseUrl = "https://portal.managego.com/api/pmc_v2/";
 #endif
         private static DateTimeOffset TokenExpiry { get; set; } = default;
-        private static string UserName { get; set; }
-        private static string Password { get; set; }
+        internal static string UserName { get; set; }
+        internal static string Password { get; set; }
+        public static string RefreshToken { get; private set; }
 
         static WebAPI()
         {
             WebClient = new HttpClient { BaseAddress = new Uri(BaseUrl) };
+        }
+
+
+
+        internal static async Task<LoginResponse> RefreshAccessTokenWithtoken()
+        {
+            var request = new Models.LoginRequest
+            {
+                AccessToken = RefreshToken
+            };
+            var res = await PostForm<Models.LoginRequest, Models.LoginResponse>(request, DataAccess.ApiEndPoint.authorize, null);
+            SetAuthToken(res.UserInfo.AccessToken);
+            return res;
         }
 
         public static async Task<T2> PostItem<T1, T2>(T1 item, ApiEndPoint enpoint, string subpath = null)
@@ -31,7 +45,7 @@ namespace MGDataAccessLibrary.DataAccess
             {
                 Console.WriteLine("**** Re -logged in ****");
                 TokenExpiry = default;
-                await BussinessLogic.UserProcessor.Login(UserName, password: Password);
+                await RefreshAccessTokenWithtoken();
             }
             var myContent = JsonConvert.SerializeObject(item);
             var content = new StringContent(myContent, Encoding.UTF8, "application/json");
@@ -63,6 +77,7 @@ namespace MGDataAccessLibrary.DataAccess
         {
             WebClient.DefaultRequestHeaders.Remove("AccessToken");
             WebClient.DefaultRequestHeaders.Add("AccessToken", accessToken);
+            RefreshToken = accessToken;
 #if DEBUG
             TokenExpiry = DateTimeOffset.Now.AddMinutes(1);
 #else
@@ -70,13 +85,15 @@ namespace MGDataAccessLibrary.DataAccess
 #endif
         }
 
+
+
         public static async Task<T> PostRequest<T>(ApiEndPoint enpoint, string subpath = null)
         {
             if (TokenExpiry != default && TokenExpiry < DateTimeOffset.Now)
             {
                 TokenExpiry = default;
                 Console.WriteLine("**** Re -logged in ****");
-                await BussinessLogic.UserProcessor.Login(UserName, password: Password);
+                await RefreshAccessTokenWithtoken();
             }
             var path = enpoint.ToString();
             if (!string.IsNullOrWhiteSpace(subpath))
@@ -129,7 +146,7 @@ namespace MGDataAccessLibrary.DataAccess
             {
                 Console.WriteLine("**** Re -logged in ****");
                 TokenExpiry = default;
-                await BussinessLogic.UserProcessor.Login(UserName, password: Password);
+                await RefreshAccessTokenWithtoken();
             }
             var myContent = new FormUrlEncodedContent(item.ToKeyValue());
             var path = enpoint.ToString();
