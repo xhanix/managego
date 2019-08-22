@@ -15,25 +15,16 @@ namespace ManageGo
         public string TenantHomePhone { get; set; }
         public string TenantCellPhone { get; set; }
         public string TenantEmailAddress { get; set; }
+        [AlsoNotifyFor("UnitsListHeight")]
         public List<Unit> TenantUnits { get; set; }
-
+        [JsonIgnore]
+        public double UnitsListHeight => TenantUnits.Count * 25;
         [JsonIgnore]
         public string FullName => TenantFirstName + " " + TenantLastName;
 
-        private string firstUnitAddress;
         [JsonIgnore]
-        public string FirstUnitAddress
-        {
-            get
-            {
-                if (!string.IsNullOrWhiteSpace(firstUnitAddress))
-                    return firstUnitAddress;
-                if (TenantUnits is null || !TenantUnits.Any())
-                    return "No units for tenant!";
-                return TenantUnits.First().ShortAddress;
-            }
-            set => firstUnitAddress = value;
-        }
+        public string FirstUnitAddress => TenantUnits.Any() ? TenantUnits.Count > 1 ? TenantUnits.First().ShortAddress + $" +{TenantUnits.Count - 1} more buildings" : TenantUnits.First().ShortAddress : "No units for tenant!";
+
         [JsonIgnore]
         public string ShortDescription => FullName + ", " + FirstUnitAddress;
 

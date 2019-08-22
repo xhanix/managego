@@ -1,6 +1,7 @@
 ﻿using System;
 using ManageGo.Controls;
 using ManageGo.iOS;
+using UIKit;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.iOS;
 
@@ -13,10 +14,10 @@ namespace ManageGo.iOS
         protected override void OnElementChanged(ElementChangedEventArgs<ListView> e)
         {
             base.OnElementChanged(e);
-            if (e.NewElement != null)
+            if (e.NewElement != null && Control != null)
             {
-                var listView = this.Control as UIKit.UITableView;
-                listView.ShowsVerticalScrollIndicator = false;
+                Control.ShowsVerticalScrollIndicator = false;
+                Control.DecelerationRate = UIScrollView.DecelerationRateFast;
             }
         }
     }

@@ -148,13 +148,13 @@
                     <Grid Padding="14,8,18,8">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="auto" />
-                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="0.5*" />
+                            <ColumnDefinition Width="0.5*" />
                         </Grid.ColumnDefinitions>
                         <Button Grid.Column="1"
                                 FontSize="Small"
                                 TextColor="{StaticResource Grey-Mid-1}"
-                                Text="Close ticket"
+                                Text="{Binding CloseTicketButtonText}"
                                 Command="{Binding OnCloseTicketButtonTapped}"
                                 BackgroundColor="Transparent"
                                 HorizontalOptions="EndAndExpand" />
@@ -183,158 +183,186 @@
                              Content="{Binding PopContentView}"
                              VerticalOptions="FillAndExpand" />
             </StackLayout>
-            <StackLayout Grid.Row="2"
-                         BackgroundColor="#f4f4f4"
-                         Spacing="0">
-                <Grid Padding="18">
-                    <Frame BackgroundColor="White"
-                           CornerRadius="5"
-                           HasShadow="false"
-                           Padding="0,0,8,0">
-                        <controls:CustomListView ItemsSource="{Binding Comments}"
-                                                 IsRefreshing="{Binding IsBusy,Mode=OneWay}"
-                                                 ItemAppearing="Handle_ItemAppearing"
-                                                 x:Name="MyListView"
-                                                 VerticalOptions="StartAndExpand"
-                                                 RefreshCommand="{Binding OnListRefreshRequested}"
-                                                 IsPullToRefreshEnabled="true"
-                                                 SelectionMode="None"
-                                                 IsEnabled="{Binding ListIsEnabled}"
-                                                 HasUnevenRows="true"
-                                                 BackgroundColor="White"
-                                                 SeparatorVisibility="None">
-                            <x:Arguments>
-                                <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
-                            </x:Arguments>
-                            <ListView.ItemTemplate>
-                                <DataTemplate>
-                                    <ViewCell>
-                                        <StackLayout Orientation="Horizontal"
-                                                     Margin="0,0,4,0">
-                                            <StackLayout VerticalOptions="FillAndExpand"
-                                                         Margin="18,0,0,0">
-                                                <BoxView VerticalOptions="Start"
-                                                         HeightRequest="25.5"
-                                                         HorizontalOptions="Center"
-                                                         BackgroundColor="{Binding TopSideLineColor}"
-                                                         Opacity="0.25"
-                                                         WidthRequest="2" />
-                                                <Frame Padding="2"
-                                                       MinimumWidthRequest="6"
-                                                       WidthRequest="6"
-                                                       MinimumHeightRequest="6"
-                                                       HeightRequest="6"
-                                                       Margin="0,-8,0,0"
-                                                       CornerRadius="5"
-                                                       HasShadow="false"
-                                                       BorderColor="{Binding SideLineColor}"
-                                                       BackgroundColor="{Binding SideLineColor}" />
-                                                <BoxView VerticalOptions="FillAndExpand"
-                                                         HorizontalOptions="Center"
-                                                         Margin="0,-16,0,0"
-                                                         BackgroundColor="{Binding SideLineColor}"
-                                                         Opacity="0.25"
-                                                         WidthRequest="2" />
-                                            </StackLayout>
-                                            <StackLayout HorizontalOptions="FillAndExpand"
-                                                         VerticalOptions="Start"
-                                                         Spacing="0">
-                                                <Frame WidthRequest="{Binding PermittedEditorWidth,Source={x:Reference ThisPage}}"
-                                                       HorizontalOptions="FillAndExpand"
-                                                       VerticalOptions="Start"
-                                                       x:Name="FrameContainer"
-                                                       Padding="{Binding BubblePadding}"
-                                                       Margin="4,0,22,0"
-                                                       BackgroundColor="{Binding BubbleBackgroundColor}"
-                                                       HasShadow="false">
-                                                    <StackLayout Margin="4,12,6,0"
-                                                                 Spacing="0">
-                                                        <Label Margin="0,0,0,2"
-                                                               FormattedText="{Binding FirstLineText}"
-                                                               VerticalTextAlignment="Center"
-                                                               LineBreakMode="MiddleTruncation" />
-                                                        <controls:SelectableLabel WidthRequest="{Binding PermittedEditorWidth,Source={x:Reference ThisPage}}"
+
+            <Grid Padding="18"
+                  Grid.Row="2"
+                  BackgroundColor="#f4f4f4">
+                <Frame BackgroundColor="White"
+                       CornerRadius="5"
+                       HasShadow="false"
+                       Padding="0,0,8,0">
+                    <controls:CustomListView ItemsSource="{Binding Comments}"
+                                             IsRefreshing="{Binding IsBusy,Mode=OneWay}"
+                                             ItemAppearing="Handle_ItemAppearing"
+                                             x:Name="MyListView"
+                                             VerticalOptions="FillAndExpand"
+                                             RefreshCommand="{Binding OnListRefreshRequested}"
+                                             IsPullToRefreshEnabled="true"
+                                             SelectionMode="None"
+                                             IsEnabled="{Binding ListIsEnabled}"
+                                             HasUnevenRows="true"
+                                             BackgroundColor="White"
+                                             SeparatorVisibility="None">
+                        <x:Arguments>
+                            <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
+                        </x:Arguments>
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <ViewCell>
+                                    <Grid Margin="0,0,4,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <StackLayout
+                                            Grid.Column="0"
+                                            VerticalOptions="FillAndExpand"
+                                            Margin="18,-5,0,0">
+                                            <BoxView VerticalOptions="Start"
+                                                     HeightRequest="25.5"
+                                                     HorizontalOptions="Center"
+                                                     BackgroundColor="{Binding TopSideLineColor}"
+                                                     Opacity="0.25"
+                                                     WidthRequest="2" />
+                                            <Frame Padding="2"
+                                                   MinimumWidthRequest="6"
+                                                   WidthRequest="6"
+                                                   MinimumHeightRequest="6"
+                                                   HeightRequest="6"
+                                                   Margin="0,-8,0,0"
+                                                   CornerRadius="5"
+                                                   HasShadow="false"
+                                                   BorderColor="{Binding SideLineColor}"
+                                                   BackgroundColor="{Binding SideLineColor}" />
+                                            <BoxView VerticalOptions="FillAndExpand"
+                                                     HorizontalOptions="Center"
+                                                     Margin="0,-14,0,-2"
+                                                     BackgroundColor="{Binding SideLineColor}"
+                                                     Opacity="0.25"
+                                                     WidthRequest="2" />
+                                        </StackLayout>
+                                        <Grid Grid.Column="1">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+
+                                            <Frame
+                                                Grid.Row="0"
+                                                WidthRequest="{Binding PermittedEditorWidth,Source={x:Reference ThisPage}}"
+                                                HorizontalOptions="FillAndExpand"
+                                                VerticalOptions="FillAndExpand"
+                                                x:Name="FrameContainer"
+                                                Padding="{Binding BubblePadding}"
+                                                Margin="4,0,22,0"
+                                                BackgroundColor="{Binding BubbleBackgroundColor}"
+                                                HasShadow="false">
+                                                <Grid Margin="4,12,6,0">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto" />
+                                                        <RowDefinition Height="Auto" />
+                                                        <RowDefinition Height="Auto" />
+                                                    </Grid.RowDefinitions>
+                                                    <Label Margin="0,0,0,2"
+                                                           Grid.Row="0"
+                                                           FormattedText="{Binding FirstLineText}"
+                                                           VerticalTextAlignment="Center"
+                                                           LineBreakMode="MiddleTruncation" />
+
+                                                    <controls:SelectableLabel
+                                                        Grid.Row="1"
+                                                        HorizontalOptions="Fill"
+                                                        VerticalOptions="Fill"
+                                                        BackgroundColor="Transparent"
+                                                        Text="{Binding SecondLineText}"
+                                                        TextColor="#58595b"
+                                                        FontSize="Medium" />
+                                                    <StackLayout
+                                                        Grid.Row="2"
+                                                        Orientation="Horizontal">
+                                                        <Image Source="pet_blue.png"
+                                                               IsVisible="{Binding HasPet}"
+                                                               VerticalOptions="StartAndExpand"
+                                                               Margin="0,2,12,0" />
+                                                        <controls:SelectableLabel IsVisible="{Binding AccessNote,Converter={StaticResource StringToBoolConverter}}"
+                                                                                  WidthRequest="{Binding PermittedEditorWidth,Source={x:Reference ThisPage}}"
                                                                                   HorizontalOptions="Start"
+                                                                                  Text="{Binding AccessNote}"
                                                                                   BackgroundColor="Transparent"
-                                                                                  Text="{Binding SecondLineText,Mode=OneTime}"
                                                                                   TextColor="#58595b"
                                                                                   FontSize="Medium" />
-                                                        <StackLayout Orientation="Horizontal">
-                                                            <Image Source="pet_blue.png"
-                                                                   IsVisible="{Binding HasPet}"
-                                                                   VerticalOptions="StartAndExpand"
-                                                                   Margin="0,2,12,0" />
-                                                            <controls:SelectableLabel IsVisible="{Binding AccessNote,Converter={StaticResource StringToBoolConverter}}"
-                                                                                      WidthRequest="{Binding PermittedEditorWidth,Source={x:Reference ThisPage}}"
-                                                                                      HorizontalOptions="Start"
-                                                                                      Text="{Binding AccessNote}"
-                                                                                      BackgroundColor="Transparent"
-                                                                                      TextColor="#58595b"
-                                                                                      FontSize="Medium" />
-                                                        </StackLayout>
-                                                        <controls:NestedListView ItemsSource="{Binding Files}"
-                                                                                 SelectionMode="None"
-                                                                                 VerticalOptions="Start"
-                                                                                 BackgroundColor="Transparent"
-                                                                                 Margin="0,4,0,0"
-                                                                                 IsVisible="{Binding HasFiles}"
-                                                                                 SeparatorVisibility="None"
-                                                                                 HeightRequest="{Binding AttachedFilesListHeight}">
-                                                            <x:Arguments>
-                                                                <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
-                                                            </x:Arguments>
-                                                            <ListView.ItemTemplate>
-                                                                <DataTemplate>
-                                                                    <ViewCell>
-                                                                        <Frame HasShadow="false"
-                                                                               Margin="0,8,0,0"
-                                                                               BackgroundColor="#f9fafb"
-                                                                               Padding="4">
-                                                                            <StackLayout Orientation="Horizontal">
-                                                                                <Label Text="{Binding Name}"
-                                                                                       VerticalOptions="CenterAndExpand"
-                                                                                       TextColor="#2f88f6"
-                                                                                       LineBreakMode="TailTruncation">
-                                                                                    <Label.GestureRecognizers>
-                                                                                        <TapGestureRecognizer NumberOfTapsRequired="1"
-                                                                                                              Command="{Binding BindingContext.OnAttachedFileTapped,Source={x:Reference ThisPage}}"
-                                                                                                              CommandParameter="{Binding .}" />
-                                                                                    </Label.GestureRecognizers>
-                                                                                </Label>
-                                                                            </StackLayout>
-                                                                        </Frame>
-                                                                    </ViewCell>
-                                                                </DataTemplate>
-                                                            </ListView.ItemTemplate>
-                                                        </controls:NestedListView>
                                                     </StackLayout>
-                                                </Frame>
-                                                <Label Text="Internal"
-                                                       IsVisible="{Binding InternalLabelIsVisible}"
-                                                       FontSize="Small"
-                                                       Margin="10,2,0,0"
-                                                       TextColor="{Binding SideLineColor}" />
-                                                <BoxView IsVisible="{Binding IsNotTheLastComment}"
-                                                         HeightRequest="1"
-                                                         Opacity="0.25"
-                                                         Margin="9,12,18,9"
-                                                         HorizontalOptions="FillAndExpand"
-                                                         BackgroundColor="#808285" />
-                                            </StackLayout>
-                                        </StackLayout>
-                                    </ViewCell>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </controls:CustomListView>
-                    </Frame>
-                </Grid>
-                <Image Source="gradient.png"
-                       InputTransparent="true"
-                       Aspect="Fill"
-                       HeightRequest="80"
-                       Margin="0,-80,0,0"
-                       IsVisible="{Binding ReplyBoxIsVisible}" />
-            </StackLayout>
+                                                    <controls:NestedListView
+                                                        Grid.Row="3"
+                                                        ItemsSource="{Binding Files}"
+                                                        SelectionMode="None"
+                                                        VerticalOptions="Start"
+                                                        BackgroundColor="Transparent"
+                                                        Margin="0,4,0,0"
+                                                        SeparatorVisibility="None"
+                                                        HeightRequest="{Binding AttachedFilesListHeight}">
+                                                        <x:Arguments>
+                                                            <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
+                                                        </x:Arguments>
+                                                        <ListView.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <ViewCell>
+                                                                    <Frame HasShadow="false"
+                                                                           Margin="0,8,0,0"
+                                                                           BackgroundColor="#f9fafb"
+                                                                           Padding="4">
+                                                                        <StackLayout Orientation="Horizontal">
+                                                                            <Label Text="{Binding Name}"
+                                                                                   VerticalOptions="CenterAndExpand"
+                                                                                   TextColor="#2f88f6"
+                                                                                   LineBreakMode="TailTruncation">
+                                                                                <Label.GestureRecognizers>
+                                                                                    <TapGestureRecognizer NumberOfTapsRequired="1"
+                                                                                                          Command="{Binding BindingContext.OnAttachedFileTapped,Source={x:Reference ThisPage}}"
+                                                                                                          CommandParameter="{Binding .}" />
+                                                                                </Label.GestureRecognizers>
+                                                                            </Label>
+                                                                        </StackLayout>
+                                                                    </Frame>
+                                                                </ViewCell>
+                                                            </DataTemplate>
+                                                        </ListView.ItemTemplate>
+                                                    </controls:NestedListView>
+                                                </Grid>
+                                            </Frame>
+
+
+                                            <Label Text="Internal"
+                                                   Grid.Row="1"
+                                                   IsVisible="{Binding InternalLabelIsVisible}"
+                                                   FontSize="Small"
+                                                   Margin="10,2,0,0"
+                                                   TextColor="{Binding SideLineColor}" />
+                                            <BoxView
+                                                Grid.Row="2"
+                                                IsVisible="{Binding IsNotTheLastComment}"
+                                                HeightRequest="1"
+                                                Opacity="0.25"
+                                                Margin="9,12,18,9"
+                                                HorizontalOptions="FillAndExpand"
+                                                BackgroundColor="#808285" />
+
+                                        </Grid>
+                                    </Grid>
+                                </ViewCell>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </controls:CustomListView>
+                </Frame>
+            </Grid>
+            <Image Source="gradient.png"
+                   InputTransparent="true"
+                   Aspect="Fill"
+                   HeightRequest="80"
+                   Margin="0,-80,0,0"
+                   IsVisible="{Binding ReplyBoxIsVisible}" />
+
             <!-- Event action sheet -->
             <!-- IsVisible="{Binding EventActionSheetIsVisible}" -->
             <Grid Grid.Row="2"
@@ -975,20 +1003,83 @@
                        TextColor="White" />
             </StackLayout>
         </Frame>
+        <!-- {Binding IsUploadingFiles} -->
+        <Frame
+            IsVisible="{Binding IsUploadingFiles}"
+            HasShadow="false"
+            BackgroundColor="Transparent"
+            RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent, Property=Width,Factor=1}"
+            RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent, Property=Height,Factor=1}"
+            RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent, Property=Height,Factor=0}"
+            RelativeLayout.XConstraint="{ConstraintExpression Type=RelativeToParent, Property=Width,Factor=0}">
+            <Frame VerticalOptions="CenterAndExpand"
+                   BackgroundColor="#99000000"
+                   HasShadow="False"
+                   HorizontalOptions="CenterAndExpand">
+                <StackLayout>
+                    <ActivityIndicator Color="White"
+                                       IsRunning="true"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center" />
+                    <Label Text="Upload in progress..."
+                           FontSize="Small"
+                           HorizontalTextAlignment="Center"
+                           TextColor="White" />
+                </StackLayout>
+            </Frame>
+        </Frame>
+        <!-- {Binding IsCreatingEvent} -->
+        <Frame
+            IsVisible="{Binding IsCreatingEvent}"
+            HasShadow="false"
+            BackgroundColor="Transparent"
+            RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent, Property=Width,Factor=1}"
+            RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent, Property=Height,Factor=1}"
+            RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent, Property=Height,Factor=0}"
+            RelativeLayout.XConstraint="{ConstraintExpression Type=RelativeToParent, Property=Width,Factor=0}">
+            <Frame VerticalOptions="CenterAndExpand"
+                   BackgroundColor="#99000000"
+                   HasShadow="False"
+                   HorizontalOptions="CenterAndExpand">
+                <StackLayout>
+                    <ActivityIndicator Color="White"
+                                       IsRunning="true"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center" />
+                    <Label Text="Sending..."
+                           FontSize="Small"
+                           HorizontalTextAlignment="Center"
+                           TextColor="White" />
+                </StackLayout>
+            </Frame>
+        </Frame>
         <!-- IsVisible="{Binding ShouldShowClock}" -->
         <Grid x:Name="ClockPopupBackground"
               IsVisible="{Binding ShouldShowClock}"
               RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent, Property=Width,Factor=1}"
               RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent, Property=Height,Factor=1}"
               BackgroundColor="#7D000000">
-            <Image Source="close_white.png"
-                   WidthRequest="45"
-                   HeightRequest="45"
-                   InputTransparent="true"
-                   Margin="0,25,15,0"
-                   HorizontalOptions="EndAndExpand"
-                   VerticalOptions="StartAndExpand" />
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <StackLayout Grid.Row="0">
+                <Image
+                    Grid.Row="0"
+                    Source="close_white.png"
+                    WidthRequest="45"
+                    HeightRequest="45"
+                    InputTransparent="true"
+                    Margin="0,25,15,0"
+                    HorizontalOptions="End"
+                    VerticalOptions="Start" />
+                <StackLayout.GestureRecognizers>
+                    <TapGestureRecognizer NumberOfTapsRequired="1"
+                                          Command="{Binding OnCloseTimePickerTapped}" />
+                </StackLayout.GestureRecognizers>
+            </StackLayout>
             <Frame HasShadow="false"
+                   Grid.Row="1"
                    InputTransparent="false"
                    Margin="16,0,16,0"
                    HorizontalOptions="CenterAndExpand"
@@ -1024,7 +1115,7 @@
                             </Image.GestureRecognizers>
                         </Image>
                     </Grid>
-                    <local:MGTimePicker Time="{Binding PickedTime,Mode=TwoWay}" />
+                    <local:MGTimePicker Time="{Binding ClockTime,Mode=TwoWay}" />
                     <Button Command="{Binding OnSetTimeFromPickerTapped}"
                             HorizontalOptions="FillAndExpand"
                             Text="Set time"
@@ -1037,10 +1128,7 @@
                     <TapGestureRecognizer NumberOfTapsRequired="1" />
                 </Frame.GestureRecognizers>
             </Frame>
-            <Grid.GestureRecognizers>
-                <TapGestureRecognizer NumberOfTapsRequired="1"
-                                      Command="{Binding OnCloseTimePickerTapped}" />
-            </Grid.GestureRecognizers>
+
         </Grid>
         <RelativeLayout.GestureRecognizers>
             <SwipeGestureRecognizer Direction="Right"

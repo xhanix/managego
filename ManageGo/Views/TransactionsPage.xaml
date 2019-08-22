@@ -10,6 +10,7 @@
     <ContentPage.Resources>
         <local:InverseBoolConverter x:Key="InverseBoolConverter" />
         <local:PaymentStatusOverwrite x:Key="PaymentStatusOverwrite" />
+        <local:TransactionAmountToStatusText x:Key="TransactionAmountToStatusText" />
     </ContentPage.Resources>
     <RelativeLayout>
         <Grid RowSpacing="0"
@@ -206,7 +207,7 @@
                                                             <Span Text=" &#8226;  "
                                                                   FontSize="Small"
                                                                   TextColor="{StaticResource Grey-Light-1}" />
-                                                            <Span Text="{Binding TransactionDate, StringFormat={StaticResource DateTimeToHeaderString}}"
+                                                            <Span Text="{Binding TransactionDate, StringFormat={StaticResource DateTimeToTransactionsHeaderString}}"
                                                                   FontSize="Small"
                                                                   TextColor="{StaticResource Grey-Light-1}" />
                                                         </FormattedString>
@@ -271,7 +272,6 @@
                                                     <ListView.ItemTemplate>
                                                         <DataTemplate>
                                                             <ViewCell>
-
                                                                 <StackLayout Spacing="0"
                                                                              VerticalOptions="Start">
                                                                     <Label VerticalOptions="Start">
@@ -283,7 +283,7 @@
                                                                                 <Span Text="  &#9679;  "
                                                                                       FontSize="Micro"
                                                                                       TextColor="{StaticResource Grey-Light-1}" />
-                                                                                <Span Text="{Binding TransactionDate,StringFormat={StaticResource DateTimeToHeaderString}}"
+                                                                                <Span Text="{Binding TransactionDate,StringFormat={StaticResource DateTimeToTransactionsHeaderString}}"
                                                                                       FontSize="Small"
                                                                                       TextColor="{StaticResource Grey-Light-1}" />
                                                                                 <Span Text="  &#9679;  "
@@ -300,12 +300,6 @@
                                                                            VerticalOptions="Start"
                                                                            FontSize="Small"
                                                                            TextColor="{StaticResource Grey-Mid-1}" />
-                                                                    <Label Text="{Binding TransactionStatus,Converter={StaticResource PaymentStatusOverwrite}}"
-                                                                           IsVisible="{Binding ShowStatusText}"
-                                                                           HorizontalTextAlignment="Start"
-                                                                           FontSize="Small"
-                                                                           TextColor="{StaticResource Red}"
-                                                                           VerticalOptions="Center" />
 
                                                                     <StackLayout Orientation="Horizontal"
                                                                                  Margin="0,4,0,0">
@@ -314,10 +308,12 @@
                                                                                FontSize="Small"
                                                                                HorizontalOptions="Start"
                                                                                VerticalOptions="Center" />
-                                                                        <Label Text="{Binding TransactionStatus,Converter={StaticResource PaymentStatusOverwrite}}"
+                                                                        <Label Text="{Binding Amount,Converter={StaticResource TransactionAmountToStatusText}}"
+                                                                               TextColor="{Binding StatusColor}"
                                                                                HorizontalTextAlignment="Start"
                                                                                FontSize="Small"
-                                                                               TextColor="{StaticResource Grey-Mid-1}"
+                                                                               Margin="0,2,0,0"
+                                                                               VerticalTextAlignment="Center"
                                                                                VerticalOptions="Center" />
                                                                     </StackLayout>
                                                                     <BoxView HeightRequest="1"

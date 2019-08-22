@@ -198,6 +198,29 @@ namespace ManageGo
             base.ViewIsAppearing(sender, e);
             Buildings = App.Buildings;
             SelectedBuildingsString = "Select";
+            SelectedUnitString = "Select";
+            SelectedTenantString = "Select";
+            if (Buildings != null)
+            {
+                foreach (var b in Buildings)
+                {
+                    b.IsSelected = false;
+                }
+            }
+            if (Units != null)
+            {
+                foreach (var b in Units)
+                {
+                    b.IsSelected = false;
+                }
+            }
+            if (Tenants != null)
+            {
+                foreach (var b in Tenants)
+                {
+                    b.IsSelected = false;
+                }
+            }
         }
 
         public bool NothingFetched { get; private set; }
@@ -246,6 +269,11 @@ namespace ManageGo
                     }
                     else
                         FetchedPayments = new ObservableCollection<Payment>();
+                    foreach (var payment in fetchedPayments)
+                    {
+                        Console.WriteLine(payment.TransactionDate);
+                    }
+
                     CanGetMorePages = FetchedPayments != null && FetchedPayments.Count == ParameterItem.PageSize;
 
                 }
@@ -319,7 +347,7 @@ namespace ManageGo
                 return new FreshAwaitCommand((par, tcs) =>
                 {
                     var payment = (Payment)par;
-                    var alreadyExpandedItem = FetchedPayments.FirstOrDefault(t => t.DetailsShown && t.PaymentId != payment.PaymentId);
+                    var alreadyExpandedItem = FetchedPayments?.FirstOrDefault(t => t.DetailsShown && t.PaymentId != payment.PaymentId);
                     if (alreadyExpandedItem != null)
                         alreadyExpandedItem.DetailsShown = false;
                     payment.DetailsShown = !payment.DetailsShown;
@@ -383,7 +411,7 @@ namespace ManageGo
             }
             else if (Buildings.Count(t => t.IsSelected) == 1)
             {
-                SelectedBuildingsString = Buildings.First(t => t.IsSelected).BuildingName;
+                SelectedBuildingsString = Buildings.First(t => t.IsSelected).BuildingShortAddress;
                 var details = await Services.DataAccess.GetBuildingDetails(Buildings.First(t => t.IsSelected).BuildingId);
                 Units = details.Units;
             }

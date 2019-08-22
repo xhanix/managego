@@ -47,7 +47,7 @@ namespace ManageGo
             {
                 if (Tenants is null || !Tenants.Any())
                 {
-                    return "Empty";
+                    return string.Empty;
                 }
                 return string.Join(", ", Tenants.Select(t => t.FullName));
             }

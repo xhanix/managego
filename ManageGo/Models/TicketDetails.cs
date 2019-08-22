@@ -16,6 +16,7 @@ namespace ManageGo
         public List<Categories> Categories { get; set; }
         public bool IsAccessGranted { get; set; }
         public Models.AccessGrantedObject AccessGrantedObject { get; set; }
+        public List<int> Assigned { get; set; }
 
     }
 }

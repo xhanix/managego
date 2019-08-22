@@ -25,16 +25,11 @@ namespace ManageGo
         [AlsoNotifyFor("FirstLineText")]
         public string Name
         {
-            get
-            {
-                return CommentType == CommentTypes.Access ? "Access Granted"
+            get => CommentType == CommentTypes.Access ? "Access Granted"
                     : CommentType == CommentTypes.WorkOrder ? "Work order"
                     : CommentType == CommentTypes.Event ? "Event" : name;
-            }
-            set
-            {
-                name = value;
-            }
+
+            set => name = value;
         }
         [AlsoNotifyFor("FirstLineText")]
         public string CommentCreateTime { get; set; }
@@ -46,16 +41,10 @@ namespace ManageGo
         public bool HasPet { get; set; }
 
         [JsonIgnore]
-        public Thickness BubblePadding
-        {
-            get
-            {
-                return CommentType == CommentTypes.Management || CommentType == CommentTypes.Internal ||
+        public Thickness BubblePadding => CommentType == CommentTypes.Management || CommentType == CommentTypes.Internal ||
                                                   CommentType == CommentTypes.Resident
                                    ? new Thickness(0, 2, 0, 2) : new Thickness(22, 2, 22, 2);
 
-            }
-        }
 
         [JsonIgnore]
         public FormattedString FirstLineText
@@ -78,13 +67,7 @@ namespace ManageGo
         }
 
         [JsonIgnore]
-        public string SecondLineText
-        {
-            get
-            {
-                return Text ?? string.Empty;
-            }
-        }
+        public string SecondLineText => Text ?? string.Empty;
 
         [JsonIgnore]
         public bool BottomSeparatorIsVisible

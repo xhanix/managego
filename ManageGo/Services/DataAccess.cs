@@ -31,6 +31,7 @@ namespace ManageGo.Services
 
             DependencyService.Get<IGoogleCloudMessagingHelper>().SubscribeToTopic($"{result.UserInfo.UserID}");
             var perm = result.Permissions;
+            App.PMCName = result.PMCInfo.PMCName;
             //reset the permissions on log in
             App.UserPermissions = UserPermissions.None;
             if (perm.CanAccessPayments)
@@ -154,7 +155,7 @@ namespace ManageGo.Services
                 MGDataAccessLibrary.DataAccess.ApiEndPoint.CreateTicket, null)).TicketID;
 
 
-        public static async Task<int> SendNewCommentAsync(Dictionary<string, object> parameters)
+        public static async Task<int> SendNewCommentAsync(MGDataAccessLibrary.Models.AddNewCommentRequestItem parameters)
         => (await MGDataAccessLibrary.DataAccess.WebAPI
                 .PostItem<object, SendCommentResponse>(parameters,
                 MGDataAccessLibrary.DataAccess.ApiEndPoint.TicketNewComment, null)).CommentID;
@@ -167,9 +168,9 @@ namespace ManageGo.Services
                 MGDataAccessLibrary.DataAccess.ApiEndPoint.CreateWorkOrder, null)).WorkOrderID;
 
 
-        public static async Task<byte[]> GetCommentFile(Dictionary<string, object> parameters)
+        public static async Task<byte[]> GetCommentFile(MGDataAccessLibrary.Models.CommentFileRequestItem item)
         => await MGDataAccessLibrary.DataAccess.WebAPI
-                .PostItem<object, byte[]>(parameters,
+                .PostItem<object, byte[]>(item,
                 MGDataAccessLibrary.DataAccess.ApiEndPoint.GetTicketFile, null);
 
 
@@ -178,7 +179,7 @@ namespace ManageGo.Services
         public static async Task UploadFile(File file)
         {
 
-            await MGDataAccessLibrary.DataAccess.WebAPI
+            var result = await MGDataAccessLibrary.DataAccess.WebAPI
                 .PostItem<object, object>(new
                 {
                     CommentID = file.ParentComment,
@@ -191,12 +192,14 @@ namespace ManageGo.Services
 
         public static async Task UploadCompleted(int commentId)
         {
+            var completedRequestItem = new MGDataAccessLibrary.Models.UploadCompletedRequestItem
+            {
+                CommentID = commentId
+            };
+
             await MGDataAccessLibrary.DataAccess.WebAPI
-                .PostItem<object, object>(new
-                {
-                    CommentID = commentId
-                },
-                MGDataAccessLibrary.DataAccess.ApiEndPoint.CommentNewFile, null);
+                .PostItem<object, object>(completedRequestItem,
+                MGDataAccessLibrary.DataAccess.ApiEndPoint.CommentFilesCompleted, null);
         }
         #endregion
 

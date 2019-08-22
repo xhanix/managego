@@ -140,7 +140,7 @@
                                         <StackLayout Orientation="Horizontal"
                                                      Padding="0,6,0,6">
                                             <Image Source="{Binding CheckBoxImage}" />
-                                            <Label Text="{Binding BuildingName}"
+                                            <Label Text="{Binding BuildingShortAddress}"
                                                    VerticalOptions="CenterAndExpand"
                                                    LineBreakMode="TailTruncation"
                                                    FontSize="Small" />

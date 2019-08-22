@@ -163,6 +163,7 @@ namespace ManageGo
 
                     // FetchedTickets is null on view init
                     var fetchedTransactions = await Services.DataAccess.GetTransactionsAsync(ParameterItem);
+
                     if (fetchedTransactions != null)
                         FetchedTransactions = new ObservableCollection<BankTransaction>(fetchedTransactions);
                     else

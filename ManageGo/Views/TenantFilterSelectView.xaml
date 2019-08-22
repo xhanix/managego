@@ -7,6 +7,7 @@
              x:Class="ManageGo.TenantFilterSelectView">
     <ContentView.Resources>
         <local:FilterFieldStringToColor x:Key="FilterFieldStringToColor" />
+        <local:BoolToCheckBoxIconSource x:Key="BoolToCheckBoxIconSource" />
     </ContentView.Resources>
     <ScrollView>
         <StackLayout Spacing="0">
@@ -54,7 +55,7 @@
                                         <StackLayout Orientation="Horizontal"
                                                      Margin="0,12,0,0">
                                             <Image Source="{Binding CheckBoxImage}" />
-                                            <Label Text="{Binding BuildingName}"
+                                            <Label Text="{Binding BuildingShortAddress}"
                                                    VerticalOptions="CenterAndExpand"
                                                    LineBreakMode="TailTruncation"
                                                    FontSize="Small" />
@@ -174,7 +175,7 @@
                         <StackLayout IsVisible="{Binding FilterStatusExpanded}">
                             <StackLayout Orientation="Horizontal"
                                          Margin="0,12,0,0">
-                                <Image Source="{Binding ActiveTenantCheckBoxImage}" />
+                                <Image Source="{Binding SelectedActiveTenantFilter, Converter={StaticResource BoolToCheckBoxIconSource}}" />
                                 <Label Text="Active"
                                        VerticalOptions="CenterAndExpand"
                                        LineBreakMode="TailTruncation"
@@ -187,7 +188,7 @@
                             </StackLayout>
                             <StackLayout Orientation="Horizontal"
                                          Margin="0,12,0,0">
-                                <Image Source="{Binding InActiveTenantCheckBoxImage}" />
+                                <Image Source="{Binding SelectedInActiveTenantFilter, Converter={StaticResource BoolToCheckBoxIconSource}}" />
                                 <Label Text="Inactive"
                                        VerticalOptions="CenterAndExpand"
                                        LineBreakMode="TailTruncation"

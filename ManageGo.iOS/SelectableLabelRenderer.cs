@@ -1,5 +1,7 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
+using CoreGraphics;
 using ManageGo.Controls;
 using ManageGo.iOS;
 using UIKit;
@@ -15,19 +17,21 @@ namespace ManageGo.iOS
         {
             base.OnElementChanged(e);
 
-            if (Control == null) return;
-
-            Control.Selectable = true;
-            Control.Editable = false;
-            Control.ScrollEnabled = false;
-            Control.TextContainerInset = UIEdgeInsets.Zero;
-            //Control.TextContainer.LineFragmentPadding = 0;
-            Control.TextContainer.LineBreakMode = UILineBreakMode.WordWrap;
-            Control.TextContainer.WidthTracksTextView = true;
-            Control.BackgroundColor = new UIColor(0, 0);
-
+            if (Control != null && e.NewElement != null)
+            {
+                Control.Selectable = true;
+                Control.Editable = false;
+                Control.ScrollEnabled = false;
+                Control.TextContainerInset = UIEdgeInsets.Zero;
+                //Control.TextContainer.LineFragmentPadding = 0;
+                Control.TextContainer.LineBreakMode = UILineBreakMode.WordWrap;
+                Control.TextContainer.WidthTracksTextView = true;
+                Control.BackgroundColor = new UIColor(0, 0);
+            }
 
         }
+
+
     }
 
 }

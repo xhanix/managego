@@ -29,6 +29,8 @@ namespace ManageGo.Services
         public async static Task<(byte[], string)> PickPhotoAndVideos()
         {
             Tuple<Stream, string, MGFileType> result = await DependencyService.Get<IPicturePicker>().GetImageStreamAsync();
+            if (result is null || result.Item1 is null || string.IsNullOrWhiteSpace(result.Item2))
+                return (new byte[0], string.Empty);
             using (MemoryStream ms = new MemoryStream())
             {
                 result.Item1.CopyTo(ms);

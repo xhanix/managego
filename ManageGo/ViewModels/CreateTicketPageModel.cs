@@ -406,14 +406,24 @@ namespace ManageGo
                 async void execute(TaskCompletionSource<bool> tcs)
                 {
                     AttachActionSheetIsVisible = false;
-                    var result = await Services.PhotoHelper.PickPhotoAndVideos();
-                    if (result.Item1 != null)
+                    try
                     {
-                        AttachedFile = new File { Content = result.Item1, Name = result.Item2 };
-                        RaisePropertyChanged("ReplyAttachedFilesIsVisible");
-                        RaisePropertyChanged("ReplyAttachedFilesListHeight");
+                        var result = await Services.PhotoHelper.PickPhotoAndVideos();
+                        if (result.Item1 != null)
+                        {
+                            AttachedFile = new File { Content = result.Item1, Name = result.Item2 };
+                            RaisePropertyChanged("ReplyAttachedFilesIsVisible");
+                            RaisePropertyChanged("ReplyAttachedFilesListHeight");
+                        }
                     }
-                    tcs?.SetResult(true);
+                    catch (Exception ex)
+                    {
+                        await CoreMethods.DisplayAlert("ManageGo", ex.Message, "Dismiss");
+                    }
+                    finally
+                    {
+                        tcs?.SetResult(true);
+                    }
                 }
                 return new FreshAwaitCommand(execute);
             }
@@ -657,7 +667,7 @@ namespace ManageGo
                     {
                         await CoreMethods.DisplayAlert("Something went wrong", ex.Message, "DISMISS");
                     }
-                    AddressLabelText = building.BuildingName;
+                    AddressLabelText = building.BuildingShortAddress;
                     foreach (var b in Buildings.Where(t => t.IsSelected && t.BuildingId != building.BuildingId))
                     {
                         b.IsSelected = false;

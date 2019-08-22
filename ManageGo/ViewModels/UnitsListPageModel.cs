@@ -53,12 +53,15 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand(async (par, tcs) =>
+                async void execute(object par, TaskCompletionSource<bool> tcs)
                 {
                     Unit unit = (Unit)par;
+                    if (string.IsNullOrWhiteSpace(unit.FormattedTenantNames))
+                        return;
                     await CoreMethods.PushPageModel<TenantsPageModel>(data: unit.BuildingId, modal: false);
                     tcs?.SetResult(true);
-                });
+                }
+                return new FreshAwaitCommand(execute);
             }
         }
 
@@ -75,7 +78,7 @@ namespace ManageGo
                 {
                     u.BuildingId = BuildingId;
                 }
-                BuildingName = buildingDetails.BuildingName;
+                BuildingName = buildingDetails.BuildingShortAddress;
                 HasLoaded = true;
             }
             catch (Exception ex)

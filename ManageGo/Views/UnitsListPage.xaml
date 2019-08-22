@@ -47,7 +47,7 @@
                              Spacing="12"
                              Padding="22,18,0,18">
                     <Image Source="building_grey.png" />
-                    <Label Text="{Binding BuildingName}"
+                    <Label Text="{Binding BuildingShortAddress}"
                            FontSize="Medium"
                            FontAttributes="Bold"
                            TextColor="{StaticResource Grey-Dark-1}" />

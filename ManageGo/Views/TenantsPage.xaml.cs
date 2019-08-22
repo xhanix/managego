@@ -13,6 +13,14 @@ namespace ManageGo
             NavigationPage.SetHasNavigationBar(this, false);
         }
 
+        public async void Hanlde_ItemAppearing(object sender, ItemVisibilityEventArgs e)
+        {
+            if (this.BindingContext != null)
+            {
+                await ((TenantsPageModel)BindingContext).OnItemAppeared((Tenant)e.Item);
+            }
+        }
+
         void Handle_Tapped(object sender, System.EventArgs e)
         {
             var st = (Frame)sender;

@@ -20,17 +20,8 @@ namespace ManageGo
         public bool FilterUnitsExpanded { get; set; }
         public bool FilterStatusExpanded { get; set; }
         public string SelectedUnitString { get; set; }
-        public bool FilterButtonIsEnabled
-        {
-            get
-            {
-                var selectedBuilding = Buildings.Any(t => t.IsSelected);
-                var statusSelected = SelectedActiveTenantFilter != SelectedInActiveTenantFilter;
-                var hasKeywords = !string.IsNullOrWhiteSpace(FilterKeywords);
-                return selectedBuilding || statusSelected || hasKeywords;
-            }
-        }
-        [AlsoNotifyFor("FilterButtonIsEnabled")]
+        public bool CanFilter => Buildings.Any(t => t.IsSelected) || !string.IsNullOrWhiteSpace(FilterKeywords);
+        [AlsoNotifyFor("CanFilter")]
         public string FilterKeywords { get; set; }
         public View PopContentView { get; private set; }
         public bool ListIsEnabled { get; set; }
@@ -38,35 +29,16 @@ namespace ManageGo
         public List<Building> Buildings { get; set; }
         public List<Unit> Units { get; set; }
         public ObservableCollection<Tenant> FetchedTenants { get; set; }
-        private int LastLoadedItemId { get; set; }
         private int CurrentListPage { get; set; }
         private bool CanGetMorePages { get; set; }
         public Models.TenantRequestItem CurrentFilter { get; private set; }
         public Models.TenantRequestItem ParameterItem { get; set; }
         public string NumberOfAppliedFilters { get; internal set; } = " ";
-        [AlsoNotifyFor("FilterButtonIsEnabled")]
+        [AlsoNotifyFor("CanFilter")]
         public string SelectedBuildingsString { get; set; }
-        [AlsoNotifyFor("FilterButtonIsEnabled")]
         public bool SelectedActiveTenantFilter { get; set; }
-        [AlsoNotifyFor("FilterButtonIsEnabled")]
         public bool SelectedInActiveTenantFilter { get; set; }
         public bool BackbuttonIsVisible { get; private set; }
-        public string ActiveTenantCheckBoxImage
-        {
-            get
-            {
-                return !SelectedActiveTenantFilter ? "unchecked.png" : "checked.png";
-            }
-        }
-        public string InActiveTenantCheckBoxImage
-        {
-
-            get
-            {
-                return !SelectedInActiveTenantFilter ? "unchecked.png" : "checked.png";
-            }
-        }
-
         public string SelectedStatusFlagsString
         {
             get
@@ -127,7 +99,7 @@ namespace ManageGo
         internal override async Task LoadData(bool refreshData = false, bool FetchNextPage = false)
         {
             NothingFetched = false;
-            var selectedBuildingAddress = Buildings?.Count(b => b.IsSelected) == 1 ? Buildings.First(b => b.IsSelected).BuildingName : null;
+            var selectedBuildingAddress = Buildings?.Count(b => b.IsSelected) == 1 ? Buildings.First(b => b.IsSelected).BuildingShortAddress : null;
             try
             {
                 if (FetchNextPage && ParameterItem != null)
@@ -139,24 +111,17 @@ namespace ManageGo
                     {
                         foreach (var item in nextPage)
                         {
-                            if (!string.IsNullOrWhiteSpace(selectedBuildingAddress))
-                                item.FirstUnitAddress = selectedBuildingAddress;
                             FetchedTenants.Add(item);
                         }
                     }
                     CanGetMorePages = nextPage != null && nextPage.Count() == ParameterItem.PageSize;
-                    var lastIdx = FetchedTenants.IndexOf(FetchedTenants.Last());
-                    var index = Math.Floor(lastIdx / 2d);
-                    var markedItem = FetchedTenants.ElementAt((int)index);
-                    LastLoadedItemId = markedItem.TenantID;
+
                 }
                 else
                 {
                     HasLoaded = false;
                     if (ParameterItem is null)
-                    {
                         ParameterItem = new Models.TenantRequestItem();
-                    }
                     if (refreshData)
                         ParameterItem.Page = 1;
                     List<Tenant> tenantsAsync = (await DataAccess.GetTenantsAsync(ParameterItem)).ToList();
@@ -164,26 +129,13 @@ namespace ManageGo
                         FetchedTenants = new ObservableCollection<Tenant>(tenantsAsync);
                     else
                         FetchedTenants = new ObservableCollection<Tenant>();
-                    if (FetchedTenants != null && FetchedTenants.Any() && !string.IsNullOrWhiteSpace(selectedBuildingAddress))
-                    {
-                        foreach (var t in FetchedTenants)
-                        {
-                            t.FirstUnitAddress = selectedBuildingAddress;
-                        }
-                    }
 
                     CanGetMorePages = FetchedTenants != null && FetchedTenants.Count == ParameterItem.PageSize;
-                    if (FetchedTenants.Any() && CanGetMorePages)
-                    {
-                        var lastIdx = FetchedTenants.IndexOf(FetchedTenants.Last());
-                        var index = Math.Floor(lastIdx / 2d);
-                        var markedItem = FetchedTenants.ElementAt((int)index);
-                        LastLoadedItemId = markedItem.TenantID;
-                    }
+
                     if (Buildings.Any(t => t.IsSelected) && Units is null)
                     {
                         var details = await DataAccess.GetBuildingDetails(Buildings.First(t => t.IsSelected).BuildingId);
-                        SelectedBuildingsString = details.BuildingName;
+                        SelectedBuildingsString = details.BuildingShortAddress;
                         Units = details.Units;
                     }
                 }
@@ -279,9 +231,16 @@ namespace ManageGo
                     {
                         if (str == "Inactive")
                             SelectedInActiveTenantFilter = !SelectedInActiveTenantFilter;
+                        if (!SelectedInActiveTenantFilter)
+                            SelectedActiveTenantFilter = true;
                     }
                     else
+                    {
                         SelectedActiveTenantFilter = !SelectedActiveTenantFilter;
+                        if (!SelectedActiveTenantFilter)
+                            SelectedInActiveTenantFilter = true;
+                    }
+
                     tcs?.SetResult(true);
                 }));
             }
@@ -292,6 +251,12 @@ namespace ManageGo
             {
                 async void execute(object parameter, TaskCompletionSource<bool> tcs)
                 {
+                    if (!CanFilter)
+                    {
+                        await CoreMethods.DisplayAlert("ManageGo", "Select a building or type in search bar", "OK");
+                        tcs?.SetResult(true);
+                        return;
+                    }
                     PopContentView = null;
                     FilterSelectViewIsShown = false;
                     ParameterItem = new Models.TenantRequestItem();
@@ -319,7 +284,7 @@ namespace ManageGo
                     await LoadData(refreshData: true);
                     tcs?.SetResult(true);
                 }
-                return new FreshAwaitCommand(execute, (arg) => FilterButtonIsEnabled);
+                return new FreshAwaitCommand(execute);
             }
         }
 
@@ -327,6 +292,23 @@ namespace ManageGo
         {
             base.ViewIsAppearing(sender, e);
             App.MasterDetailNav.IsGestureEnabled = false;
+            SelectedBuildingsString = "Select";
+            SelectedUnitString = "Select";
+            if (Buildings != null)
+            {
+                foreach (var b in Buildings)
+                {
+                    b.IsSelected = false;
+                }
+            }
+            if (Units != null)
+            {
+                foreach (var b in Units)
+                {
+                    b.IsSelected = false;
+                }
+            }
+
         }
 
         protected override void ViewIsDisappearing(object sender, EventArgs e)
@@ -344,6 +326,7 @@ namespace ManageGo
             Units = null;
             FilterUnitsExpanded = false;
             SelectedUnitString = "Select";
+            SelectedBuildingsString = "Select";
             ParameterItem = null;
             CurrentFilter = null;
             NumberOfAppliedFilters = " ";
@@ -351,10 +334,10 @@ namespace ManageGo
 
         public async Task OnItemAppeared(Tenant tenant)
         {
-            if (tenant.TenantID != LastLoadedItemId)
-                return;
-            CurrentListPage++;
-            await LoadData(true, false);
+            if (FetchedTenants != null && FetchedTenants.Last() == tenant && CanGetMorePages)
+            {
+                await LoadData(false, true);
+            }
         }
 
         public FreshAwaitCommand OnFilterTapped
@@ -469,17 +452,26 @@ namespace ManageGo
                     SelectedUnitString = "Select";
                     try
                     {
-                        var details = await DataAccess.GetBuildingDetails(building.BuildingId);
+                        /*
                         foreach (Building b in Buildings.Where(t => t.IsSelected && t.BuildingId != building.BuildingId))
                         {
                             b.IsSelected = false;
-                        }
+                        }*/
                         building.IsSelected = !building.IsSelected;
                         if (building.IsSelected)
-                            SelectedBuildingsString = building.BuildingName;
-                        else
-                            SelectedBuildingsString = string.Empty;
-                        Units = details.Units;
+                        {
+                            var details = await DataAccess.GetBuildingDetails(building.BuildingId);
+                            Units = details.Units;
+                        }
+                        var count = Buildings.Count(t => t.IsSelected);
+                        if (count > 0)
+                        {
+                            SelectedBuildingsString = Buildings.First(t => t.IsSelected).BuildingShortAddress;
+                            if (count > 1)
+                            {
+                                SelectedBuildingsString += $" + {count - 1} Buildings";
+                            }
+                        }
                     }
                     catch (Exception ex)
                     {

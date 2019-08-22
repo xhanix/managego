@@ -115,9 +115,9 @@
                              MinimumHeightRequest="75">
                     <Grid Padding="14,12,18,8">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="0.25*" />
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="0.25*" />
                         </Grid.ColumnDefinitions>
                         <Button Grid.Column="0"
                                 FontSize="Small"
@@ -125,7 +125,7 @@
                                 Text="Reset"
                                 Command="{Binding OnResetFiltersButtonTapped}"
                                 BackgroundColor="Transparent"
-                                HorizontalOptions="EndAndExpand" />
+                                HorizontalOptions="StartAndExpand" />
                         <Button Grid.Column="1"
                                 FontSize="Medium"
                                 TextColor="White"
@@ -231,10 +231,11 @@
                                                 </Grid.ColumnDefinitions>
                                                 <Image Grid.Column="0"
                                                        Source="awaiting_response.png"
+                                                       VerticalOptions="CenterAndExpand"
                                                        IsVisible="{Binding NeedReply}" />
                                                 <Label Grid.Column="1"
                                                        Text="{Binding TicketSubject}"
-                                                       VerticalOptions="StartAndExpand"
+                                                       VerticalOptions="CenterAndExpand"
                                                        TextColor="{StaticResource Grey-Mid-1}"
                                                        FontSize="Medium"
                                                        FontAttributes="Bold"

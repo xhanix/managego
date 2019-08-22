@@ -125,6 +125,7 @@
                     SelectionMode="None"
                     HasUnevenRows="true"
                     BackgroundColor="Transparent"
+                    ItemAppearing="Hanlde_ItemAppearing"
                     SeparatorVisibility="None"
                     Margin="22,18,22,18">
                     <x:Arguments>
@@ -167,12 +168,50 @@
                                             </StackLayout>
                                             <BoxView HeightRequest="1"
                                                      Margin="0,4,0,4"
+                                                     IsVisible="{Binding DetailsShown,Converter={StaticResource InverseBoolConverter}}"
                                                      BackgroundColor="{StaticResource Grey-Light-2}" />
                                             <Label Text="{Binding FirstUnitAddress}"
+                                                   HorizontalOptions="FillAndExpand"
                                                    FontSize="Small"
+                                                   IsVisible="{Binding DetailsShown,Converter={StaticResource InverseBoolConverter}}"
                                                    TextColor="{StaticResource Grey-Light-1}" />
+                                            <BoxView HeightRequest="1"
+                                                     IsVisible="{Binding DetailsShown}"
+                                                     Margin="0,4,0,4"
+                                                     BackgroundColor="{StaticResource Grey-Light-2}" />
+                                            <StackLayout VerticalOptions="Start">
+                                                <controls:NestedListView SeparatorVisibility="None"
+                                                                         HasUnevenRows="True"
+                                                                         SelectionMode="None"
+                                                                         HeightRequest="{Binding UnitsListHeight}"
+                                                                         ItemsSource="{Binding TenantUnits}"
+                                                                         IsVisible="{Binding DetailsShown}"
+                                                                         HorizontalScrollBarVisibility="Never"
+                                                                         VerticalScrollBarVisibility="Always">
+                                                    <x:Arguments>
+                                                        <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
+                                                    </x:Arguments>
+                                                    <ListView.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <ViewCell>
+                                                                <StackLayout Padding="0,4,0,4">
+                                                                    <Label Text="{Binding ShortAddress}"
+                                                                           FontSize="Small"
+                                                                           TextColor="{StaticResource Grey-Light-1}" />
+                                                                    <StackLayout.GestureRecognizers>
+                                                                        <TapGestureRecognizer />
+                                                                    </StackLayout.GestureRecognizers>
+                                                                </StackLayout>
+                                                            </ViewCell>
+                                                        </DataTemplate>
+                                                    </ListView.ItemTemplate>
+                                                </controls:NestedListView>
+                                            </StackLayout>
+                                            <BoxView HeightRequest="1"
+                                                     IsVisible="{Binding DetailsShown}"
+                                                     Margin="0,0,0,4"
+                                                     BackgroundColor="{StaticResource Grey-Light-2}" />
                                             <StackLayout IsVisible="{Binding DetailsShown}"
-                                                         Margin="0,8,0,0"
                                                          HorizontalOptions="FillAndExpand">
                                                 <StackLayout Orientation="Horizontal">
                                                     <Label Text="Email:"
