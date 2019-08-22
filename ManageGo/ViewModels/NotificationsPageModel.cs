@@ -11,6 +11,36 @@ namespace ManageGo
         public ObservableCollection<Models.PendingApprovalItem> FetchedNotifications { get; set; }
 
 
+        public override void Init(object initData)
+        {
+            base.Init(initData);
+            if (initData is bool _isModal)
+            {
+                IsModal = _isModal;
+                HamburgerIsVisible = !IsModal;
+            }
+        }
+
+        protected override void ViewIsAppearing(object sender, EventArgs e)
+        {
+            base.ViewIsAppearing(sender, e);
+            HamburgerIsVisible = !IsModal;
+        }
+
+
+        public FreshAwaitCommand OnBackbuttonTapped
+        {
+            get
+            {
+                async void execute(TaskCompletionSource<bool> tcs)
+                {
+                    await CoreMethods.PopPageModel(modal: CurrentPage.Navigation.ModalStack.Contains(CurrentPage), animate: false);
+                    tcs?.SetResult(true);
+                }
+                return new FreshAwaitCommand(execute);
+            }
+        }
+
         public FreshAwaitCommand ShowDetails
         {
             get
@@ -32,15 +62,18 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand(async (par, tcs) =>
+                async void execute(object par, TaskCompletionSource<bool> tcs)
                 {
                     Models.PendingApprovalItem item = (Models.PendingApprovalItem)par;
                     var confirmResult = await CoreMethods.DisplayActionSheet($"Confirm approval for {item.Tenant?.FullName}", "Cancel", "Approve");
                     if (confirmResult != "Approve")
+                    {
+                        tcs?.SetResult(true);
                         return;
+                    }
                     try
                     {
-                        await Services.DataAccess.ApproveItem(item);
+                        await MGDataAccessLibrary.BussinessLogic.NotificatinsProcessor.RespondToNotification(item.LeaseID, true);
                         FetchedNotifications.Remove(item);
                     }
                     catch (Exception ex)
@@ -48,11 +81,12 @@ namespace ManageGo
                         await CoreMethods.DisplayAlert("Something went wrong", ex.Message, "DISMISS");
                     }
                     tcs?.SetResult(true);
-                });
+                }
+                return new FreshAwaitCommand(execute);
             }
         }
 
-        internal override async Task LoadData(bool refreshData = false, bool applyNewFilter = false)
+        internal override async Task LoadData(bool refreshData = false, bool FetchNextPage = false)
         {
             try
             {
@@ -62,11 +96,12 @@ namespace ManageGo
             catch (Exception ex)
             {
                 APIhasFailed = true;
-                await CoreMethods.DisplayAlert("Something went wrong!", ex.Message, "DIMISS");
+                await CoreMethods.DisplayAlert("Something went wrong!", ex.Message, "Dismiss");
             }
             finally
             {
                 HasLoaded = true;
+                ((NotificationsPage)CurrentPage).DataLoaded();
             }
         }
     }

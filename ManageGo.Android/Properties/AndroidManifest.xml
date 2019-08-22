@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="1" package="com.ManageGo.ManageGo" android:versionCode="2">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="1.0.10" package="com.ManageGo.ManageGo" android:versionCode="15">
 	<uses-sdk android:minSdkVersion="23" android:targetSdkVersion="28" />
 	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -10,7 +10,7 @@
 	<uses-permission android:name="android.permission.WAKE_LOCK" />
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-feature android:name="android.hardware.camera.autofocus" />
-	<application android:label="ManageGo" android:icon="@drawable/icon">
+	<application android:label="ManageGo" android:icon="@drawable/ic_launcher">
 		<provider android:name="android.support.v4.content.FileProvider" android:authorities="${applicationId}.ManageGo.pcm" android:exported="false" android:grantUriPermissions="true">
 			<meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths"></meta-data>
 		</provider>
@@ -22,5 +22,6 @@
 				<category android:name="${applicationId}" />
 			</intent-filter>
 		</receiver>
+		<meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@drawable/not_icon_white" />
 	</application>
 </manifest>

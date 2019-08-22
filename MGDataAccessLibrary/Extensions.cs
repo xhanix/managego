@@ -5,12 +5,26 @@ using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace MGDataAccessLibrary
 {
     public static class Extensions
     {
+        public static async Task<T> ReadAsApiResponseForType<T>(this HttpContent content, string requestBody, string nodeName = null)
+        {
+            var responseString = await content.ReadAsStringAsync();
+            if (string.IsNullOrWhiteSpace(responseString))
+                return default;
+            var j = JsonConvert.DeserializeObject<Models.BaseApiResponse<T>>(responseString);
+            if (j.Status == Models.ResponseStatus.Error)
+            {
+                throw new Exception("Server error message: (" + j.ErrorMessage + ") App request: (" + requestBody + ")");
+            }
+            return j.Result;
+        }
+
         public static async Task<T> ReadAsObjectAsync<T>(this HttpContent content, string nodeName = null)
         {
             var responseString = await content.ReadAsStringAsync();

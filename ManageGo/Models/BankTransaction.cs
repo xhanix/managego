@@ -33,7 +33,7 @@ namespace ManageGo.Models
             }
         }
         public int TenantTransactionsCount { get; set; }
-        public List<PaymentBase> Payments { get; set; }
+        public List<Payment> Payments { get; set; }
 
         public string BuildingsCount
         {
@@ -80,7 +80,7 @@ namespace ManageGo.Models
         {
             get
             {
-                return Payments != null ? Payments.Count * 50 : 0;
+                return Payments != null ? Payments.Count * 80 : 0;
             }
         }
     }

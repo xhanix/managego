@@ -22,8 +22,14 @@ namespace ManageGo.iOS
                     Console.WriteLine("Plugin.ShareFile: ShareLocalFile Warning: localFilePath null or empty");
                     return;
                 }
+                var window = UIApplication.SharedApplication.KeyWindow;
+                var vc = window.RootViewController;
+                while (vc.PresentedViewController != null)
+                {
+                    vc = vc.PresentedViewController;
+                }
+                //var rootController = UIApplication.SharedApplication.KeyWindow.RootViewController;
 
-                var rootController = UIApplication.SharedApplication.KeyWindow.RootViewController;
                 var sharedItems = new List<NSObject>();
                 var fileName = Path.GetFileName(localFilePath);
 
@@ -39,7 +45,7 @@ namespace ManageGo.iOS
 
                 if (UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Phone)
                 {
-                    rootController.PresentViewController(activityViewController, true, null);
+                    vc.PresentViewController(activityViewController, true, null);
                 }
                 else
                 {

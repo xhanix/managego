@@ -8,12 +8,11 @@ namespace ManageGo
     public partial class MaintenanceTicketsPage : ContentPage
     {
         public event EventHandler<MaintenanceTicket> OnTicketAppeared;
+
         public MaintenanceTicketsPage()
         {
             InitializeComponent();
             NavigationPage.SetHasNavigationBar(this, false);
-
-
         }
 
         void Handle_Tapped(object sender, EventArgs e)
@@ -49,6 +48,22 @@ namespace ManageGo
         void Handle_ItemAppearing(object sender, ItemVisibilityEventArgs e)
         {
             OnTicketAppeared?.Invoke(this, (MaintenanceTicket)e.Item);
+        }
+
+        public void DataLoaded()
+        {
+            if (this.BindingContext != null)
+            {
+                MyListView.ItemsSource = ((MaintenanceTicketsPageModel)BindingContext).FetchedTickets;
+            }
+            MyListView.HasUnevenRows = !MyListView.HasUnevenRows;
+            MyListView.HasUnevenRows = !MyListView.HasUnevenRows;
+        }
+
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+            MyListView.ItemsSource = null;
         }
     }
 }

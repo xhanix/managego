@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Application xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="ManageGo.App">
+<Application xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ManageGo.App">
     <Application.Resources>
         <ResourceDictionary>
             <!-- Format -->
             <x:String x:Key="FormatDecimalToCurrency">{0:$#,##0.00}</x:String>
             <x:String x:Key="DateTimeToHeaderString">{0:MMM dd - hh:mm tt}</x:String>
-             <!-- Colors -->
+            <x:String x:Key="DateTimeToTransactionsHeaderString">{0:MMM dd}</x:String>
+            <!-- Colors -->
             <Color x:Key="Primary">#3E90F4</Color>
             <Color x:Key="Secondary">#60A6F5</Color>
             <Color x:Key="Tertiary">#FFFFFF</Color>
@@ -18,40 +21,65 @@
             <Color x:Key="Yellow">#e0a031</Color>
             <Color x:Key="Green">#55C433</Color>
             <Color x:Key="Red">#E13D40</Color>
-            <Style x:Key="Regular-Text" TargetType="Label">
+            <Style x:Key="Regular-Text"
+                   TargetType="Label">
             </Style>
-            <OnPlatform x:TypeArguments="x:String" x:Key="MonoBoldFont">
-                <On Platform="Android" Value="CourierPSStd-Bold.ttf#CourierPSMTStd-Bold" />
-                <On Platform="iOS" Value="CourierPSStd-Bold" />
+            <OnPlatform x:TypeArguments="x:String"
+                        x:Key="MonoBoldFont">
+                <On Platform="Android"
+                    Value="CourierPSStd-Bold.ttf#CourierPSMTStd-Bold" />
+                <On Platform="iOS"
+                    Value="CourierPSStd-Bold" />
             </OnPlatform>
-            <Style x:Key="Small-Text" TargetType="Label" BasedOn="{StaticResource Regular-Text}">
-                <Setter Property="FontSize" Value="Small" />
-            </Style> 
-            <Style x:Key="Primary-Small" TargetType="Label" BasedOn="{StaticResource Small-Text}">
-                <Setter Property="TextColor" Value="{StaticResource Primary}" />
+            <Style x:Key="Small-Text"
+                   TargetType="Label"
+                   BasedOn="{StaticResource Regular-Text}">
+                <Setter Property="FontSize"
+                        Value="Small" />
             </Style>
-            <Style x:Key="My-TitleFirstPart-Style" TargetType="Span">
-                <Setter Property="FontSize" Value="Medium" />
-                <Setter Property="FontAttributes" Value="Bold" />
-                <Setter Property="TextColor" Value="#58595b" />
+            <Style x:Key="Primary-Small"
+                   TargetType="Label"
+                   BasedOn="{StaticResource Small-Text}">
+                <Setter Property="TextColor"
+                        Value="{StaticResource Primary}" />
             </Style>
-            <Style x:Key="My-TitleSecondPart-Style" TargetType="Span">
-                <Setter Property="FontSize" Value="Small" />
-                <Setter Property="TextColor" Value="#a7a9ac" />
+            <Style x:Key="My-TitleFirstPart-Style"
+                   TargetType="Span">
+                <Setter Property="FontSize"
+                        Value="Medium" />
+                <Setter Property="FontAttributes"
+                        Value="Bold" />
+                <Setter Property="TextColor"
+                        Value="#58595b" />
             </Style>
-            
-            <Style x:Key="PageTitle" TargetType="Label">
-                <Setter Property="TextColor" Value="{StaticResource Grey-Mid-1}" />
-                <Setter Property="FontAttributes" Value="Bold" />
-                <Setter Property="FontSize" Value="Medium" />
-                <Setter Property="HorizontalOptions" Value="CenterAndExpand" />
-                <Setter Property="HorizontalTextAlignment" Value="Center" />
+            <Style x:Key="My-TitleSecondPart-Style"
+                   TargetType="Span">
+                <Setter Property="FontSize"
+                        Value="Small" />
+                <Setter Property="TextColor"
+                        Value="#a7a9ac" />
             </Style>
-            
+
+            <Style x:Key="PageTitle"
+                   TargetType="Label">
+                <Setter Property="TextColor"
+                        Value="{StaticResource Grey-Mid-1}" />
+                <Setter Property="FontAttributes"
+                        Value="Bold" />
+                <Setter Property="FontSize"
+                        Value="Medium" />
+                <Setter Property="HorizontalOptions"
+                        Value="CenterAndExpand" />
+                <Setter Property="HorizontalTextAlignment"
+                        Value="Center" />
+            </Style>
+
             <Style TargetType="Label">
                 <Style.Triggers>
-                    <Trigger TargetType="Label" Property="FontAttributes" Value="Bold">
-                        <Setter Property="FontFamily"  >
+                    <Trigger TargetType="Label"
+                             Property="FontAttributes"
+                             Value="Bold">
+                        <Setter Property="FontFamily">
                             <Setter.Value>
                                 <OnPlatform
                                     x:TypeArguments="x:String"
@@ -71,7 +99,7 @@
                 </Setter>
             </Style>
 
-             <Style TargetType="Button">
+            <Style TargetType="Button">
                 <Setter Property="FontFamily">
                     <Setter.Value>
                         <OnPlatform
@@ -92,8 +120,8 @@
                     </Setter.Value>
                 </Setter>
             </Style>
-            
-            
+
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>

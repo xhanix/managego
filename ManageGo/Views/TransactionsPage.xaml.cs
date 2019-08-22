@@ -12,6 +12,7 @@ namespace ManageGo
         {
             InitializeComponent();
             NavigationPage.SetHasNavigationBar(this, false);
+            TransactionsList.ItemsSource = null;
         }
 
         void Handle_Tapped(object sender, System.EventArgs e)
@@ -40,5 +41,24 @@ namespace ManageGo
         {
             OnTransactionAppeared?.Invoke(this, (Models.BankTransaction)e.Item);
         }
+
+
+
+        public void DataLoaded()
+        {
+            if (this.BindingContext != null)
+            {
+                TransactionsList.ItemsSource = ((TransactionsPageModel)BindingContext).FetchedTransactions;
+            }
+            TransactionsList.HasUnevenRows = !TransactionsList.HasUnevenRows;
+            TransactionsList.HasUnevenRows = !TransactionsList.HasUnevenRows;
+        }
+
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+            TransactionsList.ItemsSource = null;
+        }
+
     }
 }

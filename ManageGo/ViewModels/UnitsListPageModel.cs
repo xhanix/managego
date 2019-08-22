@@ -23,13 +23,26 @@ namespace ManageGo
             BackbuttonIsVisible = true;
         }
 
+        protected override void ViewIsAppearing(object sender, EventArgs e)
+        {
+            base.ViewIsAppearing(sender, e);
+            App.MasterDetailNav.IsGestureEnabled = false;
+        }
+
+        protected override void ViewIsDisappearing(object sender, EventArgs e)
+        {
+            base.ViewIsDisappearing(sender, e);
+            if (App.MasterDetailNav != null)
+                App.MasterDetailNav.IsGestureEnabled = true;
+        }
+
         public FreshAwaitCommand OnBackbuttonTapped
         {
             get
             {
                 async void execute(TaskCompletionSource<bool> tcs)
                 {
-                    await CoreMethods.PopPageModel(modal: CurrentPage.Navigation.ModalStack.Contains(CurrentPage), animate: false);
+                    await CoreMethods.PopPageModel(modal: CurrentPage.Navigation.ModalStack.Contains(CurrentPage), animate: true);
                     tcs?.SetResult(true);
                 }
                 return new FreshAwaitCommand(execute);
@@ -40,12 +53,15 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand(async (par, tcs) =>
+                async void execute(object par, TaskCompletionSource<bool> tcs)
                 {
                     Unit unit = (Unit)par;
+                    if (string.IsNullOrWhiteSpace(unit.FormattedTenantNames))
+                        return;
                     await CoreMethods.PushPageModel<TenantsPageModel>(data: unit.BuildingId, modal: false);
                     tcs?.SetResult(true);
-                });
+                }
+                return new FreshAwaitCommand(execute);
             }
         }
 
@@ -62,7 +78,7 @@ namespace ManageGo
                 {
                     u.BuildingId = BuildingId;
                 }
-                BuildingName = buildingDetails.BuildingName;
+                BuildingName = buildingDetails.BuildingShortAddress;
                 HasLoaded = true;
             }
             catch (Exception ex)

@@ -12,7 +12,7 @@ namespace ManageGo
         public string Message { get; set; }
         public bool HamburgerIsVisible { get; set; } = true;
 
-        private readonly string receivingEmail = "naftaliklein@gmail.com";//"nklein@managego.com";
+        private readonly string receivingEmail = "appfeedback@managego.com";//"nklein@managego.com";
 
         public FreshAwaitCommand OnMasterMenuTapped
         {
@@ -48,6 +48,7 @@ namespace ManageGo
                     $" Username: {App.UserInfo.UserFirstName + " " + App.UserInfo.UserLastName}\n\r" +
                     $" User email: {App.UserInfo.UserEmailAddress}\n\r" +
                     $" PMC: {App.PMCName}\n\r" +
+                    $" Using App Version: {Xamarin.Essentials.VersionTracking.CurrentVersion}\n\r" +
                     "\n\r------------\n\r" +
                     "DEVICE INFO\n\r" +
                     "------------\n\r" +
@@ -56,28 +57,25 @@ namespace ManageGo
                     $" Device Name: {DeviceInfo.Name}\n\r" +
                     $" Device Platform: {DeviceInfo.Platform}\n\r" +
                     $" Device OS Version: {DeviceInfo.VersionString}\n\r" +
-                    $" Device Type: {DeviceInfo.DeviceType}\n\r";
-
+                    $" Device Type: {DeviceInfo.DeviceType}\n\r" +
+                    $" Timestamp: {DateTime.Now.ToLongDateString()}\n\r";
 
                     var stringToSend = "{\"serverId\": \"12003\",\"APIKey\": \"Hb35KdWo4g2A7Qwc8SFa\",\"Messages\": [  " +
                         "{ \"To\": [ {\"emailAddress\": \"" +
                         $"{receivingEmail}" +
                         "\",\"friendlyName\": \"App feedback ManageGo\" }  ],    \"From\": {  \"emailAddress\": \"" +
-                        $"{receivingEmail}" +
+                        $"{App.UserInfo.UserEmailAddress}" +
                         "\", \"friendlyName\": \"" +
-                        "App feedback ManageGo" +
+                        $"{App.UserInfo.UserFirstName + " " + App.UserInfo.UserLastName}" +
                         "\"  }, \"Subject\": \"" +
-                        $"{SelectedTopic}" +
+                        "PMC App Feedback" +
                         "\",\"TextBody\": \"" +
                         $"{finalMessage}" +
                         "\"}]}";
 
                     try
                     {
-                        var content = new StringContent(stringToSend
-                            , encoding: Encoding.UTF8,
-                            mediaType: "application/json");
-                        var response = await Services.DataAccess.client.PostAsync("https://inject.socketlabs.com/api/v1/email", content);
+                        var response = await MGDataAccessLibrary.DataAccess.WebAPI.SendFeedBack(feedback: stringToSend);
                         var responseString = await response.Content.ReadAsStringAsync();
                         if (response.StatusCode != System.Net.HttpStatusCode.OK)
                         {

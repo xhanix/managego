@@ -14,9 +14,9 @@ namespace ManageGo.iOS
         protected override void OnElementChanged(ElementChangedEventArgs<Switch> e)
         {
             base.OnElementChanged(e);
-            if (e.OldElement != null || e.NewElement == null)
+            if (e.NewElement is null || Control is null)
                 return;
-            var view = (CustomSwitch)Element;
+            var view = (CustomSwitch)e.NewElement;
             if (!string.IsNullOrEmpty(view.SwitchThumbImage))
             {
                 Control.OnImage = UIImage.FromFile(view.SwitchThumbImage.ToString());
@@ -31,5 +31,7 @@ namespace ManageGo.iOS
             //The color used to tint the outline of the switch when it is turned off.
             Control.TintColor = view.SwitchOffColor.ToUIColor();
         }
+
+
     }
 }

@@ -15,7 +15,6 @@ namespace ManageGo
 {
     internal class TransactionsPageModel : BaseDetailPage
     {
-
         int CurrentListPage { get; set; } = 1;
         public View RangePickerView { get; set; }
         public string FilterKeywords { get; set; }
@@ -164,6 +163,7 @@ namespace ManageGo
 
                     // FetchedTickets is null on view init
                     var fetchedTransactions = await Services.DataAccess.GetTransactionsAsync(ParameterItem);
+
                     if (fetchedTransactions != null)
                         FetchedTransactions = new ObservableCollection<BankTransaction>(fetchedTransactions);
                     else
@@ -177,6 +177,7 @@ namespace ManageGo
                         LastLoadedItemId = markedItem.Id;
                     }
                 }
+                ((TransactionsPage)CurrentPage).DataLoaded();
             }
             catch (Exception ex)
             {
@@ -267,7 +268,7 @@ namespace ManageGo
                         ParameterItem.DateFrom = DateRange.StartDate;
                         ParameterItem.DateTo = DateRange.EndDate;
                     }
-                    NumberOfAppliedFilters = $"{ParameterItem.NumberOfAppliedFilters}";
+                    NumberOfAppliedFilters = ParameterItem.NumberOfAppliedFilters == 0 ? "" : $"{ParameterItem.NumberOfAppliedFilters}";
                     await LoadData(refreshData: true, FetchNextPage: false);
                     tcs?.SetResult(true);
                 }
@@ -384,6 +385,7 @@ namespace ManageGo
                         SelectedDateRange = new DateRange(DateRange.StartDate, DateRange.EndDate);
                         CurrentFilter = ParameterItem.Clone();
                         PopContentView = new Views.TransactionsFilterPage(this).Content;
+                        SelectedAmountRange = new Tuple<int?, int?>(0, 5000);
                     }
                     FilterSelectViewIsShown = !FilterSelectViewIsShown;
                     tcs?.SetResult(true);
@@ -399,18 +401,14 @@ namespace ManageGo
                 return new FreshAwaitCommand((par, tcs) =>
                 {
                     var account = (BankAccount)par;
-                    foreach (BankAccount b in BankAccounts)
-                    {
-                        b.IsSelected = false;
-                    }
-                    account.IsSelected = true;
-                    SelectedAccountString = account.Title;
+                    account.IsSelected = !account.IsSelected;
+                    int numOfSelectedAccount = BankAccounts.Count(t => t.IsSelected);
+                    SelectedAccountString = numOfSelectedAccount == 0 ? string.Empty :
+                       numOfSelectedAccount == 1 ? account.Title : numOfSelectedAccount.ToString() + " accounts";
                     tcs?.SetResult(true);
                 });
             }
         }
-
-
 
 
         public FreshAwaitCommand OnBackbuttonTapped

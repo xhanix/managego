@@ -10,6 +10,7 @@ namespace ManageGo
         public LoginPage()
         {
             InitializeComponent();
+            NavigationPage.SetHasNavigationBar(this, false);
         }
     }
 }

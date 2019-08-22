@@ -7,5 +7,7 @@ namespace ManageGo.Models
         public int NotificationObject { get; set; }
         public string Title { get; set; }
         public string Body { get; set; }
+
+
     }
 }

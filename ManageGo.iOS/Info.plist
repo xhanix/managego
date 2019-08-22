@@ -20,7 +20,7 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>MinimumOSVersion</key>
-	<string>11.0</string>
+	<string>11.4</string>
 	<key>CFBundleDisplayName</key>
 	<string>ManageGo</string>
 	<key>CFBundleIdentifier</key>
@@ -59,9 +59,9 @@
 	<key>NSFaceIDUsageDescription</key>
 	<string>ManageGO needs Face ID to log in</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<string>1.0.9</string>
 	<key>CFBundleVersion</key>
-	<string>1.0</string>
+	<string>1.12</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>ManageGo needs access to location to function.</string>
 	<key>NSLocationWhenInUseUsageDescription </key>
@@ -72,5 +72,7 @@
 	<array>
 		<string>remote-notification</string>
 	</array>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>ManageGo needs access to location to function as intended.</string>
 </dict>
 </plist>

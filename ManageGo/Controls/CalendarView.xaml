@@ -1,80 +1,115 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Grid 
-    xmlns="http://xamarin.com/schemas/2014/forms" 
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+<Grid
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:controls="clr-namespace:ManageGo.Controls"
-    xmlns:global-controls="clr-namespace:ManageGo.Controls;assembly=ManageGo"
     x:Name="CalendarViewControl"
+    Margin="0,8,0,25"
     RowSpacing="0"
+    HeightRequest="350"
     x:Class="ManageGo.Controls.CalendarView">
 
     <Grid.ColumnDefinitions>
-        <ColumnDefinition Width=".25*" />
-        <ColumnDefinition Width=".5*" />
-        <ColumnDefinition Width=".25*" />
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="Auto" />
     </Grid.ColumnDefinitions>
     <Grid.RowDefinitions>
         <RowDefinition Height="25" />
         <RowDefinition Height="1" />
-        <RowDefinition Height="*" />
+        <RowDefinition Height="310" />
     </Grid.RowDefinitions>
 
-    <Grid Grid.Row="0" BackgroundColor="White" Grid.ColumnSpan="3">
+    <Grid Grid.Row="0"
+          BackgroundColor="White"
+          Grid.ColumnSpan="3">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width=".3*" />
-            <ColumnDefinition Width=".4*" />
-            <ColumnDefinition Width=".3*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
-        <global-controls:TappableLabel Grid.Column="0" 
-                                       x:Name="past7DaysButton"
-                                       Text="Past 7 days" 
-                                       VerticalOptions="Center" HorizontalOptions="CenterAndExpand"
-                                       HorizontalTextAlignment="Center"
-                                       Style="{StaticResource Primary-Small}"
-                                       IsVisible="false" />
-        
-        <StackLayout Spacing="15" Grid.Column="1"  Orientation="Horizontal">
+        <controls:TappableLabel Grid.Column="0"
+                                x:Name="past7DaysButton"
+                                Text="Past 7 days"
+                                VerticalOptions="Center"
+                                HorizontalOptions="CenterAndExpand"
+                                HorizontalTextAlignment="Center"
+                                TextColor="{StaticResource Primary}"
+                                FontSize="Subtitle"
+                                IsVisible="false" />
 
-            <Image Source="chevron_left" VerticalOptions="Center" >
-                 <Image.GestureRecognizers>
-                    <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="ShowPreviousMonth_Tapped" />
-                </Image.GestureRecognizers>
-            </Image>
-            
-            <Label x:Name="titleLabel" HorizontalOptions="CenterAndExpand" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                    FontSize="Small" FontAttributes="Bold" />
+        <StackLayout Spacing="15"
+                     Grid.Column="1"
+                     Orientation="Horizontal">
 
-            <Image Source="chevron_right" VerticalOptions="Center" >
-                <Image.GestureRecognizers>
-                    <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="ShowNextMonth_Tapped" />
-                </Image.GestureRecognizers>
-            </Image>
+
+
+            <Label x:Name="titleLabel"
+                   HorizontalOptions="CenterAndExpand"
+                   HorizontalTextAlignment="Center"
+                   VerticalTextAlignment="Center"
+                   FontSize="Small"
+                   FontAttributes="Bold" />
+
+
 
         </StackLayout>
 
-        <global-controls:TappableLabel Grid.Column="2" 
-                                       x:Name="past30DaysButton"
-                                       Text="Past 30 days" 
-                                       VerticalOptions="Center" HorizontalOptions="CenterAndExpand"
-                                       HorizontalTextAlignment="Center"
-                                       Style="{StaticResource Primary-Small}"
-                                       IsVisible="false"/>
+        <controls:TappableLabel Grid.Column="2"
+                                x:Name="past30DaysButton"
+                                Text="Past 30 days"
+                                VerticalOptions="Center"
+                                HorizontalOptions="CenterAndExpand"
+                                HorizontalTextAlignment="Center"
+                                TextColor="{StaticResource Primary}"
+                                FontSize="Subtitle"
+                                IsVisible="false" />
     </Grid>
 
-    <BoxView Grid.Row="1" Grid.ColumnSpan="3" HeightRequest="1" HorizontalOptions="FillAndExpand" BackgroundColor="#DFDFE0" />
+    <BoxView Grid.Row="1"
+             Grid.ColumnSpan="3"
+             HeightRequest="1"
+             HorizontalOptions="FillAndExpand"
+             BackgroundColor="#DFDFE0" />
 
-    <controls:Calendar x:Name="calendar" Grid.Row="2" Grid.ColumnSpan="3" 
+    <Image Grid.Column="0"
+           Grid.Row="2"
+           Source="chevron_left"
+           Margin="0,-20,0,0"
+           WidthRequest="25"
+           HeightRequest="25"
+           VerticalOptions="Center">
+        <Image.GestureRecognizers>
+            <TapGestureRecognizer NumberOfTapsRequired="1"
+                                  Tapped="ShowPreviousMonth_Tapped" />
+        </Image.GestureRecognizers>
+    </Image>
+    <controls:Calendar x:Name="calendar"
+                       Grid.Column="1"
+                       Grid.Row="2"
+                       HeightRequest="310"
+                       VerticalOptions="Center"
                        OnMonthYearChanged="Handle_OnMonthYearChanged"
-                       chevron="Handle_chevron"
-                       HeightRequest="500"
-                       WidthRequest="700"
-                       HorizontalOptions="Center" />
+                       chevron="Handle_chevron" />
+
+    <Image Source="chevron_right"
+           Grid.Column="2"
+           Grid.Row="2"
+           Margin="0,-20,0,0"
+           WidthRequest="25"
+           HeightRequest="25"
+           VerticalOptions="Center">
+        <Image.GestureRecognizers>
+            <TapGestureRecognizer NumberOfTapsRequired="1"
+                                  Tapped="ShowNextMonth_Tapped" />
+        </Image.GestureRecognizers>
+    </Image>
 
     <!-- 
     SelectedDates="{Binding SelectedDates}"
     SelectedDates="{Binding Source={x:Reference CalendarViewControl}, Path=SelectedDates }" 
     -->
-    
+
 </Grid>
 

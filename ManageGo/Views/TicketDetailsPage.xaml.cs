@@ -1,6 +1,7 @@
 ﻿using Xamarin.Forms;
 using PropertyChanged;
 using System.Linq;
+using System;
 
 namespace ManageGo
 {
@@ -19,6 +20,8 @@ namespace ManageGo
             ReplyBox.HeightRequest = ReplyBoxHeigh;
         }
 
+
+
         protected override void OnSizeAllocated(double width, double height)
         {
             base.OnSizeAllocated(width, height);
@@ -26,6 +29,8 @@ namespace ManageGo
             PageWidth = width * 0.7;
             PermittedEditorWidth = PageWidth + 20;
         }
+
+
 
         protected override bool OnBackButtonPressed()
         {
@@ -79,6 +84,8 @@ namespace ManageGo
                 var f = c.Files.ToList();
                 c.Files = new System.Collections.ObjectModel.ObservableCollection<File>(f);
             }
+
+
         }
 
         void Handle_Unfocused(object sender, FocusEventArgs e)
@@ -102,6 +109,17 @@ namespace ManageGo
             MyScrollView.VerticalScrollBarVisibility = ScrollBarVisibility.Always;
             WasFocused = true;
             ReplyEditor.Focus();
+        }
+
+        internal void ScrollToBottom(object item)
+        {
+            // MyListView.ScrollTo(item, ScrollToPosition.End, false);
+        }
+
+        internal void RedrawTable()
+        {
+            MyListView.HasUnevenRows = !MyListView.HasUnevenRows;
+            MyListView.HasUnevenRows = !MyListView.HasUnevenRows;
         }
     }
 }

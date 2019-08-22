@@ -26,7 +26,8 @@
         EventsListDates,
         EventList,
         PendingApprovals,
-        PendingApprovalAction
+        PendingApprovalAction,
+        ResetPassword
     }
 }
 

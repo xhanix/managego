@@ -13,6 +13,7 @@ namespace ManageGo
         public bool HasLoaded { get; internal set; }
         [AlsoNotifyFor("IsLoading")]
         public bool APIhasFailed { get; internal set; }
+        public bool IsModal { get; internal set; }
         public bool IsLoading
         {
             get

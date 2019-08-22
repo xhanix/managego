@@ -30,8 +30,6 @@ namespace ManageGo
             FetchEventsFromDate = DateTime.Today.AddDays(-60);
             FetchEventsToDate = DateTime.Today.AddDays(60);
             HighlightedDates = new List<DateTime>();
-
-
             SelectedDateChanged += CalendarSelectedDateChanged;
         }
 
@@ -41,12 +39,20 @@ namespace ManageGo
             {
                 if (HighlightedDates.Any(t => t.Date == SelectedDate.Date))
                 {
-                    CalendarEvents = await Services.DataAccess.GetEventsForDate(SelectedDate);
+                    var requestItem = new Models.CalendarEventRequestItem
+                    {
+                        DateFrom = SelectedDate,
+                        DateTo = SelectedDate.AddDays(1)
+                    };
+
+
+                    CalendarEvents = await Services.DataAccess.GetEventsForDate(requestItem);
                     DateHasNoEvents = false;
                 }
                 else
                 {
                     CalendarEvents?.Clear();
+                    CalendarEvents = new List<Models.CalendarEvent>();
                     DateHasNoEvents = true;
                 }
             }
@@ -57,8 +63,14 @@ namespace ManageGo
             }
             finally
             {
-
                 HasLoaded = true;
+                var dic = new Models.EventsDatesRequestItem
+                {
+                    DateFrom = FetchEventsFromDate,
+                    DateTo = FetchEventsToDate
+                };
+                HighlightedDates = (await Services.DataAccess.GetEventsList(dic)).Dates.ToList();
+                ((CalendarPage)CurrentPage).DataLoaded();
             }
 
         }
@@ -83,7 +95,7 @@ namespace ManageGo
                             {
                             {"TicketDetails", ticketDetails},
                             {"TicketNumber", ticket.First()?.TicketNumber},
-                            {"Address", ticket.First()?.Building.BuildingShortAddress},
+                            {"Address", ticket.First()?.Building?.BuildingShortAddress},
                             {"TicketTitleText", ticket.First()?.TicketSubject},
                             {"Ticket", ticket.FirstOrDefault()}
                             };
@@ -119,17 +131,22 @@ namespace ManageGo
         internal override async Task LoadData(bool refreshData = false, bool FetchNextPage = false)
         {
             HasLoaded = false;
-            var dic = new Dictionary<string, object>
+            var dic = new Models.EventsDatesRequestItem
             {
-                {"DateFrom", FetchEventsFromDate},
-                {"DateTo", FetchEventsToDate}
+                DateFrom = FetchEventsFromDate,
+                DateTo = FetchEventsToDate
             };
             try
             {
-                HighlightedDates = await Services.DataAccess.GetEventsList(dic);
+                HighlightedDates = (await Services.DataAccess.GetEventsList(dic)).Dates.ToList();
                 if (HighlightedDates.Any(t => t.Date == SelectedDate.Date))
                 {
-                    CalendarEvents = await Services.DataAccess.GetEventsForDate(SelectedDate);
+                    var requestItem = new Models.CalendarEventRequestItem
+                    {
+                        DateFrom = SelectedDate,
+                        DateTo = SelectedDate.AddDays(1)
+                    };
+                    CalendarEvents = await Services.DataAccess.GetEventsForDate(requestItem);
                 }
                 else
                 {
@@ -143,6 +160,7 @@ namespace ManageGo
             finally
             {
                 HasLoaded = true;
+                ((CalendarPage)CurrentPage).DataLoaded();
             }
 
         }

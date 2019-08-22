@@ -11,6 +11,9 @@ namespace ManageGo
     {
         public int TicketId { get; set; }
         public string TicketNumber { get; set; }
+        //Status false = closed ticket
+        [AlsoNotifyFor("TicketStatus")]
+        public bool Status { get; set; }
         public string TicketStatus { get; set; }
         public DateTime TicketCreateTime { get; set; }
         public string TicketSubject { get; set; }
@@ -25,7 +28,8 @@ namespace ManageGo
         public bool HasEvent { get; set; }
         public bool HasPet { get; set; }
         public bool HasAccess { get; set; }
-        public List<int> Assigned { get; set; }
+        public bool NeedReply { get; set; }
+
         public List<MaintenanceTicketComment> Comments { get; set; }
         [JsonIgnore]
         public string NumberOfRepliesString
@@ -61,12 +65,8 @@ namespace ManageGo
         }
         [JsonIgnore]
         public string TenantDetails
-        {
-            get
-            {
-                return Tenant == null ? "" : $"{Tenant.TenantFirstName} {Tenant.TenantLastName}, {Building?.BuildingName} #{Unit?.UnitName}";
-            }
-        }
+            => Tenant == null ? "" : $"{Tenant.TenantFirstName} {Tenant.TenantLastName}{Environment.NewLine}{Environment.NewLine}{Building?.BuildingShortAddress} #{Unit?.UnitName}";
+
         [JsonIgnore]
         public bool FirstCommentShown { get; set; }
 

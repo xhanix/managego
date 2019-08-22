@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using FreshMvvm;
 using Microsoft.AppCenter.Analytics;
 using Xamarin.Forms;
@@ -69,9 +70,11 @@ namespace ManageGo
                 return new FreshAwaitCommand((tcs) =>
                 {
                     Analytics.TrackEvent("Support notification menu tapped");
+
                     if (!App.MasterDetailNav.Pages.ContainsKey("Notifications"))
                         App.MasterDetailNav.AddPage<NotificationsPageModel>("Notifications");
                     App.MasterDetailNav.SwitchSelectedRootPageModel<NotificationsPageModel>();
+                    App.MenuIsPresented = false;
                     tcs?.SetResult(true);
                 });
             }
@@ -84,6 +87,8 @@ namespace ManageGo
                 async void execute(System.Threading.Tasks.TaskCompletionSource<bool> tcs)
                 {
                     Analytics.TrackEvent("Support maintenance menu tapped");
+                    if (!App.MasterDetailNav.Pages.ContainsKey("Maintenance Tickets"))
+                        App.MasterDetailNav.AddPage<MaintenanceTicketsPageModel>("Maintenance Tickets");
                     if (App.MasterDetailNav.Detail is NavigationPage
                     && ((NavigationPage)App.MasterDetailNav.Detail).CurrentPage.GetModel() is MaintenanceTicketsPageModel model)
                     {
@@ -95,6 +100,7 @@ namespace ManageGo
                     }
                     else
                         await App.MasterDetailNav.SwitchSelectedRootPageModel<MaintenanceTicketsPageModel>();
+                    App.MenuIsPresented = false;
                     tcs?.SetResult(true);
                 }
                 return new FreshAwaitCommand(execute);
@@ -108,7 +114,9 @@ namespace ManageGo
                 return new FreshAwaitCommand((tcs) =>
                 {
                     Analytics.TrackEvent("Support home menu tapped");
+
                     App.MasterDetailNav.SwitchSelectedRootPageModel<WelcomePageModel>();
+                    App.MenuIsPresented = false;
                     tcs?.SetResult(true);
                 });
             }
@@ -123,9 +131,11 @@ namespace ManageGo
                 return new FreshAwaitCommand((tcs) =>
                 {
                     Analytics.TrackEvent("Support feedback menu tapped");
+
                     if (!App.MasterDetailNav.Pages.ContainsKey("Feedback"))
                         App.MasterDetailNav.AddPage<FeedbackPageModel>("Feedback");
                     App.MasterDetailNav.SwitchSelectedRootPageModel<FeedbackPageModel>();
+                    App.MenuIsPresented = false;
                     tcs?.SetResult(true);
                 });
             }
@@ -138,9 +148,11 @@ namespace ManageGo
                 return new FreshAwaitCommand((tcs) =>
                 {
                     Analytics.TrackEvent("Support settings menu tapped");
+
                     if (!App.MasterDetailNav.Pages.ContainsKey("Settings"))
                         App.MasterDetailNav.AddPage<SettingsPageModel>("Settings");
                     App.MasterDetailNav.SwitchSelectedRootPageModel<SettingsPageModel>();
+                    App.MenuIsPresented = false;
                     tcs?.SetResult(true);
                 });
             }
@@ -153,9 +165,11 @@ namespace ManageGo
                 return new FreshAwaitCommand((tcs) =>
                 {
                     Analytics.TrackEvent("Support calendar menu tapped");
+
                     if (!App.MasterDetailNav.Pages.ContainsKey("OnCalendarPage"))
                         App.MasterDetailNav.AddPage<CalendarPageModel>("OnCalendarPage");
                     App.MasterDetailNav.SwitchSelectedRootPageModel<CalendarPageModel>();
+                    App.MenuIsPresented = false;
                     tcs?.SetResult(true);
                 });
             }
@@ -168,9 +182,11 @@ namespace ManageGo
                 return new FreshAwaitCommand((tcs) =>
                 {
                     Analytics.TrackEvent("Support tenants menu tapped");
+
                     if (!App.MasterDetailNav.Pages.ContainsKey("Tenants"))
                         App.MasterDetailNav.AddPage<TenantsPageModel>("Tenants");
                     App.MasterDetailNav.SwitchSelectedRootPageModel<TenantsPageModel>();
+                    App.MenuIsPresented = false;
                     tcs?.SetResult(true);
                 });
             }
@@ -180,14 +196,18 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand((tcs) =>
+                async void execute(TaskCompletionSource<bool> tcs)
                 {
+
+                    //allow the side menu animation to completed
                     Analytics.TrackEvent("Support payments menu tapped");
                     if (!App.MasterDetailNav.Pages.ContainsKey("Payments"))
                         App.MasterDetailNav.AddPage<PaymentsPageModel>("Payments");
-                    App.MasterDetailNav.SwitchSelectedRootPageModel<PaymentsPageModel>();
+                    await App.MasterDetailNav.SwitchSelectedRootPageModel<PaymentsPageModel>();
+                    App.MenuIsPresented = false;
                     tcs?.SetResult(true);
-                });
+                }
+                return new FreshAwaitCommand(execute);
             }
         }
 
@@ -198,9 +218,11 @@ namespace ManageGo
                 return new FreshAwaitCommand((tcs) =>
                 {
                     Analytics.TrackEvent("Support transations menu tapped");
+
                     if (!App.MasterDetailNav.Pages.ContainsKey("Transactions"))
                         App.MasterDetailNav.AddPage<TransactionsPageModel>("Transactions");
                     App.MasterDetailNav.SwitchSelectedRootPageModel<TransactionsPageModel>();
+                    App.MenuIsPresented = false;
                     tcs?.SetResult(true);
                 });
             }
@@ -213,9 +235,11 @@ namespace ManageGo
                 return new FreshAwaitCommand((tcs) =>
                 {
                     Analytics.TrackEvent("Support buildings menu tapped");
+
                     if (!App.MasterDetailNav.Pages.ContainsKey("Buildings"))
                         App.MasterDetailNav.AddPage<BuildingsListPageModel>("Buildings");
                     App.MasterDetailNav.SwitchSelectedRootPageModel<BuildingsListPageModel>();
+                    App.MenuIsPresented = false;
                     tcs?.SetResult(true);
                 });
             }

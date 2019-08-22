@@ -20,6 +20,9 @@ namespace ManageGo
         }
 
 
+
+
+
         void Handle_Tapped(object sender, EventArgs e)
         {
             var name = ((Image)sender).ClassId;
@@ -44,10 +47,6 @@ namespace ManageGo
 
         }
 
-        //todo remove
-        void Handle_Clicked(object sender, System.EventArgs e)
-        {
-            App.NotificationReceived(1, 9999);
-        }
+
     }
 }

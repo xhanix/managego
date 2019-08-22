@@ -13,6 +13,8 @@ namespace ManageGo
             NavigationPage.SetHasNavigationBar(this, false);
         }
 
+
+
         protected override bool OnBackButtonPressed()
         {
 
@@ -29,6 +31,22 @@ namespace ManageGo
                 App.MasterDetailNav.SwitchSelectedRootPageModel<WelcomePageModel>();
             }
             return true;
+        }
+
+
+        public void DataLoaded()
+        {
+            if (this.BindingContext != null)
+            {
+                MyListView.ItemsSource = ((BuildingsListPageModel)BindingContext).Buildings;
+            }
+
+        }
+
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+            MyListView.ItemsSource = null;
         }
     }
 }

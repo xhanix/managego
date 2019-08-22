@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>735439127869-kkbio3r2pfjh4vrge617cubq9qp7rb2s.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.735439127869-kkbio3r2pfjh4vrge617cubq9qp7rb2s</string>
+	<key>API_KEY</key>
+	<string>AIzaSyAmFXtRwtXZu_yCEofGXzldrEqFKnn8kUw</string>
+	<key>GCM_SENDER_ID</key>
+	<string>735439127869</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.ManageGo.ManageGoPMC</string>
+	<key>PROJECT_ID</key>
+	<string>testmanagego</string>
+	<key>STORAGE_BUCKET</key>
+	<string>testmanagego.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:735439127869:ios:775db074ada0fc5a</string>
+	<key>DATABASE_URL</key>
+	<string>https://testmanagego.firebaseio.com</string>
+</dict>
+</plist>

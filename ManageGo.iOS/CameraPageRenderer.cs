@@ -17,7 +17,7 @@ namespace ManageGo.iOS
         {
             base.OnElementChanged(e);
 
-            if (Control == null)
+            if (Control == null && e.NewElement != null)
             {
                 uiCameraPreview = new UICameraPreview(e.NewElement.Camera, e.NewElement.Speed, e.NewElement.FileUrl, e.NewElement.Mode);
 

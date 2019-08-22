@@ -14,6 +14,9 @@ namespace ManageGo
         public List<Tags> Tags { get; set; }
         public List<Tenant> Tenants { get; set; }
         public List<Categories> Categories { get; set; }
+        public bool IsAccessGranted { get; set; }
+        public Models.AccessGrantedObject AccessGrantedObject { get; set; }
+        public List<int> Assigned { get; set; }
 
     }
 }

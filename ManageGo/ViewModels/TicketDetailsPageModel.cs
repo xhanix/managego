@@ -10,6 +10,8 @@ using System.IO;
 using Plugin.FilePicker.Abstractions;
 using Plugin.FilePicker;
 using Plugin.Permissions;
+using System.Text;
+using Microsoft.AppCenter.Crashes;
 
 namespace ManageGo
 {
@@ -21,8 +23,17 @@ namespace ManageGo
         public bool CanReplyToComments { get; private set; }
         public bool CanCreateWorkorderAndEvents { get; private set; }
         public bool CanEditTicketDetails { get; private set; }
+        public bool IsUploadingFiles { get; private set; }
+        public bool IsCreatingEvent { get; private set; }
         #endregion
         #region Properties
+        public bool AccessGrantIsExpanded { get; set; } = true;
+        [AlsoNotifyFor("ShowAccessGranted")]
+        public bool IsAccessGranted { get; private set; }
+        public bool ShowAccessGranted => IsAccessGranted && !ShowingTicketDetails;
+        public string AccessPetText { get; private set; }
+        public string CloseTicketButtonText => TicketStatus == TicketStatus.Closed ? "Open Ticket" : "Close Ticket";
+        public string AccessGrantedTimesText { get; private set; }
         public bool SetFromTime { get; private set; }
         public bool SwitchingAmPam { get; private set; }
         public bool OldTimeIsPm { get; private set; }
@@ -43,68 +54,42 @@ namespace ManageGo
         public View DueDateCalendarView { get; private set; }
         public DateTime OldTime { get; private set; }
         public bool ShouldShowClock { get; private set; }
-        [AlsoNotifyFor("PriorityOptionsRowIcon")]
         public bool PriorityOptionsVisible { get; private set; }
-        [AlsoNotifyFor("CategoryOptionsRowIcon")]
         public bool CategoryOptionsVisible { get; private set; }
-        [AlsoNotifyFor("AssignedOptionsRowIcon")]
         public bool AssignedOptionsVisible { get; private set; }
-        [AlsoNotifyFor("TagOptionsRowIcon")]
         public bool TagOptionsVisible { get; private set; }
-        public string CategoryLabelText { get; private set; } = String.Empty;
-        public string AssignedLabelText { get; private set; } = String.Empty;
+        public string CategoryLabelText { get; private set; } = string.Empty;
+        public string AssignedLabelText { get; private set; } = string.Empty;
         public string CategoryLabelColor { get; private set; } = "#424242";
-        public string TagLabelText { get; private set; } = String.Empty;
+        public string TagLabelText { get; private set; } = string.Empty;
         public string TagLabelColor { get; private set; } = "#424242";
-        public string DueDate { get; private set; } = String.Empty;
+        public string DueDate { get; private set; } = string.Empty;
         public List<Categories> Categories { get; private set; }
         public List<Tags> Tags { get; private set; }
-        int TicketStatus { get; set; }
+        [AlsoNotifyFor("CloseTicketButtonText")]
+        TicketStatus TicketStatus { get; set; }
         public double ReplyAttachedFilesListHeight { get { return CurrentReplyAttachments is null || !CurrentReplyAttachments.Any() ? 0 : CurrentReplyAttachments.Count * 28; } }
 
-        public string PriorityOptionsRowIcon
-        {
-            get { return PriorityOptionsVisible ? "chevron_down.png" : "chevron_right.png"; }
-        }
-        public string CategoryOptionsRowIcon
-        {
-            get { return CategoryOptionsVisible ? "chevron_down.png" : "chevron_right.png"; }
-        }
-        public string AssignedOptionsRowIcon
-        {
-            get { return AssignedOptionsVisible ? "chevron_down.png" : "chevron_right.png"; }
-        }
-        public string TagOptionsRowIcon
-        {
-            get { return TagOptionsVisible ? "chevron_down.png" : "chevron_right.png"; }
-        }
-        public string DueDateRowIcon
-        {
-            get { return DueDateCalendarView != null ? "chevron_down.png" : "chevron_right.png"; }
-        }
+        public string DueDateRowIcon => DueDateCalendarView != null ? "chevron_down.png" : "chevron_right.png";
+
         public bool SetToTime { get; private set; }
         public bool ListIsEnabled { get; private set; } = true;
         public string TicketAddress { get; private set; }
         public string TicketTitleText { get; private set; }
-        public string PriorityLabelTextColor
-        {
-            get
-            {
-                return PriorityLabelText.ToLower() == "low" ? "#949494" :
-                    PriorityLabelText.ToLower() == "medium" ? "#e0a031" : "#E13D40";
-            }
-        }
+        public string PriorityLabelTextColor => PriorityLabelText.ToLower() == "low" ? "#949494" : PriorityLabelText.ToLower() == "medium" ? "#e0a031" : "#E13D40";
+
         [AlsoNotifyFor("PriorityLabelTextColor")]
         public string PriorityLabelText { get; private set; }
-        public string LowPriorityRadioIcon { get { return PriorityLabelText.ToLower() == "low" ? "radio_selected.png" : "radio_unselected.png"; } }
-        public string MediumPriorityRadioIcon { get { return PriorityLabelText.ToLower() == "medium" ? "radio_selected.png" : "radio_unselected.png"; } }
-        public string HighPriorityRadioIcon { get { return PriorityLabelText.ToLower() == "high" ? "radio_selected.png" : "radio_unselected.png"; } }
+        public string LowPriorityRadioIcon => PriorityLabelText.ToLower() == "low" ? "radio_selected.png" : "radio_unselected.png";
+        public string MediumPriorityRadioIcon => PriorityLabelText.ToLower() == "medium" ? "radio_selected.png" : "radio_unselected.png";
+        public string HighPriorityRadioIcon => PriorityLabelText.ToLower() == "high" ? "radio_selected.png" : "radio_unselected.png";
 
         public MaintenanceTicket CurrentTicket { get; private set; }
         public bool HasPet { get; private set; }
         public bool HasAccess { get; private set; }
         public bool HasWorkOrder { get; private set; }
         public bool HasEvent { get; private set; }
+        [AlsoNotifyFor("ShowAccessGranted")]
         public bool ShowingTicketDetails { get; private set; }
         public bool ReplyButtonIsVisible { get; private set; } = true;
         public bool ReplyBoxIsVisible { get; private set; }
@@ -116,7 +101,7 @@ namespace ManageGo
         bool IsToTimeSelected { get; set; }
         public List<User> Users { get; private set; }
         public string TicketComment { get; private set; }
-        private List<int> AssignedUserIds { get; set; }
+
         DateTime pickedTime;
         private int numberOfTries;
 
@@ -128,31 +113,21 @@ namespace ManageGo
         public int BridgeColumn { get; private set; }
         [AlsoNotifyFor("AmButtonImage", "PmButtonImage")]
         public bool PickedTimeIsAM { get; set; }
-        public string CurrentTime { get; private set; }
-        public string AmButtonImage
-        {
-            get { return PickedTimeIsAM ? "am_active.png" : "am_inactive.png"; }
-        }
-        public string PmButtonImage
-        {
-            get { return !PickedTimeIsAM ? "pm_active.png" : "pm_inactive.png"; }
-        }
+        public string CurrentTime => ClockTime.ToString("h:mm");
+        public string AmButtonImage => PickedTimeIsAM ? "am_active.png" : "am_inactive.png";
+        public string PmButtonImage => !PickedTimeIsAM ? "pm_active.png" : "pm_inactive.png";
         readonly string redColor = "#fc3535";
-        public string EndTimeTextColor
-        {
-            get
-            {
-                if (DateTime.Parse(FromTime) > DateTime.Parse(ToTime))
-                    return redColor;
-                return "#9b9b9b";
-            }
-        }
+        public string EndTimeTextColor => DateTime.Parse(FromTime) > DateTime.Parse(ToTime) ? redColor : "#9b9b9b";
+
+        [AlsoNotifyFor("CurrentTime")]
+        public DateTime ClockTime { get; set; }
         [AlsoNotifyFor("FromTime", "ToTime", "CurrentTime")]
         public DateTime PickedTime
         {
             get { return pickedTime; }
             set
             {
+                Console.WriteLine("Picked time SET");
                 if (!PickedTimeIsAM)
                     pickedTime = !PickedTimeIsAM && !SwitchingAmPam ? value.AddHours(12) : value;
                 else
@@ -161,7 +136,7 @@ namespace ManageGo
                     ToTime = pickedTime.ToString("h:mm tt");
                 else if (SetFromTime)
                     FromTime = pickedTime.ToString("h:mm tt");
-                CurrentTime = pickedTime.ToString("h:mm");
+
                 SwitchingAmPam = false;
             }
         }
@@ -175,36 +150,23 @@ namespace ManageGo
         public DateTime SelectedEventDate { get; set; }
         public bool EventCalendarIsVisible { get; private set; }
 
-        public string SelectedEventDateString
-        {
-            get
-            {
-                return SelectedEventDate == DateTime.MinValue ? "Select..." : SelectedEventDate.ToString("MM/dd/yy");
-            }
-        }
+        public string SelectedEventDateString => SelectedEventDate == DateTime.MinValue ? "Select..." : SelectedEventDate.ToString("MM/dd/yy");
+
         public List<ExternalContact> ExternalContacts { get; private set; }
         int TicketId { get; set; }
         [AlsoNotifyFor("PopUpBackgroundIsVisible")]
         public bool SendOptionsPupupIsVisible { get; private set; }
         [AlsoNotifyFor("PopUpBackgroundIsVisible")]
         public bool AttachActionSheetIsVisible { get; private set; }
-        public bool PopUpBackgroundIsVisible
-        {
-            get { return AttachActionSheetIsVisible || SendOptionsPupupIsVisible; }
-        }
+        public bool PopUpBackgroundIsVisible => AttachActionSheetIsVisible || SendOptionsPupupIsVisible;
         public bool ReplyIsInternal { get; private set; }
 
         public List<File> ReplyAttachments { get; set; }
         Dictionary<string, object> Data { get; set; }
         [AlsoNotifyFor("ReplyAttachedFilesIsVisible", "ReplyAttachedFilesListHeight")]
         public ObservableCollection<File> CurrentReplyAttachments { get; set; }
-        public bool ReplyAttachedFilesIsVisible
-        {
-            get
-            {
-                return CurrentReplyAttachments != null && CurrentReplyAttachments.Count > 0;
-            }
-        }
+        public bool ReplyAttachedFilesIsVisible => CurrentReplyAttachments != null && CurrentReplyAttachments.Count > 0;
+
         public string ReplyTextBody { get; set; }
         #endregion
         public override void Init(object initData)
@@ -226,6 +188,7 @@ namespace ManageGo
             CanReplyToComments = App.UserPermissions.HasFlag(UserPermissions.CanReplyInternally);
             CanCreateWorkorderAndEvents = App.UserPermissions.HasFlag(UserPermissions.CanAddWorkordersAndEvents);
             CanEditTicketDetails = App.UserPermissions.HasFlag(UserPermissions.CanEditTicketDetails);
+            ClockTime.AddYears(1);
         }
 
 
@@ -247,19 +210,20 @@ namespace ManageGo
             }
         }
 
-        public FreshAwaitCommand OnHideDetailsTapped
-        {
-            get
-            {
-                return new FreshAwaitCommand((tcs) =>
+        public FreshAwaitCommand OnHideDetailsTapped => new FreshAwaitCommand((tcs) =>
+                 {
+                     PopContentView = null;
+                     ShowingTicketDetails = false;
+                     ReplyButtonIsVisible = true;
+                     tcs?.SetResult(true);
+                 });
+
+
+        public FreshAwaitCommand OnAccessGrantPanelTapped => new FreshAwaitCommand((tcs) =>
                 {
-                    PopContentView = null;
-                    ShowingTicketDetails = false;
-                    ReplyButtonIsVisible = true;
+                    AccessGrantIsExpanded = !AccessGrantIsExpanded;
                     tcs?.SetResult(true);
                 });
-            }
-        }
 
         public FreshAwaitCommand OnCloseTicketButtonTapped
         {
@@ -268,13 +232,28 @@ namespace ManageGo
                 async void execute(TaskCompletionSource<bool> tcs)
                 {
 
-                    var result = await CoreMethods.DisplayActionSheet($"Do you want to close {TicketTitle}?", "Cancel", "Close Ticket");
-                    if (result == "Close Ticket")
+                    var result = await CoreMethods.DisplayActionSheet(
+                         TicketStatus == TicketStatus.Closed ? $"Do you want to open {TicketTitle}?" : $"Do you want to close {TicketTitle}?",
+                        "Cancel",
+                        TicketStatus == TicketStatus.Closed ? "Open Ticket" : "Close Ticket");
+                    if (result == "Close Ticket" || result == "Open Ticket")
                     {
-                        TicketStatus = 1;
+                        TicketStatus = TicketStatus == TicketStatus.Closed ? TicketStatus.Open : TicketStatus.Closed;
                         OnSaveEditsTapped.Execute(null);
                         OnHideDetailsTapped.Execute(null);
-                        await CoreMethods.PopPageModel(data: CurrentTicket, modal: false);
+                        foreach (var user in App.Users)
+                        {
+                            user.IsSelected = false;
+                        }
+                        foreach (var cat in App.Categories)
+                        {
+                            cat.IsSelected = false;
+                        }
+                        foreach (var tag in App.Tags)
+                        {
+                            tag.IsSelected = false;
+                        }
+                        await CoreMethods.PopPageModel(data: true, modal: false);
                     }
                     tcs?.SetResult(true);
                 }
@@ -288,32 +267,31 @@ namespace ManageGo
             {
                 async void execute(TaskCompletionSource<bool> tcs)
                 {
-                    PopContentView = null;
-                    ReplyButtonIsVisible = true;
-                    var ticketPriority = 2;
+                    OnHideDetailsTapped.Execute(null);
+                    var ticketPriority = TicketPriorities.Medium;
                     if (PriorityLabelText.ToLower() == "low")
-                        ticketPriority = 0;
-                    else if (PriorityLabelText.ToLower() == "medium")
-                        ticketPriority = 1;
+                        ticketPriority = TicketPriorities.Low;
+                    else if (PriorityLabelText.ToLower() == "high")
+                        ticketPriority = TicketPriorities.High;
+                    var requestItem = new Models.UpdateTicketRequestItem
+                    {
+                        Priority = ticketPriority,
+                        TicketID = TicketId,
+                        Categories = Categories?.Where(t => t.IsSelected).Select(t => t.CategoryID),
+                        Status = TicketStatus,
+                        TenantID = TicketTenant,
+                        UnitID = Unit?.UnitId,
+                        Tags = Tags?.Where(t => t.IsSelected).Select(t => t.TagID),
+                        Assigned = Users?.Where(t => t.IsSelected).Select(t => t.UserID),
+                        BuildingID = BuildingId,
+                        Comment = TicketComment,
+                        DueDate = null
+                    };
                     try
                     {
-                        Dictionary<string, object> parameters = new Dictionary<string, object>
-                        {
-                            { "TicketID", TicketId },
-                            { "Categories", Categories.Where(t=>t.IsSelected) },
-                            { "Status", TicketStatus },
-                            { "Priority", ticketPriority },
-                            { "TenantID", TicketTenant},
-                            { "UnitID", Unit.UnitId},
-                            { "Tags", Tags.Where(t=>t.IsSelected) },
-                            { "Assigned", Users.Where(t=>t.IsSelected) },
-                            { "BuildingID", BuildingId },
-                            { "Comment", TicketComment },
-
-                        };
                         if (DateTime.TryParse(DueDate, out DateTime d))
-                            parameters.Add("DueDate", d);
-                        await Services.DataAccess.UpdateTicket(parameters);
+                            requestItem.DueDate = d;
+                        await Services.DataAccess.UpdateTicket(requestItem);
                     }
                     catch (Exception ex)
                     {
@@ -461,14 +439,15 @@ namespace ManageGo
                 {
                     var file = param as File;
 
-                    //get file
-                    var dic = new Dictionary<string, object> {
-                        {"TicketID", TicketId},
-                        {"FileID", file.ID}
-                                                                                               };
+                    //get file                                 };
+                    var requestItem = new MGDataAccessLibrary.Models.CommentFileRequestItem
+                    {
+                        FileID = file.ID,
+                        TicketID = TicketId
+                    };
 
                     IsDownloadingFile = true;
-                    var fileData = await Services.DataAccess.GetCommentFile(dic);
+                    var fileData = await Services.DataAccess.GetCommentFile(requestItem);
                     IsDownloadingFile = false;
 
                     if (fileData is null || string.IsNullOrWhiteSpace(file.Name))
@@ -504,7 +483,7 @@ namespace ManageGo
                 async void execute(TaskCompletionSource<bool> tcs)
                 {
                     ReplyIsInternal = true;
-                    await SendComment(commentType: CommentTypes.Internal, tcs: tcs);
+                    await SendComment(commentType: MGDataAccessLibrary.Models.CommentTypes.Internal, tcs: tcs);
                 }
                 return new FreshAwaitCommand(execute);
             }
@@ -517,38 +496,30 @@ namespace ManageGo
                 async void execute(TaskCompletionSource<bool> tcs)
                 {
                     ReplyIsInternal = false;
-                    await SendComment(commentType: CommentTypes.Management, tcs: tcs);
+                    await SendComment(commentType: MGDataAccessLibrary.Models.CommentTypes.Management, tcs: tcs);
                 }
                 return new FreshAwaitCommand(execute);
             }
         }
 
-        async Task SendComment(CommentTypes commentType, TaskCompletionSource<bool> tcs)
+        async Task SendComment(MGDataAccessLibrary.Models.CommentTypes commentType, TaskCompletionSource<bool> tcs)
         {
             if (string.IsNullOrWhiteSpace(ReplyTextBody))
                 await CoreMethods.DisplayAlert("ManageGo", "Please enter reply text", "OK");
             try
             {
-                var dic = new Dictionary<string, object> {
-                    {"TicketID", TicketId},
-                    {"CommentType", commentType},
-                    {"Comment", ReplyTextBody},
-                    {"IsCompleted", false}
+                IsCreatingEvent = true;
+                var item = new MGDataAccessLibrary.Models.AddNewCommentRequestItem
+                {
+                    TicketID = TicketId,
+                    CommentType = commentType,
+                    Comment = ReplyTextBody,
+                    IsCompleted = false
                 };
                 SendOptionsPupupIsVisible = false;
                 AttachActionSheetIsVisible = false;
                 ReplyBoxIsVisible = false;
                 ReplyButtonIsVisible = true;
-                Comments.Add(new ManageGo.Comments
-                {
-                    CommentType = commentType,
-                    Text = $"{ReplyTextBody}",
-                    CommentCreateTime = DateTime.Now.ToShortDateString(),
-                    Name = App.UserName,
-                    Files = new ObservableCollection<File>(ReplyAttachments.Where(t => t.ParentComment == 0))
-                });
-                RaisePropertyChanged("Comments");
-
                 // First assing a temp id for later identification. In case multiple comments
                 // get created quickly before all files are uploaded
                 var tempId = Guid.NewGuid().ToString();
@@ -562,7 +533,7 @@ namespace ManageGo
                 CurrentReplyAttachments.Clear();
                 RaisePropertyChanged("ReplyAttachedFilesIsVisible");
                 tcs?.SetResult(true); // allow another comment to be sent immidiately
-                int newId = await Services.DataAccess.SendNewCommentAsync(dic);
+                int newId = await Services.DataAccess.SendNewCommentAsync(item);
                 // reassign the the real comment id to the file with the temp Id
                 foreach (File file in ReplyAttachments.Where(t => t.ParentCommentTempId == tempId))
                 {
@@ -575,14 +546,19 @@ namespace ManageGo
                 {
                     uploadTask.Add(Services.DataAccess.UploadFile(file));
                 }
+
                 await Task.WhenAll(uploadTask);
                 if (ReplyAttachments.Any(t => t.ParentComment == newId))
                     await Services.DataAccess.UploadCompleted(commentId: newId);
+                OnListRefreshRequested.Execute(null);
 
+                IsCreatingEvent = false;
             }
             catch (Exception ex)
             {
+                IsCreatingEvent = false;
                 await CoreMethods.DisplayAlert("Something went wrong", ex.Message, "DISMISS");
+
             }
 
         }
@@ -593,6 +569,12 @@ namespace ManageGo
             {
                 async void execute(TaskCompletionSource<bool> tcs)
                 {
+                    if (CurrentTicket.Unit is null)
+                    {
+                        await CoreMethods.DisplayAlert("ManageGo", "This ticket is not assigned to a tenant", "OK");
+                        tcs?.SetResult(true);
+                        return;
+                    }
                     //show the send options popup
                     if (string.IsNullOrWhiteSpace(ReplyTextBody))
                         await CoreMethods.DisplayAlert("ManageGo", "Please enter reply text", "OK");
@@ -604,37 +586,44 @@ namespace ManageGo
             }
         }
 
-        public FreshAwaitCommand OnAttachButtonTapped
+        public FreshAwaitCommand OnAttachButtonTapped => new FreshAwaitCommand((tcs) =>
         {
-            get
-            {
-                return new FreshAwaitCommand((tcs) =>
-                {
-                    AttachActionSheetIsVisible = true;
-                    tcs?.SetResult(true);
-                });
-            }
-        }
+            AttachActionSheetIsVisible = true;
+            tcs?.SetResult(true);
+        });
 
-        public FreshAwaitCommand OnBackgroundTapped
-        {
-            get
-            {
-                return new FreshAwaitCommand((tcs) =>
-                {
-                    SendOptionsPupupIsVisible = false;
-                    AttachActionSheetIsVisible = false;
-                    tcs?.SetResult(true);
-                });
-            }
-        }
+
+
+        public FreshAwaitCommand OnBackgroundTapped => new FreshAwaitCommand((tcs) =>
+               {
+                   SendOptionsPupupIsVisible = false;
+                   AttachActionSheetIsVisible = false;
+                   tcs?.SetResult(true);
+               });
+
+
 
         public FreshAwaitCommand OnBackButtonTapped
         {
             get
             {
+
                 async void execute(TaskCompletionSource<bool> tcs)
                 {
+                    if (ShouldShowClock)
+                        return;
+                    foreach (var user in App.Users)
+                    {
+                        user.IsSelected = false;
+                    }
+                    foreach (var cat in App.Categories)
+                    {
+                        cat.IsSelected = false;
+                    }
+                    foreach (var tag in App.Tags)
+                    {
+                        tag.IsSelected = false;
+                    }
                     if (ShouldShowClock)
                     {
                         OnCloseTimePickerTapped.Execute(null);
@@ -656,11 +645,7 @@ namespace ManageGo
             }
         }
 
-        public FreshAwaitCommand OnCloseReplyBubbleTapped
-        {
-            get
-            {
-                return new FreshAwaitCommand((tcs) =>
+        public FreshAwaitCommand OnCloseReplyBubbleTapped => new FreshAwaitCommand((tcs) =>
                 {
                     ReplyButtonIsVisible = true;
                     ReplyBoxIsVisible = false;
@@ -668,8 +653,8 @@ namespace ManageGo
                     EventActionSheetIsVisible = false;
                     tcs?.SetResult(true);
                 });
-            }
-        }
+
+
 
         public FreshAwaitCommand OnSwitchPriorityTapped
         {
@@ -695,6 +680,13 @@ namespace ManageGo
             {
                 async void execute(TaskCompletionSource<bool> tcs)
                 {
+                    if (CurrentTicket.Unit is null)
+                    {
+                        await CoreMethods.DisplayAlert("ManageGo", "This ticket is not assigned to a tenant", "OK");
+                        tcs?.SetResult(true);
+                        return;
+                    }
+
                     var _timeFrom = DateTime.Parse(FromTime);
                     var _timeTo = DateTime.Parse(ToTime);
                     if (string.IsNullOrWhiteSpace(EventSummary) ||
@@ -722,63 +714,85 @@ namespace ManageGo
                         tcs?.SetResult(true);
                         return;
                     }
-
-                    var dic = new Dictionary<string, object> {
-                        {"TicketID", TicketId},
-                        {"Note", EventSummary},
-                        {"Title", EventSummary},
-                        {"EventDate", SelectedEventDate},
-                        {"TimeFrom", _timeFrom.ToString("HHmm")},
-                        {"TimeTo", _timeTo.ToString("HHmm")},
-                        {"SendToUsers", Users.Where(t=>t.IsSelected).Select(t=>t.UserID)},
-                        {"SendToExternalContacts", ExternalContacts.Where(t=>t.IsSelected).Select(t=>t.ExternalID) },
-                                                                                                 };
-                    WorkOrderActionSheetIsVisible = false;
-                    EventActionSheetIsVisible = false;
-                    SendOptionsPupupIsVisible = false;
-                    AttachActionSheetIsVisible = false;
-                    ReplyBoxIsVisible = false;
-                    ReplyButtonIsVisible = true;
-                    Comments.Add(new Comments
+                    IsCreatingEvent = true;
+                    var newEvent = new MGDataAccessLibrary.Models.EventCreateItem
                     {
-                        CommentType = CommentTypes.Event,
-                        Text = $"{EventSummary}",
-                        CommentCreateTime = DateTime.Now.ToShortDateString(),
-                        Name = App.UserName
-                    });
+                        TicketID = TicketId,
+                        Note = EventSummary,
+                        Title = EventSummary,
+                        EventDate = SelectedEventDate,
+                        TimeFrom = _timeFrom.ToString("HHmm"),
+                        TimeTo = _timeTo.ToString("HHmm"),
+                        SendToUsers = Users.Where(t => t.IsSelected).Select(t => t.UserID),
+                        SendToExternalContacts = ExternalContacts.Where(t => t.IsSelected).Select(t => t.ExternalID),
+                        SendToEmail = WorkOrderSendEmail,
+                        SendToTenant = new List<int> { TicketTenant },
+                    };
+
                     RaisePropertyChanged("Comments");
                     try
                     {
-                        await Services.DataAccess.SendNewEventAsync(dic);
-                        foreach (var user in Users.Where(t => t.IsSelected))
-                        {
-                            if (AssignedUserIds.Contains(user.UserID))
-                                user.IsSelected = true;
-                            else
-                                user.IsSelected = false;
-                        }
-                        foreach (var user in ExternalContacts.Where(t => t.IsSelected))
-                        {
-                            if (AssignedUserIds.Contains(user.ExternalID))
-                                user.IsSelected = true;
-                            else
-                                user.IsSelected = false;
-                        }
+                        await MGDataAccessLibrary.BussinessLogic.TicketsProcessor.CreateEvent(newEvent);
                         //clear the fields used for the workorder
                         EventSummary = null;
                         SelectedEventDate = DateTime.MinValue;
                         WorkOrderSendEmail = null;
+
+                        WorkOrderActionSheetIsVisible = false;
+                        EventActionSheetIsVisible = false;
+                        SendOptionsPupupIsVisible = false;
+                        AttachActionSheetIsVisible = false;
+                        ReplyBoxIsVisible = false;
+                        ReplyButtonIsVisible = true;
+                        OnListRefreshRequested.Execute(null);
+                        ((TicketDetailsPage)CurrentPage).RedrawTable();
+                        SetTicketAsignedUsers();
                     }
                     catch (Exception ex)
                     {
+                        IsCreatingEvent = false;
+                        Crashes.TrackError(ex);
                         await CoreMethods.DisplayAlert("Something went wrong", ex.Message, "DISMISS");
                     }
                     finally
                     {
+                        IsCreatingEvent = false;
                         tcs?.SetResult(true);
                     }
+
                 }
                 return new FreshAwaitCommand(execute, () => CanCreateWorkorderAndEvents);
+            }
+        }
+
+        /// <summary>
+        /// Sets the selected users to the users whom this ticket is assigned to
+        /// </summary>
+        private void SetTicketAsignedUsers()
+        {
+            if (Users is null)
+                return;
+            foreach (var user in Users)
+            {
+                if (TicketDetails.Assigned != null && TicketDetails.Assigned.Contains(user.UserID))
+                    user.IsSelected = true;
+                else
+                    user.IsSelected = false;
+            }
+            if (ExternalContacts != null)
+            {
+                foreach (var user in ExternalContacts)
+                {
+                    if (TicketDetails.Assigned.Contains(user.ExternalID))
+                        user.IsSelected = true;
+                    else
+                        user.IsSelected = false;
+                }
+            }
+            AssignedLabelText = Users?.FirstOrDefault(t => t.IsSelected)?.UserFullName;
+            if (Users.Count(t => t.IsSelected) > 1)
+            {
+                AssignedLabelText += $", +{Users.Count(t => t.IsSelected) - 1} more";
             }
         }
 
@@ -788,6 +802,12 @@ namespace ManageGo
             {
                 async void execute(TaskCompletionSource<bool> tcs)
                 {
+                    if (CurrentTicket.Unit is null)
+                    {
+                        await CoreMethods.DisplayAlert("ManageGo", "This ticket is not assigned to a tenant", "OK");
+                        tcs?.SetResult(true);
+                        return;
+                    }
                     //send the created work order
                     if (string.IsNullOrWhiteSpace(WorkOrderSummary) || string.IsNullOrWhiteSpace(WorkOrderDetail))
                     {
@@ -795,15 +815,23 @@ namespace ManageGo
                         tcs?.SetResult(true);
                         return;
                     }
+                    else if (!Users.Where(t => t.IsSelected).Any())
+                    {
+                        await CoreMethods.DisplayAlert("ManageGo", "Please select a user", "DISMISS");
+                        tcs?.SetResult(true);
+                        return;
+                    }
 
-                    var dic = new Dictionary<string, object> {
-                        {"TicketID", TicketId},
-                        {"Summary", WorkOrderSummary},
-                        {"Details", WorkOrderDetail},
-                        {"SendToUsers", Users.Where(t=>t.IsSelected).Select(t=>t.UserID)},
-                        {"SendToExternalContacts", ExternalContacts.Where(t=>t.IsSelected).Select(t=>t.ExternalID) },
-                        {"SendToEmail", WorkOrderSendEmail}
+                    var item = new Models.CreateWorkorderRequestItem
+                    {
+                        TicketID = TicketId,
+                        SendToUsers = Users.Where(t => t.IsSelected).Select(t => t.UserID),
+                        Details = WorkOrderDetail,
+                        Summary = WorkOrderSummary,
+                        SendToEmail = WorkOrderSendEmail,
+                        SendToExternalContacts = ExternalContacts.Where(t => t.IsSelected).Select(t => t.ExternalID)
                     };
+
                     WorkOrderActionSheetIsVisible = false;
                     SendOptionsPupupIsVisible = false;
                     AttachActionSheetIsVisible = false;
@@ -820,32 +848,26 @@ namespace ManageGo
                     RaisePropertyChanged("Comments");
                     try
                     {
-                        await Services.DataAccess.SendNewWorkOurderAsync(dic);
-                        foreach (var user in Users.Where(t => t.IsSelected))
-                        {
-                            if (AssignedUserIds.Contains(user.UserID))
-                                user.IsSelected = true;
-                            else
-                                user.IsSelected = false;
-                        }
-                        foreach (var user in ExternalContacts.Where(t => t.IsSelected))
-                        {
-                            if (AssignedUserIds.Contains(user.ExternalID))
-                                user.IsSelected = true;
-                            else
-                                user.IsSelected = false;
-                        }
+                        IsCreatingEvent = true;
+                        await Services.DataAccess.SendNewWorkOurderAsync(item);
+                        SetTicketAsignedUsers();
                         //clear the fields used for the workorder
                         WorkOrderSummary = null;
                         WorkOrderDetail = null;
                         WorkOrderSendEmail = null;
+                        OnListRefreshRequested.Execute(null);
+                        ((TicketDetailsPage)CurrentPage).RedrawTable();
+                        SetTicketAsignedUsers();
                     }
                     catch (Exception ex)
                     {
+                        IsCreatingEvent = false;
+                        Crashes.TrackError(ex);
                         await CoreMethods.DisplayAlert("Something went wrong", ex.Message, "DISMISS");
                     }
                     finally
                     {
+                        IsCreatingEvent = false;
                         tcs?.SetResult(true);
                     }
 
@@ -861,16 +883,27 @@ namespace ManageGo
                 async void execute(TaskCompletionSource<bool> tcs)
                 {
                     AttachActionSheetIsVisible = false;
-                    var result = await Services.PhotoHelper.PickPhotoAndVideos();
-                    if (result.Item1 != null)
+                    try
                     {
-                        var file = new File { Content = result.Item1, Name = result.Item2 };
-                        ReplyAttachments.Add(file);
-                        CurrentReplyAttachments.Add(file);
-                        RaisePropertyChanged("ReplyAttachedFilesIsVisible");
-                        RaisePropertyChanged("ReplyAttachedFilesListHeight");
+                        var result = await Services.PhotoHelper.PickPhotoAndVideos();
+                        if (result.Item1 != null)
+                        {
+                            var file = new File { Content = result.Item1, Name = result.Item2 };
+                            ReplyAttachments.Add(file);
+                            CurrentReplyAttachments.Add(file);
+                            RaisePropertyChanged("ReplyAttachedFilesIsVisible");
+                            RaisePropertyChanged("ReplyAttachedFilesListHeight");
+                        }
                     }
-                    tcs?.SetResult(true);
+                    catch (Exception ex)
+                    {
+                        await CoreMethods.DisplayAlert("ManageGo", ex.Message, "Dismiss");
+                    }
+                    finally
+                    {
+                        tcs?.SetResult(true);
+                    }
+
                 }
                 return new FreshAwaitCommand(execute);
             }
@@ -900,6 +933,7 @@ namespace ManageGo
                     }
                     catch (Exception ex)
                     {
+                        Crashes.TrackError(ex);
                         await CoreMethods.DisplayAlert("Something went wrong", ex.Message, "DISMISS");
                     }
                     finally
@@ -915,6 +949,7 @@ namespace ManageGo
         protected override void ViewIsAppearing(object sender, EventArgs e)
         {
             base.ViewIsAppearing(sender, e);
+            App.MasterDetailNav.IsGestureEnabled = false;
             if (Data is null)
                 return;
             if (Data.TryGetValue("TicketNumber", out object ticketNumber))
@@ -933,9 +968,14 @@ namespace ManageGo
 
         private void SetupView(TicketDetails ticketDetails, MaintenanceTicket ticket)
         {
+            if (ticketDetails is null)
+                return;
             Categories = new List<Categories>();
             PriorityLabelText = "Not Available";
             Comments = new ObservableCollection<Comments>();
+            CategoryLabelText = "Select";
+            AssignedLabelText = "Select";
+            TagLabelText = "Select";
             foreach (var cat in App.Categories)
             {
                 cat.IsSelected = false;
@@ -948,61 +988,75 @@ namespace ManageGo
             {
                 tag.IsSelected = false;
             }
-            if (ticket != null)
-            {
-                CurrentTicket = ticket;
-                HasPet = ticket.HasPet;
-                HasAccess = ticket.HasAccess;
-                HasWorkOrder = ticket.HasWorkorder;
-                HasEvent = ticket.HasEvent;
-                TicketId = ticket.TicketId;
-                Status = ticket.TicketStatus;
-                Unit = ticket.Unit;
-                TicketTenant = ticket.Tenant.TenantID;
-                BuildingId = ticket.Building is null ? 0 : ticket.Building.BuildingId;
-                Users = App.Users;
-                TicketComment = ticket.FirstComment;
 
-                AssignedUserIds = ticket.Assigned;
-                if (ticket.Assigned != null && ticket.Assigned.Any())
+            CurrentTicket = ticket;
+            HasPet = ticket.HasPet;
+            HasAccess = ticket.HasAccess;
+            HasWorkOrder = ticket.HasWorkorder;
+            HasEvent = ticket.HasEvent;
+            TicketId = ticket.TicketId;
+            Status = ticket.TicketStatus;
+            Unit = ticket.Unit;
+            TicketTenant = ticket.Tenant.TenantID;
+            BuildingId = ticket.Building is null ? 0 : ticket.Building.BuildingId;
+            Users = App.Users;
+            TicketStatus = ticket.Status ? TicketStatus.Open : TicketStatus.Closed;
+
+            var tenantName = ticket.Tenant.TenantFirstName + " " + ticket.Tenant.TenantLastName;
+            TenantName = string.IsNullOrWhiteSpace(tenantName) ? "Not Available" : tenantName;
+            DueDate = ticket.DueDate.HasValue ?
+                ticket.DueDate.Value.ToString("MM/dd/yy") : "Not Set";
+            if (ticketDetails is null && !string.IsNullOrWhiteSpace(ticket.FirstComment))
+            {
+                Comments.Insert(0, new Comments
                 {
-                    foreach (var user in Users)
+                    CommentType = CommentTypes.Resident,
+                    Text = ticket.FirstComment,
+                    TopSideLineColor = "#00FFFFFF",
+                    IsNotTheLastComment = false,
+                    CommentCreateTime = ticket.TicketCreateTime.ToLongDateString(),
+                    HasPet = ticket.HasPet,
+                    HasAccess = ticket.HasAccess
+                });
+            }
+            else
+            {
+                IsAccessGranted = ticketDetails.IsAccessGranted;
+                if (IsAccessGranted)
+                {
+                    switch (ticketDetails.AccessGrantedObject.PetInUnit)
                     {
-                        if (ticket.Assigned.Contains(user.UserID))
-                        {
-                            user.IsSelected = true;
-                        }
+                        case 0:
+                            AccessPetText = string.Empty;
+                            break;
+                        case 1:
+                            AccessPetText = "Pets in unit: Small pet";
+                            break;
+                        case 2:
+                            AccessPetText = "Pets in unit: Large pet";
+                            break;
+                    }
+
+                    if (ticketDetails.AccessGrantedObject.Dates is null || !ticketDetails.AccessGrantedObject.Dates.Any())
+                    {
+                        if (string.IsNullOrWhiteSpace(ticketDetails.AccessGrantedObject.CustomDescription))
+                            AccessGrantedTimesText = $"Access anytime{Environment.NewLine}{AccessPetText}";
                         else
+                            AccessGrantedTimesText = ticketDetails.AccessGrantedObject.CustomDescription + $"{Environment.NewLine}{AccessPetText}";
+                    }
+                    else
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        foreach (var date in TicketDetails.AccessGrantedObject.Dates)
                         {
-                            user.IsSelected = false;
+                            var tring = $"{date.DateTimeStart.ToString("MMM dd, yyyy")} - {date.DateTimeStart.ToString("h:mm tt")} - {date.DateTimeEnd.ToString("h:mm tt")}{Environment.NewLine}";
+                            sb.Append(tring);
                         }
+                        sb.Append(AccessPetText);
+                        AccessGrantedTimesText = sb.ToString();
                     }
                 }
-                var tenantName = ticket.Tenant.TenantFirstName + " " + ticket.Tenant.TenantLastName;
-                TenantName = string.IsNullOrWhiteSpace(tenantName) ? "Not Available" : tenantName;
-                DueDate = ticket.DueDate.HasValue ?
-                    ticket.DueDate.Value.ToString("MM/dd/yy") : "Not Set";
-                if (ticketDetails is null)
-                {
-                    if (!string.IsNullOrWhiteSpace(TicketComment))
-                        Comments.Insert(0, new Comments
-                        {
-                            CommentType = CommentTypes.Resident,
-                            Text = TicketComment,
-                            TopSideLineColor = "#00FFFFFF",
-                            IsNotTheLastComment = false,
-                            CommentCreateTime = ticket.TicketCreateTime.ToLongDateString(),
-                            HasPet = ticket.HasPet,
-
-                            HasAccess = ticket.HasAccess
-                        });
-                }
             }
-            if (ticketDetails is null)
-            {
-                return;
-            }
-
 
             if (TicketDetails.Comments != null)
             {
@@ -1017,20 +1071,19 @@ namespace ManageGo
                     }
                 }
             }
+
             PriorityLabelText = TicketDetails.Priority;
             // Categories = TicketDetails.Categories;
             Categories = App.Categories;
             Tags = App.Tags;
+
             if (TicketDetails.Categories != null && TicketDetails.Categories.Any())
             {
                 CategoryLabelText = TicketDetails.Categories.First().CategoryName;
                 CategoryLabelColor = "#" + TicketDetails.Categories.First().Color;
                 foreach (var cat in Categories)
                 {
-                    if (TicketDetails.Categories.Any(c => c.CategoryID == cat.CategoryID))
-                    {
-                        cat.IsSelected = true;
-                    }
+                    cat.IsSelected = TicketDetails.Categories.Any(c => c.CategoryID == cat.CategoryID);
                 }
                 if (Categories.Count(t => t.IsSelected) > 1)
                 {
@@ -1038,25 +1091,23 @@ namespace ManageGo
                     CategoryLabelColor = "#58595B";
                 }
             }
+
             if (TicketDetails.Tags != null && TicketDetails.Tags.Any())
             {
                 TagLabelText = TicketDetails.Tags.First().TagName;
                 TagLabelColor = "#" + TicketDetails.Tags.First().Color;
                 foreach (var tag in Tags)
                 {
-                    if (TicketDetails.Tags.Any(c => c.TagID == tag.TagID))
-                    {
-                        tag.IsSelected = true;
-                    }
+                    tag.IsSelected = TicketDetails.Tags.Any(c => c.TagID == tag.TagID);
                 }
                 if (Tags.Count(t => t.IsSelected) > 1)
                 {
-                    TagLabelText = TagLabelText + $", +{Tags.Count(t => t.IsSelected) - 1} more";
+                    TagLabelText += $", +{Tags.Count(t => t.IsSelected) - 1} more";
                     TagLabelColor = "#58595B";
                 }
             }
-
             ExternalContacts = App.ExternalContacts;
+            SetTicketAsignedUsers();
         }
 
         public FreshAwaitCommand OnTagTapped
@@ -1073,7 +1124,7 @@ namespace ManageGo
                         TagLabelColor = "#" + Tags.First(t => t.IsSelected).Color;
                         if (Tags.Count(t => t.IsSelected) > 1)
                         {
-                            TagLabelText = TagLabelText + $", +{Tags.Count(t => t.IsSelected) - 1} more";
+                            TagLabelText += $", +{Tags.Count(t => t.IsSelected) - 1} more";
                             TagLabelColor = "#58595B";
                         }
                     }
@@ -1099,11 +1150,8 @@ namespace ManageGo
                             tcs?.SetResult(true);
                             return;
                         }
-                        else
-                        {
-                            ClearUserSelections();
-                            EnableAllCategories();
-                        }
+                        ClearUserSelections();
+                        EnableAllCategories();
                     }
                     cat.IsSelected = !cat.IsSelected;
                     if (Categories.Any(t => t.IsSelected == true))
@@ -1135,6 +1183,13 @@ namespace ManageGo
                 }
                 return new FreshAwaitCommand(execute);
             }
+        }
+
+        protected override void ViewIsDisappearing(object sender, EventArgs e)
+        {
+            if (App.MasterDetailNav != null)
+                App.MasterDetailNav.IsGestureEnabled = true;
+            base.ViewIsDisappearing(sender, e);
         }
 
         void ClearCategorySelections()
@@ -1268,7 +1323,7 @@ namespace ManageGo
                     if (TicketId > 0)
                     {
                         TicketDetails = await Services.DataAccess.GetTicketDetails(TicketId);
-                        SetupView(TicketDetails, null);
+                        SetupView(TicketDetails, CurrentTicket);
                         IsBusy = false;
                     }
 
@@ -1312,7 +1367,7 @@ namespace ManageGo
                 // user does not have any of the required permissions
                 if (await CrossPermissions.Current.ShouldShowRequestPermissionRationaleAsync(Plugin.Permissions.Abstractions.Permission.Camera))
                 {
-                    await CoreMethods.DisplayAlert("ManageGo", "Need camera access to take photo/video", "OK");
+                    await CoreMethods.DisplayAlert("ManageGo", "Need camera access to take photo/video.", "OK");
                 }
                 if (await CrossPermissions.Current.ShouldShowRequestPermissionRationaleAsync(Plugin.Permissions.Abstractions.Permission.Microphone))
                 {
@@ -1350,8 +1405,12 @@ namespace ManageGo
                 {
                     if (PickedTimeIsAM)
                     {
+                        var _newTime = PickedTime.Date + new TimeSpan(ClockTime.Hour, ClockTime.Minute, ClockTime.Second);
+                        PickedTime = _newTime;
                         SwitchingAmPam = true;
-                        PickedTime = PickedTime.AddHours(12);
+                        var newTime = PickedTime.AddHours(12);
+                        PickedTime = newTime;
+                        ClockTime = newTime;
                     }
                     PickedTimeIsAM = false;
                     tcs?.SetResult(true);
@@ -1367,8 +1426,12 @@ namespace ManageGo
                 {
                     if (!PickedTimeIsAM)
                     {
+                        var _newTime = PickedTime.Date + new TimeSpan(ClockTime.Hour, ClockTime.Minute, ClockTime.Second);
+                        PickedTime = _newTime;
                         SwitchingAmPam = true;
-                        PickedTime = PickedTime.AddHours(-12);
+                        var newTime = PickedTime.AddHours(-12);
+                        PickedTime = newTime;
+                        ClockTime = newTime;
                     }
 
                     PickedTimeIsAM = true;
@@ -1399,6 +1462,7 @@ namespace ManageGo
                     }
                     SetFromTime = true;
                     PickedTime = DateTime.Parse(FromTime.Replace("PM", ""));
+                    ClockTime = DateTime.Parse(FromTime.Replace("PM", ""));
                     tcs?.SetResult(true);
                 });
             }
@@ -1426,6 +1490,7 @@ namespace ManageGo
                     }
                     SetToTime = true;
                     PickedTime = DateTime.Parse(ToTime.Replace("PM", ""));
+                    ClockTime = DateTime.Parse(FromTime.Replace("PM", ""));
                     tcs?.SetResult(true);
                 });
             }
@@ -1440,11 +1505,13 @@ namespace ManageGo
                     var _oldTime = OldTime;
                     SwitchingAmPam = false;
                     PickedTimeIsAM = !OldTimeIsPm;
+
                     if (SetToTime)
                         PickedTime = new DateTime(_oldTime.Ticks);
                     else if (SetFromTime)
                         PickedTime = new DateTime(_oldTime.Ticks);
-                    RaisePropertyChanged("PickedTime");
+                    ClockTime = PickedTime;
+                    RaisePropertyChanged();
                     ShouldShowClock = false;
                     tcs?.SetResult(true);
                 });
@@ -1457,7 +1524,8 @@ namespace ManageGo
             {
                 return new FreshAwaitCommand((tcs) =>
                 {
-                    var _timeString = PickedTime.ToString("hh:mm tt");
+                    var _timeString = ClockTime.ToString("hh:mm");
+                    _timeString = _timeString + " " + (PickedTimeIsAM ? "AM" : "PM");
                     if (SetFromTime)
                     {
                         FromTime = _timeString;
@@ -1488,8 +1556,14 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand((tcs) =>
+                return new FreshAwaitCommand(async (tcs) =>
                 {
+                    if (CurrentTicket.Unit is null)
+                    {
+                        await CoreMethods.DisplayAlert("ManageGo", "This ticket is not assigned to a tenant", "OK");
+                        tcs?.SetResult(true);
+                        return;
+                    }
                     ReplyButtonIsVisible = false;
                     ReplyBoxIsVisible = true;
                     tcs?.SetResult(true);
@@ -1501,8 +1575,14 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand((tcs) =>
+                return new FreshAwaitCommand(async (tcs) =>
                 {
+                    if (CurrentTicket.Unit is null)
+                    {
+                        await CoreMethods.DisplayAlert("ManageGo", "This ticket is not assigned to a tenant", "OK");
+                        tcs?.SetResult(true);
+                        return;
+                    }
                     ReplyButtonIsVisible = false;
                     WorkOrderActionSheetIsVisible = true;
                     tcs?.SetResult(true);
@@ -1514,14 +1594,22 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand((tcs) =>
+                return new FreshAwaitCommand(async (tcs) =>
                 {
+                    if (CurrentTicket.Unit is null)
+                    {
+                        await CoreMethods.DisplayAlert("ManageGo", "This ticket is not assigned to a tenant", "OK");
+                        tcs?.SetResult(true);
+                        return;
+                    }
                     ReplyButtonIsVisible = false;
                     EventActionSheetIsVisible = true;
                     tcs?.SetResult(true);
                 }, () => CanCreateWorkorderAndEvents);
             }
         }
+
+
     }
 }
 

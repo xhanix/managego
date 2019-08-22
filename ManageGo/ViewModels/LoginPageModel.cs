@@ -17,11 +17,12 @@ namespace ManageGo
         public bool ResetPasswordViewIsVisible { get; private set; }
         public string BioLoginButtonText { get; private set; }
         public bool IsLoggingIn { get; private set; }
-
         internal event EventHandler<bool> OnSuccessfulLogin;
         public string AuthString { get; private set; }
         [AlsoNotifyFor("LoginButtonBgColor")]
         public string UserEmail { get; set; }
+        private string HiddenEmail { get; set; }
+        private string HiddenPassword { get; set; }
         [AlsoNotifyFor("LoginButtonBgColor")]
         public string UserPassword { get; set; }
         public string LoginButtonBgColor
@@ -34,6 +35,14 @@ namespace ManageGo
         }
         [AlsoNotifyFor("AuthCheckBoxIcon")]
         public bool IsBiometricsEnabled { get; private set; }
+
+        public override void Init(object initData)
+        {
+            base.Init(initData);
+            if (initData is bool userLoggedOut)
+                UserLoggedOut = true;
+        }
+
         protected override async void ViewIsAppearing(object sender, EventArgs e)
         {
             base.ViewIsAppearing(sender, e);
@@ -91,18 +100,19 @@ namespace ManageGo
                         Device.BeginInvokeOnMainThread(action);
                     }
                 }
-                DependencyService.Get<ILocalAuthHelper>().Authenticate(userName, OnBiometricAuthSuccess, onFailure);
+                if (!UserLoggedOut)
+                    DependencyService.Get<ILocalAuthHelper>().Authenticate(userName, OnBiometricAuthSuccess, onFailure);
             }
-
         }
 
         private void OnBiometricAuthSuccess()
         {
             async void action()
             {
-                UserEmail = await SecureStorage.GetAsync("UserName");
-                UserPassword = await SecureStorage.GetAsync("Password");
-                await FinishLogin(isBiometricLogin: true);
+
+                HiddenEmail = await SecureStorage.GetAsync("UserName");
+                HiddenPassword = await SecureStorage.GetAsync("Password");
+                await FinishLogin(isBiometricLogin: true, useHiddenField: true);
             }
             Device.BeginInvokeOnMainThread(action);
         }
@@ -143,14 +153,29 @@ namespace ManageGo
             }
         }
 
-        private async Task FinishLogin(bool isBiometricLogin)
+        public FreshAwaitCommand OnContactUsButtonTapped
+        {
+            get
+            {
+
+                return new FreshAwaitCommand((tcs) =>
+                {
+                    Device.OpenUri(new Uri($"mailto:sales@managego.com"));
+                    tcs?.SetResult(true);
+                });
+            }
+        }
+
+        private async Task FinishLogin(bool isBiometricLogin, bool useHiddenField = false)
         {
             try
             {
+                var userName = useHiddenField ? HiddenEmail : UserEmail;
+                var password = useHiddenField ? HiddenPassword : UserPassword;
                 IsLoggingIn = true;
                 if (Connectivity.NetworkAccess != NetworkAccess.Internet)
                     throw new Exception("Not connected to Internet");
-                await Services.DataAccess.Login(UserEmail, UserPassword);
+                await Services.DataAccess.Login(userName, password);
                 Preferences.Set("IsFirstLogin", false);
 #if !DEBUG
                 if (!isBiometricLogin)
@@ -252,11 +277,12 @@ namespace ManageGo
                 return new FreshAwaitCommand((tcs) =>
                 {
                     IsBiometricsEnabled = !IsBiometricsEnabled;
+                    Preferences.Set("IsBiometricAuthEnabled", IsBiometricsEnabled);
                     tcs?.SetResult(true);
                 });
             }
         }
 
-
+        public bool UserLoggedOut { get; private set; }
     }
 }
