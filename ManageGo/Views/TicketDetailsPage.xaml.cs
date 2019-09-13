@@ -121,5 +121,10 @@ namespace ManageGo
             MyListView.HasUnevenRows = !MyListView.HasUnevenRows;
             MyListView.HasUnevenRows = !MyListView.HasUnevenRows;
         }
+
+        internal void StopRefresh()
+        {
+            MyListView.EndRefresh();
+        }
     }
 }

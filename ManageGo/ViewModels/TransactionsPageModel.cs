@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using CustomCalendar;
@@ -133,6 +132,8 @@ namespace ManageGo
                 if (FetchNextPage && ParameterItem != null)
                 {
                     ParameterItem.Page++;
+                    if (ParameterItem.DateFrom.HasValue && !ParameterItem.DateTo.HasValue)
+                        ParameterItem.DateTo = ParameterItem.DateFrom.Value.AddDays(1);
                     var nextPage = await Services.DataAccess.GetTransactionsAsync(ParameterItem);
                     if (nextPage != null)
                     {
@@ -162,6 +163,8 @@ namespace ManageGo
                         ParameterItem.Page = 1;
 
                     // FetchedTickets is null on view init
+                    if (ParameterItem.DateFrom.HasValue && !ParameterItem.DateTo.HasValue)
+                        ParameterItem.DateTo = ParameterItem.DateFrom.Value.AddDays(1);
                     var fetchedTransactions = await Services.DataAccess.GetTransactionsAsync(ParameterItem);
 
                     if (fetchedTransactions != null)
@@ -201,9 +204,14 @@ namespace ManageGo
                 return new FreshAwaitCommand((par, tcs) =>
                 {
                     var transaction = (BankTransaction)par;
-                    var alreadyExpandedItem = FetchedTransactions.FirstOrDefault(t => t.DetailsShown && t.Id != transaction.Id);
-                    if (alreadyExpandedItem != null)
-                        alreadyExpandedItem.DetailsShown = false;
+                    if (transaction is null)
+                        return;
+                    if (FetchedTransactions != null && FetchedTransactions.Any())
+                    {
+                        var alreadyExpandedItem = FetchedTransactions?.FirstOrDefault(t => t.DetailsShown && t.Id != transaction.Id);
+                        if (alreadyExpandedItem != null)
+                            alreadyExpandedItem.DetailsShown = false;
+                    }
                     transaction.DetailsShown = !transaction.DetailsShown;
                     tcs?.SetResult(true);
                 });
@@ -264,7 +272,7 @@ namespace ManageGo
                         if (BankAccounts != null && BankAccounts.Any(f => f.IsSelected))
                             ParameterItem.BankAccounts = BankAccounts.Where(f => f.IsSelected).Select(f => f.BankAccountID).ToList();
                         ParameterItem.AmountFrom = FilteredAmountRange?.Item1;
-                        ParameterItem.AmountTo = FilteredAmountRange?.Item2;
+                        ParameterItem.AmountTo = FilteredAmountRange?.Item2 == 5000 ? null : FilteredAmountRange?.Item2;
                         ParameterItem.DateFrom = DateRange.StartDate;
                         ParameterItem.DateTo = DateRange.EndDate;
                     }
@@ -379,9 +387,13 @@ namespace ManageGo
                 return new FreshAwaitCommand((tcs) =>
                 {
                     if (FilterSelectViewIsShown)
+                    {
                         PopContentView = (View)null;
+                        App.MasterDetailNav.IsGestureEnabled = true;
+                    }
                     else
                     {
+                        App.MasterDetailNav.IsGestureEnabled = false;
                         SelectedDateRange = new DateRange(DateRange.StartDate, DateRange.EndDate);
                         CurrentFilter = ParameterItem.Clone();
                         PopContentView = new Views.TransactionsFilterPage(this).Content;

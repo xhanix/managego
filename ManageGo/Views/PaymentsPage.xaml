@@ -190,7 +190,7 @@
                                                    WidthRequest="10"
                                                    Padding="0"
                                                    HasShadow="false"
-                                                   BackgroundColor="{Binding StatusColor}" />
+                                                   BackgroundColor="{Binding PaymentPageStatusColor}" />
                                             <Image Source="chat_grey.png"
                                                    HorizontalOptions="Center"
                                                    IsVisible="{Binding PaymentNote,Converter={StaticResource StringToBoolConverter}}" />
@@ -210,7 +210,7 @@
                                                     <ColumnDefinition Width="25" />
                                                 </Grid.ColumnDefinitions>
                                                 <Label Grid.Column="0"
-                                                       Text="{Binding TotalAmountAndFees, StringFormat={StaticResource FormatDecimalToCurrency}}"
+                                                       Text="{Binding Total, StringFormat={StaticResource FormatDecimalToCurrency}}"
                                                        FontSize="Medium"
                                                        FontAttributes="Bold"
                                                        MinimumWidthRequest="20"
@@ -287,23 +287,11 @@
                                                     </StackLayout>
                                                     <StackLayout Orientation="Horizontal"
                                                                  IsVisible="{Binding OtherFee}">
-                                                        <Label Text="Late fee:"
+                                                        <Label Text="Other fees:"
                                                                FontSize="Small"
                                                                HorizontalOptions="Start"
                                                                TextColor="{StaticResource Grey-Light-1}" />
                                                         <Label Text="{Binding OtherFee,StringFormat={StaticResource FormatDecimalToCurrency}}"
-                                                               HorizontalOptions="EndAndExpand"
-                                                               HorizontalTextAlignment="End"
-                                                               FontSize="Small"
-                                                               TextColor="{StaticResource Grey-Mid-2}" />
-                                                    </StackLayout>
-                                                    <StackLayout Orientation="Horizontal"
-                                                                 IsVisible="{Binding TenantFee}">
-                                                        <Label Text="Tenant fee:"
-                                                               FontSize="Small"
-                                                               HorizontalOptions="Start"
-                                                               TextColor="{StaticResource Grey-Light-1}" />
-                                                        <Label Text="{Binding TenantFee,StringFormat={StaticResource FormatDecimalToCurrency}}"
                                                                HorizontalOptions="EndAndExpand"
                                                                HorizontalTextAlignment="End"
                                                                FontSize="Small"
@@ -314,7 +302,7 @@
                                                                FontSize="Small"
                                                                HorizontalOptions="Start"
                                                                TextColor="{StaticResource Grey-Light-1}" />
-                                                        <Label Text="{Binding TotalAmountAndFees,StringFormat={StaticResource FormatDecimalToCurrency}}"
+                                                        <Label Text="{Binding Total,StringFormat={StaticResource FormatDecimalToCurrency}}"
                                                                HorizontalOptions="EndAndExpand"
                                                                HorizontalTextAlignment="End"
                                                                FontSize="Small"
@@ -362,15 +350,17 @@
                                                              BackgroundColor="{StaticResource Key=Grey-Light-2}" />
                                                     <StackLayout Orientation="Horizontal">
                                                         <Label Text="⬤"
-                                                               TextColor="{Binding StatusColor}"
+                                                               TextColor="{Binding PaymentPageStatusColor}"
                                                                FontSize="Small"
                                                                HorizontalOptions="Start"
-                                                               VerticalOptions="Center" />
+                                                               VerticalOptions="Start" />
                                                         <Label Text="{Binding TransactionStatus,Converter={StaticResource PaymentStatusOverwrite}}"
                                                                HorizontalTextAlignment="Start"
                                                                FontSize="Small"
+                                                               Margin="0,1.5,0,0"
+                                                               VerticalTextAlignment="End"
                                                                TextColor="{StaticResource Grey-Mid-1}"
-                                                               VerticalOptions="Center" />
+                                                               VerticalOptions="End" />
                                                     </StackLayout>
                                                     <BoxView HeightRequest="1"
                                                              Margin="0,4,0,4"

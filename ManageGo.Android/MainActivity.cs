@@ -28,7 +28,7 @@ namespace ManageGo.Droid
         public static MainActivity Current { private set; get; }
         public event EventHandler<bool> FingerPringPermissionsResultReady;
         public static readonly int PickImageId = 1000;
-        static readonly string TAG = "MainActivity";
+        // static readonly string TAG = "MainActivity";
         internal static readonly string CHANNEL_ID = "my_notification_channel";
         internal static readonly int NOTIFICATION_ID = 199;
         public TaskCompletionSource<string> PickImageTaskCompletionSource { set; get; }
@@ -121,18 +121,18 @@ namespace ManageGo.Droid
             {
                 if (GoogleApiAvailability.Instance.IsUserResolvableError(resultCode))
                 {
-                    var msg = GoogleApiAvailability.Instance.GetErrorString(resultCode);
+                    // var msg = GoogleApiAvailability.Instance.GetErrorString(resultCode);
                 }
                 else
                 {
-                    var msg = "This device is not supported";
+                    // var msg = "This device is not supported";
                     Finish();
                 }
                 return false;
             }
             else
             {
-                var msg = "Google Play Services is available.";
+                // var msg = "Google Play Services is available.";
                 return true;
             }
         }

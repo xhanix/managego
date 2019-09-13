@@ -17,10 +17,8 @@ namespace ManageGo
 
         void Handle_Tapped(object sender, EventArgs e)
         {
-            var st = (StackLayout)sender;
-            var container = st.Parent;
-            var row = container.Parent.Parent as ViewCell;
-            row.ForceUpdateSize();
+            MyListView.HasUnevenRows = !MyListView.HasUnevenRows;
+            MyListView.HasUnevenRows = !MyListView.HasUnevenRows;
         }
 
         protected override bool OnBackButtonPressed()

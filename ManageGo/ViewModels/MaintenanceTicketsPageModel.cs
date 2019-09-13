@@ -17,7 +17,6 @@ namespace ManageGo
     internal class MaintenanceTicketsPageModel : BaseDetailPage
     {
         DateRange dateRange;
-
         public TicketRequestItem CurrentFilter { get; private set; }
         public TicketRequestItem ParameterItem { get; set; }
         [AlsoNotifyFor("NothingFetched")]
@@ -39,14 +38,14 @@ namespace ManageGo
         [AlsoNotifyFor("SelectedPriorityString")]
         public bool IsHighPriorityFilterSelected { get; private set; }
         [AlsoNotifyFor("SelectedStatusFlagsString")]
-        public bool SelectedOpenTicketsFilter { get; private set; }
+        public bool SelectedOpenTicketsFilter { get; private set; } = true;
         [AlsoNotifyFor("SelectedStatusFlagsString")]
         public bool SelectedClosedTicketsFilter { get; private set; }
         public string FilterKeywords { get; set; }
-
-        public string SelectedStatusFlagsString => (SelectedOpenTicketsFilter && SelectedClosedTicketsFilter) || (!SelectedOpenTicketsFilter && !SelectedClosedTicketsFilter) ? "All" : SelectedOpenTicketsFilter ? "Open" : "Closed";
-
-
+        public string SelectedStatusFlagsString =>
+            (SelectedOpenTicketsFilter && SelectedClosedTicketsFilter) ||
+            (!SelectedOpenTicketsFilter && !SelectedClosedTicketsFilter) ? "All" :
+            SelectedOpenTicketsFilter ? "Open" : "Closed";
         public string SelectedPriorityString
         {
             get
@@ -231,7 +230,6 @@ namespace ManageGo
                         }
                     }
                     CanGetMorePages = nextPage != null && nextPage.Count() == ParameterItem.PageSize;
-
                 }
                 else
                 {
@@ -250,7 +248,7 @@ namespace ManageGo
 
                     // FetchedTickets is null on view init
                     var fetchedTickets = await Services.DataAccess.GetTicketsAsync(ParameterItem);
-                    if (fetchedTickets != null)
+                    if (fetchedTickets != null && fetchedTickets.Any())
                         FetchedTickets = new ObservableCollection<MaintenanceTicket>(fetchedTickets);
                     else
                         FetchedTickets = new ObservableCollection<MaintenanceTicket>();
@@ -265,7 +263,7 @@ namespace ManageGo
             }
             catch (Exception ex)
             {
-                Crashes.TrackError(ex, new Dictionary<string, string> { { "Class", GetType().FullName } });
+                Crashes.TrackError(ex);
                 APIhasFailed = true;
                 FetchedTickets = new ObservableCollection<MaintenanceTicket>();
                 if (await CoreMethods.DisplayAlert("Something went wrong", $"Unable to get tickets. Error Message: {ex.Message}", "Try again", "Dismiss"))
@@ -280,8 +278,6 @@ namespace ManageGo
             }
         }
 
-
-
         public FreshAwaitCommand SetFilterStatus
         {
             get
@@ -293,9 +289,13 @@ namespace ManageGo
                     {
                         case "Open":
                             SelectedOpenTicketsFilter = !SelectedOpenTicketsFilter;
+                            if (!SelectedOpenTicketsFilter && !SelectedClosedTicketsFilter)
+                                SelectedClosedTicketsFilter = true;
                             break;
                         case "Closed":
                             SelectedClosedTicketsFilter = !SelectedClosedTicketsFilter;
+                            if (!SelectedClosedTicketsFilter && !SelectedOpenTicketsFilter)
+                                SelectedOpenTicketsFilter = true;
                             break;
                         default:
                             break;
@@ -357,7 +357,6 @@ namespace ManageGo
                         default:
                             break;
                     }
-
                 });
             }
         }
@@ -521,6 +520,8 @@ namespace ManageGo
                     IsLowPriorityFilterSelected = false;
                     IsMediumPriorityFilterSelected = false;
                     IsHighPriorityFilterSelected = false;
+                    SelectedOpenTicketsFilter = true;
+                    SelectedClosedTicketsFilter = false;
                     tcs?.SetResult(true);
                 }
                 return new FreshAwaitCommand(execute);
@@ -551,7 +552,11 @@ namespace ManageGo
                         else if (SelectedClosedTicketsFilter)
                             ParameterItem.TicketStatus = TicketStatus.Closed;
                         else
+                        {
                             ParameterItem.TicketStatus = TicketStatus.Open;
+                            SelectedOpenTicketsFilter = true;
+                        }
+
                         if (IsLowPriorityFilterSelected || IsMediumPriorityFilterSelected || IsHighPriorityFilterSelected)
                         {
                             List<TicketPriorities> priorities = new List<TicketPriorities>();
@@ -656,7 +661,6 @@ namespace ManageGo
                             HorizontalOptions = LayoutOptions.End,
                             TextColor = Color.Red
                         };
-
                         var cal = new Controls.CalendarView
                         {
                             SelectedDates = DateRange,
@@ -669,11 +673,19 @@ namespace ManageGo
                         {
                             this.DateRange = cal.SelectedDates;
                             OnCalendarButtonTapped.Execute(null);
-                            ParameterItem = new TicketRequestItem
+                            if (ParameterItem != null)
                             {
-                                DateFrom = DateRange.StartDate,
-                                DateTo = DateRange.EndDate
-                            };
+                                ParameterItem.DateFrom = DateRange.StartDate;
+                                ParameterItem.DateTo = DateRange.EndDate;
+                            }
+                            else
+                            {
+                                ParameterItem = new TicketRequestItem
+                                {
+                                    DateFrom = DateRange.StartDate,
+                                    DateTo = DateRange.EndDate
+                                };
+                            }
                             NumberOfAppliedFilters = " ";
                             await LoadData(refreshData: true, FetchNextPage: false);
                         }
@@ -777,7 +789,6 @@ namespace ManageGo
         }
 
 
-
         private void SetViewForCurrentFilter()
         {
             if (CurrentFilter != null)
@@ -838,8 +849,13 @@ namespace ManageGo
                     DateRange = new DateRange(CurrentFilter.DateFrom.Value);
                 if (CurrentFilter.TicketStatus.HasValue)
                 {
-                    SelectedOpenTicketsFilter = CurrentFilter.TicketStatus.Value == TicketStatus.Open;
-                    SelectedClosedTicketsFilter = CurrentFilter.TicketStatus.Value == TicketStatus.Closed;
+                    SelectedOpenTicketsFilter = CurrentFilter.TicketStatus.Value == TicketStatus.Open || CurrentFilter.TicketStatus.Value == TicketStatus.All;
+                    SelectedClosedTicketsFilter = CurrentFilter.TicketStatus.Value == TicketStatus.Closed || CurrentFilter.TicketStatus.Value == TicketStatus.All;
+                }
+                else
+                {
+                    SelectedOpenTicketsFilter = false;
+                    SelectedClosedTicketsFilter = false;
                 }
 
                 FilterKeywords = CurrentFilter.Search;

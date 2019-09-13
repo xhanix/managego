@@ -16,8 +16,6 @@ namespace ManageGo
 
         }
 
-
-
         public event EventHandler<Payment> OnPaymentAppeared;
 
         protected override bool OnBackButtonPressed()
@@ -40,23 +38,8 @@ namespace ManageGo
 
         void Handle_Tapped(object sender, System.EventArgs e)
         {
-            var st = (Frame)sender;
-            var container = st.Parent;
-            if (container is ViewCell)
-            {
-                var row = container as ViewCell;
-                row.ForceUpdateSize();
-            }
-            else if (container.Parent != null)
-            {
-                var p = container.Parent;
-                while (p as ViewCell is null)
-                {
-                    p = p.Parent;
-                }
-                var row = p as ViewCell;
-                row.ForceUpdateSize();
-            }
+            PaymentsList.HasUnevenRows = !PaymentsList.HasUnevenRows;
+            PaymentsList.HasUnevenRows = !PaymentsList.HasUnevenRows;
         }
 
         void Handle_ItemAppearing(object sender, ItemVisibilityEventArgs e)
@@ -64,13 +47,7 @@ namespace ManageGo
             OnPaymentAppeared?.Invoke(this, (Payment)e.Item);
         }
 
-        protected override async void OnAppearing()
-        {
-            base.OnAppearing();
-            ///await Task.Delay(250);
 
-
-        }
 
         protected override void OnDisappearing()
         {

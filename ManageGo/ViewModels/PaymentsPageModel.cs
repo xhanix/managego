@@ -55,25 +55,19 @@ namespace ManageGo
                 if (FilteredAmountRange is null ||
                     (FilteredAmountRange.Item1 == 0 && FilteredAmountRange.Item2 == 5000))
                     return "All";
-                else
-                {
-                    var minVal = FilteredAmountRange.Item1 ?? 0;
-                    var maxVal = FilteredAmountRange.Item2 ?? 5000;
-                    return minVal.ToString("C0") + " - " +
-                       (maxVal == 5000 ? maxVal.ToString("C0") + "+" : FilteredAmountRange.Item2?.ToString("C0"));
-                }
 
+                var minVal = FilteredAmountRange.Item1 ?? 0;
+                var maxVal = FilteredAmountRange.Item2 ?? 5000;
+                return minVal.ToString("C0") + " - " +
+                   (maxVal == 5000 ? maxVal.ToString("C0") + "+" : FilteredAmountRange.Item2?.ToString("C0"));
             }
         }
         public string FilterKeywords { get; set; }
-
         public bool FilterBuildingsExpanded { get; set; }
         public bool FilterUnitsExpanded { get; set; }
         public bool FilterTenantsExpanded { get; set; }
         public bool FilterStatusExpanded { get; set; }
         public bool FilterDueDateExpanded { get; private set; }
-
-
         [AlsoNotifyFor("SentPaymentsCheckBoxImage", "SelectedStatusFlagsString")]
         public bool SelectedSentPaymentsFilter { get; private set; }
         [AlsoNotifyFor("ReceivedPaymentsCheckBoxImage", "SelectedStatusFlagsString")]
@@ -477,8 +471,17 @@ namespace ManageGo
                                 u.IsSelected = false;
                             }
                         }
+                        if (Tenants != null)
+                        {
+                            foreach (var b in Tenants)
+                            {
+                                b.IsSelected = false;
+                            }
+                        }
                         FilterUnitsExpanded = false;
+                        FilterTenantsExpanded = false;
                         SelectedUnitString = "Select";
+                        SelectedTenantString = "Select";
                     }
                     catch (Exception ex)
                     {
@@ -501,6 +504,12 @@ namespace ManageGo
                 async void execute(object par, TaskCompletionSource<bool> tcs)
                 {
                     var unit = (Unit)par;
+                    if (Buildings != null && Buildings.Count(t => t.IsSelected) > 1)
+                    {
+                        await CoreMethods.DisplayAlert("ManageGo", "Select only one building to select a unit", "OK");
+                        tcs?.SetResult(true);
+                        return;
+                    }
                     unit.IsSelected = !unit.IsSelected;
                     await SetupFilterViewForSelectedUnits();
                     if (Tenants != null && Tenants.Any(u => u.IsSelected))

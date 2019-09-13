@@ -213,6 +213,7 @@ namespace ManageGo
         protected override void OnResume()
         {
             // Handle when your app resumes
+            MGDataAccessLibrary.DataAccess.WebAPI.NotifyAppResumed(this);
             OnAppStarted?.Invoke(this, EventArgs.Empty);
         }
     }
