@@ -24,8 +24,6 @@ namespace ManageGo.Droid
 
         public void UnSubscribeFromTopics()
         {
-
-
             if (string.IsNullOrWhiteSpace(_topic))
                 return;
             FirebaseMessaging.Instance.UnsubscribeFromTopic("/topics/" + _topic);

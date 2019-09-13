@@ -11,7 +11,7 @@ namespace MGDataAccessLibrary.DataAccess
     public static class WebAPI
     {
         private static HttpClient WebClient { get; set; }
-#if !DEBUG
+#if DEBUG
         private const string BaseUrl = "https://ploop.dynamo-ny.com/api/pmc_v2/";
 #else
         private const string BaseUrl = "https://portal.managego.com/api/pmc_v2/";
@@ -20,13 +20,18 @@ namespace MGDataAccessLibrary.DataAccess
         internal static string UserName { get; set; }
         internal static string Password { get; set; }
         public static string RefreshToken { get; private set; }
-
+        public static event EventHandler OnAppResumed;
         static WebAPI()
         {
             WebClient = new HttpClient { BaseAddress = new Uri(BaseUrl) };
+            OnAppResumed += WebAPI_OnAppResumed;
         }
 
-
+        private static async void WebAPI_OnAppResumed(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(RefreshToken))
+                await RefreshAccessTokenWithtoken();
+        }
 
         internal static async Task<LoginResponse> RefreshAccessTokenWithtoken()
         {
@@ -167,6 +172,13 @@ namespace MGDataAccessLibrary.DataAccess
                     return result.Result;
                 }
             }
+        }
+
+
+
+        public static void NotifyAppResumed(object sender)
+        {
+            OnAppResumed?.Invoke(sender, EventArgs.Empty);
         }
     }
 }

@@ -46,91 +46,29 @@ namespace ManageGo.Droid
             ORIENTATIONS.Append((int)SurfaceOrientation.Rotation270, 180);
         }
 
-        protected override async void OnElementChanged(ElementChangedEventArgs<CameraPreview> e)
+        protected override void OnElementChanged(ElementChangedEventArgs<CameraPreview> e)
         {
             base.OnElementChanged(e);
 
             if (Control == null)
             {
-                var status = await CrossPermissions.Current.CheckPermissionStatusAsync(Plugin.Permissions.Abstractions.Permission.Camera);
-                var storageStatus = await CrossPermissions.Current.CheckPermissionStatusAsync(Plugin.Permissions.Abstractions.Permission.Storage);
-                var audioStatus = await CrossPermissions.Current.CheckPermissionStatusAsync(Plugin.Permissions.Abstractions.Permission.Microphone);
-                if (status != Plugin.Permissions.Abstractions.PermissionStatus.Granted ||
-                audioStatus != Plugin.Permissions.Abstractions.PermissionStatus.Granted ||
-                storageStatus != Plugin.Permissions.Abstractions.PermissionStatus.Granted
-                    )
+                //Camera = new CameraDroid(_context);
+                Camera = new CamRecorder(_context);
+                SetNativeControl(Camera);
+                //Camera.IsPreviewing = true;
+                if (e.NewElement != null)
                 {
-                    if (await CrossPermissions.Current.ShouldShowRequestPermissionRationaleAsync(Plugin.Permissions.Abstractions.Permission.Camera))
-                    {
-                        Android.App.AlertDialog.Builder dialog = new AlertDialog.Builder(Context);
-                        AlertDialog alert = dialog.Create();
-                        alert.SetTitle("Need Camera Permission");
-                        alert.SetMessage("ManageGo needs camera access");
-                        alert.SetButton("OK", async (c, ev) =>
-                        {
-                            // Ok button click task  
-                            var results = await CrossPermissions.Current.RequestPermissionsAsync(Plugin.Permissions.Abstractions.Permission.Camera,
-                                Plugin.Permissions.Abstractions.Permission.Microphone, Plugin.Permissions.Abstractions.Permission.Storage);
-                            //Best practice to always check that the key exists
-                            if (results.ContainsKey(Plugin.Permissions.Abstractions.Permission.Camera))
-                                status = results[Plugin.Permissions.Abstractions.Permission.Camera];
-                            if (results.ContainsKey(Plugin.Permissions.Abstractions.Permission.Microphone))
-                                audioStatus = results[Plugin.Permissions.Abstractions.Permission.Microphone];
-                            if (results.ContainsKey(Plugin.Permissions.Abstractions.Permission.Storage))
-                                storageStatus = results[Plugin.Permissions.Abstractions.Permission.Storage];
-                        });
-                    }
-                    else
-                    {
-                        var results = await CrossPermissions.Current.RequestPermissionsAsync(Plugin.Permissions.Abstractions.Permission.Camera,
-                        Plugin.Permissions.Abstractions.Permission.Microphone, Plugin.Permissions.Abstractions.Permission.Storage);
-                        //Best practice to always check that the key exists
-                        if (results.ContainsKey(Plugin.Permissions.Abstractions.Permission.Camera))
-                            status = results[Plugin.Permissions.Abstractions.Permission.Camera];
-                        if (results.ContainsKey(Plugin.Permissions.Abstractions.Permission.Microphone))
-                            audioStatus = results[Plugin.Permissions.Abstractions.Permission.Microphone];
-                        if (results.ContainsKey(Plugin.Permissions.Abstractions.Permission.Storage))
-                            storageStatus = results[Plugin.Permissions.Abstractions.Permission.Storage];
-                    }
-
-
+                    // Camera.Available += e.NewElement.NotifyAvailability;
+                    Camera.Photo += e.NewElement.NotifyPhoto;
+                    Camera.Video += e.NewElement.NotifyVideo;
+                    //Camera.Busy += e.NewElement.NotifyBusy;
+                    Camera.Click += OnCameraPreviewClicked;
+                    e.NewElement.Flash += HandleFlashChange;
+                    e.NewElement.OpenCamera += HandleCameraInitialisation;
+                    e.NewElement.CamFocus += HandleFocus;
+                    e.NewElement.Shutter += HandleShutter;
+                    e.NewElement.OnCaptureButtonTapped += OnCameraPreviewClicked;
                 }
-                if (status == Plugin.Permissions.Abstractions.PermissionStatus.Granted
-                        && storageStatus == Plugin.Permissions.Abstractions.PermissionStatus.Granted
-                        && audioStatus == Plugin.Permissions.Abstractions.PermissionStatus.Granted)
-                {
-
-                    //Camera = new CameraDroid(_context);
-                    Camera = new CamRecorder(_context);
-                    SetNativeControl(Camera);
-                    //Camera.IsPreviewing = true;
-                    if (e.NewElement != null)
-                    {
-                        // Camera.Available += e.NewElement.NotifyAvailability;
-                        Camera.Photo += e.NewElement.NotifyPhoto;
-                        Camera.Video += e.NewElement.NotifyVideo;
-                        //Camera.Busy += e.NewElement.NotifyBusy;
-
-                        Camera.Click += OnCameraPreviewClicked;
-                        e.NewElement.Flash += HandleFlashChange;
-                        e.NewElement.OpenCamera += HandleCameraInitialisation;
-                        e.NewElement.CamFocus += HandleFocus;
-                        e.NewElement.Shutter += HandleShutter;
-                        e.NewElement.OnCaptureButtonTapped += OnCameraPreviewClicked;
-                    }
-                }
-                else
-                {
-                    Android.App.AlertDialog.Builder dialog = new AlertDialog.Builder(Context);
-                    AlertDialog alert = dialog.Create();
-                    alert.SetTitle("Need Campera Permission");
-                    alert.SetMessage("ManageGo needs camera access");
-                    alert.SetButton("OK", (c, ev) =>
-                    {
-                        //do nothing
-                    });
-                }
-
             }
 
             if (e.OldElement != null)

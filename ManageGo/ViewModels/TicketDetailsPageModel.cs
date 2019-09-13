@@ -12,6 +12,7 @@ using Plugin.FilePicker;
 using Plugin.Permissions;
 using System.Text;
 using Microsoft.AppCenter.Crashes;
+using Newtonsoft.Json;
 
 namespace ManageGo
 {
@@ -37,7 +38,7 @@ namespace ManageGo
         public bool SetFromTime { get; private set; }
         public bool SwitchingAmPam { get; private set; }
         public bool OldTimeIsPm { get; private set; }
-        public bool IsBusy { get; private set; }
+        public bool IsBusy { get; set; }
         public string TenantName { get; private set; } = String.Empty;
         public TicketDetails TicketDetails { get; private set; }
         public string SecondLineText { get; private set; }
@@ -68,7 +69,7 @@ namespace ManageGo
         public List<Tags> Tags { get; private set; }
         [AlsoNotifyFor("CloseTicketButtonText")]
         TicketStatus TicketStatus { get; set; }
-        public double ReplyAttachedFilesListHeight { get { return CurrentReplyAttachments is null || !CurrentReplyAttachments.Any() ? 0 : CurrentReplyAttachments.Count * 28; } }
+        public double ReplyAttachedFilesListHeight => CurrentReplyAttachments is null || !CurrentReplyAttachments.Any() ? 10 : CurrentReplyAttachments.Count * 28;
 
         public string DueDateRowIcon => DueDateCalendarView != null ? "chevron_down.png" : "chevron_right.png";
 
@@ -103,7 +104,7 @@ namespace ManageGo
         public string TicketComment { get; private set; }
 
         DateTime pickedTime;
-        private int numberOfTries;
+
 
         [AlsoNotifyFor("EndTimeTextColor")]
         public string ToTime { get; set; }
@@ -161,7 +162,7 @@ namespace ManageGo
         public bool PopUpBackgroundIsVisible => AttachActionSheetIsVisible || SendOptionsPupupIsVisible;
         public bool ReplyIsInternal { get; private set; }
 
-        public List<File> ReplyAttachments { get; set; }
+
         Dictionary<string, object> Data { get; set; }
         [AlsoNotifyFor("ReplyAttachedFilesIsVisible", "ReplyAttachedFilesListHeight")]
         public ObservableCollection<File> CurrentReplyAttachments { get; set; }
@@ -172,7 +173,7 @@ namespace ManageGo
         public override void Init(object initData)
         {
             base.Init(initData);
-            ReplyAttachments = new List<File>();
+
             FilesToUpload = new List<byte[]>();
             CurrentReplyAttachments = new ObservableCollection<File>();
             Data = initData as Dictionary<string, object>;
@@ -203,7 +204,7 @@ namespace ManageGo
                 var fullPath = docPath + "/" + fileName;
                 var bytes = System.IO.File.ReadAllBytes(fullPath);
                 var file = new File { Content = bytes, Name = Path.GetFileName(path) };
-                ReplyAttachments.Add(file);
+
                 CurrentReplyAttachments.Add(file);
                 RaisePropertyChanged("ReplyAttachedFilesIsVisible");
                 RaisePropertyChanged("ReplyAttachedFilesListHeight");
@@ -301,6 +302,27 @@ namespace ManageGo
                     {
                         tcs?.SetResult(true);
                     }
+                }
+                return new FreshAwaitCommand(execute);
+            }
+        }
+
+
+        public FreshAwaitCommand OnFirstLineTextTapped
+        {
+            get
+            {
+                async void execute(object par, TaskCompletionSource<bool> tcs)
+                {
+                    //show tenant details as popup
+                    if (Comments?.FirstOrDefault() == (Comments)par)
+                    {
+                        CurrentTicket.Tenant.TenantDetails = CurrentTicket.TenantDetails;
+
+                        await CoreMethods.PushPageModel<TenantDetailPageModel>(CurrentTicket.Tenant, modal: true);
+                    }
+
+                    tcs?.SetResult(true);
                 }
                 return new FreshAwaitCommand(execute);
             }
@@ -414,6 +436,8 @@ namespace ManageGo
                 {
                     File file = (File)par;
                     CurrentReplyAttachments.Remove(file);
+
+                    tcs?.SetResult(true);
                     RaisePropertyChanged("ReplyAttachedFilesIsVisible");
                 });
             }
@@ -520,45 +544,34 @@ namespace ManageGo
                 AttachActionSheetIsVisible = false;
                 ReplyBoxIsVisible = false;
                 ReplyButtonIsVisible = true;
-                // First assing a temp id for later identification. In case multiple comments
-                // get created quickly before all files are uploaded
-                var tempId = Guid.NewGuid().ToString();
-                foreach (File file in ReplyAttachments.Where(t => t.ParentComment == 0))
-                {
-                    file.ParentCommentTempId = tempId;
-                }
-                // wait for the correct comment id. Another comment with attachment can be created
-                // while waiting for this.
-                ReplyTextBody = null; // clear the message box
-                CurrentReplyAttachments.Clear();
+                // clear the message box
+                ReplyTextBody = null;
+
                 RaisePropertyChanged("ReplyAttachedFilesIsVisible");
-                tcs?.SetResult(true); // allow another comment to be sent immidiately
+
                 int newId = await Services.DataAccess.SendNewCommentAsync(item);
-                // reassign the the real comment id to the file with the temp Id
-                foreach (File file in ReplyAttachments.Where(t => t.ParentCommentTempId == tempId))
-                {
-                    file.ParentComment = newId;
-                }
+
                 // only upload files for this partical comment. Other files belong to other comments
                 // that were create before or after this comment
                 List<Task> uploadTask = new List<Task>();
-                foreach (File file in ReplyAttachments.Where(t => t.ParentComment == newId))
+                foreach (File file in CurrentReplyAttachments)
                 {
+                    file.ParentComment = newId;
                     uploadTask.Add(Services.DataAccess.UploadFile(file));
                 }
 
                 await Task.WhenAll(uploadTask);
-                if (ReplyAttachments.Any(t => t.ParentComment == newId))
-                    await Services.DataAccess.UploadCompleted(commentId: newId);
+                await Services.DataAccess.UploadCompleted(newId);
+                CurrentReplyAttachments.Clear();
                 OnListRefreshRequested.Execute(null);
-
                 IsCreatingEvent = false;
+                tcs?.SetResult(true); // allow another comment to be sent immidiately
             }
             catch (Exception ex)
             {
                 IsCreatingEvent = false;
                 await CoreMethods.DisplayAlert("Something went wrong", ex.Message, "DISMISS");
-
+                tcs?.SetResult(true); // allow another comment to be sent immidiately
             }
 
         }
@@ -746,6 +759,7 @@ namespace ManageGo
                         ReplyButtonIsVisible = true;
                         OnListRefreshRequested.Execute(null);
                         ((TicketDetailsPage)CurrentPage).RedrawTable();
+
                         SetTicketAsignedUsers();
                     }
                     catch (Exception ex)
@@ -889,7 +903,7 @@ namespace ManageGo
                         if (result.Item1 != null)
                         {
                             var file = new File { Content = result.Item1, Name = result.Item2 };
-                            ReplyAttachments.Add(file);
+
                             CurrentReplyAttachments.Add(file);
                             RaisePropertyChanged("ReplyAttachedFilesIsVisible");
                             RaisePropertyChanged("ReplyAttachedFilesListHeight");
@@ -926,7 +940,7 @@ namespace ManageGo
                         string fileName = fileData.FileName;
                         //string contents = System.Text.Encoding.UTF8.GetString(fileData.DataArray);
                         var file = new File { Content = fileData.DataArray, Name = fileName };
-                        ReplyAttachments.Add(file);
+
                         CurrentReplyAttachments.Add(file);
                         RaisePropertyChanged("ReplyAttachedFilesIsVisible");
                         RaisePropertyChanged("ReplyAttachedFilesListHeight");
@@ -1108,6 +1122,8 @@ namespace ManageGo
             }
             ExternalContacts = App.ExternalContacts;
             SetTicketAsignedUsers();
+
+            IsBusy = false;
         }
 
         public FreshAwaitCommand OnTagTapped
@@ -1323,8 +1339,9 @@ namespace ManageGo
                     if (TicketId > 0)
                     {
                         TicketDetails = await Services.DataAccess.GetTicketDetails(TicketId);
-                        SetupView(TicketDetails, CurrentTicket);
                         IsBusy = false;
+                        ((TicketDetailsPage)CurrentPage).StopRefresh();
+                        SetupView(TicketDetails, CurrentTicket);
                     }
 
                     tcs?.SetResult(true);
@@ -1339,62 +1356,39 @@ namespace ManageGo
             {
                 async void execute(TaskCompletionSource<bool> tcs)
                 {
-                    if (await CheckCameraPermissionsAsync())
-                    {
-                        AttachActionSheetIsVisible = false;
+                    AttachActionSheetIsVisible = false;
+                    var result = await Plugin.Permissions.CrossPermissions.Current.CheckPermissionStatusAsync(Plugin.Permissions.Abstractions.Permission.Camera);
+                    result &= await Plugin.Permissions.CrossPermissions.Current.CheckPermissionStatusAsync(Plugin.Permissions.Abstractions.Permission.Microphone);
+                    result &= await Plugin.Permissions.CrossPermissions.Current.CheckPermissionStatusAsync(Plugin.Permissions.Abstractions.Permission.Storage);
+                    if (result == Plugin.Permissions.Abstractions.PermissionStatus.Granted)
                         await CoreMethods.PushPageModel<TakeVideoPageModel>(true, true, false);
-                    }
-                    else if (numberOfTries >= 2)
+                    else
                     {
-                        await CoreMethods.DisplayAlert("ManageGo", "Unable to take photo or video. You did not allow access to camera.", "DISMISS");
+                        var showRational = await Plugin.Permissions.CrossPermissions.Current.ShouldShowRequestPermissionRationaleAsync(Plugin.Permissions.Abstractions.Permission.Camera);
+                        if (showRational)
+                            await CoreMethods.DisplayAlert("Camera Access", "ManageGo needs access to camera to capture images", "OK");
+
+                        showRational = await Plugin.Permissions.CrossPermissions.Current.ShouldShowRequestPermissionRationaleAsync(Plugin.Permissions.Abstractions.Permission.Storage);
+                        if (showRational)
+                            await CoreMethods.DisplayAlert("Storage Access", "ManageGo needs access to storage to capture videos", "OK");
+
+                        showRational = await Plugin.Permissions.CrossPermissions.Current.ShouldShowRequestPermissionRationaleAsync(Plugin.Permissions.Abstractions.Permission.Microphone);
+                        if (showRational)
+                            await CoreMethods.DisplayAlert("Microphone Access", "ManageGo needs access to microphone to capture videos", "OK");
+
+                        await Plugin.Permissions.CrossPermissions.Current.RequestPermissionsAsync(Plugin.Permissions.Abstractions.Permission.Camera, Plugin.Permissions.Abstractions.Permission.Microphone, Plugin.Permissions.Abstractions.Permission.Storage);
+                        result = await Plugin.Permissions.CrossPermissions.Current.CheckPermissionStatusAsync(Plugin.Permissions.Abstractions.Permission.Camera);
+                        result &= await Plugin.Permissions.CrossPermissions.Current.CheckPermissionStatusAsync(Plugin.Permissions.Abstractions.Permission.Microphone);
+                        result &= await Plugin.Permissions.CrossPermissions.Current.CheckPermissionStatusAsync(Plugin.Permissions.Abstractions.Permission.Storage);
+                        if (result == Plugin.Permissions.Abstractions.PermissionStatus.Granted)
+                            await CoreMethods.PushPageModel<TakeVideoPageModel>(true, true, false);
+                        else
+                            await CoreMethods.DisplayAlert("LabLog", "Unable to access camera. Please try again later.", "Dismiss");
                     }
                     tcs?.SetResult(true);
                 }
                 return new FreshAwaitCommand(execute);
             }
-        }
-
-        private async Task<bool> CheckCameraPermissionsAsync()
-        {
-            var status = await CrossPermissions.Current.CheckPermissionStatusAsync(Plugin.Permissions.Abstractions.Permission.Camera);
-            var storageStatus = await CrossPermissions.Current.CheckPermissionStatusAsync(Plugin.Permissions.Abstractions.Permission.Storage);
-            var audioStatus = await CrossPermissions.Current.CheckPermissionStatusAsync(Plugin.Permissions.Abstractions.Permission.Microphone);
-            // user does not have any of the required permissions
-            if (status != Plugin.Permissions.Abstractions.PermissionStatus.Granted ||
-               audioStatus != Plugin.Permissions.Abstractions.PermissionStatus.Granted ||
-               storageStatus != Plugin.Permissions.Abstractions.PermissionStatus.Granted)
-            {
-                // user does not have any of the required permissions
-                if (await CrossPermissions.Current.ShouldShowRequestPermissionRationaleAsync(Plugin.Permissions.Abstractions.Permission.Camera))
-                {
-                    await CoreMethods.DisplayAlert("ManageGo", "Need camera access to take photo/video.", "OK");
-                }
-                if (await CrossPermissions.Current.ShouldShowRequestPermissionRationaleAsync(Plugin.Permissions.Abstractions.Permission.Microphone))
-                {
-                    await CoreMethods.DisplayAlert("ManageGo", "Need audio access to take video", "OK");
-                }
-                if (await CrossPermissions.Current.ShouldShowRequestPermissionRationaleAsync(Plugin.Permissions.Abstractions.Permission.Storage))
-                {
-                    await CoreMethods.DisplayAlert("ManageGo", "Need access to storage to take photo/video", "OK");
-                }
-                await CrossPermissions.Current.RequestPermissionsAsync(
-                        Plugin.Permissions.Abstractions.Permission.Camera,
-                        Plugin.Permissions.Abstractions.Permission.Microphone,
-                        Plugin.Permissions.Abstractions.Permission.Storage);
-                if (status != Plugin.Permissions.Abstractions.PermissionStatus.Granted ||
-              audioStatus != Plugin.Permissions.Abstractions.PermissionStatus.Granted ||
-              storageStatus != Plugin.Permissions.Abstractions.PermissionStatus.Granted)
-                {
-                    if (await CoreMethods.DisplayAlert("ManageGo", "Please allow access to continue", "OK", "Cancel"))
-                    {
-                        numberOfTries++;
-                        return await CheckCameraPermissionsAsync();
-                    }
-                    return false;
-                }
-                return true;
-            }
-            return true;
         }
 
         public FreshAwaitCommand OnSelectPMTapped
@@ -1556,7 +1550,7 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand(async (tcs) =>
+                async void execute(TaskCompletionSource<bool> tcs)
                 {
                     if (CurrentTicket.Unit is null)
                     {
@@ -1567,7 +1561,8 @@ namespace ManageGo
                     ReplyButtonIsVisible = false;
                     ReplyBoxIsVisible = true;
                     tcs?.SetResult(true);
-                });
+                }
+                return new FreshAwaitCommand(execute);
             }
         }
 
@@ -1575,7 +1570,7 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand(async (tcs) =>
+                async void execute(TaskCompletionSource<bool> tcs)
                 {
                     if (CurrentTicket.Unit is null)
                     {
@@ -1586,7 +1581,8 @@ namespace ManageGo
                     ReplyButtonIsVisible = false;
                     WorkOrderActionSheetIsVisible = true;
                     tcs?.SetResult(true);
-                }, () => CanCreateWorkorderAndEvents);
+                }
+                return new FreshAwaitCommand(execute, () => CanCreateWorkorderAndEvents);
             }
         }
 
@@ -1594,7 +1590,7 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand(async (tcs) =>
+                async void execute(TaskCompletionSource<bool> tcs)
                 {
                     if (CurrentTicket.Unit is null)
                     {
@@ -1605,7 +1601,8 @@ namespace ManageGo
                     ReplyButtonIsVisible = false;
                     EventActionSheetIsVisible = true;
                     tcs?.SetResult(true);
-                }, () => CanCreateWorkorderAndEvents);
+                }
+                return new FreshAwaitCommand(execute, () => CanCreateWorkorderAndEvents);
             }
         }
 

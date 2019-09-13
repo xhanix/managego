@@ -48,7 +48,6 @@ namespace ManageGo
                 return !SelectedActiveTenantFilter ? "Inactive" : "Active";
             }
         }
-
         public override void Init(object initData)
         {
             base.Init(initData);
@@ -99,9 +98,9 @@ namespace ManageGo
         internal override async Task LoadData(bool refreshData = false, bool FetchNextPage = false)
         {
             NothingFetched = false;
-            var selectedBuildingAddress = Buildings?.Count(b => b.IsSelected) == 1 ? Buildings.First(b => b.IsSelected).BuildingShortAddress : null;
             try
             {
+                var selectedBuildingAddress = Buildings?.Count(b => b.IsSelected) == 1 ? Buildings?.FirstOrDefault(b => b.IsSelected)?.BuildingShortAddress : null;
                 if (FetchNextPage && ParameterItem != null)
                 {
                     ParameterItem.Page++;
@@ -114,8 +113,7 @@ namespace ManageGo
                             FetchedTenants.Add(item);
                         }
                     }
-                    CanGetMorePages = nextPage != null && nextPage.Count() == ParameterItem.PageSize;
-
+                    CanGetMorePages = nextPage != null && nextPage?.Count() == ParameterItem.PageSize;
                 }
                 else
                 {
@@ -132,11 +130,11 @@ namespace ManageGo
 
                     CanGetMorePages = FetchedTenants != null && FetchedTenants.Count == ParameterItem.PageSize;
 
-                    if (Buildings.Any(t => t.IsSelected) && Units is null)
+                    if (Buildings != null && Buildings.Any(t => t.IsSelected) && Units is null)
                     {
                         var details = await DataAccess.GetBuildingDetails(Buildings.First(t => t.IsSelected).BuildingId);
-                        SelectedBuildingsString = details.BuildingShortAddress;
-                        Units = details.Units;
+                        SelectedBuildingsString = details?.BuildingShortAddress;
+                        Units = details?.Units;
                     }
                 }
                 Buildings = App.Buildings;
@@ -424,6 +422,10 @@ namespace ManageGo
                             {
                                 await CoreMethods.DisplayAlert("ManageGo", "Select a building first", "Dismiss");
                             }
+                            else if (Buildings is null || Buildings.Count(t => t.IsSelected) > 1)
+                            {
+                                await CoreMethods.DisplayAlert("ManageGo", "Select only one building to select a unit", "Dismiss");
+                            }
                             else
                             {
                                 FilterUnitsExpanded = !FilterUnitsExpanded;
@@ -449,28 +451,29 @@ namespace ManageGo
                     var building = (Building)par;
                     FilterUnitsExpanded = false;
                     Units = null;
-                    SelectedUnitString = "Select";
+
+                    building.IsSelected = !building.IsSelected;
+                    var count = Buildings.Count(t => t.IsSelected);
+                    if (count > 0)
+                    {
+                        SelectedBuildingsString = Buildings.First(t => t.IsSelected).BuildingShortAddress;
+                        if (count > 1)
+                        {
+                            SelectedBuildingsString += $" + {count - 1} Buildings";
+                        }
+                    }
+                    if (count > 1)
+                    {
+                        SelectedUnitString = "Select";
+                        tcs?.SetResult(true);
+                        return;
+                    }
                     try
                     {
-                        /*
-                        foreach (Building b in Buildings.Where(t => t.IsSelected && t.BuildingId != building.BuildingId))
+                        if (count == 1)
                         {
-                            b.IsSelected = false;
-                        }*/
-                        building.IsSelected = !building.IsSelected;
-                        if (building.IsSelected)
-                        {
-                            var details = await DataAccess.GetBuildingDetails(building.BuildingId);
+                            var details = await DataAccess.GetBuildingDetails(Buildings.First(t => t.IsSelected).BuildingId);
                             Units = details.Units;
-                        }
-                        var count = Buildings.Count(t => t.IsSelected);
-                        if (count > 0)
-                        {
-                            SelectedBuildingsString = Buildings.First(t => t.IsSelected).BuildingShortAddress;
-                            if (count > 1)
-                            {
-                                SelectedBuildingsString += $" + {count - 1} Buildings";
-                            }
                         }
                     }
                     catch (Exception ex)
@@ -481,6 +484,11 @@ namespace ManageGo
                     finally
                     {
                         tcs?.SetResult(true);
+                        if (count == 0)
+                        {
+                            SelectedBuildingsString = "Select";
+                            SelectedUnitString = "Select";
+                        }
                     }
                 }
                 return new FreshAwaitCommand(execute);
@@ -495,11 +503,13 @@ namespace ManageGo
                 return new FreshAwaitCommand((par, tcs) =>
                 {
                     var unit = (Unit)par;
+
+                    unit.IsSelected = !unit.IsSelected;
                     foreach (Unit u in Units)
                     {
-                        u.IsSelected = false;
+                        if (u != unit)
+                            u.IsSelected = false;
                     }
-                    unit.IsSelected = true;
                     SelectedUnitString = unit.UnitName;
                     tcs?.SetResult(true);
                 });
@@ -516,7 +526,7 @@ namespace ManageGo
                     FilterSelectViewIsShown = false;
                     CurrentFilter = null;
                     ParameterItem = null;
-                    await LoadData(true, false);
+
                     NumberOfAppliedFilters = string.Empty;
                     if (Buildings != null)
                     {
@@ -533,6 +543,9 @@ namespace ManageGo
                         }
                     }
                     SelectedActiveTenantFilter = true;
+                    SelectedBuildingsString = "Select";
+                    SelectedUnitString = "Select";
+                    await LoadData(true, false);
                     tcs?.SetResult(true);
                 }
                 return new FreshAwaitCommand(execute);

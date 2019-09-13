@@ -38,7 +38,6 @@ namespace ManageGo.Models
         [AlsoNotifyFor("StatusColor")]
         public decimal TotalAmountAndFees { get; set; }
         //public DateTime TransactionDate { get; set; }
-
         public string TransactionStatus { get; set; }
         public string TransactionType { get; set; }
         public bool ShowStatusText => Amount < 0;
@@ -55,6 +54,14 @@ namespace ManageGo.Models
             get
             {
                 return Amount > 0 ? "#51bd23" : "#e23b3b";
+            }
+        }
+        [JsonIgnore]
+        public string PaymentPageStatusColor
+        {
+            get
+            {
+                return TransactionStatus.ToLower() == "submitted" || TransactionStatus.ToLower() == "passed" ? "#51bd23" : "#e23b3b";
             }
         }
         [JsonIgnore]

@@ -143,6 +143,7 @@
                                               Command="{Binding OnAccessGrantPanelTapped}" />
                     </StackLayout.GestureRecognizers>
                 </StackLayout>
+                <!-- View for updating ticket details -->
                 <StackLayout IsVisible="{Binding ShowingTicketDetails}"
                              MinimumHeightRequest="75">
                     <Grid Padding="14,8,18,8">
@@ -192,7 +193,7 @@
                        HasShadow="false"
                        Padding="0,0,8,0">
                     <controls:CustomListView ItemsSource="{Binding Comments}"
-                                             IsRefreshing="{Binding IsBusy,Mode=OneWay}"
+                                             IsRefreshing="{Binding IsBusy,Mode=OneTime}"
                                              ItemAppearing="Handle_ItemAppearing"
                                              x:Name="MyListView"
                                              VerticalOptions="FillAndExpand"
@@ -209,6 +210,7 @@
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <ViewCell>
+
                                     <Grid Margin="0,0,4,0">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto" />
@@ -264,18 +266,25 @@
                                                         <RowDefinition Height="Auto" />
                                                         <RowDefinition Height="Auto" />
                                                     </Grid.RowDefinitions>
+                                                    <!-- on first line tapp check if it's first comment then send to tenant details -->
                                                     <Label Margin="0,0,0,2"
                                                            Grid.Row="0"
                                                            FormattedText="{Binding FirstLineText}"
                                                            VerticalTextAlignment="Center"
-                                                           LineBreakMode="MiddleTruncation" />
+                                                           LineBreakMode="MiddleTruncation">
+                                                        <Label.GestureRecognizers>
+                                                            <TapGestureRecognizer
+                                                                Command="{Binding BindingContext.OnFirstLineTextTapped,Source={x:Reference ThisPage}}"
+                                                                CommandParameter="{Binding .}" />
+                                                        </Label.GestureRecognizers>
+                                                    </Label>
 
                                                     <controls:SelectableLabel
                                                         Grid.Row="1"
                                                         HorizontalOptions="Fill"
                                                         VerticalOptions="Fill"
                                                         BackgroundColor="Transparent"
-                                                        Text="{Binding SecondLineText}"
+                                                        Text="{Binding SecondLineText, Mode=OneWay}"
                                                         TextColor="#58595b"
                                                         FontSize="Medium" />
                                                     <StackLayout
@@ -350,6 +359,7 @@
 
                                         </Grid>
                                     </Grid>
+
                                 </ViewCell>
                             </DataTemplate>
                         </ListView.ItemTemplate>

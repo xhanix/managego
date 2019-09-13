@@ -119,7 +119,7 @@ namespace ManageGo
                 return new FreshAwaitCommand((par, tcs) =>
                 {
                     var calEvent = (Models.CalendarEvent)par;
-                    var alreadyExpandedEvent = CalendarEvents.FirstOrDefault(t => t.DetailsShown && t.EventID != calEvent.EventID);
+                    var alreadyExpandedEvent = CalendarEvents?.FirstOrDefault(t => t.DetailsShown && t.EventID != calEvent.EventID);
                     if (alreadyExpandedEvent != null)
                         alreadyExpandedEvent.DetailsShown = false;
                     calEvent.DetailsShown = !calEvent.DetailsShown;

@@ -33,7 +33,8 @@ namespace ManageGo.Services
             var perm = result.Permissions;
             App.PMCName = result.PMCInfo.PMCName;
             //reset the permissions on log in
-            App.UserPermissions = UserPermissions.None;
+            App.UserPermissions = new UserPermissions();
+
             if (perm.CanAccessPayments)
                 App.UserPermissions |= UserPermissions.CanAccessPayments;
             if (perm.CanAccessMaintenanceTickets)

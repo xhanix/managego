@@ -58,10 +58,8 @@
 	</array>
 	<key>NSFaceIDUsageDescription</key>
 	<string>ManageGO needs Face ID to log in</string>
-	<key>CFBundleShortVersionString</key>
-	<string>1.0.9</string>
 	<key>CFBundleVersion</key>
-	<string>1.12</string>
+	<string>1.26</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>ManageGo needs access to location to function.</string>
 	<key>NSLocationWhenInUseUsageDescription </key>
@@ -74,5 +72,7 @@
 	</array>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>ManageGo needs access to location to function as intended.</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0.21</string>
 </dict>
 </plist>

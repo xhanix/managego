@@ -17,6 +17,12 @@ namespace ManageGo
         public MasterMenuPageModel()
         {
             HamburgerIsVisible = true;
+
+        }
+
+        protected override void ViewIsAppearing(object sender, EventArgs e)
+        {
+            base.ViewIsAppearing(sender, e);
             PaymentsIsVisible = App.UserPermissions.HasFlag(UserPermissions.CanAccessPayments);
             MaintenanceIsVisible = App.UserPermissions.HasFlag(UserPermissions.CanAccessTickets);
             NotificationsIsVisible = App.UserPermissions.HasFlag(UserPermissions.CanApproveNewTenantsUnits);

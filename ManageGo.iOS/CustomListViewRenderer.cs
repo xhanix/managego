@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using ManageGo.Controls;
 using ManageGo.iOS;
 using UIKit;
@@ -18,6 +19,7 @@ namespace ManageGo.iOS
             {
                 Control.ShowsVerticalScrollIndicator = false;
                 Control.DecelerationRate = UIScrollView.DecelerationRateFast;
+
             }
         }
     }

@@ -18,7 +18,7 @@ namespace ManageGo
         [AlsoNotifyFor("UnitsListHeight")]
         public List<Unit> TenantUnits { get; set; }
         [JsonIgnore]
-        public double UnitsListHeight => TenantUnits.Count * 25;
+        public double UnitsListHeight => TenantUnits != null ? TenantUnits.Count * 25 : 0;
         [JsonIgnore]
         public string FullName => TenantFirstName + " " + TenantLastName;
 
@@ -37,6 +37,6 @@ namespace ManageGo
 
         [JsonIgnore]
         public bool DetailsShown { get; set; }
-
+        public string TenantDetails { get; internal set; }
     }
 }
