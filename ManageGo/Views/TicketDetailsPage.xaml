@@ -403,16 +403,7 @@
                             Margin="6,-15,0,0"
                             Scrolled="Handle_Scrolled">
 
-                    <ScrollView.InputTransparent>
-                        <OnPlatform x:TypeArguments="x:Boolean">
-                            <OnPlatform.Platforms>
-                                <On Platform="iOS"
-                                    Value="False" />
-                                <On Platform="Android"
-                                    Value="True" />
-                            </OnPlatform.Platforms>
-                        </OnPlatform>
-                    </ScrollView.InputTransparent>
+                 
                     <StackLayout Spacing="0">
                         <Label Text="Event summary:"
                                Margin="0,0,0,4"
@@ -620,16 +611,7 @@
                             Padding="28,0,28,0"
                             Margin="6,-15,0,0"
                             Scrolled="Handle_Scrolled">
-                    <ScrollView.InputTransparent>
-                        <OnPlatform x:TypeArguments="x:Boolean">
-                            <OnPlatform.Platforms>
-                                <On Platform="iOS"
-                                    Value="False" />
-                                <On Platform="Android"
-                                    Value="True" />
-                            </OnPlatform.Platforms>
-                        </OnPlatform>
-                    </ScrollView.InputTransparent>
+                
                     <StackLayout Spacing="0">
                         <Label Text="Work order summary:"
                                Margin="0,0,0,4"
