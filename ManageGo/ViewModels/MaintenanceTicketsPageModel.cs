@@ -661,19 +661,15 @@ namespace ManageGo
                             OnCalendarButtonTapped.Execute(null);
                             if (ParameterItem != null)
                             {
-
                                 ParameterItem.DateFrom = DateRange?.StartDate;
                                 ParameterItem.DateTo = DateRange?.EndDate;
-
                             }
                             else
                             {
                                 ParameterItem = new TicketRequestItem
                                 {
-
                                     DateFrom = DateRange?.StartDate,
                                     DateTo = DateRange?.EndDate
-
                                 };
                             }
                             NumberOfAppliedFilters = " ";

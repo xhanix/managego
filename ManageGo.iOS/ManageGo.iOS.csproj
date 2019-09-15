@@ -58,13 +58,11 @@
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
     <CodesignProvision>VS: WildCard Development</CodesignProvision>
 <DeviceSpecificBuild>false</DeviceSpecificBuild>
-
 <MtouchSdkVersion>13.0</MtouchSdkVersion>
 <MtouchFloat32>true</MtouchFloat32>
 <OptimizePNGs></OptimizePNGs>
 <MtouchEnableSGenConc>true</MtouchEnableSGenConc>
 <MtouchLink>None</MtouchLink>
-
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <DebugType>none</DebugType>
@@ -77,9 +75,7 @@
     <CodesignKey>iPhone Developer: Hani Ebrahimi (RC3GWVX7G2)</CodesignKey>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
     <CodesignProvision>VS: WildCard Development</CodesignProvision>
-
     <MtouchSdkVersion>13.0</MtouchSdkVersion>
-
     <MtouchUseLlvm>true</MtouchUseLlvm>
     <MtouchFloat32>true</MtouchFloat32>
     <MtouchEnableSGenConc>true</MtouchEnableSGenConc>
