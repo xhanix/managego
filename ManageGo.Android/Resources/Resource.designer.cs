@@ -8370,9 +8370,6 @@ namespace ManageGo.Droid
 			// aapt resource value: 0x7f0a005f
 			public const int path_password_strike_through = 2131361887;
 			
-			// aapt resource value: 0x7f0a0068
-			public const int project_id = 2131361896;
-			
 			// aapt resource value: 0x7f0a0046
 			public const int search_menu_title = 2131361862;
 			

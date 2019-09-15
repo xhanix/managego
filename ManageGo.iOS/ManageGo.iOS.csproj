@@ -1,419 +1,420 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">iPhoneSimulator</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{E2BF8F53-0A29-45E1-B106-804899DCE953}</ProjectGuid>
-    <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <TemplateGuid>{6143fdea-f3c2-4a09-aafa-6e230626515e}</TemplateGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>ManageGo.iOS</RootNamespace>
-    <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
-    <AssemblyName>ManageGo.iOS</AssemblyName>
-    <MtouchHttpClientHandler>NSUrlSessionHandler</MtouchHttpClientHandler>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\iPhoneSimulator\Debug</OutputPath>
-    <DefineConstants>DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
-    <MtouchArch>x86_64</MtouchArch>
-    <MtouchLink>None</MtouchLink>
-    <MtouchDebug>true</MtouchDebug>
-    <CodesignProvision>VS: WildCard Development</CodesignProvision>
-    <CodesignKey>iPhone Developer: Hani Ebrahimi (RC3GWVX7G2)</CodesignKey>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
-    <DebugType>none</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\iPhoneSimulator\Release</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <MtouchLink>None</MtouchLink>
-    <MtouchArch>x86_64</MtouchArch>
-    <ConsolePause>false</ConsolePause>
-    <CodesignProvision>VS: WildCard Development</CodesignProvision>
-    <CodesignKey>iPhone Developer: Hani Ebrahimi (RC3GWVX7G2)</CodesignKey>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\iPhone\Debug</OutputPath>
-    <DefineConstants>DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
-    <MtouchArch>ARM64</MtouchArch>
-    <CodesignKey>iPhone Developer: Hani Ebrahimi (RC3GWVX7G2)</CodesignKey>
-    <MtouchDebug>true</MtouchDebug>
-    <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
-    <CodesignProvision>VS: WildCard Development</CodesignProvision>
-<DeviceSpecificBuild>false</DeviceSpecificBuild>
-<MtouchSdkVersion>13.0</MtouchSdkVersion>
-<MtouchFloat32>true</MtouchFloat32>
-<OptimizePNGs></OptimizePNGs>
-<MtouchEnableSGenConc>true</MtouchEnableSGenConc>
-<MtouchLink>None</MtouchLink>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
-    <DebugType>none</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\iPhone\Release</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <MtouchArch>ARM64</MtouchArch>
-    <ConsolePause>false</ConsolePause>
-    <CodesignKey>iPhone Developer: Hani Ebrahimi (RC3GWVX7G2)</CodesignKey>
-    <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
-    <CodesignProvision>VS: WildCard Development</CodesignProvision>
-    <MtouchSdkVersion>13.0</MtouchSdkVersion>
-    <MtouchUseLlvm>true</MtouchUseLlvm>
-    <MtouchFloat32>true</MtouchFloat32>
-    <MtouchEnableSGenConc>true</MtouchEnableSGenConc>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Ad-Hoc|iPhone' ">
-    <DebugType>none</DebugType>
-    <Optimize>True</Optimize>
-    <OutputPath>bin\iPhone\Ad-Hoc</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ConsolePause>False</ConsolePause>
-    <MtouchArch>ARM64</MtouchArch>
-    <BuildIpa>True</BuildIpa>
-    <CodesignProvision>VS: WildCard Development</CodesignProvision>
-    <CodesignKey>iPhone Developer: Hani Ebrahimi (RC3GWVX7G2)</CodesignKey>
-    <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|iPhone' ">
-    <DebugType>none</DebugType>
-    <Optimize>True</Optimize>
-    <OutputPath>bin\iPhone\AppStore</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ConsolePause>False</ConsolePause>
-    <MtouchArch>ARM64</MtouchArch>
-    <CodesignProvision>VS: WildCard Development</CodesignProvision>
-    <CodesignKey>iPhone Developer: Hani Ebrahimi (RC3GWVX7G2)</CodesignKey>
-    <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
-  </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="Main.cs" />
-    <Compile Include="AppDelegate.cs" />
-    <None Include="Entitlements.plist" />
-    <None Include="Info.plist" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="CalendarView.cs" />
-    <Compile Include="CalendarViewCell.cs" />
-    <Compile Include="DrawableControlView.cs" />
-    <Compile Include="IInfiniteScrollViewDelegate.cs" />
-    <Compile Include="InfiniteScrollView.cs" />
-    <Compile Include="InfiniteScrollViewCell.cs" />
-    <Compile Include="InfiniteScrollViewLayout.cs" />
-    <Compile Include="InfiniteScrollViewSource.cs" />
-    <Compile Include="CalendarRenderer.cs" />
-    <Compile Include="CustomEntry.cs" />
-    <Compile Include="SelectableLabelRenderer.cs" />
-    <Compile Include="CustomWebViewRenderer.cs" />
-    <Compile Include="ShareFileImplementation.cs" />
-    <Compile Include="UICameraPreview.cs" />
-    <Compile Include="CameraPageRenderer.cs" />
-    <Compile Include="OutputRecorder.cs" />
-    <Compile Include="VideoPicker.cs" />
-    <Compile Include="VideoPlayerRenderer.cs" />
-    <Compile Include="TouchEffect.cs" />
-    <Compile Include="TouchRecognizer.cs" />
-    <Compile Include="LocalAuthHelper.cs" />
-    <Compile Include="BorderlessEditor.cs" />
-    <Compile Include="PicturePickerImplementation.cs" />
-    <Compile Include="CustomSwitchRenderer.cs" />
-    <Compile Include="CustomListViewRenderer.cs" />
-    <Compile Include="GoogleCloudMessagingHelper.cs" />
-    <Compile Include="MGLabelRenderer.cs" />
-    <Compile Include="AppStoreOpenerImplementation.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <InterfaceDefinition Include="Resources\LaunchScreen.storyboard" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json">
-      <Visible>false</Visible>
-    </ImageAsset>
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\icon_76.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\icon_152.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\icon_167.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\87-1.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\40-2.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\60.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\58-1.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\87.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\80-1.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\120-1.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\120-3.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\40-1.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\80-2.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\58.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\40.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\180-2.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\1024.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\120.png" />
-    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\180.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Core" />
-    <Reference Include="Xamarin.iOS" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="SkiaSharp.Views">
-      <Version>1.68.0</Version>
-    </PackageReference>
-    <PackageReference Include="Xamarin.Essentials">
-      <Version>1.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="Xamarin.Forms">
-      <Version>4.2.0.778463</Version>
-    </PackageReference>
-    <PackageReference Include="FreshMvvm">
-      <Version>3.0.0</Version>
-    </PackageReference>
-    <PackageReference Include="Xamarin.Firebase.iOS.CloudMessaging">
-      <Version>3.1.2</Version>
-    </PackageReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
-  <ItemGroup>
-    <ProjectReference Include="..\ManageGo\ManageGo.csproj">
-      <Project>{53167476-5227-407E-B52C-E2F569F04033}</Project>
-      <Name>ManageGo</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\bank_blue%402x.png" />
-    <BundleResource Include="Resources\bank_blue%403x.png" />
-    <BundleResource Include="Resources\bank_grey%402x.png" />
-    <BundleResource Include="Resources\bank_grey%403x.png" />
-    <BundleResource Include="Resources\building_blue%402x.png" />
-    <BundleResource Include="Resources\building_blue%403x.png" />
-    <BundleResource Include="Resources\building_grey%402x.png" />
-    <BundleResource Include="Resources\building_grey%403x.png" />
-    <BundleResource Include="Resources\building_red%402x.png" />
-    <BundleResource Include="Resources\building_red%403x.png" />
-    <BundleResource Include="Resources\calendar_blue_sm%402x.png" />
-    <BundleResource Include="Resources\calendar_blue_sm%403x.png" />
-    <BundleResource Include="Resources\calendar_blue%402x.png" />
-    <BundleResource Include="Resources\calendar_blue%403x.png" />
-    <BundleResource Include="Resources\chat_green%402x.png" />
-    <BundleResource Include="Resources\chat_green%403x.png" />
-    <BundleResource Include="Resources\chat_grey_lg%402x.png" />
-    <BundleResource Include="Resources\chat_grey_lg%403x.png" />
-    <BundleResource Include="Resources\chat_grey%402x.png" />
-    <BundleResource Include="Resources\chat_grey%403x.png" />
-    <BundleResource Include="Resources\chat_red%402x.png" />
-    <BundleResource Include="Resources\chat_red%403x.png" />
-    <BundleResource Include="Resources\checked%402x.png" />
-    <BundleResource Include="Resources\checked%403x.png" />
-    <BundleResource Include="Resources\chevron_down%402x.png" />
-    <BundleResource Include="Resources\chevron_down%403x.png" />
-    <BundleResource Include="Resources\chevron_left%402x.png" />
-    <BundleResource Include="Resources\chevron_left%403x.png" />
-    <BundleResource Include="Resources\chevron_right%402x.png" />
-    <BundleResource Include="Resources\chevron_right%403x.png" />
-    <BundleResource Include="Resources\close_grey%403x.png" />
-    <BundleResource Include="Resources\dashboard_1%403x.jpg" />
-    <BundleResource Include="Resources\dot_red%402x.png" />
-    <BundleResource Include="Resources\dot_red%403x.png" />
-    <BundleResource Include="Resources\filter_blue%402x.png" />
-    <BundleResource Include="Resources\filter_blue%403x.png" />
-    <BundleResource Include="Resources\key_blue%402x.png" />
-    <BundleResource Include="Resources\key_blue%403x.png" />
-    <BundleResource Include="Resources\lock_white%402x.png" />
-    <BundleResource Include="Resources\lock_white%403x.png" />
-    <BundleResource Include="Resources\logo_old%403x.png" />
-    <BundleResource Include="Resources\logo_simple%402x.png" />
-    <BundleResource Include="Resources\logo_simple%403x.png" />
-    <BundleResource Include="Resources\logo%402x.png" />
-    <BundleResource Include="Resources\logo%403x.png" />
-    <BundleResource Include="Resources\nav_back_icon%402x.png" />
-    <BundleResource Include="Resources\nav_back_icon%403x.png" />
-    <BundleResource Include="Resources\nav_menu_icon%402x.png" />
-    <BundleResource Include="Resources\nav_menu_icon%403x.png" />
-    <BundleResource Include="Resources\pencil_grey%402x.png" />
-    <BundleResource Include="Resources\pencil_grey%403x.png" />
-    <BundleResource Include="Resources\pet_blue%402x.png" />
-    <BundleResource Include="Resources\pet_blue%403x.png" />
-    <BundleResource Include="Resources\profile_blue%402x.png" />
-    <BundleResource Include="Resources\profile_blue%403x.png" />
-    <BundleResource Include="Resources\profile_grey%402x.png" />
-    <BundleResource Include="Resources\profile_grey%403x.png" />
-    <BundleResource Include="Resources\profile_red%402x.png" />
-    <BundleResource Include="Resources\profile_red%403x.png" />
-    <BundleResource Include="Resources\radio_selected%403x.png" />
-    <BundleResource Include="Resources\radio_unselected%403x.png" />
-    <BundleResource Include="Resources\Roboto-Bold.ttf" />
-    <BundleResource Include="Resources\Roboto-Light.ttf" />
-    <BundleResource Include="Resources\Roboto-Medium.ttf" />
-    <BundleResource Include="Resources\Roboto-Regular.ttf" />
-    <BundleResource Include="Resources\Roboto-Thin.ttf" />
-    <BundleResource Include="Resources\search_blue%402x.png" />
-    <BundleResource Include="Resources\search_blue%403x.png" />
-    <BundleResource Include="Resources\search_grey%402x.png" />
-    <BundleResource Include="Resources\search_grey%403x.png" />
-    <BundleResource Include="Resources\slider-default_trackBackground%402x.png" />
-    <BundleResource Include="Resources\slider-default-handle-disabled.png" />
-    <BundleResource Include="Resources\slider-default-handle-disabled%402x.png" />
-    <BundleResource Include="Resources\slider-default-handle-highlighted.png" />
-    <BundleResource Include="Resources\slider-default-handle-highlighted%402x.png" />
-    <BundleResource Include="Resources\slider-default-handle.png" />
-    <BundleResource Include="Resources\slider-default-handle%402x.png" />
-    <BundleResource Include="Resources\slider-default-track.png" />
-    <BundleResource Include="Resources\slider-default-track%402x.png" />
-    <BundleResource Include="Resources\slider-default-trackBackground.png" />
-    <BundleResource Include="Resources\slider-default-trackCrossedOver.png" />
-    <BundleResource Include="Resources\slider-default-trackCrossedOver%402x.png" />
-    <BundleResource Include="Resources\slider-default7-handle-disabled.png" />
-    <BundleResource Include="Resources\slider-default7-handle-disabled%402x.png" />
-    <BundleResource Include="Resources\slider-default7-handle.png" />
-    <BundleResource Include="Resources\slider-default7-handle%402x.png" />
-    <BundleResource Include="Resources\slider-default7-track.png" />
-    <BundleResource Include="Resources\slider-default7-track%402x.png" />
-    <BundleResource Include="Resources\slider-default7-trackBackground.png" />
-    <BundleResource Include="Resources\slider-default7-trackBackground%402x.png" />
-    <BundleResource Include="Resources\slider-default7-trackCrossedOver.png" />
-    <BundleResource Include="Resources\slider-default7-trackCrossedOver%402x.png" />
-    <BundleResource Include="Resources\star_blue%402x.png" />
-    <BundleResource Include="Resources\star_blue%403x.png" />
-    <BundleResource Include="Resources\unchecked%402x.png" />
-    <BundleResource Include="Resources\unchecked%403x.png" />
-    <BundleResource Include="Resources\welcome_page_image.jpg" />
-    <BundleResource Include="Resources\wrench_blue%402x.png" />
-    <BundleResource Include="Resources\wrench_blue%403x.png" />
-    <BundleResource Include="Resources\chat_lg.png" />
-    <BundleResource Include="Resources\chat_lg%402x.png" />
-    <BundleResource Include="Resources\chat_lg%403x.png" />
-    <BundleResource Include="Resources\plus_1.png" />
-    <BundleResource Include="Resources\plus_1%402x.png" />
-    <BundleResource Include="Resources\plus_1%403x.png" />
-    <BundleResource Include="Resources\plus_1_1.png" />
-    <BundleResource Include="Resources\plus_1_1%402x.png" />
-    <BundleResource Include="Resources\plus_1_1%403x.png" />
-    <BundleResource Include="Resources\gradient.png" />
-    <BundleResource Include="Resources\camera_1.png" />
-    <BundleResource Include="Resources\camera_1%402x.png" />
-    <BundleResource Include="Resources\camera_1%403x.png" />
-    <BundleResource Include="Resources\camera_2.png" />
-    <BundleResource Include="Resources\camera_2%402x.png" />
-    <BundleResource Include="Resources\camera_2%403x.png" />
-    <BundleResource Include="Resources\camera_3.png" />
-    <BundleResource Include="Resources\camera_3%402x.png" />
-    <BundleResource Include="Resources\camera_3%403x.png" />
-    <BundleResource Include="Resources\close_red.png" />
-    <BundleResource Include="Resources\close_red%402x.png" />
-    <BundleResource Include="Resources\close_red%403x.png" />
-    <BundleResource Include="Resources\internal_active.png" />
-    <BundleResource Include="Resources\internal_active%402x.png" />
-    <BundleResource Include="Resources\internal_active%403x.png" />
-    <BundleResource Include="Resources\internal_inactive.png" />
-    <BundleResource Include="Resources\internal_inactive%402x.png" />
-    <BundleResource Include="Resources\internal_inactive%403x.png" />
-    <BundleResource Include="Resources\upload_blue.png" />
-    <BundleResource Include="Resources\upload_blue%402x.png" />
-    <BundleResource Include="Resources\upload_blue%403x.png" />
-    <BundleResource Include="Resources\upload_white.png" />
-    <BundleResource Include="Resources\upload_white%402x.png" />
-    <BundleResource Include="Resources\upload_white%403x.png" />
-    <BundleResource Include="Resources\arrow_right.png" />
-    <BundleResource Include="Resources\arrow_right%402x.png" />
-    <BundleResource Include="Resources\arrow_right%403x.png" />
-    <BundleResource Include="Resources\clip.png" />
-    <BundleResource Include="Resources\clip%402x.png" />
-    <BundleResource Include="Resources\clip%403x.png" />
-    <BundleResource Include="Resources\internal_closed.png" />
-    <BundleResource Include="Resources\internal_closed%402x.png" />
-    <BundleResource Include="Resources\internal_closed%403x.png" />
-    <BundleResource Include="Resources\internal_open.png" />
-    <BundleResource Include="Resources\internal_open%402x.png" />
-    <BundleResource Include="Resources\internal_open%403x.png" />
-    <BundleResource Include="Resources\arrow_left_white.png" />
-    <BundleResource Include="Resources\arrow_left_white%402x.png" />
-    <BundleResource Include="Resources\arrow_left_white%403x.png" />
-    <BundleResource Include="Resources\arrow_right_white.png" />
-    <BundleResource Include="Resources\arrow_right_white%402x.png" />
-    <BundleResource Include="Resources\arrow_right_white%403x.png" />
-    <BundleResource Include="Resources\photo_active.png" />
-    <BundleResource Include="Resources\photo_active%402x.png" />
-    <BundleResource Include="Resources\photo_active%403x.png" />
-    <BundleResource Include="Resources\photo_inactive.png" />
-    <BundleResource Include="Resources\photo_inactive%402x.png" />
-    <BundleResource Include="Resources\photo_inactive%403x.png" />
-    <BundleResource Include="Resources\video_active.png" />
-    <BundleResource Include="Resources\video_active%402x.png" />
-    <BundleResource Include="Resources\video_active%403x.png" />
-    <BundleResource Include="Resources\video_inactive.png" />
-    <BundleResource Include="Resources\video_inactive%402x.png" />
-    <BundleResource Include="Resources\video_inactive%403x.png" />
-    <BundleResource Include="Resources\capture_camera.png" />
-    <BundleResource Include="Resources\capture_camera%402x.png" />
-    <BundleResource Include="Resources\capture_camera%403x.png" />
-    <BundleResource Include="Resources\capture_video_play.png" />
-    <BundleResource Include="Resources\capture_video_play%402x.png" />
-    <BundleResource Include="Resources\capture_video_play%403x.png" />
-    <BundleResource Include="Resources\capture_video_stop.png" />
-    <BundleResource Include="Resources\capture_video_stop%402x.png" />
-    <BundleResource Include="Resources\capture_video_stop%403x.png" />
-    <BundleResource Include="Resources\RobotoMono-Bold.ttf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </BundleResource>
-    <BundleResource Include="Resources\close_white.png" />
-    <BundleResource Include="Resources\close_black.png" />
-    <BundleResource Include="Resources\CourierPSStd-Bold.ttf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </BundleResource>
-    <BundleResource Include="Resources\am_active%403x.png" />
-    <BundleResource Include="Resources\am_active%402x.png" />
-    <BundleResource Include="Resources\am_inactive%403x.png" />
-    <BundleResource Include="Resources\am_inactive%402x.png" />
-    <BundleResource Include="Resources\am_active.png" />
-    <BundleResource Include="Resources\pm_inactive%402x.png" />
-    <BundleResource Include="Resources\pm_inactive%403x.png" />
-    <BundleResource Include="Resources\pm_active%402x.png" />
-    <BundleResource Include="Resources\pm_active%403x.png" />
-    <BundleResource Include="Resources\pm_active.png" />
-    <BundleResource Include="Resources\pm_inactive.png" />
-    <BundleResource Include="Resources\am_inactive.png" />
-    <BundleResource Include="Resources\rec_dot%403x.png" />
-    <BundleResource Include="Resources\rec_dot%402x.png" />
-    <BundleResource Include="Resources\capture_video_play_2.png" />
-    <BundleResource Include="Resources\capture_video_play_2%402x.png" />
-    <BundleResource Include="Resources\capture_video_play_2%403x.png" />
-    <BundleResource Include="Resources\capture_video_stop_2.png" />
-    <BundleResource Include="Resources\capture_video_stop_2%402x.png" />
-    <BundleResource Include="Resources\capture_video_stop_2%403x.png" />
-    <BundleResource Include="Resources\chevron.png" />
-    <BundleResource Include="Resources\chevron%402x.png" />
-    <BundleResource Include="Resources\chevron%403x.png" />
-    <BundleResource Include="Resources\clip_iso.png" />
-    <BundleResource Include="Resources\clip_iso%402x.png" />
-    <BundleResource Include="Resources\clip_iso%403x.png" />
-    <BundleResource Include="Resources\filled_circle.png" />
-    <BundleResource Include="Resources\checked.png" />
-    <BundleResource Include="Resources\unchecked.png" />
-    <BundleResource Include="GoogleService-Info-3.plist" />
-    <BundleResource Include="Resources\check%402x.png" />
-    <BundleResource Include="Resources\check%403x.png" />
-    <BundleResource Include="Resources\awaiting_response.png" />
-    <BundleResource Include="Resources\awaiting_response%402x.png" />
-    <BundleResource Include="Resources\awaiting_response%403x.png" />
-    <BundleResource Include="GoogleService-Info.plist" />
-  </ItemGroup>
-  <ItemGroup>
-    <ITunesArtwork Include="iTunesArtwork%402x" />
-  </ItemGroup>
+    <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">iPhoneSimulator</Platform>
+        <ProductVersion>8.0.30703</ProductVersion>
+        <SchemaVersion>2.0</SchemaVersion>
+        <ProjectGuid>{E2BF8F53-0A29-45E1-B106-804899DCE953}</ProjectGuid>
+        <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+        <TemplateGuid>{6143fdea-f3c2-4a09-aafa-6e230626515e}</TemplateGuid>
+        <OutputType>Exe</OutputType>
+        <RootNamespace>ManageGo.iOS</RootNamespace>
+        <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
+        <AssemblyName>ManageGo.iOS</AssemblyName>
+        <MtouchHttpClientHandler>NSUrlSessionHandler</MtouchHttpClientHandler>
+        <NuGetPackageImportStamp>
+        </NuGetPackageImportStamp>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>bin\iPhoneSimulator\Debug</OutputPath>
+        <DefineConstants>DEBUG</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+        <ConsolePause>false</ConsolePause>
+        <MtouchArch>x86_64</MtouchArch>
+        <MtouchLink>None</MtouchLink>
+        <MtouchDebug>true</MtouchDebug>
+        <CodesignProvision>VS: WildCard Development</CodesignProvision>
+        <CodesignKey>iPhone Developer: Hani Ebrahimi (RC3GWVX7G2)</CodesignKey>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
+        <DebugType>none</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>bin\iPhoneSimulator\Release</OutputPath>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+        <MtouchLink>None</MtouchLink>
+        <MtouchArch>x86_64</MtouchArch>
+        <ConsolePause>false</ConsolePause>
+        <CodesignProvision>VS: WildCard Development</CodesignProvision>
+        <CodesignKey>iPhone Developer: Hani Ebrahimi (RC3GWVX7G2)</CodesignKey>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>bin\iPhone\Debug</OutputPath>
+        <DefineConstants>DEBUG</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+        <ConsolePause>false</ConsolePause>
+        <MtouchArch>ARM64</MtouchArch>
+        <CodesignKey>iPhone Developer: Hani Ebrahimi (RC3GWVX7G2)</CodesignKey>
+        <MtouchDebug>true</MtouchDebug>
+        <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
+        <CodesignProvision>VS: WildCard Development</CodesignProvision>
+        <DeviceSpecificBuild>false</DeviceSpecificBuild>
+        <MtouchSdkVersion>13.0</MtouchSdkVersion>
+        <MtouchFloat32>true</MtouchFloat32>
+        <OptimizePNGs>
+        </OptimizePNGs>
+        <MtouchEnableSGenConc>true</MtouchEnableSGenConc>
+        <MtouchLink>None</MtouchLink>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
+        <DebugType>none</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>bin\iPhone\Release</OutputPath>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+        <MtouchArch>ARM64</MtouchArch>
+        <ConsolePause>false</ConsolePause>
+        <CodesignKey>iPhone Developer: Hani Ebrahimi (RC3GWVX7G2)</CodesignKey>
+        <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
+        <CodesignProvision>VS: WildCard Development</CodesignProvision>
+        <MtouchSdkVersion>13.0</MtouchSdkVersion>
+        <MtouchUseLlvm>true</MtouchUseLlvm>
+        <MtouchFloat32>true</MtouchFloat32>
+        <MtouchEnableSGenConc>true</MtouchEnableSGenConc>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Ad-Hoc|iPhone' ">
+        <DebugType>none</DebugType>
+        <Optimize>True</Optimize>
+        <OutputPath>bin\iPhone\Ad-Hoc</OutputPath>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+        <ConsolePause>False</ConsolePause>
+        <MtouchArch>ARM64</MtouchArch>
+        <BuildIpa>True</BuildIpa>
+        <CodesignProvision>VS: WildCard Development</CodesignProvision>
+        <CodesignKey>iPhone Developer: Hani Ebrahimi (RC3GWVX7G2)</CodesignKey>
+        <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|iPhone' ">
+        <DebugType>none</DebugType>
+        <Optimize>True</Optimize>
+        <OutputPath>bin\iPhone\AppStore</OutputPath>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+        <ConsolePause>False</ConsolePause>
+        <MtouchArch>ARM64</MtouchArch>
+        <CodesignProvision>VS: WildCard Development</CodesignProvision>
+        <CodesignKey>iPhone Developer: Hani Ebrahimi (RC3GWVX7G2)</CodesignKey>
+        <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
+    </PropertyGroup>
+    <ItemGroup>
+        <Compile Include="Main.cs" />
+        <Compile Include="AppDelegate.cs" />
+        <None Include="Entitlements.plist" />
+        <None Include="Info.plist" />
+        <Compile Include="Properties\AssemblyInfo.cs" />
+        <Compile Include="CalendarView.cs" />
+        <Compile Include="CalendarViewCell.cs" />
+        <Compile Include="DrawableControlView.cs" />
+        <Compile Include="IInfiniteScrollViewDelegate.cs" />
+        <Compile Include="InfiniteScrollView.cs" />
+        <Compile Include="InfiniteScrollViewCell.cs" />
+        <Compile Include="InfiniteScrollViewLayout.cs" />
+        <Compile Include="InfiniteScrollViewSource.cs" />
+        <Compile Include="CalendarRenderer.cs" />
+        <Compile Include="CustomEntry.cs" />
+        <Compile Include="SelectableLabelRenderer.cs" />
+        <Compile Include="CustomWebViewRenderer.cs" />
+        <Compile Include="ShareFileImplementation.cs" />
+        <Compile Include="UICameraPreview.cs" />
+        <Compile Include="CameraPageRenderer.cs" />
+        <Compile Include="OutputRecorder.cs" />
+        <Compile Include="VideoPicker.cs" />
+        <Compile Include="VideoPlayerRenderer.cs" />
+        <Compile Include="TouchEffect.cs" />
+        <Compile Include="TouchRecognizer.cs" />
+        <Compile Include="LocalAuthHelper.cs" />
+        <Compile Include="BorderlessEditor.cs" />
+        <Compile Include="PicturePickerImplementation.cs" />
+        <Compile Include="CustomSwitchRenderer.cs" />
+        <Compile Include="CustomListViewRenderer.cs" />
+        <Compile Include="GoogleCloudMessagingHelper.cs" />
+        <Compile Include="MGLabelRenderer.cs" />
+        <Compile Include="AppStoreOpenerImplementation.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <InterfaceDefinition Include="Resources\LaunchScreen.storyboard" />
+        <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json">
+            <Visible>false</Visible>
+        </ImageAsset>
+        <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\icon_76.png" />
+        <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\icon_152.png" />
+        <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\icon_167.png" />
+        <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\87-1.png" />
+        <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\40-2.png" />
+        <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\60.png" />
+        <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\58-1.png" />
+        <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\87.png" />
+        <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\80-1.png" />
+        <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\120-1.png" />
+        <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\120-3.png" />
+        <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\40-1.png" />
+        <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\80-2.png" />
+        <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\58.png" />
+        <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\40.png" />
+        <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\180-2.png" />
+        <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\1024.png" />
+        <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\120.png" />
+        <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\180.png" />
+    </ItemGroup>
+    <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Xml" />
+        <Reference Include="System.Core" />
+        <Reference Include="Xamarin.iOS" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="SkiaSharp.Views">
+            <Version>1.68.0</Version>
+        </PackageReference>
+        <PackageReference Include="Xamarin.Essentials">
+            <Version>1.3.0</Version>
+        </PackageReference>
+        <PackageReference Include="Xamarin.Forms">
+            <Version>4.2.0.778463</Version>
+        </PackageReference>
+        <PackageReference Include="FreshMvvm">
+            <Version>3.0.0</Version>
+        </PackageReference>
+        <PackageReference Include="Xamarin.Firebase.iOS.CloudMessaging">
+            <Version>3.1.2</Version>
+        </PackageReference>
+    </ItemGroup>
+    <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
+    <ItemGroup>
+        <ProjectReference Include="..\ManageGo\ManageGo.csproj">
+            <Project>{53167476-5227-407E-B52C-E2F569F04033}</Project>
+            <Name>ManageGo</Name>
+        </ProjectReference>
+    </ItemGroup>
+    <ItemGroup>
+        <BundleResource Include="Resources\bank_blue%402x.png" />
+        <BundleResource Include="Resources\bank_blue%403x.png" />
+        <BundleResource Include="Resources\bank_grey%402x.png" />
+        <BundleResource Include="Resources\bank_grey%403x.png" />
+        <BundleResource Include="Resources\building_blue%402x.png" />
+        <BundleResource Include="Resources\building_blue%403x.png" />
+        <BundleResource Include="Resources\building_grey%402x.png" />
+        <BundleResource Include="Resources\building_grey%403x.png" />
+        <BundleResource Include="Resources\building_red%402x.png" />
+        <BundleResource Include="Resources\building_red%403x.png" />
+        <BundleResource Include="Resources\calendar_blue_sm%402x.png" />
+        <BundleResource Include="Resources\calendar_blue_sm%403x.png" />
+        <BundleResource Include="Resources\calendar_blue%402x.png" />
+        <BundleResource Include="Resources\calendar_blue%403x.png" />
+        <BundleResource Include="Resources\chat_green%402x.png" />
+        <BundleResource Include="Resources\chat_green%403x.png" />
+        <BundleResource Include="Resources\chat_grey_lg%402x.png" />
+        <BundleResource Include="Resources\chat_grey_lg%403x.png" />
+        <BundleResource Include="Resources\chat_grey%402x.png" />
+        <BundleResource Include="Resources\chat_grey%403x.png" />
+        <BundleResource Include="Resources\chat_red%402x.png" />
+        <BundleResource Include="Resources\chat_red%403x.png" />
+        <BundleResource Include="Resources\checked%402x.png" />
+        <BundleResource Include="Resources\checked%403x.png" />
+        <BundleResource Include="Resources\chevron_down%402x.png" />
+        <BundleResource Include="Resources\chevron_down%403x.png" />
+        <BundleResource Include="Resources\chevron_left%402x.png" />
+        <BundleResource Include="Resources\chevron_left%403x.png" />
+        <BundleResource Include="Resources\chevron_right%402x.png" />
+        <BundleResource Include="Resources\chevron_right%403x.png" />
+        <BundleResource Include="Resources\close_grey%403x.png" />
+        <BundleResource Include="Resources\dashboard_1%403x.jpg" />
+        <BundleResource Include="Resources\dot_red%402x.png" />
+        <BundleResource Include="Resources\dot_red%403x.png" />
+        <BundleResource Include="Resources\filter_blue%402x.png" />
+        <BundleResource Include="Resources\filter_blue%403x.png" />
+        <BundleResource Include="Resources\key_blue%402x.png" />
+        <BundleResource Include="Resources\key_blue%403x.png" />
+        <BundleResource Include="Resources\lock_white%402x.png" />
+        <BundleResource Include="Resources\lock_white%403x.png" />
+        <BundleResource Include="Resources\logo_old%403x.png" />
+        <BundleResource Include="Resources\logo_simple%402x.png" />
+        <BundleResource Include="Resources\logo_simple%403x.png" />
+        <BundleResource Include="Resources\logo%402x.png" />
+        <BundleResource Include="Resources\logo%403x.png" />
+        <BundleResource Include="Resources\nav_back_icon%402x.png" />
+        <BundleResource Include="Resources\nav_back_icon%403x.png" />
+        <BundleResource Include="Resources\nav_menu_icon%402x.png" />
+        <BundleResource Include="Resources\nav_menu_icon%403x.png" />
+        <BundleResource Include="Resources\pencil_grey%402x.png" />
+        <BundleResource Include="Resources\pencil_grey%403x.png" />
+        <BundleResource Include="Resources\pet_blue%402x.png" />
+        <BundleResource Include="Resources\pet_blue%403x.png" />
+        <BundleResource Include="Resources\profile_blue%402x.png" />
+        <BundleResource Include="Resources\profile_blue%403x.png" />
+        <BundleResource Include="Resources\profile_grey%402x.png" />
+        <BundleResource Include="Resources\profile_grey%403x.png" />
+        <BundleResource Include="Resources\profile_red%402x.png" />
+        <BundleResource Include="Resources\profile_red%403x.png" />
+        <BundleResource Include="Resources\radio_selected%403x.png" />
+        <BundleResource Include="Resources\radio_unselected%403x.png" />
+        <BundleResource Include="Resources\Roboto-Bold.ttf" />
+        <BundleResource Include="Resources\Roboto-Light.ttf" />
+        <BundleResource Include="Resources\Roboto-Medium.ttf" />
+        <BundleResource Include="Resources\Roboto-Regular.ttf" />
+        <BundleResource Include="Resources\Roboto-Thin.ttf" />
+        <BundleResource Include="Resources\search_blue%402x.png" />
+        <BundleResource Include="Resources\search_blue%403x.png" />
+        <BundleResource Include="Resources\search_grey%402x.png" />
+        <BundleResource Include="Resources\search_grey%403x.png" />
+        <BundleResource Include="Resources\slider-default_trackBackground%402x.png" />
+        <BundleResource Include="Resources\slider-default-handle-disabled.png" />
+        <BundleResource Include="Resources\slider-default-handle-disabled%402x.png" />
+        <BundleResource Include="Resources\slider-default-handle-highlighted.png" />
+        <BundleResource Include="Resources\slider-default-handle-highlighted%402x.png" />
+        <BundleResource Include="Resources\slider-default-handle.png" />
+        <BundleResource Include="Resources\slider-default-handle%402x.png" />
+        <BundleResource Include="Resources\slider-default-track.png" />
+        <BundleResource Include="Resources\slider-default-track%402x.png" />
+        <BundleResource Include="Resources\slider-default-trackBackground.png" />
+        <BundleResource Include="Resources\slider-default-trackCrossedOver.png" />
+        <BundleResource Include="Resources\slider-default-trackCrossedOver%402x.png" />
+        <BundleResource Include="Resources\slider-default7-handle-disabled.png" />
+        <BundleResource Include="Resources\slider-default7-handle-disabled%402x.png" />
+        <BundleResource Include="Resources\slider-default7-handle.png" />
+        <BundleResource Include="Resources\slider-default7-handle%402x.png" />
+        <BundleResource Include="Resources\slider-default7-track.png" />
+        <BundleResource Include="Resources\slider-default7-track%402x.png" />
+        <BundleResource Include="Resources\slider-default7-trackBackground.png" />
+        <BundleResource Include="Resources\slider-default7-trackBackground%402x.png" />
+        <BundleResource Include="Resources\slider-default7-trackCrossedOver.png" />
+        <BundleResource Include="Resources\slider-default7-trackCrossedOver%402x.png" />
+        <BundleResource Include="Resources\star_blue%402x.png" />
+        <BundleResource Include="Resources\star_blue%403x.png" />
+        <BundleResource Include="Resources\unchecked%402x.png" />
+        <BundleResource Include="Resources\unchecked%403x.png" />
+        <BundleResource Include="Resources\welcome_page_image.jpg" />
+        <BundleResource Include="Resources\wrench_blue%402x.png" />
+        <BundleResource Include="Resources\wrench_blue%403x.png" />
+        <BundleResource Include="Resources\chat_lg.png" />
+        <BundleResource Include="Resources\chat_lg%402x.png" />
+        <BundleResource Include="Resources\chat_lg%403x.png" />
+        <BundleResource Include="Resources\plus_1.png" />
+        <BundleResource Include="Resources\plus_1%402x.png" />
+        <BundleResource Include="Resources\plus_1%403x.png" />
+        <BundleResource Include="Resources\plus_1_1.png" />
+        <BundleResource Include="Resources\plus_1_1%402x.png" />
+        <BundleResource Include="Resources\plus_1_1%403x.png" />
+        <BundleResource Include="Resources\gradient.png" />
+        <BundleResource Include="Resources\camera_1.png" />
+        <BundleResource Include="Resources\camera_1%402x.png" />
+        <BundleResource Include="Resources\camera_1%403x.png" />
+        <BundleResource Include="Resources\camera_2.png" />
+        <BundleResource Include="Resources\camera_2%402x.png" />
+        <BundleResource Include="Resources\camera_2%403x.png" />
+        <BundleResource Include="Resources\camera_3.png" />
+        <BundleResource Include="Resources\camera_3%402x.png" />
+        <BundleResource Include="Resources\camera_3%403x.png" />
+        <BundleResource Include="Resources\close_red.png" />
+        <BundleResource Include="Resources\close_red%402x.png" />
+        <BundleResource Include="Resources\close_red%403x.png" />
+        <BundleResource Include="Resources\internal_active.png" />
+        <BundleResource Include="Resources\internal_active%402x.png" />
+        <BundleResource Include="Resources\internal_active%403x.png" />
+        <BundleResource Include="Resources\internal_inactive.png" />
+        <BundleResource Include="Resources\internal_inactive%402x.png" />
+        <BundleResource Include="Resources\internal_inactive%403x.png" />
+        <BundleResource Include="Resources\upload_blue.png" />
+        <BundleResource Include="Resources\upload_blue%402x.png" />
+        <BundleResource Include="Resources\upload_blue%403x.png" />
+        <BundleResource Include="Resources\upload_white.png" />
+        <BundleResource Include="Resources\upload_white%402x.png" />
+        <BundleResource Include="Resources\upload_white%403x.png" />
+        <BundleResource Include="Resources\arrow_right.png" />
+        <BundleResource Include="Resources\arrow_right%402x.png" />
+        <BundleResource Include="Resources\arrow_right%403x.png" />
+        <BundleResource Include="Resources\clip.png" />
+        <BundleResource Include="Resources\clip%402x.png" />
+        <BundleResource Include="Resources\clip%403x.png" />
+        <BundleResource Include="Resources\internal_closed.png" />
+        <BundleResource Include="Resources\internal_closed%402x.png" />
+        <BundleResource Include="Resources\internal_closed%403x.png" />
+        <BundleResource Include="Resources\internal_open.png" />
+        <BundleResource Include="Resources\internal_open%402x.png" />
+        <BundleResource Include="Resources\internal_open%403x.png" />
+        <BundleResource Include="Resources\arrow_left_white.png" />
+        <BundleResource Include="Resources\arrow_left_white%402x.png" />
+        <BundleResource Include="Resources\arrow_left_white%403x.png" />
+        <BundleResource Include="Resources\arrow_right_white.png" />
+        <BundleResource Include="Resources\arrow_right_white%402x.png" />
+        <BundleResource Include="Resources\arrow_right_white%403x.png" />
+        <BundleResource Include="Resources\photo_active.png" />
+        <BundleResource Include="Resources\photo_active%402x.png" />
+        <BundleResource Include="Resources\photo_active%403x.png" />
+        <BundleResource Include="Resources\photo_inactive.png" />
+        <BundleResource Include="Resources\photo_inactive%402x.png" />
+        <BundleResource Include="Resources\photo_inactive%403x.png" />
+        <BundleResource Include="Resources\video_active.png" />
+        <BundleResource Include="Resources\video_active%402x.png" />
+        <BundleResource Include="Resources\video_active%403x.png" />
+        <BundleResource Include="Resources\video_inactive.png" />
+        <BundleResource Include="Resources\video_inactive%402x.png" />
+        <BundleResource Include="Resources\video_inactive%403x.png" />
+        <BundleResource Include="Resources\capture_camera.png" />
+        <BundleResource Include="Resources\capture_camera%402x.png" />
+        <BundleResource Include="Resources\capture_camera%403x.png" />
+        <BundleResource Include="Resources\capture_video_play.png" />
+        <BundleResource Include="Resources\capture_video_play%402x.png" />
+        <BundleResource Include="Resources\capture_video_play%403x.png" />
+        <BundleResource Include="Resources\capture_video_stop.png" />
+        <BundleResource Include="Resources\capture_video_stop%402x.png" />
+        <BundleResource Include="Resources\capture_video_stop%403x.png" />
+        <BundleResource Include="Resources\RobotoMono-Bold.ttf">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </BundleResource>
+        <BundleResource Include="Resources\close_white.png" />
+        <BundleResource Include="Resources\close_black.png" />
+        <BundleResource Include="Resources\CourierPSStd-Bold.ttf">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </BundleResource>
+        <BundleResource Include="Resources\am_active%403x.png" />
+        <BundleResource Include="Resources\am_active%402x.png" />
+        <BundleResource Include="Resources\am_inactive%403x.png" />
+        <BundleResource Include="Resources\am_inactive%402x.png" />
+        <BundleResource Include="Resources\am_active.png" />
+        <BundleResource Include="Resources\pm_inactive%402x.png" />
+        <BundleResource Include="Resources\pm_inactive%403x.png" />
+        <BundleResource Include="Resources\pm_active%402x.png" />
+        <BundleResource Include="Resources\pm_active%403x.png" />
+        <BundleResource Include="Resources\pm_active.png" />
+        <BundleResource Include="Resources\pm_inactive.png" />
+        <BundleResource Include="Resources\am_inactive.png" />
+        <BundleResource Include="Resources\rec_dot%403x.png" />
+        <BundleResource Include="Resources\rec_dot%402x.png" />
+        <BundleResource Include="Resources\capture_video_play_2.png" />
+        <BundleResource Include="Resources\capture_video_play_2%402x.png" />
+        <BundleResource Include="Resources\capture_video_play_2%403x.png" />
+        <BundleResource Include="Resources\capture_video_stop_2.png" />
+        <BundleResource Include="Resources\capture_video_stop_2%402x.png" />
+        <BundleResource Include="Resources\capture_video_stop_2%403x.png" />
+        <BundleResource Include="Resources\chevron.png" />
+        <BundleResource Include="Resources\chevron%402x.png" />
+        <BundleResource Include="Resources\chevron%403x.png" />
+        <BundleResource Include="Resources\clip_iso.png" />
+        <BundleResource Include="Resources\clip_iso%402x.png" />
+        <BundleResource Include="Resources\clip_iso%403x.png" />
+        <BundleResource Include="Resources\filled_circle.png" />
+        <BundleResource Include="Resources\checked.png" />
+        <BundleResource Include="Resources\unchecked.png" />
+        <BundleResource Include="GoogleService-Info-3.plist" />
+        <BundleResource Include="Resources\check%402x.png" />
+        <BundleResource Include="Resources\check%403x.png" />
+        <BundleResource Include="Resources\awaiting_response.png" />
+        <BundleResource Include="Resources\awaiting_response%402x.png" />
+        <BundleResource Include="Resources\awaiting_response%403x.png" />
+        <BundleResource Include="GoogleService-Info.plist" />
+    </ItemGroup>
+    <ItemGroup>
+        <ITunesArtwork Include="iTunesArtwork%402x" />
+    </ItemGroup>
 </Project>
