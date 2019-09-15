@@ -26,13 +26,7 @@ namespace ManageGo
         public TicketStatus? TicketStatus { get; set; }
         public IList<TicketPriorities> Priorities { get; set; }
         public string Search { get; set; }
-        [JsonIgnore, IgnoreDataMember]
-        DateRange DefaultDateRange => new DateRange(DateTime.Today, DateTime.Today.AddDays(-30));
-        [JsonIgnore, IgnoreDataMember]
-        public DateTime DefaultStartDate => DefaultDateRange.StartDate;
 
-        [JsonIgnore, IgnoreDataMember]
-        public DateTime DefaultToDate => DefaultDateRange.EndDate.Value;
 
         [JsonIgnore]
         public int NumberOfAppliedFilters
@@ -48,7 +42,7 @@ namespace ManageGo
                     n++;
                 if (Categories != null && Categories.Any())
                     n++;
-                if ((DateFrom != null && DateFrom.Value.Date != DefaultStartDate.Date) || (DateTo != null && DateTo.Value.Date != DefaultToDate.Date))
+                if (DateFrom != null || DateTo != null)
                     n++;
                 if (Buildings != null && Buildings.Any())
                     n++;

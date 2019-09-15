@@ -119,6 +119,7 @@ namespace ManageGo
         public bool FilterCategoriesExpanded { get; private set; }
         public bool FilterTagsExpanded { get; private set; }
         public bool FilterStatusExpanded { get; private set; }
+        public bool FilterDateExpanded { get; private set; }
         public bool FilterDueDateExpanded { get; private set; }
         public bool FilterUsersExpanded { get; private set; }
         public string FilterDueDateString
@@ -152,37 +153,25 @@ namespace ManageGo
 
         [AlsoNotifyFor("FilterDueDateString")]
         public DateRange FilterDueDate { get; set; }
-
-
-
-
         [AlsoNotifyFor("CalendarButtonText")]
-        internal DateRange DateRange
-        {
-            get
-            {
-                return dateRange is null ? new DateRange(DateTime.Today, DateTime.Today.AddDays(-30)) : dateRange;
-            }
-            set
-            {
-                dateRange = value;
-            }
-        }
+        public DateRange DateRange { get; set; }
 
         public string CalendarButtonText
         {
             get
             {
-                if (DateRange.EndDate.HasValue)
+                if (DateRange is null)
+                    return "All";
+                else if (DateRange.EndDate.HasValue)
                 {
-                    if (DateRange.StartDate == DateRange.EndDate)
-                        return DateRange.StartDate.ToString("MMM-dd");
+                    if (DateRange?.StartDate == DateRange?.EndDate)
+                        return DateRange?.StartDate.ToString("MMM-dd");
                     else
-                        return DateRange.StartDate.ToString("MMM dd") + " - " + DateRange.EndDate.Value.ToString("MMM dd");
+                        return DateRange?.StartDate.ToString("MMM dd") + " - " + DateRange?.EndDate.Value.ToString("MMM dd");
                 }
                 else
                 {
-                    return DateRange.StartDate.ToString("MMM-dd");
+                    return DateRange?.StartDate.ToString("MMM-dd");
                 }
 
             }
@@ -214,8 +203,8 @@ namespace ManageGo
                         ParameterItem = new TicketRequestItem
                         {
                             TicketStatus = TicketStatus.Open,
-                            DateFrom = DateRange.StartDate,
-                            DateTo = DateRange.EndDate
+                            DateFrom = null,
+                            DateTo = null
                         };
                     }
                     ParameterItem.Page++;
@@ -239,8 +228,8 @@ namespace ManageGo
                         ParameterItem = new TicketRequestItem
                         {
                             TicketStatus = TicketStatus.Open,
-                            DateFrom = DateRange.StartDate,
-                            DateTo = DateRange.EndDate,
+                            DateFrom = null,
+                            DateTo = null,
                         };
                     }
                     if (refreshData)
@@ -485,10 +474,10 @@ namespace ManageGo
                     FilterSelectViewIsShown = false;
                     ParameterItem = null;
                     CurrentFilter = null;
+                    DateRange = null;
                     NumberOfAppliedFilters = string.Empty;
                     FetchedTickets = null;
                     await LoadData(true, false);
-
                     if (Buildings != null)
                     {
                         foreach (var b in Buildings)
@@ -522,6 +511,7 @@ namespace ManageGo
                     IsHighPriorityFilterSelected = false;
                     SelectedOpenTicketsFilter = true;
                     SelectedClosedTicketsFilter = false;
+
                     tcs?.SetResult(true);
                 }
                 return new FreshAwaitCommand(execute);
@@ -572,14 +562,11 @@ namespace ManageGo
                             ParameterItem.Assigned = Users.Where(t => t.IsSelected).Select(t => t.UserID).ToList();
                         if (Categories != null && Categories.Any(t => t.IsSelected))
                             ParameterItem.Categories = Categories.Where(t => t.IsSelected).Select(t => t.CategoryID).ToList();
-                        ParameterItem.DateFrom = this.DateRange.StartDate;
-                        if (this.DateRange.EndDate.HasValue)
-                            ParameterItem.DateTo = this.DateRange.EndDate.Value;
-                        if (FilterDueDate != null)
-                        {
-                            ParameterItem.DateFrom = FilterDueDate.StartDate;
-                            ParameterItem.DateTo = FilterDueDate.EndDate ?? FilterDueDate.StartDate;
-                        }
+                        ParameterItem.DateFrom = this.DateRange?.StartDate;
+                        ParameterItem.DateTo = this.DateRange?.EndDate ?? null;
+                        ParameterItem.DueDateFrom = FilterDueDate?.StartDate;
+                        ParameterItem.DueDateTo = FilterDueDate?.EndDate ?? FilterDueDate?.StartDate;
+
                     }
                     NumberOfAppliedFilters = ParameterItem.NumberOfAppliedFilters == 0 ? "" : $"{ParameterItem.NumberOfAppliedFilters}";
 
@@ -675,15 +662,15 @@ namespace ManageGo
                             OnCalendarButtonTapped.Execute(null);
                             if (ParameterItem != null)
                             {
-                                ParameterItem.DateFrom = DateRange.StartDate;
-                                ParameterItem.DateTo = DateRange.EndDate;
+                                ParameterItem.DateFrom = DateRange?.StartDate;
+                                ParameterItem.DateTo = DateRange?.EndDate;
                             }
                             else
                             {
                                 ParameterItem = new TicketRequestItem
                                 {
-                                    DateFrom = DateRange.StartDate,
-                                    DateTo = DateRange.EndDate
+                                    DateFrom = DateRange?.StartDate,
+                                    DateTo = DateRange?.EndDate
                                 };
                             }
                             NumberOfAppliedFilters = " ";
@@ -718,8 +705,19 @@ namespace ManageGo
                     var par = (string)parameter;
                     switch (par)
                     {
+                        case "Date":
+                            FilterDateExpanded = !FilterDateExpanded;
+                            FilterDueDateExpanded = false;
+                            FilterUsersExpanded = false;
+                            FilterTagsExpanded = false;
+                            FilterCategoriesExpanded = false;
+                            FilterStatusExpanded = false;
+                            FilterPrioritiesExpanded = false;
+                            FilterBuildingsExpanded = false;
+                            break;
                         case "DueDates":
                             FilterDueDateExpanded = !FilterDueDateExpanded;
+                            FilterDateExpanded = false;
                             FilterUsersExpanded = false;
                             FilterTagsExpanded = false;
                             FilterCategoriesExpanded = false;
@@ -729,6 +727,7 @@ namespace ManageGo
                             break;
                         case "Users":
                             FilterUsersExpanded = !FilterUsersExpanded;
+                            FilterDateExpanded = false;
                             FilterDueDateExpanded = false;
                             FilterTagsExpanded = false;
                             FilterCategoriesExpanded = false;
@@ -738,6 +737,7 @@ namespace ManageGo
                             break;
                         case "Tags":
                             FilterTagsExpanded = !FilterTagsExpanded;
+                            FilterDateExpanded = false;
                             FilterUsersExpanded = false;
                             FilterDueDateExpanded = false;
                             FilterCategoriesExpanded = false;
@@ -747,6 +747,7 @@ namespace ManageGo
                             break;
                         case "Categories":
                             FilterCategoriesExpanded = !FilterCategoriesExpanded;
+                            FilterDateExpanded = false;
                             FilterTagsExpanded = false;
                             FilterUsersExpanded = false;
                             FilterDueDateExpanded = false;
@@ -756,6 +757,7 @@ namespace ManageGo
                             break;
                         case "Status":
                             FilterStatusExpanded = !FilterStatusExpanded;
+                            FilterDateExpanded = false;
                             FilterCategoriesExpanded = false;
                             FilterTagsExpanded = false;
                             FilterUsersExpanded = false;
@@ -765,6 +767,7 @@ namespace ManageGo
                             break;
                         case "Priority":
                             FilterPrioritiesExpanded = !FilterPrioritiesExpanded;
+                            FilterDateExpanded = false;
                             FilterStatusExpanded = false;
                             FilterCategoriesExpanded = false;
                             FilterTagsExpanded = false;
@@ -774,6 +777,7 @@ namespace ManageGo
                             break;
                         case "Buildings":
                             FilterBuildingsExpanded = !FilterBuildingsExpanded;
+                            FilterDateExpanded = false;
                             FilterPrioritiesExpanded = false;
                             FilterStatusExpanded = false;
                             FilterCategoriesExpanded = false;

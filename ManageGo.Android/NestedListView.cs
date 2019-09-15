@@ -1,10 +1,12 @@
 ﻿using System;
 using Android.Content;
+using Android.Support.V4.View;
 using Android.Views;
 using ManageGo.Controls;
 using ManageGo.Droid;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
+using static Android.Views.View;
 
 [assembly: ExportRenderer(typeof(NestedListView), typeof(NestedListViewRenderer))]
 namespace ManageGo.Droid
@@ -15,17 +17,21 @@ namespace ManageGo.Droid
         {
         }
 
+
+
         protected override void OnElementChanged(ElementChangedEventArgs<ListView> e)
         {
             base.OnElementChanged(e);
-            if (e.NewElement != null)
+            if (e.NewElement != null && Control != null)
             {
-                var listView = this.Control as Android.Widget.ListView;
-                listView.NestedScrollingEnabled = true;
-                listView.VerticalScrollBarEnabled = false;
-                listView.SetFriction(ViewConfiguration.ScrollFriction * 1.5f);
+
+                Control.NestedScrollingEnabled = true;
+                Control.VerticalScrollBarEnabled = false;
+                Control.SetFriction(ViewConfiguration.ScrollFriction * 1.5f);
+
             }
         }
+
 
     }
 }

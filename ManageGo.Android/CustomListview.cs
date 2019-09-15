@@ -23,7 +23,7 @@ namespace ManageGo.Droid
                 var listView = this.Control as Android.Widget.ListView;
                 listView.NestedScrollingEnabled = false;
                 listView.VerticalScrollBarEnabled = false;
-                listView.SetFriction(ViewConfiguration.ScrollFriction * 1.5f);
+                // listView.SetFriction(ViewConfiguration.ScrollFriction * 1.5f);
             }
         }
 

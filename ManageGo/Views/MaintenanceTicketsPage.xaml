@@ -76,7 +76,7 @@
                                Margin="4,0,0,0" />
                         <StackLayout.GestureRecognizers>
                             <TapGestureRecognizer NumberOfTapsRequired="1"
-                                                  Command="{Binding OnCalendarButtonTapped}" />
+                                                  Command="{Binding OnFilterTapped}" />
                         </StackLayout.GestureRecognizers>
                     </StackLayout>
                     <BoxView WidthRequest="1"
@@ -115,9 +115,9 @@
                              MinimumHeightRequest="75">
                     <Grid Padding="14,12,18,8">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="0.25*" />
+                            <ColumnDefinition Width="0.6*" />
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="0.25*" />
+                            <ColumnDefinition Width="0.6*" />
                         </Grid.ColumnDefinitions>
                         <Button Grid.Column="0"
                                 FontSize="Small"
@@ -125,7 +125,7 @@
                                 Text="Reset"
                                 Command="{Binding OnResetFiltersButtonTapped}"
                                 BackgroundColor="Transparent"
-                                HorizontalOptions="StartAndExpand" />
+                                HorizontalOptions="CenterAndExpand" />
                         <Button Grid.Column="1"
                                 FontSize="Medium"
                                 TextColor="White"
@@ -141,7 +141,7 @@
                                 Text="Cancel"
                                 Command="{Binding OnCloseFliterViewTapped}"
                                 BackgroundColor="Transparent"
-                                HorizontalOptions="EndAndExpand" />
+                                HorizontalOptions="CenterAndExpand" />
                     </Grid>
                     <BoxView HeightRequest="1"
                              VerticalOptions="Center"

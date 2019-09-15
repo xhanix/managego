@@ -10,6 +10,16 @@
         <local:FilterFieldStringToColor x:Key="FilterFieldStringToColor" />
     </ContentView.Resources>
     <ScrollView>
+        <ScrollView.InputTransparent>
+            <OnPlatform x:TypeArguments="x:Boolean">
+                <OnPlatform.Platforms>
+                    <On Platform="iOS"
+                        Value="False" />
+                    <On Platform="Android"
+                        Value="True" />
+                </OnPlatform.Platforms>
+            </OnPlatform>
+        </ScrollView.InputTransparent>
         <StackLayout Spacing="0">
             <StackLayout Padding="21,17,21,17"
                          Spacing="0">
@@ -92,7 +102,7 @@
                                  Grid.Column="2">
                         <Image Grid.Column="2"
                                Grid.Row="0"
-                               VerticalOptions="CenterAndExpand"
+                               VerticalOptions="Start"
                                HorizontalOptions="EndAndExpand"
                                Source="chevron_right.png">
 
@@ -155,7 +165,7 @@
                             </ListView.ItemTemplate>
                         </controls:NestedListView>
                     </StackLayout>
-                    <Image VerticalOptions="CenterAndExpand"
+                    <Image VerticalOptions="Start"
                            Grid.Column="2"
                            HorizontalOptions="EndAndExpand"
                            Source="chevron_right.png" />

@@ -161,6 +161,7 @@
                                          ItemAppearing="Handle_ItemAppearing"
                                          SeparatorVisibility="None"
                                          Margin="22,18,22,18">
+
                     <x:Arguments>
                         <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
                     </x:Arguments>
