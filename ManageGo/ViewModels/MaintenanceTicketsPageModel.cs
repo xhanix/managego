@@ -511,7 +511,6 @@ namespace ManageGo
                     IsHighPriorityFilterSelected = false;
                     SelectedOpenTicketsFilter = true;
                     SelectedClosedTicketsFilter = false;
-
                     tcs?.SetResult(true);
                 }
                 return new FreshAwaitCommand(execute);
