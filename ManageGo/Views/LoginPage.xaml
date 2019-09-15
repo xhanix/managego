@@ -33,6 +33,7 @@
                            FontSize="Small"
                            HorizontalOptions="CenterAndExpand" />
                     <local:CustomEntry Placeholder="Enter your email"
+                                       AutomationId="email_entry"
                                        Text="{Binding UserEmail}" />
                     <BoxView HeightRequest="1"
                              Margin="0,-4,0,0"
@@ -43,6 +44,7 @@
                            FontSize="Small"
                            HorizontalOptions="CenterAndExpand" />
                     <local:CustomEntry Placeholder="Password"
+                                       AutomationId="password_entry"
                                        Text="{Binding UserPassword}"
                                        IsPassword="true" />
                     <BoxView HeightRequest="1"
