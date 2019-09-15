@@ -36,7 +36,7 @@
         <AndroidUseSharedRuntime>true</AndroidUseSharedRuntime>
         <AndroidSupportedAbis>x86_64</AndroidSupportedAbis>
         <AndroidUseAapt2>false</AndroidUseAapt2>
-<RunCodeAnalysis>true</RunCodeAnalysis>    </PropertyGroup>
+</PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
         <DebugType></DebugType>
         <Optimize>true</Optimize>
@@ -50,7 +50,7 @@
         <AndroidSupportedAbis>armeabi-v7a;arm64-v8a</AndroidSupportedAbis>
         <AndroidEnableMultiDex>true</AndroidEnableMultiDex>
         <AndroidLinkMode>SdkOnly</AndroidLinkMode>
-<RunCodeAnalysis>true</RunCodeAnalysis>    </PropertyGroup>
+</PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Xamarin.Android.Support.Design" Version="28.0.0.1" />
         <PackageReference Include="Xamarin.Android.Support.v7.AppCompat" Version="28.0.0.1" />
