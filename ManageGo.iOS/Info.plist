@@ -39,11 +39,11 @@
 	<key>NSCalendarsUsageDescription</key>
 	<string>Needs Calendar Permission</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Needs Camera Permission</string>
+	<string>This app uses the camera to capture photos and videos for the maintenance ticket attachments</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app needs access to photos.</string>
+	<string>This app uses your photo library to attach photos to maintenance tickets</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>This app needs access to microphone.</string>
+	<string>This app uses the microphone  to capture audio for the maintenance ticket attachments</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>This app needs access to the photo gallery.</string>
 	<key>UIAppFonts</key>
@@ -59,7 +59,9 @@
 	<key>NSFaceIDUsageDescription</key>
 	<string>ManageGO needs Face ID to log in</string>
 	<key>CFBundleVersion</key>
-	<string>1.26</string>
+
+	<string>1.27</string>
+
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>ManageGo needs access to location to function.</string>
 	<key>NSLocationWhenInUseUsageDescription </key>
@@ -73,6 +75,8 @@
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>ManageGo needs access to location to function as intended.</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0.21</string>
+
+	<string>1.0.22</string>
+
 </dict>
 </plist>

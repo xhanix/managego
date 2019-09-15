@@ -80,7 +80,7 @@ namespace ManageGo.Models
         {
             get
             {
-                return Payments != null ? Payments.Count * 80 : 0;
+                return Payments != null ? Payments.Count * 85 : 0;
             }
         }
     }
