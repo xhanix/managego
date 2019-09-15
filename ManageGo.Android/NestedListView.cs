@@ -24,7 +24,6 @@ namespace ManageGo.Droid
             base.OnElementChanged(e);
             if (e.NewElement != null && Control != null)
             {
-
                 Control.NestedScrollingEnabled = true;
                 Control.VerticalScrollBarEnabled = false;
                 Control.SetFriction(ViewConfiguration.ScrollFriction * 1.5f);

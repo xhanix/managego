@@ -18,12 +18,11 @@ namespace ManageGo.Droid
         protected override void OnElementChanged(ElementChangedEventArgs<ListView> e)
         {
             base.OnElementChanged(e);
-            if (e.NewElement != null)
+            if (e.NewElement != null && Control != null)
             {
-                var listView = this.Control as Android.Widget.ListView;
-                listView.NestedScrollingEnabled = false;
-                listView.VerticalScrollBarEnabled = false;
-                // listView.SetFriction(ViewConfiguration.ScrollFriction * 1.5f);
+                Control.NestedScrollingEnabled = false;
+                Control.VerticalScrollBarEnabled = false;
+                Control.SetFriction(ViewConfiguration.ScrollFriction * 1.5f);
             }
         }
 

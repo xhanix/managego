@@ -76,12 +76,8 @@ namespace ManageGo.Models
             }
         }
         [JsonIgnore]
-        public double PaymentsListHeight
-        {
-            get
-            {
-                return Payments != null ? Payments.Count * 85 : 0;
-            }
-        }
+        public double PaymentsListHeight => Payments != null ? Payments.Count * 85 : 0;
+
+
     }
 }

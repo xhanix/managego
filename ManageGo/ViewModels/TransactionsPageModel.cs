@@ -155,8 +155,8 @@ namespace ManageGo
                     {
                         ParameterItem = new TransactionsRequestItem
                         {
-                            DateFrom = DateRange.StartDate,
-                            DateTo = DateRange.EndDate
+                            DateFrom = DateRange?.StartDate,
+                            DateTo = DateRange?.EndDate
                         };
                     }
                     if (refreshData)

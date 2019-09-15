@@ -9,6 +9,8 @@ namespace ManageGo
 {
     public class CustomEntryRenderer : EntryRenderer
     {
+        Drawable bgColor;
+
         public CustomEntryRenderer(Context context) : base(context)
         {
 
@@ -17,15 +19,19 @@ namespace ManageGo
         protected override void OnElementChanged(ElementChangedEventArgs<Entry> e)
         {
             base.OnElementChanged(e);
-            if (e.OldElement == null)
+            if (e.NewElement != null && Control != null)
             {
-                //Control.Background = null;
+                bgColor = new ColorDrawable(Android.Graphics.Color.Transparent);
+                Control?.SetBackground(bgColor);
+                Control?.SetBackgroundColor(Android.Graphics.Color.Transparent);
+                if (!Control.Enabled)
+                    Control?.SetTextColor(Android.Graphics.Color.Gray);
             }
 
-            Control?.SetBackground(new ColorDrawable(Android.Graphics.Color.Transparent));
-            Control?.SetBackgroundColor(Android.Graphics.Color.Transparent);
-            if (Control != null && !Control.Enabled)
-                Control?.SetTextColor(Android.Graphics.Color.Gray);
+            if (e.OldElement != null)
+            {
+                bgColor.Dispose();
+            }
         }
     }
 }
