@@ -224,13 +224,14 @@
                                                      Spacing="8"
                                                      HorizontalOptions="FillAndExpand"
                                                      VerticalOptions="CenterAndExpand">
-                                            <Grid>
+                                            <Grid ColumnSpacing="0">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="Auto" />
                                                     <ColumnDefinition Width="*" />
                                                 </Grid.ColumnDefinitions>
                                                 <Image Grid.Column="0"
                                                        Source="awaiting_response.png"
+                                                       WidthRequest="18"
                                                        VerticalOptions="CenterAndExpand"
                                                        IsVisible="{Binding NeedReply}" />
                                                 <Label Grid.Column="1"
@@ -295,7 +296,8 @@
                                                     BackgroundColor="Transparent" />
                                         </StackLayout>
                                         <StackLayout Grid.Column="2"
-                                                     Padding="8,8,4,8"
+                                                     Margin="0,-8,0,0"
+                                                     Padding="8,17,8,17"
                                                      VerticalOptions="StartAndExpand">
                                             <Image Source="chevron_down.png"
                                                    Rotation="0"

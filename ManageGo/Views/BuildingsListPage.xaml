@@ -85,6 +85,7 @@
                                                          Spacing="4">
                                                 <StackLayout Orientation="Horizontal"
                                                              VerticalOptions="CenterAndExpand"
+                                                             Padding="2,8,2,8"
                                                              Spacing="2">
                                                     <Label Text="Units:"
                                                            FontSize="Small"
@@ -101,6 +102,7 @@
                                                          BackgroundColor="{StaticResource Grey-Light-2}"
                                                          VerticalOptions="Fill" />
                                                 <StackLayout Orientation="Horizontal"
+                                                              Padding="2,8,2,8"
                                                              VerticalOptions="CenterAndExpand"
                                                              Spacing="2">
                                                     <Label Text="Tenants:"
@@ -118,6 +120,7 @@
                                                          BackgroundColor="{StaticResource Grey-Light-2}"
                                                          VerticalOptions="Fill" />
                                                 <StackLayout Orientation="Horizontal"
+                                                              Padding="2,8,2,8"
                                                              VerticalOptions="CenterAndExpand"
                                                              Spacing="2">
                                                     <Label Text="Open tickets:"

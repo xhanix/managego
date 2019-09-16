@@ -21,7 +21,7 @@ using Android.Gms.Common;
 
 namespace ManageGo.Droid
 {
-    [Activity(Label = "ManageGo", Icon = "@mipmap/ic_launcher", RoundIcon = "@mipmap/ic_launcher_round", Theme = "@style/MainTheme", ScreenOrientation = Android.Content.PM.ScreenOrientation.Portrait, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+    [Activity(Label = "ManageGo", Icon = "@mipmap/ic_launcher", LaunchMode = LaunchMode.SingleTask, RoundIcon = "@mipmap/ic_launcher_round", Theme = "@style/MainTheme", ScreenOrientation = Android.Content.PM.ScreenOrientation.Portrait, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
         // Field, properties, and method for Video Picker
@@ -36,17 +36,18 @@ namespace ManageGo.Droid
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
+            base.OnCreate(savedInstanceState);
+            global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
+            LoadApplication(new App());
             TabLayoutResource = Resource.Layout.Tabbar;
             ToolbarResource = Resource.Layout.Toolbar;
             Current = this;
-            base.OnCreate(savedInstanceState);
-            global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
             CrossCurrentActivity.Current.Init(this, savedInstanceState);
-
             var result = IsPlayServicesAvailable();
             CreateNotificationChannel();
-            LoadApplication(new App());
         }
+
+    
 
         protected override async void OnNewIntent(Intent intent)
         {

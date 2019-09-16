@@ -978,6 +978,7 @@ namespace ManageGo
                 TicketDetails = ticketDetails as TicketDetails;
                 SetupView(TicketDetails, _ticket as MaintenanceTicket);
             }
+            Data = null;
         }
 
         private void SetupView(TicketDetails ticketDetails, MaintenanceTicket ticket)

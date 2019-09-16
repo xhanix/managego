@@ -160,6 +160,7 @@ namespace ManageGo
                     MainPage = __page;
                     MasterDetailNav = null;
                     MasterDetailContainer = null;
+                    UserName = null;
                     ((LoginPageModel)__page.BindingContext).OnSuccessfulLogin += Handle_OnSuccessfulLogin;
                 };
                 page.Title = "Menu";
@@ -198,6 +199,7 @@ namespace ManageGo
         protected override void OnStart()
         {
             // Handle when your app starts
+            base.OnStart();
             AppCenter.Start("android=817faa27-5418-4f2b-b55a-0013186c5482;" +
                   "ios=575732ee-7291-4330-98b1-8f1c79713205;",
                   typeof(Analytics), typeof(Crashes));
@@ -207,12 +209,14 @@ namespace ManageGo
         protected override void OnSleep()
         {
             // Handle when your app sleeps
+            base.OnSleep();
 
         }
 
         protected override void OnResume()
         {
             // Handle when your app resumes
+            base.OnResume();
             MGDataAccessLibrary.DataAccess.WebAPI.NotifyAppResumed(this);
             OnAppStarted?.Invoke(this, EventArgs.Empty);
         }
