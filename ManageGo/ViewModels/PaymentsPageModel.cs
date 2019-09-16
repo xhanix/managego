@@ -187,33 +187,32 @@ namespace ManageGo
             }
         }
 
-        protected override void ViewIsAppearing(object sender, EventArgs e)
+        protected override async void ViewIsAppearing(object sender, EventArgs e)
         {
             base.ViewIsAppearing(sender, e);
             Buildings = App.Buildings;
             SelectedBuildingsString = "Select";
             SelectedUnitString = "Select";
             SelectedTenantString = "Select";
-            if (Buildings != null)
+            await SetViewForCurrentFilter();
+            
+        }
+
+
+        private async Task SetViewForCurrentFilter()
+        {
+            Buildings?.ForEach((b) => b.IsSelected = CurrentFilter != null && CurrentFilter.Buildings != null && CurrentFilter.Buildings.Contains(b.BuildingId));
+            Units?.ForEach((b) => b.IsSelected = CurrentFilter != null && CurrentFilter.Units != null && CurrentFilter.Units.Contains(b.UnitId));
+            Tenants?.ForEach((b) => b.IsSelected = CurrentFilter != null && CurrentFilter.Tenants != null && CurrentFilter.Tenants.Contains(b.TenantID));
+            await SetupFilterViewForSelectedBuildings();
+            SetupFilterViewForSelectedTenants();
+            await SetupFilterViewForSelectedUnits();
+            if (CurrentFilter != null)
             {
-                foreach (var b in Buildings)
-                {
-                    b.IsSelected = false;
-                }
-            }
-            if (Units != null)
-            {
-                foreach (var b in Units)
-                {
-                    b.IsSelected = false;
-                }
-            }
-            if (Tenants != null)
-            {
-                foreach (var b in Tenants)
-                {
-                    b.IsSelected = false;
-                }
+                FilterDueDate = new DateRange(CurrentFilter.DateFrom, CurrentFilter.DateTo);
+                FilteredAmountRange = new Tuple<int?, int?>(CurrentFilter.AmountFrom, CurrentFilter.AmountTo);
+                SelectedAmountRange = new Tuple<int?, int?>(CurrentFilter.AmountFrom, CurrentFilter.AmountTo);
+                FilterKeywords = CurrentFilter.Search;
             }
         }
 
@@ -222,6 +221,7 @@ namespace ManageGo
         internal override async Task LoadData(bool refreshData = false, bool FetchNextPage = false)
         {
             NothingFetched = false;
+           
             try
             {
                 if (refreshData && ParameterItem != null)
@@ -230,13 +230,8 @@ namespace ManageGo
                     ParameterItem.Page = 1;
                     ParameterItem.DateTo = FilterDueDate.EndDate ?? FilterDueDate.StartDate.AddDays(1);
                     var fetchedTickets = await DataAccess.GetPaymentsAsync(ParameterItem);
-                    if (fetchedTickets != null)
-                        FetchedPayments = new ObservableCollection<Payment>(fetchedTickets);
-                    else
-                        FetchedPayments = new ObservableCollection<Payment>();
+                    FetchedPayments = fetchedTickets != null ? new ObservableCollection<Payment>(fetchedTickets) : new ObservableCollection<Payment>();
                     CanGetMorePages = FetchedPayments != null && FetchedPayments.Count == ParameterItem.PageSize;
-
-
                 }
                 else if (FetchNextPage && ParameterItem != null)
                 {
@@ -251,25 +246,17 @@ namespace ManageGo
                 else
                 {
                     HasLoaded = false;
-                    ParameterItem = new PaymentsRequestItem
+                    if (ParameterItem is null || refreshData)
                     {
-                        DateFrom = FilterDueDate.StartDate
-                    };
-                    ParameterItem.DateTo = FilterDueDate.EndDate;
+                        ParameterItem = new PaymentsRequestItem
+                        {
+                            DateFrom = FilterDueDate.StartDate
+                        };
+                        ParameterItem.DateTo = FilterDueDate.EndDate;
+                    }
                     var fetchedTickets = await DataAccess.GetPaymentsAsync(ParameterItem);
-                    if (fetchedTickets != null)
-                    {
-                        FetchedPayments = new ObservableCollection<Payment>(fetchedTickets);
-                    }
-                    else
-                        FetchedPayments = new ObservableCollection<Payment>();
-                    foreach (var payment in fetchedPayments)
-                    {
-                        Console.WriteLine(payment.TransactionDate);
-                    }
-
+                    FetchedPayments = fetchedTickets != null ? new ObservableCollection<Payment>(fetchedTickets) : new ObservableCollection<Payment>();
                     CanGetMorePages = FetchedPayments != null && FetchedPayments.Count == ParameterItem.PageSize;
-
                 }
                 if (CanGetMorePages)
                 {
@@ -290,10 +277,7 @@ namespace ManageGo
             finally
             {
                 HasLoaded = true;
-                if (FetchedPayments is null || !FetchedPayments.Any())
-                {
-                    NothingFetched = true;
-                }
+                NothingFetched = FetchedPayments is null || !FetchedPayments.Any();
             }
         }
 
@@ -476,20 +460,8 @@ namespace ManageGo
                     {
                         building.IsSelected = !building.IsSelected;
                         await SetupFilterViewForSelectedBuildings();
-                        if (Units != null && Units.Any(u => u.IsSelected))
-                        {
-                            foreach (var u in Units.Where(u => u.IsSelected))
-                            {
-                                u.IsSelected = false;
-                            }
-                        }
-                        if (Tenants != null)
-                        {
-                            foreach (var b in Tenants)
-                            {
-                                b.IsSelected = false;
-                            }
-                        }
+                        Units?.ForEach(u => u.IsSelected = false);
+                        Tenants?.ForEach(t => t.IsSelected = false);
                         FilterUnitsExpanded = false;
                         FilterTenantsExpanded = false;
                         SelectedUnitString = "Select";
@@ -524,13 +496,7 @@ namespace ManageGo
                     }
                     unit.IsSelected = !unit.IsSelected;
                     await SetupFilterViewForSelectedUnits();
-                    if (Tenants != null && Tenants.Any(u => u.IsSelected))
-                    {
-                        foreach (var u in Tenants.Where(u => u.IsSelected))
-                        {
-                            u.IsSelected = false;
-                        }
-                    }
+                    Tenants?.ForEach(t => t.IsSelected = false);
                     tcs?.SetResult(true);
                 }
                 return new FreshAwaitCommand(execute);
@@ -552,28 +518,15 @@ namespace ManageGo
             }
         }
 
-        public FreshAwaitCommand OnDismissPopupTapped
-        {
-            get
-            {
-                return new FreshAwaitCommand((tcs) =>
+        public FreshAwaitCommand OnDismissPopupTapped => new FreshAwaitCommand((tcs) =>
                 {
                     RangeSelectorIsShown = false;
-                    if (FilteredAmountRange != null)
-                        SelectedAmountRange = FilteredAmountRange;
-                    else
-                        SelectedAmountRange = new Tuple<int?, int?>(0, 5000);
+                    SelectedAmountRange = FilteredAmountRange != null ? FilteredAmountRange : new Tuple<int?, int?>(0, 5000);
                     RangePickerView = null;
                     tcs?.SetResult(true);
                 });
-            }
-        }
-
-        public FreshAwaitCommand SetFilterStatus
-        {
-            get
-            {
-                return new FreshAwaitCommand((parameter, tcs) =>
+      
+        public FreshAwaitCommand SetFilterStatus => new FreshAwaitCommand((parameter, tcs) =>
                 {
                     var status = (string)parameter;
                     switch (status)
@@ -595,14 +548,9 @@ namespace ManageGo
                     }
                     tcs?.SetResult(true);
                 });
-            }
-        }
+        
 
-        public FreshAwaitCommand OnApplyFilterRangeButtonTapped
-        {
-            get
-            {
-                return new FreshAwaitCommand((par, tcs) =>
+        public FreshAwaitCommand OnApplyFilterRangeButtonTapped => new FreshAwaitCommand((par, tcs) =>
                 {
                     FilteredAmountRange = new Tuple<int?, int?>(SelectedAmountRange.Item1, SelectedAmountRange.Item2);
 
@@ -610,8 +558,6 @@ namespace ManageGo
                     RangePickerView = null;
                     tcs?.SetResult(true);
                 });
-            }
-        }
 
         public FreshAwaitCommand OnApplyFiltersTapped
         {
@@ -653,7 +599,7 @@ namespace ManageGo
                             ParameterItem.PaymentStatuses = statuses;
                         ParameterItem.DateFrom = FilterDueDate.StartDate;
                         ParameterItem.DateTo = FilterDueDate.EndDate;
-                        CurrentFilter = ParameterItem;
+                        CurrentFilter = ParameterItem?.Clone();
                         await LoadData(refreshData: true, FetchNextPage: false);
 
                     }
@@ -683,46 +629,7 @@ namespace ManageGo
                     PopContentView = null;
                     FilterSelectViewIsShown = false;
                     //set previous filter values if exists
-                    if (CurrentFilter != null)
-                    {
-                        if (Buildings != null && CurrentFilter.Buildings != null)
-                        {
-                            foreach (var b in Buildings)
-                            {
-                                if (CurrentFilter.Buildings.Contains(b.BuildingId))
-                                    b.IsSelected = true;
-                                else
-                                    b.IsSelected = false;
-                            }
-                        }
-                        if (Units != null && CurrentFilter.Units != null)
-                        {
-                            foreach (var u in Units)
-                            {
-                                if (CurrentFilter.Units.Contains(u.UnitId))
-                                    u.IsSelected = true;
-                                else
-                                    u.IsSelected = false;
-                            }
-                        }
-                        if (Tenants != null && CurrentFilter.Tenants != null)
-                        {
-                            foreach (var t in Tenants)
-                            {
-                                if (CurrentFilter.Tenants.Contains(t.TenantID))
-                                    t.IsSelected = true;
-                                else
-                                    t.IsSelected = false;
-                            }
-                        }
-                        await SetupFilterViewForSelectedBuildings();
-                        await SetupFilterViewForSelectedUnits();
-                        SetupFilterViewForSelectedTenants();
-                        FilterDueDate = new DateRange(CurrentFilter.DateFrom, CurrentFilter.DateTo);
-                        FilteredAmountRange = new Tuple<int?, int?>(CurrentFilter.AmountFrom, CurrentFilter.AmountTo);
-                        SelectedAmountRange = new Tuple<int?, int?>(CurrentFilter.AmountFrom, CurrentFilter.AmountTo);
-                        FilterKeywords = CurrentFilter.Search;
-                    }
+                    await SetViewForCurrentFilter();
                     tcs?.SetResult(true);
                 }
                 return new FreshAwaitCommand(execute);
@@ -737,27 +644,9 @@ namespace ManageGo
                 {
                     PopContentView = null;
                     FilterSelectViewIsShown = false;
-                    if (Buildings != null)
-                    {
-                        foreach (var b in Buildings)
-                        {
-                            b.IsSelected = false;
-                        }
-                    }
-                    if (Units != null)
-                    {
-                        foreach (var b in Units)
-                        {
-                            b.IsSelected = false;
-                        }
-                    }
-                    if (Tenants != null)
-                    {
-                        foreach (var b in Tenants)
-                        {
-                            b.IsSelected = false;
-                        }
-                    }
+                    Buildings?.ForEach(t => t.IsSelected = false);
+                    Units?.ForEach(t => t.IsSelected = false);
+                    Tenants?.ForEach(t => t.IsSelected = false);
                     SelectedReceivedPaymentsFilter = false;
                     SelectedRefundedPaymentsFilter = false;
                     SelectedSentPaymentsFilter = false;

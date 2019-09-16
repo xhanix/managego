@@ -75,7 +75,7 @@ namespace ManageGo
             {
                 return new FreshAwaitCommand((tcs) =>
                 {
-                    Analytics.TrackEvent("Support notification menu tapped");
+                    Analytics.TrackEvent("Notification menu tapped");
 
                     if (!App.MasterDetailNav.Pages.ContainsKey("Notifications"))
                         App.MasterDetailNav.AddPage<NotificationsPageModel>("Notifications");
@@ -92,7 +92,7 @@ namespace ManageGo
             {
                 async void execute(System.Threading.Tasks.TaskCompletionSource<bool> tcs)
                 {
-                    Analytics.TrackEvent("Support maintenance menu tapped");
+                    Analytics.TrackEvent("Tikets menu tapped");
                     if (!App.MasterDetailNav.Pages.ContainsKey("Maintenance Tickets"))
                         App.MasterDetailNav.AddPage<MaintenanceTicketsPageModel>("Maintenance Tickets");
                     if (App.MasterDetailNav.Detail is NavigationPage
@@ -103,6 +103,7 @@ namespace ManageGo
                         model.DateRange = null;
                         model.ParameterItem = null;
                         await model.LoadData(true, true);
+                        
                     }
                     else
                         await App.MasterDetailNav.SwitchSelectedRootPageModel<MaintenanceTicketsPageModel>();

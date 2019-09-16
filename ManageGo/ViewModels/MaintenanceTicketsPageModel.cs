@@ -19,9 +19,9 @@ namespace ManageGo
         DateRange dateRange;
         public TicketRequestItem CurrentFilter { get; private set; }
         public TicketRequestItem ParameterItem { get; set; }
-        [AlsoNotifyFor("NothingFetched")]
+       
         public ObservableCollection<MaintenanceTicket> FetchedTickets { get; set; }
-        public bool NothingFetched => IsLoading == false && (FetchedTickets is null || !FetchedTickets.Any());
+        public bool NothingFetched { get; set; }
 
         public bool ParentIsBuildingPage { get; private set; }
         public List<Building> Buildings { get; private set; }
@@ -198,6 +198,7 @@ namespace ManageGo
 
             try
             {
+                NothingFetched = false;
                 if (FetchNextPage)
                 {
                     if (ParameterItem is null)
@@ -242,8 +243,12 @@ namespace ManageGo
                     if (fetchedTickets != null && fetchedTickets.Any())
                         FetchedTickets = new ObservableCollection<MaintenanceTicket>(fetchedTickets);
                     else
+                    {
                         FetchedTickets = new ObservableCollection<MaintenanceTicket>();
-
+                        NothingFetched = true;
+                    }
+                      
+                    
                     CanGetMorePages = FetchedTickets != null && FetchedTickets.Count == ParameterItem?.PageSize;
 
                     ListIsEnabled = true;
@@ -262,6 +267,7 @@ namespace ManageGo
                     if (!IsLoading)
                         await this.LoadData();
                 }
+                NothingFetched = true;
             }
             finally
             {
@@ -370,6 +376,7 @@ namespace ManageGo
                         var _view = new TicketFilterSelectView(bindingContext: this);
                         CurrentFilter = ParameterItem?.Clone();
                         PopContentView = _view.Content;
+                        RaisePropertyChanged();
                         ListIsEnabled = false;
                     }
                     FilterSelectViewIsShown = !FilterSelectViewIsShown;
@@ -575,6 +582,7 @@ namespace ManageGo
 
                     HasLoaded = false;
                     FetchedTickets = new ObservableCollection<MaintenanceTicket>();
+                    CurrentFilter = ParameterItem?.Clone();
                     await LoadData(false, false);
 
                     HasLoaded = true;
@@ -798,75 +806,26 @@ namespace ManageGo
 
         private void SetViewForCurrentFilter()
         {
-            if (CurrentFilter != null)
-            {
-                if (Buildings != null && CurrentFilter.Buildings != null)
-                {
-                    foreach (var b in Buildings)
-                    {
-                        if (CurrentFilter.Buildings.Contains(b.BuildingId))
-                            b.IsSelected = true;
-                        else
-                            b.IsSelected = false;
-                    }
-                }
-                if (Users != null && CurrentFilter.Assigned != null)
-                {
-                    foreach (var u in Users)
-                    {
-                        if (CurrentFilter.Assigned.Contains(u.UserID))
-                            u.IsSelected = true;
-                        else
-                            u.IsSelected = false;
-                    }
-                }
-                if (Tags != null && CurrentFilter.Tags != null)
-                {
-                    foreach (var t in Tags)
-                    {
-                        if (CurrentFilter.Tags.Contains(t.TagID))
-                            t.IsSelected = true;
-                        else
-                            t.IsSelected = false;
-                    }
-                }
-                if (Categories != null && CurrentFilter.Categories != null)
-                {
-                    foreach (var c in Categories)
-                    {
-                        if (CurrentFilter.Categories.Contains(c.CategoryID))
-                            c.IsSelected = true;
-                        else
-                            c.IsSelected = false;
-                    }
-                }
-
-                if (CurrentFilter.DueDateFrom.HasValue && CurrentFilter.DueDateTo.HasValue)
-                    FilterDueDate = new DateRange(CurrentFilter.DueDateFrom.Value, CurrentFilter.DueDateTo.Value);
-                if (CurrentFilter.Priorities != null)
-                {
-                    IsLowPriorityFilterSelected = CurrentFilter.Priorities.Contains(TicketPriorities.Low);
-                    IsMediumPriorityFilterSelected = CurrentFilter.Priorities.Contains(TicketPriorities.Medium);
-                    IsHighPriorityFilterSelected = CurrentFilter.Priorities.Contains(TicketPriorities.High);
-                }
-
-                if (CurrentFilter.DateFrom.HasValue && CurrentFilter.DateTo.HasValue)
-                    DateRange = new DateRange(CurrentFilter.DateFrom.Value, CurrentFilter.DateTo.Value);
-                else if (CurrentFilter.DateFrom.HasValue && !CurrentFilter.DateTo.HasValue)
-                    DateRange = new DateRange(CurrentFilter.DateFrom.Value);
-                if (CurrentFilter.TicketStatus.HasValue)
-                {
-                    SelectedOpenTicketsFilter = CurrentFilter.TicketStatus.Value == TicketStatus.Open || CurrentFilter.TicketStatus.Value == TicketStatus.All;
-                    SelectedClosedTicketsFilter = CurrentFilter.TicketStatus.Value == TicketStatus.Closed || CurrentFilter.TicketStatus.Value == TicketStatus.All;
-                }
-                else
-                {
-                    SelectedOpenTicketsFilter = false;
-                    SelectedClosedTicketsFilter = false;
-                }
-
-                FilterKeywords = CurrentFilter.Search;
-            }
+            Buildings = App.Buildings;
+            Categories = App.Categories;
+            Tags = App.Tags;
+            Users = App.Users;
+            Buildings?.ForEach((b) => b.IsSelected = CurrentFilter != null && CurrentFilter.Buildings != null && CurrentFilter.Buildings.Contains(b.BuildingId));
+            Users?.ForEach((b) => b.IsSelected = CurrentFilter != null && CurrentFilter.Assigned != null && CurrentFilter.Assigned.Contains(b.UserID));
+            Tags?.ForEach((b) => b.IsSelected = CurrentFilter != null && CurrentFilter.Tags != null && CurrentFilter.Tags.Contains(b.TagID));
+            Categories?.ForEach((b) => b.IsSelected = CurrentFilter != null && CurrentFilter.Categories != null && CurrentFilter.Categories.Contains(b.CategoryID));
+            FilterDueDate = CurrentFilter !=  null && CurrentFilter.DueDateFrom.HasValue && CurrentFilter.DueDateTo.HasValue ?
+                new DateRange(CurrentFilter.DueDateFrom.Value, CurrentFilter.DueDateTo.Value) : null;
+            DateRange = CurrentFilter != null && CurrentFilter.DateFrom.HasValue && CurrentFilter.DateTo.HasValue ?
+                new DateRange(CurrentFilter.DateFrom.Value, CurrentFilter.DateTo.Value) : null;
+            FilterKeywords = CurrentFilter?.Search;
+            IsLowPriorityFilterSelected = CurrentFilter != null && CurrentFilter.Priorities != null && CurrentFilter.Priorities.Contains(TicketPriorities.Low);
+            IsMediumPriorityFilterSelected = CurrentFilter != null && CurrentFilter.Priorities != null && CurrentFilter.Priorities.Contains(TicketPriorities.Medium);
+            IsHighPriorityFilterSelected = CurrentFilter != null && CurrentFilter.Priorities != null && CurrentFilter.Priorities.Contains(TicketPriorities.High);
+            SelectedOpenTicketsFilter = CurrentFilter != null && CurrentFilter.TicketStatus.HasValue && (CurrentFilter.TicketStatus.Value == TicketStatus.Open || CurrentFilter.TicketStatus.Value == TicketStatus.All);
+            SelectedClosedTicketsFilter = CurrentFilter != null && CurrentFilter.TicketStatus.HasValue && (CurrentFilter.TicketStatus.Value == TicketStatus.Closed || CurrentFilter.TicketStatus.Value == TicketStatus.All);
+            if (CurrentFilter != null && CurrentFilter.DateFrom.HasValue && !CurrentFilter.DateTo.HasValue)
+                DateRange = new DateRange(CurrentFilter.DateFrom.Value);
         }
 
         protected override void ViewIsDisappearing(object sender, EventArgs e)
@@ -892,10 +851,7 @@ namespace ManageGo
         public override void Init(object initData)
         {
             base.Init(initData);
-            Buildings = App.Buildings;
-            Categories = App.Categories;
-            Tags = App.Tags;
-            Users = App.Users;
+          
             ParentIsBuildingPage = false;
             if (initData is int buildingId)
             {
@@ -943,21 +899,6 @@ namespace ManageGo
 
             }
         }
-        private async Task ShowNoInternetView()
-        {
-            APIhasFailed = true;
-            HasLoaded = false;
-            ErrorText = Connectivity.NetworkAccess != NetworkAccess.Internet ?
-                                    "No Internet Connection" : "Host Unreachable";
-            await Task.Run(() =>
-            {
-                while (Connectivity.NetworkAccess != NetworkAccess.Internet
-                       && !cancellationTokenSource.IsCancellationRequested)
-                {
-                    Thread.Sleep(1000);
-                }
-            });
-            await LoadData();
-        }
+       
     }
 }

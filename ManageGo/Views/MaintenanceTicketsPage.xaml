@@ -226,7 +226,7 @@
                                                      VerticalOptions="CenterAndExpand">
                                             <Grid ColumnSpacing="0">
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="18" />
                                                     <ColumnDefinition Width="*" />
                                                 </Grid.ColumnDefinitions>
                                                 <Image Grid.Column="0"
@@ -238,11 +238,11 @@
                                                        Text="{Binding TicketSubject}"
                                                        VerticalOptions="CenterAndExpand"
                                                        TextColor="{StaticResource Grey-Mid-1}"
-                                                       FontSize="Medium"
+                                                       FontSize="Small"
                                                        FontAttributes="Bold"
                                                        LineBreakMode="TailTruncation" />
                                             </Grid>
-                                            <StackLayout Orientation="Horizontal">
+                                            <StackLayout Orientation="Horizontal" Margin="18,0,0,0">
                                                 <Label Text="{Binding FormattedDate}"
                                                        FontSize="Small"
                                                        TextColor="{StaticResource Grey-Light-1}"
@@ -263,7 +263,7 @@
                                             <BoxView BackgroundColor="{StaticResource Grey-Light-2}"
                                                      HeightRequest="1"
                                                      HorizontalOptions="FillAndExpand" />
-                                            <StackLayout Margin="0">
+                                            <StackLayout Margin="18,0,0,0">
                                                 <Image Grid.Column="0"
                                                        Source="profile_grey.png"
                                                        VerticalOptions="Start"
@@ -276,6 +276,7 @@
                                                        TextColor="{StaticResource Grey-Light-1}" />
                                             </StackLayout>
                                             <StackLayout Orientation="Horizontal"
+                                                         Margin="18,0,0,0"
                                                          VerticalOptions="StartAndExpand"
                                                          IsVisible="{Binding FirstCommentShown}">
                                                 <Image Source="chat_grey.png"
@@ -288,6 +289,7 @@
                                                        TextColor="{StaticResource Grey-Light-1}" />
                                             </StackLayout>
                                             <Button Text="View ticket"
+                                                    Margin="18,0,0,0"
                                                     IsVisible="{Binding FirstCommentShown}"
                                                     InputTransparent="true"
                                                     HorizontalOptions="StartAndExpand"

@@ -18,7 +18,5 @@ namespace ManageGo
         {
             this.BindingContext = bindingContext;
         }
-
-
     }
 }
