@@ -27,6 +27,11 @@ namespace ManageGo
             OnTransactionAppeared?.Invoke(this, (Models.BankTransaction)e.Item);
         }
 
+        protected override bool OnBackButtonPressed()
+        {
+            App.MasterDetailNav.SwitchSelectedRootPageModel<WelcomePageModel>();
+            return true;
+        }
 
 
         public void DataLoaded()

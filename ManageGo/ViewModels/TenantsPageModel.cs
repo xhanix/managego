@@ -314,6 +314,11 @@ namespace ManageGo
             base.ViewIsDisappearing(sender, e);
             if (App.MasterDetailNav != null)
                 App.MasterDetailNav.IsGestureEnabled = true;
+            if (FilterSelectViewIsShown)
+            {
+                FilterSelectViewIsShown = false;
+                PopContentView = null;
+            }
             if (Buildings != null)
             {
                 foreach (Building building in Buildings.Where(t => t.IsSelected))

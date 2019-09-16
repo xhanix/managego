@@ -27,6 +27,13 @@ namespace ManageGo
             CalContainer.Content = cal;
         }
 
+        protected override bool OnBackButtonPressed()
+        {
+            
+            App.MasterDetailNav.SwitchSelectedRootPageModel<WelcomePageModel>();
+            return true;
+        }
+
         public void DataLoaded()
         {
             if (this.BindingContext != null)

@@ -22,6 +22,8 @@ namespace ManageGo
         [AlsoNotifyFor("NothingFetched")]
         public ObservableCollection<MaintenanceTicket> FetchedTickets { get; set; }
         public bool NothingFetched => IsLoading == false && (FetchedTickets is null || !FetchedTickets.Any());
+
+        public bool ParentIsBuildingPage { get; private set; }
         public List<Building> Buildings { get; private set; }
         [AlsoNotifyFor("SelectedCategoriesString")]
         public List<Categories> Categories { get; private set; }
@@ -870,6 +872,12 @@ namespace ManageGo
         protected override void ViewIsDisappearing(object sender, EventArgs e)
         {
             base.ViewIsDisappearing(sender, e);
+            if (FilterSelectViewIsShown)
+            {
+                PopContentView = null;
+                ListIsEnabled = true;
+                FilterSelectViewIsShown = false;
+            }
             if (App.MasterDetailNav != null)
                 App.MasterDetailNav.IsGestureEnabled = true;
 
@@ -888,9 +896,11 @@ namespace ManageGo
             Categories = App.Categories;
             Tags = App.Tags;
             Users = App.Users;
+            ParentIsBuildingPage = false;
             if (initData is int buildingId)
             {
                 //view requested from Buildings view
+                ParentIsBuildingPage = true;
                 Buildings = App.Buildings;
                 Categories = App.Categories;
                 Tags = App.Tags;

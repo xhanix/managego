@@ -24,12 +24,18 @@ namespace ManageGo
         protected override bool OnBackButtonPressed()
         {
             var model = (MaintenanceTicketsPageModel)BindingContext;
+
             if (model.PopContentView != null)
             {
                 model.PopContentView = null;
                 model.ListIsEnabled = true;
                 model.CalendarIsShown = false;
                 model.FilterSelectViewIsShown = false;
+                return true;
+            }
+            if (model.ParentIsBuildingPage)
+            {
+                model.CoreMethods.PopToRoot(false);
                 return true;
             }
             App.MasterDetailNav.SwitchSelectedRootPageModel<WelcomePageModel>();

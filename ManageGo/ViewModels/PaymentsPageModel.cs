@@ -297,6 +297,18 @@ namespace ManageGo
             }
         }
 
+        protected override void ViewIsDisappearing(object sender, EventArgs e)
+        {
+            base.ViewIsDisappearing(sender, e);
+            if (FilterSelectViewIsShown)
+            {
+                FilterSelectViewIsShown = false;
+                PopContentView = null;
+                if (App.MasterDetailNav != null)
+                    App.MasterDetailNav.IsGestureEnabled = true;
+            }
+        }
+
         public override void Init(object initData)
         {
             base.Init(initData);
