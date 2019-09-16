@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="1.0.20" package="com.ManageGo.ManageGo" android:versionCode="175">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="1.0.21" package="com.ManageGo.ManageGo" android:versionCode="176">
 	<uses-sdk android:minSdkVersion="23" android:targetSdkVersion="28" />
 	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
