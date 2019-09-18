@@ -123,7 +123,6 @@
         <None Include="Properties\AndroidManifest.xml" />
         <None Include="packages.config" />
         <None Include="google-services-1.json">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
     </ItemGroup>
     <ItemGroup>
@@ -496,7 +495,6 @@
     </ItemGroup>
     <ItemGroup>
       <GoogleServicesJson Include="google-services.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </GoogleServicesJson>
     </ItemGroup>
     <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
