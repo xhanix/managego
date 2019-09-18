@@ -20,15 +20,22 @@ namespace ManageGo.Droid
     public class MyFirebaseMessagingService : FirebaseMessagingService
     {
         const string TAG = "MyFirebaseMsgService";
+
+        public override void OnNewToken(string p0)
+        {
+            Analytics.TrackEvent($"FCM Token: {p0}");
+            base.OnNewToken(p0);
+        }
+
         public override void OnMessageReceived(RemoteMessage message)
         {
             //notification type is in Message.Notification.ClickAction
             //ObjectId is in Message.Data.NotificationObject
-
             var notification = message.GetNotification();
+            Analytics.TrackEvent($"FCM.notification.body: {notification.Body}, FCM.notification.ClickAction: {notification.ClickAction}");
             //NotificationObject was the id of the item to show. Need to add this.
             Log.Debug(TAG, "From: " + message.From);
-            Log.Debug(TAG, "Notification Message Body: " + message.GetNotification().Body);
+            Log.Debug(TAG, "Notification Message Body: " + notification.Body);
             if (message.Data.TryGetValue("NotificationObject", out string notificationObject)
                 && int.TryParse(notificationObject, out int objectId)
                 && Enum.TryParse(notification.ClickAction, out Models.PushNotificationType _type))

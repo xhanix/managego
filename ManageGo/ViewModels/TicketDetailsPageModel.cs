@@ -341,6 +341,12 @@ namespace ManageGo
                     }
                     else
                     {
+                        AccessGrantIsExpanded = false;
+                        PriorityOptionsVisible = false;
+                        DueDateCalendarView = null;
+                        AssignedOptionsVisible = false;
+                        CategoryOptionsVisible = false;
+                        TagOptionsVisible = false;
                         PopContentView = new Views.EditTicketDetailsView(this);
                         ReplyBoxIsVisible = false;
                         WorkOrderActionSheetIsVisible = false;
@@ -361,6 +367,11 @@ namespace ManageGo
                 return new FreshAwaitCommand((tcs) =>
                 {
                     PriorityOptionsVisible = !PriorityOptionsVisible;
+                    AccessGrantIsExpanded = false;
+                    DueDateCalendarView = null;
+                    AssignedOptionsVisible = false;
+                    TagOptionsVisible = false;
+                    CategoryOptionsVisible = false;
                     tcs?.SetResult(true);
                 });
             }
@@ -372,10 +383,16 @@ namespace ManageGo
             {
                 return new FreshAwaitCommand((tcs) =>
                 {
+                    AccessGrantIsExpanded = false;
+                    PriorityOptionsVisible = false;
+                    AssignedOptionsVisible = false;
+                    TagOptionsVisible = false;
+                    CategoryOptionsVisible = false;
                     if (DueDateCalendarView != null)
                         DueDateCalendarView = null;
                     else
                     {
+
                         var cal = new Controls.CalendarView();
                         cal.HeightRequest = 240;
                         DueDateCalendarView = cal;
@@ -397,6 +414,11 @@ namespace ManageGo
             {
                 return new FreshAwaitCommand((tcs) =>
                 {
+                    AccessGrantIsExpanded = false;
+                    PriorityOptionsVisible = false;
+                    DueDateCalendarView = null;
+                    AssignedOptionsVisible = false;
+                    TagOptionsVisible = false;
                     CategoryOptionsVisible = !CategoryOptionsVisible;
                     tcs?.SetResult(true);
                 });
@@ -409,6 +431,11 @@ namespace ManageGo
             {
                 return new FreshAwaitCommand((tcs) =>
                 {
+                    AccessGrantIsExpanded = false;
+                    PriorityOptionsVisible = false;
+                    DueDateCalendarView = null;
+                    TagOptionsVisible = false;
+                    CategoryOptionsVisible = false;
                     AssignedOptionsVisible = !AssignedOptionsVisible;
                     tcs?.SetResult(true);
                 });
@@ -422,6 +449,11 @@ namespace ManageGo
             {
                 return new FreshAwaitCommand((tcs) =>
                 {
+                    AccessGrantIsExpanded = false;
+                    PriorityOptionsVisible = false;
+                    DueDateCalendarView = null;
+                    AssignedOptionsVisible = false;
+                    CategoryOptionsVisible = false;
                     TagOptionsVisible = !TagOptionsVisible;
                     tcs?.SetResult(true);
                 });

@@ -144,6 +144,7 @@ namespace ManageGo
                         await ((MainPage as FreshMasterDetailNavigationContainer))?.PushPage(updatedPage, new UpdatePageModel(), modal: true);
                 }
             }
+
         }
 
         void Handle_OnSuccessfulLogin(object sender, bool e)

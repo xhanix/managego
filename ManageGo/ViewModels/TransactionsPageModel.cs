@@ -18,10 +18,22 @@ namespace ManageGo
         public View RangePickerView { get; set; }
         public string FilterKeywords { get; set; }
         DateRange dateRange;
+        private bool filterSelectViewIsShown;
+
         public TransactionsRequestItem CurrentFilter { get; private set; }
         public TransactionsRequestItem ParameterItem { get; set; }
         public string NumberOfAppliedFilters { get; internal set; } = " ";
-        public bool FilterSelectViewIsShown { get; set; }
+
+        public bool FilterSelectViewIsShown {
+            get => filterSelectViewIsShown;
+            set
+            {
+                filterSelectViewIsShown = value;
+                FilterDateRangeExpanded = false;
+                FilterAccountsExpanded = false;
+            }
+        }
+
         public ObservableCollection<BankTransaction> FetchedTransactions { get; set; }
         public bool RangeSelectorIsShown { get; private set; }
         public List<BankAccount> BankAccounts { get; private set; }
@@ -201,6 +213,7 @@ namespace ManageGo
             base.ViewIsDisappearing(sender, e);
             if (FilterSelectViewIsShown)
             {
+                UndoUnsavedFilterOptions();
                 FilterSelectViewIsShown = false;
                 PopContentView = null;
                 if (App.MasterDetailNav != null)
@@ -334,28 +347,41 @@ namespace ManageGo
                 {
                     PopContentView = null;
                     FilterSelectViewIsShown = false;
-                    if (CurrentFilter != null)
-                    {
-                        if (BankAccounts != null && CurrentFilter.BankAccounts != null)
-                        {
-                            foreach (var b in BankAccounts)
-                            {
-                                if (CurrentFilter.BankAccounts.Contains(b.BankAccountID))
-                                    b.IsSelected = true;
-                                else
-                                    b.IsSelected = false;
-                            }
-                        }
-                        if (CurrentFilter.DateFrom.HasValue && CurrentFilter.DateTo.HasValue)
-                            DateRange = new DateRange(CurrentFilter.DateFrom.Value, CurrentFilter.DateTo.Value);
-                        else if (CurrentFilter.DateFrom.HasValue && !CurrentFilter.DateTo.HasValue)
-                            DateRange = new DateRange(CurrentFilter.DateFrom.Value);
-                        FilteredAmountRange = new Tuple<int?, int?>(CurrentFilter.AmountFrom, CurrentFilter.AmountTo);
-                        SelectedAmountRange = new Tuple<int?, int?>(CurrentFilter.AmountFrom, CurrentFilter.AmountTo);
-                        FilterKeywords = CurrentFilter.Search;
-                    }
+                    UndoUnsavedFilterOptions();
                     tcs?.SetResult(true);
                 }));
+            }
+        }
+
+        private void UndoUnsavedFilterOptions()
+        {
+            if (CurrentFilter != null)
+            {
+                if (BankAccounts != null && CurrentFilter.BankAccounts != null)
+                {
+                    foreach (var b in BankAccounts)
+                    {
+                        if (CurrentFilter.BankAccounts.Contains(b.BankAccountID))
+                            b.IsSelected = true;
+                        else
+                            b.IsSelected = false;
+                    }
+                }
+                if (CurrentFilter.DateFrom.HasValue && CurrentFilter.DateTo.HasValue)
+                    DateRange = new DateRange(CurrentFilter.DateFrom.Value, CurrentFilter.DateTo.Value);
+                else if (CurrentFilter.DateFrom.HasValue && !CurrentFilter.DateTo.HasValue)
+                    DateRange = new DateRange(CurrentFilter.DateFrom.Value);
+                FilteredAmountRange = new Tuple<int?, int?>(CurrentFilter.AmountFrom, CurrentFilter.AmountTo);
+                SelectedAmountRange = new Tuple<int?, int?>(CurrentFilter.AmountFrom, CurrentFilter.AmountTo);
+                FilterKeywords = CurrentFilter.Search;
+            }
+            else
+            {
+                dateRange = null;
+                SelectedAmountRange = new Tuple<int?, int?>(0, 5000);
+                FilteredAmountRange = null;
+                BankAccounts?.ForEach(t => t.IsSelected = false);
+                
             }
         }
 

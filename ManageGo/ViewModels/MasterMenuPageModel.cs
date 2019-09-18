@@ -95,18 +95,7 @@ namespace ManageGo
                     Analytics.TrackEvent("Tikets menu tapped");
                     if (!App.MasterDetailNav.Pages.ContainsKey("Maintenance Tickets"))
                         App.MasterDetailNav.AddPage<MaintenanceTicketsPageModel>("Maintenance Tickets");
-                    if (App.MasterDetailNav.Detail is NavigationPage
-                    && ((NavigationPage)App.MasterDetailNav.Detail).CurrentPage.GetModel() is MaintenanceTicketsPageModel model)
-                    {
-                        App.MasterDetailNav.IsPresented = false;
-                        model.NumberOfAppliedFilters = " ";
-                        model.DateRange = null;
-                        model.ParameterItem = null;
-                        await model.LoadData(true, true);
-                        
-                    }
-                    else
-                        await App.MasterDetailNav.SwitchSelectedRootPageModel<MaintenanceTicketsPageModel>();
+                    await App.MasterDetailNav.SwitchSelectedRootPageModel<MaintenanceTicketsPageModel>();
                     App.MenuIsPresented = false;
                     tcs?.SetResult(true);
                 }
@@ -120,7 +109,7 @@ namespace ManageGo
             {
                 return new FreshAwaitCommand((tcs) =>
                 {
-                    Analytics.TrackEvent("Support home menu tapped");
+                    Analytics.TrackEvent("Home menu tapped");
 
                     App.MasterDetailNav.SwitchSelectedRootPageModel<WelcomePageModel>();
                     App.MenuIsPresented = false;
@@ -137,7 +126,7 @@ namespace ManageGo
             {
                 return new FreshAwaitCommand((tcs) =>
                 {
-                    Analytics.TrackEvent("Support feedback menu tapped");
+                    Analytics.TrackEvent("Feedback menu tapped");
 
                     if (!App.MasterDetailNav.Pages.ContainsKey("Feedback"))
                         App.MasterDetailNav.AddPage<FeedbackPageModel>("Feedback");
@@ -154,7 +143,7 @@ namespace ManageGo
             {
                 return new FreshAwaitCommand((tcs) =>
                 {
-                    Analytics.TrackEvent("Support settings menu tapped");
+                    Analytics.TrackEvent("Settings menu tapped");
 
                     if (!App.MasterDetailNav.Pages.ContainsKey("Settings"))
                         App.MasterDetailNav.AddPage<SettingsPageModel>("Settings");
@@ -171,7 +160,7 @@ namespace ManageGo
             {
                 return new FreshAwaitCommand((tcs) =>
                 {
-                    Analytics.TrackEvent("Support calendar menu tapped");
+                    Analytics.TrackEvent("Calendar menu tapped");
 
                     if (!App.MasterDetailNav.Pages.ContainsKey("OnCalendarPage"))
                         App.MasterDetailNav.AddPage<CalendarPageModel>("OnCalendarPage");
@@ -188,7 +177,7 @@ namespace ManageGo
             {
                 return new FreshAwaitCommand((tcs) =>
                 {
-                    Analytics.TrackEvent("Support tenants menu tapped");
+                    Analytics.TrackEvent("Tenants menu tapped");
 
                     if (!App.MasterDetailNav.Pages.ContainsKey("Tenants"))
                         App.MasterDetailNav.AddPage<TenantsPageModel>("Tenants");
@@ -207,7 +196,7 @@ namespace ManageGo
                 {
 
                     //allow the side menu animation to completed
-                    Analytics.TrackEvent("Support payments menu tapped");
+                    Analytics.TrackEvent("Payments menu tapped");
                     if (!App.MasterDetailNav.Pages.ContainsKey("Payments"))
                         App.MasterDetailNav.AddPage<PaymentsPageModel>("Payments");
                     await App.MasterDetailNav.SwitchSelectedRootPageModel<PaymentsPageModel>();
@@ -224,7 +213,7 @@ namespace ManageGo
             {
                 return new FreshAwaitCommand((tcs) =>
                 {
-                    Analytics.TrackEvent("Support transations menu tapped");
+                    Analytics.TrackEvent("Transations menu tapped");
 
                     if (!App.MasterDetailNav.Pages.ContainsKey("Transactions"))
                         App.MasterDetailNav.AddPage<TransactionsPageModel>("Transactions");
@@ -241,7 +230,7 @@ namespace ManageGo
             {
                 return new FreshAwaitCommand((tcs) =>
                 {
-                    Analytics.TrackEvent("Support buildings menu tapped");
+                    Analytics.TrackEvent("Buildings menu tapped");
 
                     if (!App.MasterDetailNav.Pages.ContainsKey("Buildings"))
                         App.MasterDetailNav.AddPage<BuildingsListPageModel>("Buildings");
@@ -258,8 +247,16 @@ namespace ManageGo
             {
                 return new FreshAwaitCommand((tcs) =>
                 {
-                    Analytics.TrackEvent("Support logout menu tapped");
+                    Analytics.TrackEvent("User logged out from menu");
                     DependencyService.Get<IGoogleCloudMessagingHelper>().UnSubscribeFromTopics();
+                    App.Buildings = null;
+                    App.Categories = null;
+                    App.BankAccounts = null;
+                    App.Tags = null;
+                    App.UserInfo = null;
+                    App.UserName = null;
+                    App.UserPermissions = UserPermissions.None;
+                    App.Users = null;
                     OnLogout?.Invoke(this, true);
                 });
             }

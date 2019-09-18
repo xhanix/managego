@@ -11,11 +11,11 @@ namespace MGDataAccessLibrary.DataAccess
     public static class WebAPI
     {
         private static HttpClient WebClient { get; set; }
-#if DEBUG
-        private const string BaseUrl = "https://ploop.dynamo-ny.com/api/pmc_v2/";
-#else
+//#if DEBUG
+      //  private const string BaseUrl = "https://ploop.dynamo-ny.com/api/pmc_v2/";
+//#else
         private const string BaseUrl = "https://portal.managego.com/api/pmc_v2/";
-#endif
+//#endif
         private static DateTimeOffset TokenExpiry { get; set; } = default;
         internal static string UserName { get; set; }
         internal static string Password { get; set; }
@@ -35,12 +35,22 @@ namespace MGDataAccessLibrary.DataAccess
 
         internal static async Task<LoginResponse> RefreshAccessTokenWithtoken()
         {
+            if (string.IsNullOrWhiteSpace(RefreshToken))
+            {
+                RefreshToken = Xamarin.Essentials.Preferences.Get("RefToken", string.Empty);
+            }
+            if (string.IsNullOrWhiteSpace(RefreshToken))
+            {
+                throw new Exception("Unable to get refresh token from device storage");
+            }
             var request = new Models.LoginRequest
             {
                 AccessToken = RefreshToken
             };
             var res = await PostForm<Models.LoginRequest, Models.LoginResponse>(request, DataAccess.ApiEndPoint.authorize, null);
+
             SetAuthToken(res.UserInfo.AccessToken);
+            BussinessLogic.UserProcessor.onRefreshedToken?.Invoke(res);
             return res;
         }
 
@@ -83,6 +93,7 @@ namespace MGDataAccessLibrary.DataAccess
             WebClient.DefaultRequestHeaders.Remove("AccessToken");
             WebClient.DefaultRequestHeaders.Add("AccessToken", accessToken);
             RefreshToken = accessToken;
+            Xamarin.Essentials.Preferences.Set("RefToken", accessToken);
 #if DEBUG
             TokenExpiry = DateTimeOffset.Now.AddMinutes(1);
 #else
@@ -97,7 +108,7 @@ namespace MGDataAccessLibrary.DataAccess
             if (TokenExpiry != default && TokenExpiry < DateTimeOffset.Now)
             {
                 TokenExpiry = default;
-                Console.WriteLine("**** Re -logged in ****");
+                Console.WriteLine("**** Re-logged in ****");
                 await RefreshAccessTokenWithtoken();
             }
             var path = enpoint.ToString();

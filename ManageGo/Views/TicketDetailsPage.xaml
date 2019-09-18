@@ -146,7 +146,7 @@
                 <!-- View for updating ticket details -->
                 <StackLayout IsVisible="{Binding ShowingTicketDetails}"
                              MinimumHeightRequest="75">
-                    <Grid Padding="14,8,18,8">
+                    <Grid Padding="14,4,18,4">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="0.5*" />
@@ -156,6 +156,8 @@
                                 FontSize="Small"
                                 TextColor="{StaticResource Grey-Mid-1}"
                                 Text="{Binding CloseTicketButtonText}"
+                                VerticalOptions="FillAndExpand"
+                                Padding="8"
                                 Command="{Binding OnCloseTicketButtonTapped}"
                                 BackgroundColor="Transparent"
                                 HorizontalOptions="EndAndExpand" />

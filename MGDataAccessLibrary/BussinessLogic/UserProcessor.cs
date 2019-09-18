@@ -1,16 +1,27 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using MGDataAccessLibrary.Models;
 
 namespace MGDataAccessLibrary.BussinessLogic
 {
     public static class UserProcessor
     {
-        public static async Task<Models.LoginResponse> Login(string userName, string password)
+        public static Action<Models.LoginResponse> onRefreshedToken;
+
+        public static async Task<Models.LoginResponse> Login(string userName, string password, Action<Models.LoginResponse> onNewLoginDataAvailable)
         {
+            onRefreshedToken = onNewLoginDataAvailable;
+            //#if DEBUG
+            //    userName = "pmc@mobile.test";
+            // password = "Aa1111";
+            //#endif
+
 #if DEBUG
-            userName = "pmc@mobile.test";
-            password = "Aa1111";
+            userName = "Waltz11211@gmail.com";//"xhanix@me.com";
+            password = "Waltz311";//"Hani123";
 #endif
+
+
             var request = new Models.LoginRequest { Login = userName, Password = password };
             var res = await DataAccess.WebAPI.PostForm<Models.LoginRequest, Models.LoginResponse>(request, DataAccess.ApiEndPoint.authorize, null);
             DataAccess.WebAPI.SetAuthToken(res.UserInfo.AccessToken);

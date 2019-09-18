@@ -27,9 +27,24 @@ namespace ManageGo
         public string NumberOfAppliedFilters => CurrentFilter is null || CurrentFilter.NumberOfAppliedFilters == 0 ? " " : $"{CurrentFilter.NumberOfAppliedFilters}";
 
         PaymentsRequestItem ParameterItem { get; set; }
-        public bool FilterSelectViewIsShown { get; set; }
+
+        public bool FilterSelectViewIsShown {
+            get => filterSelectViewIsShown;
+            set
+            {
+                filterSelectViewIsShown = value;
+                FilterBuildingsExpanded = false;
+                FilterDueDateExpanded = false;
+                FilterStatusExpanded = false;
+                FilterTenantsExpanded = false;
+                FilterUnitsExpanded = false;
+            }
+        }
+
         public bool RangeSelectorIsShown { get; private set; }
         ObservableCollection<Payment> fetchedPayments;
+        private bool filterSelectViewIsShown;
+
         public ObservableCollection<Payment> FetchedPayments
         {
             get { return fetchedPayments; }
@@ -207,12 +222,24 @@ namespace ManageGo
             await SetupFilterViewForSelectedBuildings();
             SetupFilterViewForSelectedTenants();
             await SetupFilterViewForSelectedUnits();
+            UndoUnsavedFilterOptions();
+        }
+
+        private void UndoUnsavedFilterOptions()
+        {
             if (CurrentFilter != null)
             {
                 FilterDueDate = new DateRange(CurrentFilter.DateFrom, CurrentFilter.DateTo);
                 FilteredAmountRange = new Tuple<int?, int?>(CurrentFilter.AmountFrom, CurrentFilter.AmountTo);
                 SelectedAmountRange = new Tuple<int?, int?>(CurrentFilter.AmountFrom, CurrentFilter.AmountTo);
                 FilterKeywords = CurrentFilter.Search;
+            }
+            else
+            {
+                dateRange = null;
+                FilteredAmountRange = null;
+                SelectedAmountRange = new Tuple<int?, int?>(0, 5000);
+                FilterKeywords = null;
             }
         }
 
@@ -284,6 +311,7 @@ namespace ManageGo
         protected override void ViewIsDisappearing(object sender, EventArgs e)
         {
             base.ViewIsDisappearing(sender, e);
+            UndoUnsavedFilterOptions();
             if (FilterSelectViewIsShown)
             {
                 FilterSelectViewIsShown = false;

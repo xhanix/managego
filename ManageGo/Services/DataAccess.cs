@@ -13,9 +13,58 @@ namespace ManageGo.Services
 {
     public static class DataAccess
     {
+        private static void OnNewLoginDataAvailable(MGDataAccessLibrary.Models.LoginResponse result)
+        {
+            App.UserInfo = new SignedInUserInfo
+            {
+                AccessToken = result.UserInfo.AccessToken,
+                UserEmailAddress = result.UserInfo.UserEmailAddress,
+                UserFirstName = result.UserInfo.UserFirstName,
+                UserLastName = result.UserInfo.UserLastName,
+                TenantPushNotification = result.UserInfo.TenantPushNotification,
+                MaintenancePushNotification = result.UserInfo.MaintenancePushNotification,
+                PaymentPushNotification = result.UserInfo.PaymentPushNotification,
+                PushNotification = result.UserInfo.PushNotification,
+                UserID = result.UserInfo.UserID
+            };
+            var perm = result.Permissions;
+            App.PMCName = result.PMCInfo.PMCName;
+            //reset the permissions on log in
+            App.UserPermissions = new UserPermissions();
+
+            if (perm.CanAccessPayments)
+                App.UserPermissions |= UserPermissions.CanAccessPayments;
+            if (perm.CanAccessMaintenanceTickets)
+                App.UserPermissions |= UserPermissions.CanAccessTickets;
+            if (perm.CanReplyPublicly)
+                App.UserPermissions |= UserPermissions.CanReplyPublicly;
+            if (perm.CanReplyInternally)
+                App.UserPermissions |= UserPermissions.CanReplyInternally;
+            if (perm.CanAccessTenants)
+                App.UserPermissions |= UserPermissions.CanAccessTenants;
+            if (perm.CanAddWorkordersAndEvents)
+                App.UserPermissions |= UserPermissions.CanAddWorkordersAndEvents;
+            if (perm.CanApproveNewTenantsUnits)
+                App.UserPermissions |= UserPermissions.CanApproveNewTenantsUnits;
+            if (perm.CanEditTicket)
+                App.UserPermissions |= UserPermissions.CanEditTicketDetails;
+
+
+            if (App.Buildings is null)
+                GetBuildings().ConfigureAwait(false);
+            if (App.BankAccounts is null)
+                GetBankAccounts().ConfigureAwait(false);
+            if (App.Categories is null || App.Categories.Count == 0)
+            {
+                GetAllCategoriesAndTags().ConfigureAwait(false);
+                GetAllUsers().ConfigureAwait(false);
+            }
+           
+        }
+
         public static async Task Login(string userName = null, string password = null)
         {
-            var result = await MGDataAccessLibrary.BussinessLogic.UserProcessor.Login(userName, password);
+            var result = await MGDataAccessLibrary.BussinessLogic.UserProcessor.Login(userName, password, OnNewLoginDataAvailable);
             App.UserInfo = new SignedInUserInfo
             {
                 AccessToken = result.UserInfo.AccessToken,
@@ -53,6 +102,7 @@ namespace ManageGo.Services
                 App.UserPermissions |= UserPermissions.CanEditTicketDetails;
         }
 
+       
 
         public static async Task ResetPassword(string userName)
         => await MGDataAccessLibrary.DataAccess.WebAPI.PostItem<object, object>(new { PMCUserEmailAddress = userName }

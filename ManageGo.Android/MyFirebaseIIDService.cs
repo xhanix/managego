@@ -10,6 +10,7 @@ namespace ManageGo.Droid
     [IntentFilter(new[] { "com.google.firebase.INSTANCE_ID_EVENT" })]
     public class MyFirebaseIIDService : FirebaseMessagingService
     {
+       
         public override void OnNewToken(string p0)
         {
             base.OnNewToken(p0);

@@ -15,7 +15,19 @@ namespace ManageGo
 {
     internal class TenantsPageModel : BaseDetailPage
     {
-        public bool FilterSelectViewIsShown { get; set; }
+        private bool filterSelectViewIsShown;
+
+        public bool FilterSelectViewIsShown {
+            get => filterSelectViewIsShown;
+            set
+            {
+                filterSelectViewIsShown = value;
+                FilterBuildingsExpanded = false;
+                FilterStatusExpanded = false;
+                FilterUnitsExpanded = false;
+            }
+        }
+
         public bool FilterBuildingsExpanded { get; set; }
         public bool FilterUnitsExpanded { get; set; }
         public bool FilterStatusExpanded { get; set; }
@@ -167,55 +179,70 @@ namespace ManageGo
                     Units = null;
                     FilterUnitsExpanded = false;
                     SelectedUnitString = "Select";
-                    if (CurrentFilter != null)
-                    {
-                        if (Buildings != null && CurrentFilter.Buildings != null)
-                        {
-                            foreach (var b in Buildings)
-                            {
-                                if (CurrentFilter.Buildings.Contains(b.BuildingId))
-                                    b.IsSelected = true;
-                                else
-                                    b.IsSelected = false;
-                            }
-                            if (Buildings.Count(b => b.IsSelected) == 1)
-                            {
-                                var details = await DataAccess.GetBuildingDetails(Buildings.First(b => b.IsSelected).BuildingId);
-                                Units = details.Units;
-                            }
-                        }
-                        if (Units != null && CurrentFilter.Units != null)
-                        {
-                            foreach (var u in Units)
-                            {
-                                if (CurrentFilter.Units.Contains(u.UnitId))
-                                    u.IsSelected = true;
-                                else
-                                    u.IsSelected = false;
-                            }
-                        }
-                        switch (CurrentFilter.Status)
-                        {
-                            case TenantStatus.Active:
-                                SelectedActiveTenantFilter = true;
-                                SelectedInActiveTenantFilter = false;
-                                break;
-                            case TenantStatus.Inactive:
-                                SelectedActiveTenantFilter = false;
-                                SelectedInActiveTenantFilter = true;
-                                break;
-                            case TenantStatus.All:
-                                SelectedActiveTenantFilter = true;
-                                SelectedInActiveTenantFilter = true;
-                                break;
-                        }
-
-                        FilterKeywords = CurrentFilter.Search;
-                    }
+                    await UndoUnsavedFiterOptions();
                     tcs?.SetResult(true);
+
                 }
                 return new FreshAwaitCommand(execute);
             }
+        }
+
+        private async Task UndoUnsavedFiterOptions()
+        {
+            if (CurrentFilter != null)
+            {
+                if (CurrentFilter?.Buildings != null)
+                {
+                    foreach (var b in Buildings)
+                    {
+                        if (CurrentFilter.Buildings.Contains(b.BuildingId))
+                            b.IsSelected = true;
+                        else
+                            b.IsSelected = false;
+                    }
+                    if (Buildings.Count(b => b.IsSelected) == 1)
+                    {
+                        var details = await DataAccess.GetBuildingDetails(Buildings.First(b => b.IsSelected).BuildingId);
+                        Units = details.Units;
+                    }
+                }
+                if (CurrentFilter?.Units != null)
+                {
+                    foreach (var u in Units)
+                    {
+                        if (CurrentFilter.Units.Contains(u.UnitId))
+                            u.IsSelected = true;
+                        else
+                            u.IsSelected = false;
+                    }
+                }
+                switch (CurrentFilter.Status)
+                {
+                    case TenantStatus.Active:
+                        SelectedActiveTenantFilter = true;
+                        SelectedInActiveTenantFilter = false;
+                        break;
+                    case TenantStatus.Inactive:
+                        SelectedActiveTenantFilter = false;
+                        SelectedInActiveTenantFilter = true;
+                        break;
+                    case TenantStatus.All:
+                        SelectedActiveTenantFilter = true;
+                        SelectedInActiveTenantFilter = true;
+                        break;
+                }
+
+                FilterKeywords = CurrentFilter.Search;
+            }
+            else
+            {
+                Units?.ForEach(t => t.IsSelected = false);
+                Buildings?.ForEach(t => t.IsSelected = false);
+                SelectedActiveTenantFilter = true;
+                SelectedInActiveTenantFilter = false;
+
+            }
+
         }
 
         public FreshAwaitCommand SetFilterStatus
@@ -309,9 +336,10 @@ namespace ManageGo
 
         }
 
-        protected override void ViewIsDisappearing(object sender, EventArgs e)
+        protected override async void ViewIsDisappearing(object sender, EventArgs e)
         {
             base.ViewIsDisappearing(sender, e);
+            await UndoUnsavedFiterOptions();
             if (App.MasterDetailNav != null)
                 App.MasterDetailNav.IsGestureEnabled = true;
             if (FilterSelectViewIsShown)

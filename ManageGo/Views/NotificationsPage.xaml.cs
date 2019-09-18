@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.Linq;
 using Xamarin.Forms;
 
 namespace ManageGo
@@ -50,6 +50,19 @@ namespace ManageGo
         {
             base.OnDisappearing();
             MyListView.ItemsSource = null;
+        }
+
+        protected override bool OnBackButtonPressed()
+        {
+            if (Navigation.ModalStack.Contains(this))
+            {
+                Navigation.PopModalAsync();
+            }
+            else
+            {
+                App.MasterDetailNav.SwitchSelectedRootPageModel<WelcomePageModel>();
+            }
+            return true;
         }
 
     }

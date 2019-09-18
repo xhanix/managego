@@ -22,6 +22,7 @@ using Android.Gms.Common;
 namespace ManageGo.Droid
 {
     [Activity(Label = "ManageGo", Icon = "@mipmap/ic_launcher", LaunchMode = LaunchMode.SingleTask, RoundIcon = "@mipmap/ic_launcher_round", Theme = "@style/MainTheme", ScreenOrientation = Android.Content.PM.ScreenOrientation.Portrait, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+    [IntentFilter(new[] { "TicketCreated", "TicketReply", "UnitAwaitingApproval", "TicketReplyInternal", "TicketAssigned", "TenantAwaitingApproval", "PaymentReceived" }, Categories = new[] { Intent.CategoryDefault })]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
         // Field, properties, and method for Video Picker

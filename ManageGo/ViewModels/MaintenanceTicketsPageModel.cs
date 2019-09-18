@@ -17,6 +17,8 @@ namespace ManageGo
     internal class MaintenanceTicketsPageModel : BaseDetailPage
     {
         DateRange dateRange;
+        private bool filterSelectViewIsShown;
+
         public TicketRequestItem CurrentFilter { get; private set; }
         public TicketRequestItem ParameterItem { get; set; }
        
@@ -140,7 +142,20 @@ namespace ManageGo
         [AlsoNotifyFor("AddNewButtonIsVisisble")]
         internal bool CalendarIsShown { get; set; }
         [AlsoNotifyFor("AddNewButtonIsVisisble")]
-        public bool FilterSelectViewIsShown { get; set; }
+        public bool FilterSelectViewIsShown {
+            get => filterSelectViewIsShown;
+            set {
+                filterSelectViewIsShown = value;
+                FilterBuildingsExpanded = false;
+                FilterCategoriesExpanded = false;
+                FilterDateExpanded = false;
+                FilterDueDateExpanded = false;
+                FilterPrioritiesExpanded = false;
+                FilterStatusExpanded = false;
+                FilterTagsExpanded = false;
+                FilterUsersExpanded = false;
+            }
+        }
         public bool BackbuttonIsVisible { get; private set; }
 
         public string NumberOfAppliedFilters { get; internal set; } = " ";
@@ -831,6 +846,7 @@ namespace ManageGo
         protected override void ViewIsDisappearing(object sender, EventArgs e)
         {
             base.ViewIsDisappearing(sender, e);
+            SetViewForCurrentFilter();
             if (FilterSelectViewIsShown)
             {
                 PopContentView = null;
