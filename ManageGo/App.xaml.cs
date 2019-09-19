@@ -127,6 +127,22 @@ namespace ManageGo
 
         private async void App_OnAppStarted(object sender, EventArgs e)
         {
+#if DEBUG
+            Xamarin.Essentials.Preferences.Set("LastVersionCheck", DateTime.Now);
+            MGDataAccessLibrary.DevicePlatform plaform =
+                Xamarin.Forms.Device.RuntimePlatform == Xamarin.Forms.Device.iOS ?
+                MGDataAccessLibrary.DevicePlatform.iOS : MGDataAccessLibrary.DevicePlatform.Android;
+            var currentVer = int.Parse(Xamarin.Essentials.VersionTracking.CurrentVersion.Replace(".", ""));
+            var needsUpdate = await MGDataAccessLibrary.BussinessLogic.AppVersionProcessor.AppNeedsUpdate(currentVer, plaform);
+            if (needsUpdate)
+            {
+                var updatedPage = FreshPageModelResolver.ResolvePageModel<UpdatePageModel>();
+                if (!LoggedIn)
+                    await ((MainPage as FreshNavigationContainer))?.PushPage(updatedPage, new UpdatePageModel(), modal: true);
+                else
+                    await ((MainPage as FreshMasterDetailNavigationContainer))?.PushPage(updatedPage, new UpdatePageModel(), modal: true);
+            }
+#else
             var lastTimeCheck = Xamarin.Essentials.Preferences.Get("LastVersionCheck", DateTime.MinValue);
             if (lastTimeCheck == DateTime.MinValue || DateTime.Now >= lastTimeCheck.AddMinutes(10))
             {
@@ -145,6 +161,7 @@ namespace ManageGo
                         await ((MainPage as FreshMasterDetailNavigationContainer))?.PushPage(updatedPage, new UpdatePageModel(), modal: true);
                 }
             }
+#endif
 
         }
 
