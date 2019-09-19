@@ -258,6 +258,7 @@ namespace ManageGo
                     App.UserPermissions = UserPermissions.None;
                     App.Users = null;
                     OnLogout?.Invoke(this, true);
+                    
                 });
             }
         }

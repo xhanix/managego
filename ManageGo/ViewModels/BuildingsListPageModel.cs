@@ -16,6 +16,18 @@ namespace ManageGo
             return Task.FromResult(0);
         }
 
+
+        public override void Init(object initData)
+        {
+            base.Init(initData);
+            App.OnLoggedOut += App_OnLoggedOut;
+        }
+
+        private void App_OnLoggedOut(object sender, bool e)
+        {
+            Buildings = null;
+        }
+
         public FreshAwaitCommand OnTicketsTapped
         {
             get

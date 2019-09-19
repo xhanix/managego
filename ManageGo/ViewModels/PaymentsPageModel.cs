@@ -341,6 +341,14 @@ namespace ManageGo
                 }
             }
             ((PaymentsPage)this.CurrentPage).OnPaymentAppeared += p;
+            App.OnLoggedOut += App_OnLoggedOut;
+        }
+
+        private void App_OnLoggedOut(object sender, bool e)
+        {
+            Buildings = null;
+            Units = null;
+            Tenants = null;
         }
 
         public FreshAwaitCommand OnPulledToRefresh

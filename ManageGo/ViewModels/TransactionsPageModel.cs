@@ -132,6 +132,13 @@ namespace ManageGo
                 }
             }
             ((TransactionsPage)this.CurrentPage).OnTransactionAppeared += p;
+            App.OnLoggedOut += App_OnLoggedOut;
+        }
+
+        private void App_OnLoggedOut(object sender, bool e)
+        {
+            BankAccounts = null;
+
         }
 
         public bool NothingFetched { get; private set; }

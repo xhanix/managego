@@ -22,6 +22,7 @@ namespace ManageGo
         internal static string UserName { get; set; }
         internal static string PMCName { get; set; }
         internal DateTimeOffset LastVersionCheckTime { get; set; } = DateTimeOffset.MinValue;
+        internal static event EventHandler<bool> OnLoggedOut;
         internal static SignedInUserInfo UserInfo { get; set; }
         internal static List<Building> Buildings { get; set; }
         internal static List<Categories> Categories { get; set; }
@@ -163,6 +164,14 @@ namespace ManageGo
                     MasterDetailContainer = null;
                     UserName = null;
                     ((LoginPageModel)__page.BindingContext).OnSuccessfulLogin += Handle_OnSuccessfulLogin;
+                    try
+                    {
+                        OnLoggedOut?.Invoke(this, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        Crashes.TrackError(ex);
+                    }
                 };
                 page.Title = "Menu";
                 MasterDetailNav.Master = page;

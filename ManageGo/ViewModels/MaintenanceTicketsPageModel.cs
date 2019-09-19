@@ -50,6 +50,7 @@ namespace ManageGo
             (SelectedOpenTicketsFilter && SelectedClosedTicketsFilter) ||
             (!SelectedOpenTicketsFilter && !SelectedClosedTicketsFilter) ? "All" :
             SelectedOpenTicketsFilter ? "Open" : "Closed";
+
         public string SelectedPriorityString
         {
             get
@@ -68,6 +69,7 @@ namespace ManageGo
                 return string.Join(", ", result);
             }
         }
+
         public string SelectedCategoriesString
         {
             get
@@ -843,6 +845,16 @@ namespace ManageGo
                 DateRange = new DateRange(CurrentFilter.DateFrom.Value);
         }
 
+
+        private void App_OnLoggedOut(object sender, bool e)
+        {
+            Buildings = null;
+            Categories = null;
+            Users = null;
+            Tags = null;
+
+        }
+
         protected override void ViewIsDisappearing(object sender, EventArgs e)
         {
             base.ViewIsDisappearing(sender, e);
@@ -867,7 +879,7 @@ namespace ManageGo
         public override void Init(object initData)
         {
             base.Init(initData);
-          
+            
             ParentIsBuildingPage = false;
             if (initData is int buildingId)
             {
@@ -890,6 +902,7 @@ namespace ManageGo
                 }
                 BackbuttonIsVisible = true;
                 App.MasterDetailNav.IsGestureEnabled = false;
+                App.OnLoggedOut += App_OnLoggedOut;
             }
             async void p(object sender, MaintenanceTicket e)
             {
@@ -900,6 +913,8 @@ namespace ManageGo
             }
             ((MaintenanceTicketsPage)this.CurrentPage).OnTicketAppeared += p;
         }
+
+        
 
         public override void ReverseInit(object returnedData)
         {

@@ -31,7 +31,10 @@ namespace ManageGo
             Analytics.TrackEvent("View tenant details from Ticket");
             if (Tenant.TenantUnits is null)
                 Analytics.TrackEvent("Tenant units is null from Ticket detail page");
+           
         }
+
+        
 
         public FreshAwaitCommand OnBackButtonTapped
         {

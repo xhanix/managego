@@ -190,8 +190,10 @@ namespace ManageGo
             CanCreateWorkorderAndEvents = App.UserPermissions.HasFlag(UserPermissions.CanAddWorkordersAndEvents);
             CanEditTicketDetails = App.UserPermissions.HasFlag(UserPermissions.CanEditTicketDetails);
             ClockTime.AddYears(1);
+           
         }
 
+       
 
         public override void ReverseInit(object returnedData)
         {

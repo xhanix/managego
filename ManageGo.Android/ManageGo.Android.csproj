@@ -122,8 +122,6 @@
         <None Include="Assets\AboutAssets.txt" />
         <None Include="Properties\AndroidManifest.xml" />
         <None Include="packages.config" />
-        <None Include="google-services-1.json">
-        </None>
     </ItemGroup>
     <ItemGroup>
         <AndroidResource Include="Resources\layout\Tabbar.axml" />
