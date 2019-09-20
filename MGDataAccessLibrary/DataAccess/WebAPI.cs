@@ -12,7 +12,7 @@ namespace MGDataAccessLibrary.DataAccess
     {
         private static HttpClient WebClient { get; set; }
 //#if DEBUG
-      //  private const string BaseUrl = "https://ploop.dynamo-ny.com/api/pmc_v2/";
+  //      private const string BaseUrl = "https://ploop.dynamo-ny.com/api/pmc_v2/";
 //#else
         private const string BaseUrl = "https://portal.managego.com/api/pmc_v2/";
 //#endif
@@ -20,6 +20,8 @@ namespace MGDataAccessLibrary.DataAccess
         internal static string UserName { get; set; }
         internal static string Password { get; set; }
         public static string RefreshToken { get; private set; }
+        public static bool GettingNewToken { get; private set; }
+
         public static event EventHandler OnAppResumed;
         static WebAPI()
         {
@@ -37,7 +39,9 @@ namespace MGDataAccessLibrary.DataAccess
             var res = new LoginResponse();
             try
             {
-                WebClient = new HttpClient { BaseAddress = new Uri(BaseUrl) };
+                GettingNewToken = true;
+                if (WebClient is null)
+                    WebClient = new HttpClient { BaseAddress = new Uri(BaseUrl) };
                 if (string.IsNullOrWhiteSpace(RefreshToken))
                 {
                     RefreshToken = Xamarin.Essentials.Preferences.Get("RefToken", string.Empty);
@@ -46,14 +50,18 @@ namespace MGDataAccessLibrary.DataAccess
                 {
                     return null;
                 }
+                
                 var request = new Models.LoginRequest
                 {
                     AccessToken = RefreshToken
                 };
+                WebClient.DefaultRequestHeaders.Remove("AccessToken");
+                WebClient.DefaultRequestHeaders.Add("AccessToken", RefreshToken);
                 res = await PostForm<Models.LoginRequest, Models.LoginResponse>(request, DataAccess.ApiEndPoint.authorize, null);
 
                 SetAuthToken(res.UserInfo.AccessToken);
                 BussinessLogic.UserProcessor.onRefreshedToken?.Invoke(res);
+                GettingNewToken = false;
                 return res;
             }
             catch (Exception ex)
@@ -193,8 +201,6 @@ namespace MGDataAccessLibrary.DataAccess
                 }
             }
         }
-
-
 
         public static void NotifyAppResumed(object sender)
         {

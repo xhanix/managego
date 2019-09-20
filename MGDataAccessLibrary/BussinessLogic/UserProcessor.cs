@@ -11,14 +11,16 @@ namespace MGDataAccessLibrary.BussinessLogic
         public static async Task<Models.LoginResponse> Login(string userName, string password, Action<Models.LoginResponse> onNewLoginDataAvailable)
         {
             onRefreshedToken = onNewLoginDataAvailable;
-            //#if DEBUG
-            //    userName = "pmc@mobile.test";
-            // password = "Aa1111";
-            //#endif
+            /*
+            #if DEBUG
+                userName = "pmc@mobile.test";
+                password = "Aa1111";
+            #endif
+            */
 
 #if DEBUG
             userName = "Waltz11211@gmail.com";//"xhanix@me.com";
-            password = "Waltz311";//"Hani123";
+            password = "MGwaltz311";//"Hani123";
 #endif
 
 
