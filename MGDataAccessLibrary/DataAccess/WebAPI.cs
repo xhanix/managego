@@ -29,28 +29,37 @@ namespace MGDataAccessLibrary.DataAccess
 
         private static async void WebAPI_OnAppResumed(object sender, EventArgs e)
         {
-            if (!string.IsNullOrWhiteSpace(RefreshToken))
-                await RefreshAccessTokenWithtoken();
+            await RefreshAccessTokenWithtoken();
         }
 
         internal static async Task<LoginResponse> RefreshAccessTokenWithtoken()
         {
-            if (string.IsNullOrWhiteSpace(RefreshToken))
+            var res = new LoginResponse();
+            try
             {
-                RefreshToken = Xamarin.Essentials.Preferences.Get("RefToken", string.Empty);
-            }
-            if (string.IsNullOrWhiteSpace(RefreshToken))
-            {
-                throw new Exception("Unable to get refresh token from device storage");
-            }
-            var request = new Models.LoginRequest
-            {
-                AccessToken = RefreshToken
-            };
-            var res = await PostForm<Models.LoginRequest, Models.LoginResponse>(request, DataAccess.ApiEndPoint.authorize, null);
+                WebClient = new HttpClient { BaseAddress = new Uri(BaseUrl) };
+                if (string.IsNullOrWhiteSpace(RefreshToken))
+                {
+                    RefreshToken = Xamarin.Essentials.Preferences.Get("RefToken", string.Empty);
+                }
+                if (string.IsNullOrWhiteSpace(RefreshToken))
+                {
+                    return null;
+                }
+                var request = new Models.LoginRequest
+                {
+                    AccessToken = RefreshToken
+                };
+                res = await PostForm<Models.LoginRequest, Models.LoginResponse>(request, DataAccess.ApiEndPoint.authorize, null);
 
-            SetAuthToken(res.UserInfo.AccessToken);
-            BussinessLogic.UserProcessor.onRefreshedToken?.Invoke(res);
+                SetAuthToken(res.UserInfo.AccessToken);
+                BussinessLogic.UserProcessor.onRefreshedToken?.Invoke(res);
+                return res;
+            }
+            catch (Exception ex)
+            {
+
+            }
             return res;
         }
 

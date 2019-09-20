@@ -5,6 +5,8 @@ using System.Linq;
 using Firebase.CloudMessaging;
 using Firebase.Core;
 using Foundation;
+using Microsoft.AppCenter.Analytics;
+using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ObjCRuntime;
@@ -34,13 +36,14 @@ namespace ManageGo.iOS
             if (UIDevice.CurrentDevice.CheckSystemVersion(10, 0))
             {
 
-                UNUserNotificationCenter.Current.Delegate = (AppDelegate)UIApplication.SharedApplication.Delegate;
+               
                 UNUserNotificationCenter.Current.RequestAuthorization(UNAuthorizationOptions.Alert | UNAuthorizationOptions.Sound | UNAuthorizationOptions.Sound,
                                                                         (granted, error) =>
                                                                         {
                                                                             if (granted)
                                                                                 InvokeOnMainThread(UIApplication.SharedApplication.RegisterForRemoteNotifications);
                                                                         });
+                UNUserNotificationCenter.Current.Delegate = (AppDelegate)UIApplication.SharedApplication.Delegate;
             }
             else if (UIDevice.CurrentDevice.CheckSystemVersion(8, 0))
             {
@@ -67,11 +70,14 @@ namespace ManageGo.iOS
             Console.WriteLine($"Firebase registration token: {fcmToken}");
         }
 
-        public override void OnActivated(UIApplication uiApplication)
+        public override void WillEnterForeground(UIApplication uiApplication)
         {
-            base.OnActivated(uiApplication);
+            base.WillEnterForeground(uiApplication);
+            App.OniOSAppWillCameToForeground();
             Messaging.SharedInstance.ShouldEstablishDirectChannel = true;
         }
+
+       
 
         public override void DidEnterBackground(UIApplication uiApplication)
         {
@@ -88,23 +94,35 @@ namespace ManageGo.iOS
         public void WillPresentNotification(UNUserNotificationCenter center, UNNotification notification, Action<UNNotificationPresentationOptions> completionHandler)
         {
             //triggered when app is in foreground
-            var userInfo = notification.Request.Content.UserInfo;
+            //var userInfo = notification.Request.Content.UserInfo;
             //userInfo.NotificationObject
-            completionHandler(UNNotificationPresentationOptions.Alert);
+            completionHandler(UNNotificationPresentationOptions.Alert | UNNotificationPresentationOptions.Sound);
         }
 
+       
 
         public override void DidReceiveRemoteNotification(UIApplication application, NSDictionary userInfo, Action<UIBackgroundFetchResult> completionHandler)
         {
             //triggered when user taps on notification
-            var aps = userInfo["aps"] as NSDictionary;
-            var type = aps["category"] as NSString;
-            var notifObject = userInfo["NotificationObject"] as NSString;
-            if (int.TryParse(notifObject, out int objectId))
+            try
             {
-                var _type = Enum.Parse<Models.PushNotificationType>(type);
-                App.NotificationReceived((int)_type, objectId, false).ConfigureAwait(false);
+                var aps = userInfo["aps"] as NSDictionary;
+                var type = aps["category"] as NSString;
+                var notifObject = userInfo["NotificationObject"] as NSString;
+                Analytics.TrackEvent($"Got push, objectId = {notifObject}");
+                Analytics.TrackEvent($"Got push, category = {type}");
+                Analytics.TrackEvent($"Got push, category = {aps}");
+                if (int.TryParse(notifObject, out int objectId))
+                {
+                    var _type = Enum.Parse<Models.PushNotificationType>(type);
+                    App.NotificationReceived((int)_type, objectId, false).ConfigureAwait(false);
+                }
             }
+            catch (Exception ex)
+            {
+                Crashes.TrackError(ex);
+            }
+            
         }
 
         public static void ShowMessage(string title, string message, UIViewController fromViewController, Action actionForOk = null)

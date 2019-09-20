@@ -122,48 +122,10 @@ namespace ManageGo
             var navContainer = new FreshNavigationContainer(page);
             MainPage = navContainer;
             ((LoginPageModel)page.BindingContext).OnSuccessfulLogin += Handle_OnSuccessfulLogin;
-            OnAppStarted += App_OnAppStarted;
+            //OnAppStarted += App_OnAppStarted;
         }
 
-        private async void App_OnAppStarted(object sender, EventArgs e)
-        {
-#if DEBUG
-            Xamarin.Essentials.Preferences.Set("LastVersionCheck", DateTime.Now);
-            MGDataAccessLibrary.DevicePlatform plaform =
-                Xamarin.Forms.Device.RuntimePlatform == Xamarin.Forms.Device.iOS ?
-                MGDataAccessLibrary.DevicePlatform.iOS : MGDataAccessLibrary.DevicePlatform.Android;
-            var currentVer = int.Parse(Xamarin.Essentials.VersionTracking.CurrentVersion.Replace(".", ""));
-            var needsUpdate = await MGDataAccessLibrary.BussinessLogic.AppVersionProcessor.AppNeedsUpdate(currentVer, plaform);
-            if (needsUpdate)
-            {
-                var updatedPage = FreshPageModelResolver.ResolvePageModel<UpdatePageModel>();
-                if (!LoggedIn)
-                    await ((MainPage as FreshNavigationContainer))?.PushPage(updatedPage, new UpdatePageModel(), modal: true);
-                else
-                    await ((MainPage as FreshMasterDetailNavigationContainer))?.PushPage(updatedPage, new UpdatePageModel(), modal: true);
-            }
-#else
-            var lastTimeCheck = Xamarin.Essentials.Preferences.Get("LastVersionCheck", DateTime.MinValue);
-            if (lastTimeCheck == DateTime.MinValue || DateTime.Now >= lastTimeCheck.AddMinutes(10))
-            {
-                Xamarin.Essentials.Preferences.Set("LastVersionCheck", DateTime.Now);
-                MGDataAccessLibrary.DevicePlatform plaform =
-                    Xamarin.Forms.Device.RuntimePlatform == Xamarin.Forms.Device.iOS ?
-                    MGDataAccessLibrary.DevicePlatform.iOS : MGDataAccessLibrary.DevicePlatform.Android;
-                var currentVer = int.Parse(Xamarin.Essentials.VersionTracking.CurrentVersion.Replace(".", ""));
-                var needsUpdate = await MGDataAccessLibrary.BussinessLogic.AppVersionProcessor.AppNeedsUpdate(currentVer, plaform);
-                if (needsUpdate)
-                {
-                    var updatedPage = FreshPageModelResolver.ResolvePageModel<UpdatePageModel>();
-                    if (!LoggedIn)
-                        await ((MainPage as FreshNavigationContainer))?.PushPage(updatedPage, new UpdatePageModel(), modal: true);
-                    else
-                        await ((MainPage as FreshMasterDetailNavigationContainer))?.PushPage(updatedPage, new UpdatePageModel(), modal: true);
-                }
-            }
-#endif
-
-        }
+        
 
         void Handle_OnSuccessfulLogin(object sender, bool e)
         {
@@ -244,31 +206,59 @@ namespace ManageGo
         {
             // Handle when your app resumes
             base.OnResume();
-            MGDataAccessLibrary.DataAccess.WebAPI.NotifyAppResumed(this);
-            OnAppStarted?.Invoke(this, EventArgs.Empty);
+            if (Xamarin.Forms.Device.RuntimePlatform == Xamarin.Forms.Device.iOS)
+            {
+
+            }
+            else
+            {
+                try
+                {
+                    MGDataAccessLibrary.DataAccess.WebAPI.NotifyAppResumed(this);
+                    OnAppStarted?.Invoke(this, EventArgs.Empty);
+                }
+                catch (Exception ex)
+                {
+                    Crashes.TrackError(ex);
+                }
+            }
+
+        }
+
+
+        public static void OniOSAppWillCameToForeground()
+        {
+            try
+            {
+                MGDataAccessLibrary.DataAccess.WebAPI.NotifyAppResumed(null);
+            }
+            catch (Exception ex)
+            {
+                Crashes.TrackError(ex);
+            }
         }
     }
+        public interface IGoogleCloudMessagingHelper
+        {
+            void SubscribeToTopic(string topic);
+            void UnSubscribeFromTopics();
+        }
 
-    public interface IGoogleCloudMessagingHelper
-    {
-        void SubscribeToTopic(string topic);
-        void UnSubscribeFromTopics();
+        public interface ILocalAuthHelper
+        {
+            LocalAuthType GetLocalAuthType();
+            void Authenticate(string userId, Action onSuccess, Action onFailure);
+        }
+
+        public interface IPicturePicker
+        {
+            Task<Tuple<Stream, string, Services.MGFileType>> GetImageStreamAsync();
+        }
+
+        public interface IAppStoreOpener
+        {
+            void OpenAppStore();
+        }
+
     }
 
-    public interface ILocalAuthHelper
-    {
-        LocalAuthType GetLocalAuthType();
-        void Authenticate(string userId, Action onSuccess, Action onFailure);
-    }
-
-    public interface IPicturePicker
-    {
-        Task<Tuple<Stream, string, Services.MGFileType>> GetImageStreamAsync();
-    }
-
-    public interface IAppStoreOpener
-    {
-        void OpenAppStore();
-    }
-
-}

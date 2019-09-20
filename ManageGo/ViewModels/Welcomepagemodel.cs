@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using FreshMvvm;
+using Microsoft.AppCenter.Crashes;
 using Plugin.Permissions.Abstractions;
 using PropertyChanged;
 using Xamarin.Essentials;
@@ -27,6 +28,51 @@ namespace ManageGo
             HamburgerIsVisible = true;
         }
 
+        protected override async void ViewIsAppearing(object sender, EventArgs e)
+        {
+            base.ViewIsAppearing(sender, e);
+            try
+            {
+#if DEBUG
+             var lastTimeCheck = Xamarin.Essentials.Preferences.Get("LastVersionCheck", DateTime.MinValue);
+            if (lastTimeCheck == DateTime.MinValue || DateTime.Now >= lastTimeCheck.AddMinutes(10))
+            {
+                Xamarin.Essentials.Preferences.Set("LastVersionCheck", DateTime.Now);
+                MGDataAccessLibrary.DevicePlatform plaform =
+                    Xamarin.Forms.Device.RuntimePlatform == Xamarin.Forms.Device.iOS ?
+                    MGDataAccessLibrary.DevicePlatform.iOS : MGDataAccessLibrary.DevicePlatform.Android;
+                var currentVer = int.Parse(Xamarin.Essentials.VersionTracking.CurrentVersion.Replace(".", ""));
+                var needsUpdate = await MGDataAccessLibrary.BussinessLogic.AppVersionProcessor.AppNeedsUpdate(currentVer, plaform);
+                if (needsUpdate)
+                {
+                    await CoreMethods.PushPageModel<UpdatePageModel>(data: null, modal: true);
+                    var updatedPage = FreshPageModelResolver.ResolvePageModel<UpdatePageModel>();
+                }
+            }
+#else
+                var lastTimeCheck = Xamarin.Essentials.Preferences.Get("LastVersionCheck", DateTime.MinValue);
+                if (lastTimeCheck == DateTime.MinValue || DateTime.Now >= lastTimeCheck.AddMinutes(10))
+                {
+                    Xamarin.Essentials.Preferences.Set("LastVersionCheck", DateTime.Now);
+                    MGDataAccessLibrary.DevicePlatform plaform =
+                        Xamarin.Forms.Device.RuntimePlatform == Xamarin.Forms.Device.iOS ?
+                        MGDataAccessLibrary.DevicePlatform.iOS : MGDataAccessLibrary.DevicePlatform.Android;
+                    var currentVer = int.Parse(Xamarin.Essentials.VersionTracking.CurrentVersion.Replace(".", ""));
+                    var needsUpdate = await MGDataAccessLibrary.BussinessLogic.AppVersionProcessor.AppNeedsUpdate(currentVer, plaform);
+                    if (needsUpdate)
+                    {
+                        await CoreMethods.PushPageModel<UpdatePageModel>(data: null, modal: true);
+                        var updatedPage = FreshPageModelResolver.ResolvePageModel<UpdatePageModel>();
+                    }
+                }
+#endif
+            }
+            catch (Exception ex)
+            {
+                Crashes.TrackError(ex);
+            }
+
+        }
 
         override internal async Task LoadData(bool refreshData = false, bool FetchNextPage = false)
         {

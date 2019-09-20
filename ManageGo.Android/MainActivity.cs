@@ -57,59 +57,60 @@ namespace ManageGo.Droid
         {
            
             base.OnNewIntent(intent);
-           
-            
-            if (intent.Extras != null)
+            if (intent is null || intent.Extras is null)
             {
-                try
+                Analytics.TrackEvent("Intent is null");
+                return;
+            }
+            try
+            { 
+                Bundle bundle = intent.Extras;
+                Bundle b = intent.Extras; //Where myIntent is of course an Intent
+                ICollection<string> c = b.KeySet(); //This is the collection of extras
+                Dictionary<string, string> d = new Dictionary<string, string>();
+
+                foreach (var key in c)
                 {
-                    Bundle bundle = intent.Extras;
-                    Bundle b = intent.Extras; //Where myIntent is of course an Intent
-                    ICollection<string> c = b.KeySet(); //This is the collection of extras
-                    Dictionary<string, string> d = new Dictionary<string, string>();
-
-                    foreach (var key in c)
-                    {
-                        Object v = b.Get(key);
-                        d.Add(key, v.ToString());
-                        Console.WriteLine($"######## {key} : {v}");
-                        Console.WriteLine($"######## value type: {v.GetType().Name}");
-                    }
-
-                    bool isGroup = intent.Extras.GetString("IsGroup", "0") != "0";
-
-                    string target = intent.Extras.GetString("Type");
-                    if (string.IsNullOrWhiteSpace(target))
-                    {
-                        Analytics.TrackEvent("Push Intent target is null");
-                    }
-                    else
-                        Analytics.TrackEvent($"Push Intent target: {target.ToString()}, Group action: {isGroup}");
-                    int finalTarget = 0;
-                    if (!string.IsNullOrWhiteSpace(target) && Enum.TryParse(target, true, out ManageGo.Models.PushNotificationType value))
-                    {
-                        Analytics.TrackEvent($"Push target null; Action: {value.ToString()}");
-                        finalTarget = (int)value;
-                    }
-                    else if (Enum.TryParse(intent.Action, true, out ManageGo.Models.PushNotificationType _value))
-                    {
-                        Analytics.TrackEvent($"Push target null; Action: {_value.ToString()}");
-                        finalTarget = (int)_value;
-                    }
-                    Console.WriteLine($"Push target: {finalTarget}");
-                    var objectId = intent.Extras.GetString("NotificationObject");
-                    Console.WriteLine($"object id string: {objectId}");
-                    if (int.TryParse(objectId, out int convertedId) && convertedId != default)
-                    {
-                        Console.WriteLine($"object id int: {convertedId}");
-                        await App.NotificationReceived(finalTarget, convertedId, isGroup);
-                    }
+                    Object v = b.Get(key);
+                    d.Add(key, v.ToString());
+                    Console.WriteLine($"######## {key} : {v}");
+                    Console.WriteLine($"######## value type: {v.GetType().Name}");
                 }
-                catch (Exception ex)
+
+                bool isGroup = intent.Extras.GetString("IsGroup", "0") != "0";
+
+                string target = intent.Extras.GetString("Type");
+                if (string.IsNullOrWhiteSpace(target))
                 {
-                    Crashes.TrackError(ex);
+                    Analytics.TrackEvent("Push Intent target is null");
+                }
+                else
+                    Analytics.TrackEvent($"Push Intent target: {target.ToString()}, Group action: {isGroup}");
+                int finalTarget = 0;
+                if (!string.IsNullOrWhiteSpace(target) && Enum.TryParse(target, true, out ManageGo.Models.PushNotificationType value))
+                {
+                    Analytics.TrackEvent($"Push target null; Action: {value.ToString()}");
+                    finalTarget = (int)value;
+                }
+                else if (Enum.TryParse(intent.Action, true, out ManageGo.Models.PushNotificationType _value))
+                {
+                    Analytics.TrackEvent($"Push target null; Action: {_value.ToString()}");
+                    finalTarget = (int)_value;
+                }
+                Console.WriteLine($"Push target: {finalTarget}");
+                var objectId = intent.Extras.GetString("NotificationObject");
+                Console.WriteLine($"object id string: {objectId}");
+                if (int.TryParse(objectId, out int convertedId) && convertedId != default)
+                {
+                    Console.WriteLine($"object id int: {convertedId}");
+                    await App.NotificationReceived(finalTarget, convertedId, isGroup);
                 }
             }
+            catch (Exception ex)
+            {
+                Crashes.TrackError(ex);
+            }
+            
         }
         
         void CreateNotificationChannel()

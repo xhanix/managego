@@ -103,6 +103,50 @@ namespace ManageGo
                 if (!UserLoggedOut)
                     DependencyService.Get<ILocalAuthHelper>().Authenticate(userName, OnBiometricAuthSuccess, onFailure);
             }
+
+            try
+            {
+#if DEBUG
+             var lastTimeCheck = Xamarin.Essentials.Preferences.Get("LastVersionCheck", DateTime.MinValue);
+            if (true)
+            {
+                Xamarin.Essentials.Preferences.Set("LastVersionCheck", DateTime.Now);
+                MGDataAccessLibrary.DevicePlatform plaform =
+                    Xamarin.Forms.Device.RuntimePlatform == Xamarin.Forms.Device.iOS ?
+                    MGDataAccessLibrary.DevicePlatform.iOS : MGDataAccessLibrary.DevicePlatform.Android;
+                var currentVer = int.Parse(Xamarin.Essentials.VersionTracking.CurrentVersion.Replace(".", ""));
+                var needsUpdate = await MGDataAccessLibrary.BussinessLogic.AppVersionProcessor.AppNeedsUpdate(currentVer, plaform);
+                if (needsUpdate && !ShowedUpdateAlert)
+                {
+                        ShowedUpdateAlert = true;
+                        await CoreMethods.PushPageModel<UpdatePageModel>(data: null, modal: true);
+                    var updatedPage = FreshPageModelResolver.ResolvePageModel<UpdatePageModel>();
+                }
+            }
+#else
+                var lastTimeCheck = Xamarin.Essentials.Preferences.Get("LastVersionCheck", DateTime.MinValue);
+                if (lastTimeCheck == DateTime.MinValue || DateTime.Now >= lastTimeCheck.AddMinutes(10))
+                {
+                    Xamarin.Essentials.Preferences.Set("LastVersionCheck", DateTime.Now);
+                    MGDataAccessLibrary.DevicePlatform plaform =
+                        Xamarin.Forms.Device.RuntimePlatform == Xamarin.Forms.Device.iOS ?
+                        MGDataAccessLibrary.DevicePlatform.iOS : MGDataAccessLibrary.DevicePlatform.Android;
+                    var currentVer = int.Parse(Xamarin.Essentials.VersionTracking.CurrentVersion.Replace(".", ""));
+                    var needsUpdate = await MGDataAccessLibrary.BussinessLogic.AppVersionProcessor.AppNeedsUpdate(currentVer, plaform);
+                    if (needsUpdate && !ShowedUpdateAlert)
+                    {
+                        ShowedUpdateAlert = true;
+                        await CoreMethods.PushPageModel<UpdatePageModel>(data: null, modal: true);
+                        var updatedPage = FreshPageModelResolver.ResolvePageModel<UpdatePageModel>();
+                    }
+                }
+#endif
+            }
+            catch (Exception ex)
+            {
+                Crashes.TrackError(ex);
+            }
+
         }
 
         private void OnBiometricAuthSuccess()
@@ -284,5 +328,6 @@ namespace ManageGo
         }
 
         public bool UserLoggedOut { get; private set; }
+        public bool ShowedUpdateAlert { get; private set; }
     }
 }

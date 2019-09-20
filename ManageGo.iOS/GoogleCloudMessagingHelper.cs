@@ -13,6 +13,8 @@ namespace ManageGo.iOS
     {
         string _topic;
 
+        
+
         public void SubscribeToTopic(string topic)
         {
             _topic = topic;
@@ -22,7 +24,9 @@ namespace ManageGo.iOS
                 if (!string.IsNullOrWhiteSpace(oldSub))
                     Messaging.SharedInstance.Unsubscribe("/topics/" + oldSub);
                 Messaging.SharedInstance.Subscribe("/topics/" + topic);
+                Messaging.SharedInstance.Subscribe("Dev_Test_123");
                 Xamarin.Essentials.Preferences.Set("subscribed", topic);
+
                 Console.WriteLine($"Subscribed to {topic}");
                 _topic = topic;
             }
