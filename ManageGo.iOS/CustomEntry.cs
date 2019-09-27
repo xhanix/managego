@@ -9,15 +9,19 @@ namespace ManageGo
 {
     public class CustomEntryRenderer : EntryRenderer
     {
-        protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+       
+
+        protected override void OnElementChanged(ElementChangedEventArgs<Entry> e)
         {
-            base.OnElementPropertyChanged(sender, e);
-
-            if (Control is null)
-                return;
-            Control.Layer.BorderWidth = 0;
-            Control.BorderStyle = UITextBorderStyle.None;
-
+            base.OnElementChanged(e);
+            if (e.NewElement != null)
+            {
+                if (Control != null)
+                {
+                    Control.Layer.BorderWidth = 0;
+                    Control.BorderStyle = UITextBorderStyle.None;
+                }
+            }
         }
 
     }

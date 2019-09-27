@@ -304,14 +304,14 @@ namespace ManageGo
 
                         var allowedCategories = Categories.Select(c => c.CategoryID);
 
-                        if (Users.Any(t => t.IsSelected && (t.Categories is null || !t.Categories.Any())))
+                        if (Users.Any(t => t.IsSelected && t.Categories != null && !t.Categories.Any()))
                         {
+                            //at least one of the selected users does not have access to any categories
                             DisableAllCategories();
-
                         }
                         else
                         {
-                            foreach (var user in Users.Where(user => user.IsSelected))
+                            foreach (var user in Users.Where(user => user.IsSelected && user.Categories != null))
                             {
                                 allowedCategories = allowedCategories.Intersect(user.Categories);
                             }
@@ -514,7 +514,7 @@ namespace ManageGo
                             if (u.Categories.Intersect(selectedCats).Count() == selectedCats.Count())
                                 u.IsEnabled = true;
                         }
-
+                        Users.Where(user => user.Categories is null).ToList().ForEach(u => u.IsEnabled = true);
                     }
                     else
                     {

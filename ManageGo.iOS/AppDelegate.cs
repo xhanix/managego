@@ -122,7 +122,6 @@ namespace ManageGo.iOS
             {
                 Crashes.TrackError(ex);
             }
-            
         }
 
         public static void ShowMessage(string title, string message, UIViewController fromViewController, Action actionForOk = null)
