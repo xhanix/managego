@@ -32,7 +32,6 @@
         <CodesignKey>iPhone Developer: Hani Ebrahimi (RC3GWVX7G2)</CodesignKey>
 <RunCodeAnalysis>true</RunCodeAnalysis><MtouchFloat32>true</MtouchFloat32>
 <MtouchEnableSGenConc>true</MtouchEnableSGenConc>
-<MtouchSdkVersion>13.0</MtouchSdkVersion>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
         <DebugType>none</DebugType>

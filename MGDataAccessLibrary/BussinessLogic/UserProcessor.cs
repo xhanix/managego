@@ -11,17 +11,17 @@ namespace MGDataAccessLibrary.BussinessLogic
         public static async Task<Models.LoginResponse> Login(string userName, string password, Action<Models.LoginResponse> onNewLoginDataAvailable)
         {
             onRefreshedToken = onNewLoginDataAvailable;
-            /*
-            #if DEBUG
-                userName = "pmc@mobile.test";
-                password = "Aa1111";
-            #endif
-            */
 
 #if DEBUG
-            userName = "Waltz11211@gmail.com";//"xhanix@me.com";
-            password = "MGwaltz311";//"Hani123";
+            userName = "pmc@mobile.test";
+            password = "Aa1111";
 #endif
+            var token = Xamarin.Essentials.Preferences.Get("RefToken", string.Empty);
+            /*
+            #if DEBUG
+                        userName = "Waltz11211@gmail.com";//"xhanix@me.com";
+                        password = "MGwaltz311";//"Hani123";
+            #endif*/
 
 
             var request = new Models.LoginRequest { Login = userName, Password = password };
