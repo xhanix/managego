@@ -7,4 +7,10 @@ namespace MGDataAccessLibrary.Models
         public string ErrorMessage { get; set; }
         public T Result { get; set; }
     }
+
+    public class BaseApiV3Response<T>
+    {
+        public string AccessToken { get; set; }
+        public T Data { get; set; }
+    }
 }

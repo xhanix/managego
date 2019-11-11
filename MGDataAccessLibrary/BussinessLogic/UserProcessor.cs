@@ -13,10 +13,10 @@ namespace MGDataAccessLibrary.BussinessLogic
             onRefreshedToken = onNewLoginDataAvailable;
 
 #if DEBUG
-            userName = "pmc@mobile.test";
-            password = "Aa1111";
+            //    userName = "pmc@mobile.test";
+            //   password = "Aa1111";
 #endif
-            var token = Xamarin.Essentials.Preferences.Get("RefToken", string.Empty);
+
             /*
             #if DEBUG
                         userName = "Waltz11211@gmail.com";//"xhanix@me.com";

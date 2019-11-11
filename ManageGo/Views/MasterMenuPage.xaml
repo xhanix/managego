@@ -7,7 +7,7 @@
             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
             x:Class="ManageGo.MasterMenuPage">
     <ContentPage.Resources>
-         <ResourceDictionary>
+        <ResourceDictionary>
             <Style TargetType="BoxView">
                 <Setter Property="HeightRequest" Value="1" />
                 <Setter Property="HorizontalOptions" Value="FillAndExpand" />
@@ -16,7 +16,7 @@
         </ResourceDictionary>
     </ContentPage.Resources>
     <StackLayout Spacing="0">
-         <Button BackgroundColor="Transparent"
+        <Button BackgroundColor="Transparent"
                     Command="{Binding OnMasterMenuTapped}"
                     HorizontalOptions="Start"
                     IsVisible="{Binding HamburgerIsVisible}"
@@ -50,6 +50,11 @@
                     <Label Text="Maintenance" TextColor="{StaticResource Grey-Dark-1}" FontSize="Medium"  VerticalOptions="CenterAndExpand" />
                     <Button Text="Maintenance" Command="{Binding OnMaintenanceTapped}" FontSize="Small" BackgroundColor="Transparent" TextColor="Transparent" HorizontalOptions="Fill"/>
                 </Grid>
+                <BoxView IsVisible="true" BackgroundColor="{StaticResource Grey-Light-2}"/>
+                <Grid Margin="0,0,4,0" IsVisible="{Binding MaintenanceIsVisible}">
+                    <Label Text="Amenities" TextColor="{StaticResource Grey-Dark-1}" FontSize="Medium"  VerticalOptions="CenterAndExpand" />
+                    <Button Text="Amenities" Command="{Binding OnAmenitiesTapped}" FontSize="Small" BackgroundColor="Transparent" TextColor="Transparent" HorizontalOptions="Fill"/>
+                </Grid>
                 <BoxView BackgroundColor="{StaticResource Grey-Light-2}"/>
                 <Grid Margin="0,0,4,0">
                     <Label Text="Calendar" TextColor="{StaticResource Grey-Dark-1}" FontSize="Medium"  VerticalOptions="CenterAndExpand" />
@@ -82,7 +87,7 @@
                 </Grid>
                 <BoxView BackgroundColor="{StaticResource Grey-Light-2}"/>
                 <Grid Margin="0,0,4,0">
-                     <Label Text="Logout" TextColor="{StaticResource Grey-Dark-1}" FontSize="Medium"  VerticalOptions="CenterAndExpand" />
+                    <Label Text="Logout" TextColor="{StaticResource Grey-Dark-1}" FontSize="Medium"  VerticalOptions="CenterAndExpand" />
                     <Button Text="Logout" Command="{Binding OnLogoutTapped}" FontSize="Small" BackgroundColor="Transparent" TextColor="Transparent" HorizontalOptions="Fill"/>
                 </Grid>
                 <BoxView BackgroundColor="{StaticResource Grey-Light-1}"/>
@@ -90,22 +95,22 @@
                 <StackLayout Orientation="Horizontal" Margin="0,8,0,0">
                     <Label Text="Email: " TextColor="Gray" FontSize="Small"/>
                     <Label Text="support@managego.com" TextColor="#318bfa" FontSize="Small">
-                         <Label.GestureRecognizers>
+                        <Label.GestureRecognizers>
                             <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Handle_Tapped" />
                         </Label.GestureRecognizers>
                     </Label>
                 </StackLayout>
                 <StackLayout Orientation="Horizontal" Margin="0,8,0,12">
                     <Label Text="Phone: " TextColor="Gray" FontSize="Small">
-                       
+
                     </Label>
                     <Label Text="212-300-7950" TextColor="#318bfa" FontSize="Small">
-                         <Label.GestureRecognizers>
+                        <Label.GestureRecognizers>
                             <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="Handle_Tapped_1" />
                         </Label.GestureRecognizers>
                     </Label>
                 </StackLayout>
             </StackLayout>
         </ScrollView>
-        </StackLayout>
+    </StackLayout>
 </ContentPage>

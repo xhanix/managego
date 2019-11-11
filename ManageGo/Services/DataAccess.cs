@@ -52,14 +52,14 @@ namespace ManageGo.Services
 
             if (App.Buildings is null)
                 GetBuildings().ConfigureAwait(false);
-            if (App.BankAccounts is null)
+            if (App.BankAccounts is null && perm.CanAccessPayments)
                 GetBankAccounts().ConfigureAwait(false);
             if (App.Categories is null || App.Categories.Count == 0)
             {
                 GetAllCategoriesAndTags().ConfigureAwait(false);
                 GetAllUsers().ConfigureAwait(false);
             }
-           
+
         }
 
         public static async Task Login(string userName = null, string password = null)
@@ -102,7 +102,7 @@ namespace ManageGo.Services
                 App.UserPermissions |= UserPermissions.CanEditTicketDetails;
         }
 
-       
+
 
         public static async Task ResetPassword(string userName)
         => await MGDataAccessLibrary.DataAccess.WebAPI.PostItem<object, object>(new { PMCUserEmailAddress = userName }

@@ -241,6 +241,17 @@ namespace ManageGo
             }
         }
 
+        public FreshAwaitCommand OnAmenitiesTapped => new FreshAwaitCommand((tcs) =>
+        {
+            Analytics.TrackEvent("Ameneties menu tapped");
+
+            if (!App.MasterDetailNav.Pages.ContainsKey("Ameneties"))
+                App.MasterDetailNav.AddPage<AmenitiesListPageModel>("Ameneties");
+            App.MasterDetailNav.SwitchSelectedRootPageModel<AmenitiesListPageModel>();
+            App.MenuIsPresented = false;
+            tcs?.SetResult(true);
+        });
+
         public FreshAwaitCommand OnLogoutTapped
         {
             get
@@ -258,7 +269,7 @@ namespace ManageGo
                     App.UserPermissions = UserPermissions.None;
                     App.Users = null;
                     OnLogout?.Invoke(this, true);
-                    
+
                 });
             }
         }

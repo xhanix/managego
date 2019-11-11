@@ -10,7 +10,7 @@ namespace MGDataAccessLibrary.DataAccess
 {
     public static class WebAPI
     {
-        private static HttpClient WebClient { get; set; }
+        internal static HttpClient WebClient { get; set; }
 #if DEBUG
         private const string BaseUrl = "https://ploop.dynamo-ny.com/api/pmc_v2/";
 #else
@@ -56,6 +56,7 @@ namespace MGDataAccessLibrary.DataAccess
                     AccessToken = RefreshToken
                 };
                 WebClient.DefaultRequestHeaders.Remove("AccessToken");
+                WebClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(RefreshToken);
                 WebClient.DefaultRequestHeaders.Add("AccessToken", RefreshToken);
                 res = await PostForm<Models.LoginRequest, Models.LoginResponse>(request, DataAccess.ApiEndPoint.authorize, null);
 
@@ -84,18 +85,16 @@ namespace MGDataAccessLibrary.DataAccess
             var path = enpoint.ToString();
             if (!string.IsNullOrWhiteSpace(subpath))
                 path = path + @"/" + subpath;
-            using (var response = await WebClient.PostAsync(path, content))
+            using var response = await WebClient.PostAsync(path, content);
+            if (!response.IsSuccessStatusCode)
             {
-                if (!response.IsSuccessStatusCode)
-                {
-                    var result = await response.Content.ReadAsStringAsync();
-                    throw new Exception(result);
-                }
-                else
-                {
-                    var result = await response.Content.ReadAsApiResponseForType<T2>(requestBody: myContent);
-                    return result;
-                }
+                var result = await response.Content.ReadAsStringAsync();
+                throw new Exception(result);
+            }
+            else
+            {
+                var result = await response.Content.ReadAsApiResponseForType<T2>(requestBody: myContent);
+                return result;
             }
         }
 
@@ -109,6 +108,7 @@ namespace MGDataAccessLibrary.DataAccess
         {
             WebClient.DefaultRequestHeaders.Remove("AccessToken");
             WebClient.DefaultRequestHeaders.Add("AccessToken", accessToken);
+            WebClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(accessToken);
             RefreshToken = accessToken;
             Xamarin.Essentials.Preferences.Set("RefToken", accessToken);
 #if DEBUG
