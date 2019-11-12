@@ -11,11 +11,11 @@ namespace MGDataAccessLibrary.DataAccess
     public static class WebAPI
     {
         internal static HttpClient WebClient { get; set; }
-#if DEBUG
-        private const string BaseUrl = "https://ploop.dynamo-ny.com/api/pmc_v2/";
-#else
+        //#if DEBUG
+        // private const string BaseUrl = "https://ploop.dynamo-ny.com/api/pmc_v2/";
+        //#else
         private const string BaseUrl = "https://portal.managego.com/api/pmc_v2/";
-#endif
+        //#endif
         private static DateTimeOffset TokenExpiry { get; set; } = default;
         internal static string UserName { get; set; }
         internal static string Password { get; set; }

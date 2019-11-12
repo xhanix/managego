@@ -64,7 +64,12 @@ namespace ManageGo
                         tcs?.SetResult(true);
                         return;
                     }
-
+                    if (Categories is null || !Categories.Any(t => t.IsSelected))
+                    {
+                        await CoreMethods.DisplayAlert("Cannot create ticket", "Please select a category.", "OK");
+                        tcs?.SetResult(true);
+                        return;
+                    }
                     var ticketPriority = TicketPriorities.Medium;
                     if (PriorityLabelText.ToLower() == "low")
                         ticketPriority = TicketPriorities.Low;

@@ -51,19 +51,19 @@ namespace ManageGo.Droid
             CreateNotificationChannel();
         }
 
-    
+
 
         protected override async void OnNewIntent(Intent intent)
         {
-           
+
             base.OnNewIntent(intent);
             if (intent is null || intent.Extras is null)
             {
-                Analytics.TrackEvent("Intent is null");
+                Analytics.TrackEvent("Intent or Intent.Extras is null");
                 return;
             }
             try
-            { 
+            {
                 Bundle bundle = intent.Extras;
                 Bundle b = intent.Extras; //Where myIntent is of course an Intent
                 ICollection<string> c = b.KeySet(); //This is the collection of extras
@@ -110,9 +110,9 @@ namespace ManageGo.Droid
             {
                 Crashes.TrackError(ex);
             }
-            
+
         }
-        
+
         void CreateNotificationChannel()
         {
             if (Build.VERSION.SdkInt < BuildVersionCodes.O)

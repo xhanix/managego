@@ -12,12 +12,12 @@ namespace ManageGo
         public bool PaymentsIsVisible { get; private set; }
         public bool MaintenanceIsVisible { get; private set; }
         public bool NotificationsIsVisible { get; private set; }
+        public bool TenantIsVisible { get; private set; }
 
         internal event EventHandler<bool> OnLogout;
         public MasterMenuPageModel()
         {
             HamburgerIsVisible = true;
-
         }
 
         protected override void ViewIsAppearing(object sender, EventArgs e)
@@ -26,6 +26,7 @@ namespace ManageGo
             PaymentsIsVisible = App.UserPermissions.HasFlag(UserPermissions.CanAccessPayments);
             MaintenanceIsVisible = App.UserPermissions.HasFlag(UserPermissions.CanAccessTickets);
             NotificationsIsVisible = App.UserPermissions.HasFlag(UserPermissions.CanApproveNewTenantsUnits);
+            TenantIsVisible = App.UserPermissions.HasFlag(UserPermissions.CanAccessTenants);
         }
 
         public FreshAwaitCommand OnSupportEmailTapped

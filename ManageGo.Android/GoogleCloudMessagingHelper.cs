@@ -18,7 +18,7 @@ namespace ManageGo.Droid
             if (!string.IsNullOrWhiteSpace(oldSub))
                 FirebaseMessaging.Instance.UnsubscribeFromTopic("/topics/" + oldSub);
             FirebaseMessaging.Instance.SubscribeToTopic("/topics/" + topic);
-            Console.WriteLine($"FCM token: {FirebaseInstanceId.Instance.Token}");
+            //Console.WriteLine($"FCM token: {FirebaseInstanceId.Instance.Token}");
             FirebaseMessaging.Instance.SubscribeToTopic("dev_0505_dev");
             Xamarin.Essentials.Preferences.Set("subscribed", topic);
             Console.WriteLine($"Subscribed to {topic}");

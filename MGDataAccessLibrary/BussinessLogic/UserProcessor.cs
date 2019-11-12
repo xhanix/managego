@@ -13,8 +13,29 @@ namespace MGDataAccessLibrary.BussinessLogic
             onRefreshedToken = onNewLoginDataAvailable;
 
 #if DEBUG
-            //    userName = "pmc@mobile.test";
-            //   password = "Aa1111";
+            // userName = "pmc@mobile.test";
+            // password = "Aa1111";
+
+            //no access to bank account
+            //userName = "aidenclk11@gmail.com";
+            //password = "Qwerasdf1";
+
+            //no access to tenants
+            //userName = "apptest@test.com";
+            //password = "Qwerasdf1";
+
+            //no access to payments
+            //userName = "apptest2@test.com";
+            //password = "Qwerasdf1";
+
+            //no access to Maintenance
+            //userName = "apptest3@test.com";
+            //password = "Qwerasdf1";
+
+            //pmc production
+            userName = "aidenclk1@gmail.com";
+            password = "Qwerasdf1";
+
 #endif
 
             /*

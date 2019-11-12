@@ -17,7 +17,8 @@ namespace ManageGo
     {
         private bool filterSelectViewIsShown;
 
-        public bool FilterSelectViewIsShown {
+        public bool FilterSelectViewIsShown
+        {
             get => filterSelectViewIsShown;
             set
             {
@@ -161,7 +162,7 @@ namespace ManageGo
             }
             finally
             {
-                NothingFetched = !FetchedTenants.Any();
+                NothingFetched = FetchedTenants is null || !FetchedTenants.Any();
                 HasLoaded = true;
                 ((TenantsPage)CurrentPage).DataLoaded();
             }

@@ -29,51 +29,55 @@ namespace ManageGo.Droid
         {
             try
             {
+
                 if (string.IsNullOrWhiteSpace(localFilePath))
                 {
-                    Console.WriteLine("Plugin.ShareFile: ShareLocalFile Warning: localFilePath null or empty");
+                    Console.WriteLine("ShareFile: ShareLocalFile Warning: localFilePath null or empty");
                     return;
                 }
 
-                // if (!localFilePath.StartsWith("file://", StringComparison.CurrentCulture))
-                //   localFilePath = string.Format("file://{0}", localFilePath);
+                var fileName = System.IO.Path.GetFileName(localFilePath);
+                Java.IO.File dir = Android.OS.Environment.GetExternalStoragePublicDirectory(Android.OS.Environment.DirectoryDownloads);
+                Java.IO.File file = new Java.IO.File(dir, fileName);
+                Android.Net.Uri path = FileProvider.GetUriForFile(CrossCurrentActivity.Current.AppContext, "com.ManageGo.ManageGo.ManageGo.pcm", file);
+                file.SetReadable(true, false);
+                var email = new Intent(Intent.ActionSend);
+                email.PutExtra(Intent.ExtraEmail, new string[] { "" });
+                email.PutExtra(Android.Content.Intent.ExtraCc, new string[] { "" });
+                email.PutExtra(Intent.ExtraSubject, "Attached File");
+                email.PutExtra(Intent.ExtraText, "See attached file");
+                email.PutExtra(Intent.ExtraStream, path);
 
-                var fileUri = Android.Net.Uri.Parse(localFilePath);
+                email.SetFlags(ActivityFlags.NewTask);
 
-                var intent = new Intent();
-                intent.SetFlags(ActivityFlags.ClearTop);
-                intent.SetFlags(ActivityFlags.NewTask);
-                intent.SetAction(Intent.ActionView);
-                //intent.SetType("*/*");
-                //intent.PutExtra(Intent.ExtraStream, fileUri);
-                intent.PutExtra(Intent.ExtraText, title);
-                //intent.PutExtra(Intent.ExtraSubject, string.Empty);
-                intent.SetFlags(ActivityFlags.GrantReadUriPermission);
-                Java.IO.File file = new Java.IO.File(localFilePath);
-                file.SetReadable(true);
-                var uri = FileProvider.GetUriForFile(CrossCurrentActivity.Current.AppContext, CrossCurrentActivity.Current.AppContext.PackageName + ".ManageGo.pcm", file);
+
                 var type = "*/*";
                 if (localFilePath.EndsWith("pdf", StringComparison.Ordinal) || localFilePath.EndsWith("ai", StringComparison.Ordinal))
+                {
                     type = "application/pdf";
-                else if (localFilePath.EndsWith("jpg", StringComparison.Ordinal)
+                    email.SetType("message/rfc822");
+                    email.SetDataAndType(path, type);
+                }
+                else
+                {
+                    if (localFilePath.EndsWith("jpg", StringComparison.Ordinal)
                          || localFilePath.EndsWith("jpeg", StringComparison.Ordinal)
                          || localFilePath.EndsWith("png", StringComparison.Ordinal)
                          || localFilePath.EndsWith("tiff", StringComparison.Ordinal)
                          || localFilePath.EndsWith("gif", StringComparison.Ordinal)
                          || localFilePath.EndsWith("bmp", StringComparison.Ordinal))
-                    type = "image/*";
-                else if (localFilePath.EndsWith("mp4", StringComparison.Ordinal) || localFilePath.EndsWith("mpeg", StringComparison.Ordinal) || localFilePath.EndsWith("mpg", StringComparison.Ordinal))
-                    type = "video/mp4";
-                else if (localFilePath.EndsWith("wav", StringComparison.Ordinal))
-                    type = "video/wav";
-                else
-                    intent.SetAction(Intent.ActionSend);
-                intent.SetDataAndType(uri, type);
-                var chooserIntent = Intent.CreateChooser(intent, title);
-                chooserIntent.SetFlags(ActivityFlags.ClearTop);
-                chooserIntent.SetFlags(ActivityFlags.NewTask);
-                //intent.SetFlags(ActivityFlags.ClearWhenTaskReset | ActivityFlags.NewTask);
-                Android.App.Application.Context.StartActivity(chooserIntent);
+                        type = "image/*";
+                    else if (localFilePath.EndsWith("mp4", StringComparison.Ordinal) || localFilePath.EndsWith("mpeg", StringComparison.Ordinal) || localFilePath.EndsWith("mpg", StringComparison.Ordinal))
+                        type = "video/mp4";
+                    else if (localFilePath.EndsWith("wav", StringComparison.Ordinal))
+                        type = "video/wav";
+                    email.SetDataAndType(path, type);
+                }
+
+                //
+
+                CrossCurrentActivity.Current.AppContext.StartActivity(email);
+
             }
             catch (Exception ex)
             {
@@ -107,6 +111,12 @@ namespace ManageGo.Droid
                 if (ex != null && !string.IsNullOrWhiteSpace(ex.Message))
                     Console.WriteLine("Exception in Plugin.ShareFile: ShareRemoteFile Exception: {0}", ex.Message);
             }
+        }
+
+        public string GetPublicExternalFolderPath()
+        {
+
+            return Android.OS.Environment.GetExternalStoragePublicDirectory(Android.OS.Environment.DirectoryDownloads).AbsolutePath;
         }
 
         /// <summary>

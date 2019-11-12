@@ -14,6 +14,7 @@ namespace ManageGo
         public bool BackbuttonIsVisible { get; private set; }
         public string BuildingName { get; set; }
         public List<Unit> Units { get; set; }
+        public bool CanSelectTenants { get; set; }
         public override void Init(object initData)
         {
             base.Init(initData);
@@ -27,6 +28,7 @@ namespace ManageGo
         {
             base.ViewIsAppearing(sender, e);
             App.MasterDetailNav.IsGestureEnabled = false;
+            CanSelectTenants = App.UserPermissions.HasFlag(UserPermissions.CanAccessTenants);
         }
 
         protected override void ViewIsDisappearing(object sender, EventArgs e)
@@ -55,6 +57,8 @@ namespace ManageGo
             {
                 async void execute(object par, TaskCompletionSource<bool> tcs)
                 {
+                    if (!CanSelectTenants)
+                        return;
                     Unit unit = (Unit)par;
                     if (string.IsNullOrWhiteSpace(unit.FormattedTenantNames))
                         return;

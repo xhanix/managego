@@ -13,6 +13,11 @@ namespace ManageGo.iOS
 {
     public class ShareFileImplementation : IShareFile
     {
+        public string GetPublicExternalFolderPath()
+        {
+            return Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+        }
+
         public void ShareLocalFile(string localFilePath, string title = "", object view = null)
         {
             try

@@ -24,7 +24,8 @@ namespace ManageGo
         public TransactionsRequestItem ParameterItem { get; set; }
         public string NumberOfAppliedFilters { get; internal set; } = " ";
 
-        public bool FilterSelectViewIsShown {
+        public bool FilterSelectViewIsShown
+        {
             get => filterSelectViewIsShown;
             set
             {
@@ -224,7 +225,7 @@ namespace ManageGo
                 FilterSelectViewIsShown = false;
                 PopContentView = null;
                 if (App.MasterDetailNav != null)
-                App.MasterDetailNav.IsGestureEnabled = true;
+                    App.MasterDetailNav.IsGestureEnabled = true;
             }
         }
 
@@ -299,15 +300,15 @@ namespace ManageGo
                     ParameterItem = new TransactionsRequestItem();
                     if (!string.IsNullOrWhiteSpace(FilterKeywords))
                         ParameterItem.Search = FilterKeywords;
-                    else
-                    {
-                        if (BankAccounts != null && BankAccounts.Any(f => f.IsSelected))
-                            ParameterItem.BankAccounts = BankAccounts.Where(f => f.IsSelected).Select(f => f.BankAccountID).ToList();
-                        ParameterItem.AmountFrom = FilteredAmountRange?.Item1;
-                        ParameterItem.AmountTo = FilteredAmountRange?.Item2 == 5000 ? null : FilteredAmountRange?.Item2;
-                        ParameterItem.DateFrom = DateRange.StartDate;
-                        ParameterItem.DateTo = DateRange.EndDate;
-                    }
+
+
+                    if (BankAccounts != null && BankAccounts.Any(f => f.IsSelected))
+                        ParameterItem.BankAccounts = BankAccounts.Where(f => f.IsSelected).Select(f => f.BankAccountID).ToList();
+                    ParameterItem.AmountFrom = FilteredAmountRange?.Item1;
+                    ParameterItem.AmountTo = FilteredAmountRange?.Item2 == 5000 ? null : FilteredAmountRange?.Item2;
+                    ParameterItem.DateFrom = DateRange.StartDate;
+                    ParameterItem.DateTo = DateRange.EndDate;
+
                     NumberOfAppliedFilters = ParameterItem.NumberOfAppliedFilters == 0 ? "" : $"{ParameterItem.NumberOfAppliedFilters}";
                     await LoadData(refreshData: true, FetchNextPage: false);
                     tcs?.SetResult(true);
@@ -388,7 +389,7 @@ namespace ManageGo
                 SelectedAmountRange = new Tuple<int?, int?>(0, 5000);
                 FilteredAmountRange = null;
                 BankAccounts?.ForEach(t => t.IsSelected = false);
-                
+
             }
         }
 

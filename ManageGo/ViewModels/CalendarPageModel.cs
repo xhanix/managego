@@ -44,8 +44,6 @@ namespace ManageGo
                         DateFrom = SelectedDate,
                         DateTo = SelectedDate.AddDays(1)
                     };
-
-
                     CalendarEvents = await Services.DataAccess.GetEventsForDate(requestItem);
                     DateHasNoEvents = false;
                 }
@@ -55,14 +53,6 @@ namespace ManageGo
                     CalendarEvents = new List<Models.CalendarEvent>();
                     DateHasNoEvents = true;
                 }
-            }
-            catch (Exception ex)
-            {
-                await CoreMethods.DisplayAlert("Something went wrong", ex.Message, "DISMISS");
-                APIhasFailed = true;
-            }
-            finally
-            {
                 HasLoaded = true;
                 var dic = new Models.EventsDatesRequestItem
                 {
@@ -71,6 +61,11 @@ namespace ManageGo
                 };
                 HighlightedDates = (await Services.DataAccess.GetEventsList(dic)).Dates.ToList();
                 ((CalendarPage)CurrentPage).DataLoaded();
+            }
+            catch (Exception ex)
+            {
+                await CoreMethods.DisplayAlert("Something went wrong", ex.Message, "DISMISS");
+                APIhasFailed = true;
             }
 
         }

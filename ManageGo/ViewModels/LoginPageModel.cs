@@ -107,22 +107,22 @@ namespace ManageGo
             try
             {
 #if DEBUG
-             var lastTimeCheck = Xamarin.Essentials.Preferences.Get("LastVersionCheck", DateTime.MinValue);
-            if (true)
-            {
-                Xamarin.Essentials.Preferences.Set("LastVersionCheck", DateTime.Now);
-                MGDataAccessLibrary.DevicePlatform plaform =
-                    Xamarin.Forms.Device.RuntimePlatform == Xamarin.Forms.Device.iOS ?
-                    MGDataAccessLibrary.DevicePlatform.iOS : MGDataAccessLibrary.DevicePlatform.Android;
-                var currentVer = int.Parse(Xamarin.Essentials.VersionTracking.CurrentVersion.Replace(".", ""));
-                var needsUpdate = await MGDataAccessLibrary.BussinessLogic.AppVersionProcessor.AppNeedsUpdate(currentVer, plaform);
-                if (needsUpdate && !ShowedUpdateAlert)
+                var lastTimeCheck = Xamarin.Essentials.Preferences.Get("LastVersionCheck", DateTime.MinValue);
+                if (true)
                 {
+                    Xamarin.Essentials.Preferences.Set("LastVersionCheck", DateTime.Now);
+                    MGDataAccessLibrary.DevicePlatform plaform =
+                        Xamarin.Forms.Device.RuntimePlatform == Xamarin.Forms.Device.iOS ?
+                        MGDataAccessLibrary.DevicePlatform.iOS : MGDataAccessLibrary.DevicePlatform.Android;
+                    var currentVer = int.Parse(Xamarin.Essentials.VersionTracking.CurrentVersion.Replace(".", ""));
+                    var needsUpdate = await MGDataAccessLibrary.BussinessLogic.AppVersionProcessor.AppNeedsUpdate(currentVer, plaform);
+                    if (needsUpdate && !ShowedUpdateAlert)
+                    {
                         ShowedUpdateAlert = true;
                         await CoreMethods.PushPageModel<UpdatePageModel>(data: null, modal: true);
-                    var updatedPage = FreshPageModelResolver.ResolvePageModel<UpdatePageModel>();
+                        var updatedPage = FreshPageModelResolver.ResolvePageModel<UpdatePageModel>();
+                    }
                 }
-            }
 #else
                 var lastTimeCheck = Xamarin.Essentials.Preferences.Get("LastVersionCheck", DateTime.MinValue);
                 if (lastTimeCheck == DateTime.MinValue || DateTime.Now >= lastTimeCheck.AddMinutes(10))
@@ -233,12 +233,16 @@ namespace ManageGo
                 List<Task> tasks = new List<Task>();
                 if (App.Buildings is null || !App.Buildings.Any())
                     tasks.Add(Services.DataAccess.GetBuildings());
-                if (App.BankAccounts is null || !App.BankAccounts.Any())
+                if (App.UserPermissions.HasFlag(UserPermissions.CanAccessPayments) && (App.BankAccounts is null || !App.BankAccounts.Any()))
                     tasks.Add(Services.DataAccess.GetBankAccounts());
+                if (App.Users is null || !App.Users.Any())
+                {
+                    tasks.Add(Services.DataAccess.GetAllUsers());
+                }
                 if (App.Categories is null || App.Categories.Count == 0)
                 {
                     tasks.Add(Services.DataAccess.GetAllCategoriesAndTags());
-                    tasks.Add(Services.DataAccess.GetAllUsers());
+
                 }
                 await Task.WhenAll(tasks);
 

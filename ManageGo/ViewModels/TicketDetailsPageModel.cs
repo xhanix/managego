@@ -70,7 +70,7 @@ namespace ManageGo
         [AlsoNotifyFor("CloseTicketButtonText")]
         TicketStatus TicketStatus { get; set; }
         public double ReplyAttachedFilesListHeight => CurrentReplyAttachments is null || !CurrentReplyAttachments.Any() ? 10 : CurrentReplyAttachments.Count * 28;
-
+        public bool CanSelectTenants { get; set; }
         public string DueDateRowIcon => DueDateCalendarView != null ? "chevron_down.png" : "chevron_right.png";
 
         public bool SetToTime { get; private set; }
@@ -190,10 +190,10 @@ namespace ManageGo
             CanCreateWorkorderAndEvents = App.UserPermissions.HasFlag(UserPermissions.CanAddWorkordersAndEvents);
             CanEditTicketDetails = App.UserPermissions.HasFlag(UserPermissions.CanEditTicketDetails);
             ClockTime.AddYears(1);
-           
+
         }
 
-       
+
 
         public override void ReverseInit(object returnedData)
         {
@@ -270,6 +270,12 @@ namespace ManageGo
             {
                 async void execute(TaskCompletionSource<bool> tcs)
                 {
+                    if (Categories is null || !Categories.Any(t => t.IsSelected))
+                    {
+                        await CoreMethods.DisplayAlert("Cannot edit ticket details", "Please select category", "OK");
+                        tcs?.SetResult(true);
+                        return;
+                    }
                     OnHideDetailsTapped.Execute(null);
                     var ticketPriority = TicketPriorities.Medium;
                     if (PriorityLabelText.ToLower() == "low")
@@ -317,13 +323,13 @@ namespace ManageGo
                 async void execute(object par, TaskCompletionSource<bool> tcs)
                 {
                     //show tenant details as popup
+                    if (!CanSelectTenants)
+                        return;
                     if (Comments?.FirstOrDefault() == (Comments)par)
                     {
                         CurrentTicket.Tenant.TenantDetails = CurrentTicket.TenantDetails;
-
                         await CoreMethods.PushPageModel<TenantDetailPageModel>(CurrentTicket.Tenant, modal: true);
                     }
-
                     tcs?.SetResult(true);
                 }
                 return new FreshAwaitCommand(execute);
@@ -497,7 +503,7 @@ namespace ManageGo
                 {
                     var file = param as File;
 
-                    //get file                                 };
+                    //get file                            };
                     var requestItem = new MGDataAccessLibrary.Models.CommentFileRequestItem
                     {
                         FileID = file.ID,
@@ -514,8 +520,23 @@ namespace ManageGo
                     }
                     else
                     {
-                        //save the file to Documents folder and pass path to webview
-                        var documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+                        //permission effective in Android only
+                        var canAccessStorage = await CrossPermissions.Current.CheckPermissionStatusAsync(Plugin.Permissions.Abstractions.Permission.Storage);
+                        if (canAccessStorage != Plugin.Permissions.Abstractions.PermissionStatus.Granted)
+                        {
+                            var needsShowAlert = await CrossPermissions.Current.ShouldShowRequestPermissionRationaleAsync(Plugin.Permissions.Abstractions.Permission.Storage);
+                            if (needsShowAlert)
+                                await CoreMethods.DisplayAlert("ManageGo", "Need access to storage", "OK");
+                            await CrossPermissions.Current.RequestPermissionsAsync(Plugin.Permissions.Abstractions.Permission.Storage);
+                            canAccessStorage = await CrossPermissions.Current.CheckPermissionStatusAsync(Plugin.Permissions.Abstractions.Permission.Storage);
+                        }
+
+                        if (canAccessStorage != Plugin.Permissions.Abstractions.PermissionStatus.Granted)
+                        {
+                            await CoreMethods.DisplayAlert("ManageGo", "This app requires access to external storage.", "OK");
+                            return;
+                        }
+                        var documentsPath = DependencyService.Get<IShareFile>().GetPublicExternalFolderPath();
                         string filePath = Path.Combine(documentsPath, file.Name);
 
                         using (FileStream fs = new FileStream(filePath, FileMode.Create))
@@ -998,6 +1019,7 @@ namespace ManageGo
         {
             base.ViewIsAppearing(sender, e);
             App.MasterDetailNav.IsGestureEnabled = false;
+            CanSelectTenants = App.UserPermissions.HasFlag(UserPermissions.CanAccessTenants);
             if (Data is null)
                 return;
             if (Data.TryGetValue("TicketNumber", out object ticketNumber))
@@ -1139,7 +1161,13 @@ namespace ManageGo
                     CategoryLabelText = CategoryLabelText + $", +{Categories.Count(t => t.IsSelected) - 1} more";
                     CategoryLabelColor = "#58595B";
                 }
+                if (Users != null && Users.Any())
+                {
+                    DisableAllUsers();
+                    Users.ForEach(user => user.IsEnabled = user.Categories is null || !user.Categories.Any() || user.Categories.Contains(TicketDetails.Categories.First().CategoryID));
+                }
             }
+
 
             if (TicketDetails.Tags != null && TicketDetails.Tags.Any())
             {
@@ -1246,52 +1274,26 @@ namespace ManageGo
 
         void ClearCategorySelections()
         {
-            foreach (var c in Categories)
-            {
-                c.IsSelected = false;
-            }
+            Categories.ForEach(cat => cat.IsSelected = false);
+            CategoryLabelText = "Select";
         }
 
-        void EnableAllCategories()
-        {
-            foreach (var c in Categories)
-            {
-                c.IsEnabled = true;
-            }
-        }
+        void EnableAllCategories() => Categories.ForEach(t => t.IsEnabled = true);
 
-        void DisableAllCategories()
-        {
-            foreach (var c in Categories)
-            {
-                c.IsEnabled = false;
-            }
-        }
+
+        void DisableAllCategories() => Categories.ForEach(t => t.IsEnabled = false);
+
 
         void ClearUserSelections()
         {
-            foreach (var u in Users)
-            {
-                u.IsSelected = false;
-            }
+            Users.ForEach(u => u.IsSelected = false);
+            AssignedLabelText = "Select";
         }
 
 
-        void EnableAllUsers()
-        {
-            foreach (var u in Users)
-            {
-                u.IsEnabled = true;
-            }
-        }
+        void EnableAllUsers() => Users.ForEach(u => u.IsEnabled = true);
+        void DisableAllUsers() => Users.ForEach(u => u.IsEnabled = false);
 
-        void DisableAllUsers()
-        {
-            foreach (var u in Users)
-            {
-                u.IsEnabled = false;
-            }
-        }
 
         public FreshAwaitCommand OnUserTapped
         {

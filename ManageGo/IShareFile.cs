@@ -23,5 +23,6 @@ namespace ManageGo
         /// <param name="view">For iPad you must pass the view paramater. The view parameter should be the view that triggers the share action, i.e. the share button.</param>
         /// <returns>awaitable bool</returns>
         Task ShareRemoteFile(string fileUri, string fileName, string title = "", object view = null);
+        string GetPublicExternalFolderPath();
     }
 }
