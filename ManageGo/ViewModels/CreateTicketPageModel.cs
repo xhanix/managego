@@ -54,13 +54,13 @@ namespace ManageGo
                 {
                     if (string.IsNullOrWhiteSpace(Comment) || string.IsNullOrWhiteSpace(Subject))
                     {
-                        await CoreMethods.DisplayAlert("Cannot create ticket", "Please type subject and message", "OK");
+                        await CoreMethods.DisplayAlert("Cannot create ticket", "Please type subject and message.", "OK");
                         tcs?.SetResult(true);
                         return;
                     }
-                    if (Units is null || !Units.Any(t => t.IsSelected) || Tenants is null || !Tenants.Any(t => t.IsSelected))
+                    if (Buildings is null || !Buildings.Any(t => t.IsSelected))
                     {
-                        await CoreMethods.DisplayAlert("Cannot create ticket", "Please select building, unit and tenant", "OK");
+                        await CoreMethods.DisplayAlert("Cannot create ticket", "Please select a building.", "OK");
                         tcs?.SetResult(true);
                         return;
                     }
@@ -80,13 +80,13 @@ namespace ManageGo
                         var item = new MGDataAccessLibrary.Models.CreateTicketRequestItem
                         {
                             BuildingID = Buildings.First(t => t.IsSelected).BuildingId,
-                            UnitID = Units.First(t => t.IsSelected).UnitId,
+                            UnitID = Units?.FirstOrDefault(t => t.IsSelected)?.UnitId,
                             Status = (int)TicketStatus.Open,
                             Priority = (int)ticketPriority,
                             Subject = Subject,
                             Comment = Comment,
                             DueDate = null,
-                            TenantID = Tenants.First(t => t.IsSelected).TenantID,
+                            TenantID = Tenants?.FirstOrDefault(t => t.IsSelected)?.TenantID,
                             Categories = Categories?.Where(t => t.IsSelected).Select(t => t.CategoryID),
                             Tags = Tags?.Where(t => t.IsSelected).Select(t => t.TagID),
                             Assigned = Users?.Where(t => t.IsSelected).Select(t => t.UserID),
@@ -284,6 +284,15 @@ namespace ManageGo
                 async void execute(object par, TaskCompletionSource<bool> tcs)
                 {
                     var u = (User)par;
+                    //first check if user can be selected based on selected categories
+                    //user should be already disabled based on category selection
+                    if (Buildings is null || !Buildings.Any(b => b.IsSelected) || Categories is null || !Categories.Any(c => c.IsSelected))
+                    {
+                        await CoreMethods.DisplayAlert("ManageGo", "Please select building or category before selecting a user", "OK");
+                        tcs?.SetResult(true);
+                        return;
+                    }
+
                     if (!u.IsEnabled)
                     {
                         var result = await CoreMethods.DisplayAlert("ManageGo", $"{u.UserFullName} does not have access to the selected categories. Selecting this user will clear the selected categories.", $"Select {u.UserFullName}", "Cancel");
@@ -292,61 +301,33 @@ namespace ManageGo
                             tcs?.SetResult(true);
                             return;
                         }
-                        else
-                        {
-                            ClearCategorySelections();
-                            EnableAllUsers();
-                        }
+                        ClearCategorySelections();
+                        EnableAllUsers();
                     }
                     u.IsSelected = !u.IsSelected;
-                    if (Users.Any(t => t.IsSelected == true))
+                    //users with access to all categories will have empty category array
+                    //users with categories = null have access to no categories
+                    if (Users.Any(user => user.IsSelected) && !IsSelectedUserCombinationAllowed())
                     {
-                        AssignedLabelText = Users.First(t => t.IsSelected).UserFullName;
-                        if (Users.Count(t => t.IsSelected) > 1)
-                        {
-                            AssignedLabelText = AssignedLabelText + $", +{Users.Count(t => t.IsSelected) - 1} more";
-                        }
-
-                        var allowedCategories = Categories.Select(c => c.CategoryID);
-
-                        if (Users.Any(t => t.IsSelected && t.Categories != null && !t.Categories.Any()))
-                        {
-                            //at least one of the selected users does not have access to any categories
-                            DisableAllCategories();
-                        }
-                        else
-                        {
-                            foreach (var user in Users.Where(user => user.IsSelected && user.Categories != null))
-                            {
-                                allowedCategories = allowedCategories.Intersect(user.Categories);
-                            }
-                            DisableAllCategories();
-                            if (allowedCategories.Any())
-                            {
-                                foreach (var c in Categories)
-                                {
-                                    if (allowedCategories.Contains(c.CategoryID))
-                                    {
-                                        c.IsEnabled = true;
-                                    }
-                                }
-                            }
-                        }
+                        u.IsSelected = false;
+                        await CoreMethods.DisplayAlert($"ManageGo", "This user does not have access to the selected categories.", "OK");
+                        Users.ForEach(t => t.IsSelected = false);
                     }
-                    else
-                    {
-                        //no users are selected
-                        AssignedLabelText = string.Empty;
-                        EnableAllCategories();
-                        if (!Categories.Any(c => c.IsSelected))
-                            EnableAllUsers();
-                    }
+                    SetAssignedUsersLabel();
                     tcs?.SetResult(true);
                 }
                 return new FreshAwaitCommand(execute);
             }
         }
 
+        private void SetAssignedUsersLabel()
+        {
+            AssignedLabelText = Users.FirstOrDefault(t => t.IsSelected)?.UserFullName ?? "Select";
+            if (Users.Count(t => t.IsSelected) > 1)
+            {
+                AssignedLabelText += $", +{Users.Count(t => t.IsSelected) - 1} more";
+            }
+        }
 
         public FreshAwaitCommand OnShowTagOptionsTapped => new FreshAwaitCommand((tcs) =>
                                                                          {
@@ -480,6 +461,27 @@ namespace ManageGo
                                                                                   tcs?.SetResult(true);
                                                                               });
 
+
+
+        private bool IsSelectedUserCombinationAllowed()
+        {
+            if (Categories is null || !Categories.Any(t => t.IsSelected))
+                return true;
+            bool isAllowed = false;
+            var selectedCategoryIds = Categories.Where(cat => cat.IsSelected).Select(cat => cat.CategoryID);
+            foreach (var user in Users.Where(user => user.IsSelected))
+            {
+
+                if (user.Categories is null || user.Categories.Intersect(selectedCategoryIds).Any())
+                {
+                    isAllowed = true;
+                }
+            }
+            return isAllowed;
+        }
+
+
+
         public FreshAwaitCommand OnCategoryTapped
         {
             get
@@ -487,51 +489,35 @@ namespace ManageGo
                 async void execute(object par, TaskCompletionSource<bool> tcs)
                 {
                     var cat = (Categories)par;
-                    if (!cat.IsEnabled)
+                    cat.IsSelected = !cat.IsSelected;
+                    if (Categories != null && Categories.Any(t => t.IsSelected) && Categories.Any(t => t.IsSelected) && Users.Any(user => user.IsSelected) && (Users.Any(user => user.IsSelected && user.Categories != null && !user.Categories.Any()) || !IsSelectedUserCombinationAllowed()))
                     {
-                        var result = await CoreMethods.DisplayAlert("ManageGo", $"{cat.CategoryName} is not available to the assigned users. Selecting this category will clear the selected users.", $"Select {cat.CategoryName}", "Cancel");
+
+                        var result = await CoreMethods.DisplayAlert("ManageGo", $"Selected categories are not available to the assigned users. Clear assigned users to update ticket categories.", $"Clear assigned users", "Cancel");
                         if (!result)
                         {
+                            cat.IsSelected = !cat.IsSelected;
                             tcs?.SetResult(true);
                             return;
                         }
-                        else
-                        {
-                            ClearUserSelections();
-                            EnableAllCategories();
-                        }
+                        ClearUserSelections();
+                        EnableAllCategories();
                     }
-                    cat.IsSelected = !cat.IsSelected;
-                    if (Categories.Any(t => t.IsSelected == true))
-                    {
-                        CategoryLabelText = Categories.First(t => t.IsSelected).CategoryName;
-                        CategoryLabelColor = "#" + Categories.First(t => t.IsSelected).Color;
-                        if (Categories.Count(t => t.IsSelected) > 1)
-                        {
-                            CategoryLabelText = CategoryLabelText + $", +{Categories.Count(t => t.IsSelected) - 1} more";
-                            CategoryLabelColor = "#58595B";
-                        }
-                        //selected categories
-                        DisableAllUsers();
-                        var selectedCats = Categories.Where(c => c.IsSelected).Select(c => c.CategoryID);
-                        foreach (User u in Users.Where(user => user.Categories != null))
-                        {
-                            if (u.Categories.Intersect(selectedCats).Count() == selectedCats.Count())
-                                u.IsEnabled = true;
-                        }
-                        Users.Where(user => user.Categories is null).ToList().ForEach(u => u.IsEnabled = true);
-                    }
-                    else
-                    {
-                        EnableAllUsers();
-                        if (!Users.Any(user => user.IsSelected))
-                            EnableAllCategories();
-                        CategoryLabelText = "Select";
-                    }
+                    SetSelecteCategoriesLabel();
                     tcs?.SetResult(true);
                 }
                 return new FreshAwaitCommand(execute);
             }
+        }
+
+        private void SetSelecteCategoriesLabel()
+        {
+            CategoryLabelText = Categories.FirstOrDefault(t => t.IsSelected)?.CategoryName ?? "Select";
+            if (Categories.Count(t => t.IsSelected) > 1)
+            {
+                CategoryLabelText += $", +{Categories.Count(t => t.IsSelected) - 1} more";
+            }
+            CategoryLabelColor = "#" + Categories.FirstOrDefault(t => t.IsSelected)?.Color ?? "58595B";
         }
 
         public FreshAwaitCommand OnShowPriorityOptionsTapped => new FreshAwaitCommand((tcs) =>
@@ -659,7 +645,7 @@ namespace ManageGo
                     Units = null;
                     UnitLabelText = "Select";
                     TenantLabelText = "Select";
-                    Users = App.Users.Where(user => user.Buildings != null && user.Buildings.Contains(building.BuildingId)).ToList();
+                    Users = App.Users.Where(user => user.Buildings is null || user.Buildings.Contains(building.BuildingId)).ToList();
                     try
                     {
                         var buildingWithDetails = await Services.DataAccess.GetBuildingDetails(building.BuildingId);

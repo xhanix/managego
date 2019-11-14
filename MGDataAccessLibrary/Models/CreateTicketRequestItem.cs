@@ -6,8 +6,8 @@ namespace MGDataAccessLibrary.Models
     public class CreateTicketRequestItem
     {
         public int BuildingID { get; set; }
-        public int UnitID { get; set; }
-        public int TenantID { get; set; }
+        public int? UnitID { get; set; }
+        public int? TenantID { get; set; }
         public IEnumerable<int> Categories { get; set; }
         public int Status { get; set; }
         public int Priority { get; set; }

@@ -117,11 +117,13 @@
                                                     </StackLayout.GestureRecognizers>
                                                 </StackLayout>
                                                 <BoxView WidthRequest="1"
+                                                         IsVisible="{Binding BindingContext.CanAccessMaintenance,Source={x:Reference ThisPage}}"
                                                          BackgroundColor="{StaticResource Grey-Light-2}"
                                                          VerticalOptions="Fill" />
                                                 <StackLayout Orientation="Horizontal"
                                                               Padding="2,8,2,8"
                                                              VerticalOptions="CenterAndExpand"
+                                                              IsVisible="{Binding BindingContext.CanAccessMaintenance,Source={x:Reference ThisPage}}"
                                                              Spacing="2">
                                                     <Label Text="Open tickets:"
                                                            FontSize="Small"

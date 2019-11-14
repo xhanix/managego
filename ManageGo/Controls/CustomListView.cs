@@ -7,7 +7,7 @@ namespace ManageGo.Controls
     {
         public CustomListView(ListViewCachingStrategy strategy) : base(strategy)
         {
-
+            base.BackgroundColor = Color.White;
         }
 
         public CustomListView()

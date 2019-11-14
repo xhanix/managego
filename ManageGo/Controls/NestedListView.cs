@@ -7,12 +7,12 @@ namespace ManageGo.Controls
     {
         public NestedListView(ListViewCachingStrategy strategy) : base(strategy)
         {
-
+            BackgroundColor = Color.White;
         }
 
         public NestedListView()
         {
-
+            BackgroundColor = Color.White;
         }
     }
 }

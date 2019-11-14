@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Services.cs" />
+    <Compile Remove="Views\AmenitiesListPage %28copy%29.xaml.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Controls\CalendarView.xaml.cs">

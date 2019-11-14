@@ -5,9 +5,9 @@ using Xamarin.Forms;
 
 namespace ManageGo
 {
-    public partial class AmenitiesListPage : ContentPage
+    public partial class BookingCalendarPage : ContentPage
     {
-        public AmenitiesListPage()
+        public BookingCalendarPage()
         {
             InitializeComponent();
             NavigationPage.SetHasNavigationBar(this, false);
@@ -15,7 +15,6 @@ namespace ManageGo
 
         protected override bool OnBackButtonPressed()
         {
-
             if (Navigation.ModalStack.Contains(this))
             {
                 Navigation.PopModalAsync();

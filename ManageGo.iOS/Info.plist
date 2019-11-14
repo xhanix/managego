@@ -53,7 +53,7 @@
 	<key>NSFaceIDUsageDescription</key>
 	<string>ManageGO needs Face ID to log in</string>
 	<key>CFBundleVersion</key>
-	<string>1.40</string>
+	<string>1.92</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>ManageGo needs access to location to function.</string>
 	<key>NSLocationWhenInUseUsageDescription </key>
@@ -67,7 +67,7 @@
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>ManageGo needs access to location to function as intended.</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0.40</string>
+	<string>1.0.92</string>
 	<key>NSContactsUsageDescription</key>
 	<string>ManageGo needs access to contacts to function.</string>
 	<key>NSAppleMusicUsageDescription </key>

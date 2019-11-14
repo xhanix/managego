@@ -11,6 +11,8 @@ namespace ManageGo
         public bool IsShowingUnitsPage { get; set; }
         public bool IsSearching { get; set; }
         public bool CanSelectTenants { get; set; }
+        public bool CanAccessMaintenance { get; set; }
+
         internal override Task LoadData(bool refreshData = false, bool FetchNextPage = false)
         {
             this.Buildings = App.Buildings ?? new List<Building>();
@@ -29,6 +31,7 @@ namespace ManageGo
         {
             base.ViewIsAppearing(sender, e);
             CanSelectTenants = App.UserPermissions.HasFlag(UserPermissions.CanAccessTenants);
+            CanAccessMaintenance = App.UserPermissions.HasFlag(UserPermissions.CanAccessTickets);
         }
 
         private void App_OnLoggedOut(object sender, bool e)

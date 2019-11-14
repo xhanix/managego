@@ -6,20 +6,21 @@ namespace MGDataAccessLibrary.BussinessLogic
 {
     public static class AmenitiesProcessor
     {
-        public static async Task<Models.Amenities.Responses.BookingList> GetBookingList(Models.Amenities.Requests.BookingsList parametes)
+        public static async Task<Models.Amenities.Responses.BookingList> GetBookingList(Models.Amenities.Requests.BookingsList parameters)
         {
-            var stringPars = parametes.GetQueryString();
+            var stringPars = parameters.GetQueryString();
             return await DataAccess.AmenitiesAPI.GetItems<Models.Amenities.Responses.BookingList>("bookings?" + stringPars);
         }
 
-        public static Models.Amenities.Responses.AvailableDays GetAvailableDays()
+        public static async Task<Models.Amenities.Responses.AvailableDays> GetAvailableDays(Models.Amenities.Requests.AvailableDays parameters, int amenityId)
         {
-            throw new NotImplementedException();
+            var stringPars = parameters.GetQueryString();
+            return await DataAccess.AmenitiesAPI.GetItems<Models.Amenities.Responses.AvailableDays>($"amenities/{amenityId}/available-days?" + stringPars);
         }
 
-        public static IEnumerable<Models.Amenities.Responses.Amenity> GetAmenities()
+        public static async Task<IEnumerable<Models.Amenities.Responses.Amenity>> GetAmenities()
         {
-            throw new NotImplementedException();
+            return await DataAccess.AmenitiesAPI.GetItems<IEnumerable<Models.Amenities.Responses.Amenity>>("amenities");
         }
 
     }

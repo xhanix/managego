@@ -9,6 +9,7 @@ namespace ManageGo
     internal abstract class BaseDetailPage : FreshBasePageModel
     {
         public bool HamburgerIsVisible { get; internal set; }
+
         [AlsoNotifyFor("IsLoading")]
         public bool HasLoaded { get; internal set; }
         [AlsoNotifyFor("IsLoading")]
@@ -29,6 +30,7 @@ namespace ManageGo
         {
             base.ViewIsAppearing(sender, e);
             cancellationTokenSource = new CancellationTokenSource();
+
             await LoadData();
         }
 
