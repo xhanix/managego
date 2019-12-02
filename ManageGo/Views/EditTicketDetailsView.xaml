@@ -10,7 +10,7 @@
     </ContentView.Resources>
     <ContentView.Content>
         <ScrollView VerticalOptions="FillAndExpand">
-          
+
             <StackLayout Spacing="0">
                 <Grid Padding="21,17,21,8"
                       RowSpacing="12">
@@ -127,7 +127,11 @@
                                                       Command="{Binding OnShowDueDateCalendarTapped}" />
                             </StackLayout.GestureRecognizers>
                         </StackLayout>
-                        <ContentView Content="{Binding DueDateCalendarView}" />
+                        <ContentView Content="{Binding DueDateCalendarView}" >
+                            <ContentView.GestureRecognizers>
+
+                            </ContentView.GestureRecognizers>
+                        </ContentView>
                     </StackLayout>
                     <Label Text="{Binding Status}"
                            FontSize="Small"

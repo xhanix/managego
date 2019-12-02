@@ -17,6 +17,8 @@
                     <Image Source="search_grey" />
                     <local:CustomEntry Placeholder="Search..."
                                        Text="{Binding FilterKeywords}"
+                                       TextColor="Black"
+                                       BackgroundColor="White"
                                        FontSize="Small"
                                        HorizontalOptions="FillAndExpand" />
                 </StackLayout>

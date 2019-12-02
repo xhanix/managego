@@ -18,6 +18,7 @@ namespace ManageGo
             InitializeComponent();
             NavigationPage.SetHasNavigationBar(this, false);
             ReplyBox.HeightRequest = ReplyBoxHeigh;
+
         }
 
 

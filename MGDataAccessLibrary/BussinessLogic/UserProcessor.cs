@@ -14,10 +14,10 @@ namespace MGDataAccessLibrary.BussinessLogic
 
 #if DEBUG
             //access to everything
-            //userName = "pmc@mobile.test";
-            // password = "Aa1111";
-            userName = "aidendm@managego.com";
-            password = "Qwerasdf1";
+            userName = "pmc@mobile.test";
+            password = "Aa1111";
+            // userName = "aidendm@managego.com";
+            // password = "Qwerasdf1";
 
             //no access to bank account
             // userName = "aidenclk11@gmail.com";

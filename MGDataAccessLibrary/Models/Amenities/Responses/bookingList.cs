@@ -11,4 +11,6 @@ namespace MGDataAccessLibrary.Models.Amenities.Responses
         public int TotalPending { get; set; }
         public IEnumerable<Booking> List { get; set; }
     }
+
+
 }

@@ -20,18 +20,38 @@ namespace ManageGo
         public string PendingString { get; set; }
         internal override async Task LoadData(bool refreshData = false, bool FetchNextPage = false)
         {
-            var list = await MGDataAccessLibrary.BussinessLogic.AmenitiesProcessor.GetBookingList(filter);
+            try
+            {
+                var list = await MGDataAccessLibrary.BussinessLogic.AmenitiesProcessor.GetBookingList(filter);
 
-            if (list.List is null && !list.List.Any())
-            {
-                Bookings.Clear();
-            }
-            else
-            {
-                Bookings = new ObservableCollection<MGDataAccessLibrary.Models.Amenities.Responses.Booking>(list.List);
-            }
+                if (list.List is null && !list.List.Any())
+                {
+                    Bookings.Clear();
+                }
+                else
+                {
+                    Bookings = new ObservableCollection<MGDataAccessLibrary.Models.Amenities.Responses.Booking>(list.List);
+                }
             ((AmenitiesListPage)CurrentPage).DataLoaded();
-            PendingString = list.TotalPending > 0 ? $"({list.TotalPending} pending)" : string.Empty;
+                PendingString = list.TotalPending > 0 ? $"({list.TotalPending} pending)" : string.Empty;
+            }
+            catch (Exception ex)
+            {
+                await CoreMethods.DisplayAlert("Something went wrong", ex.Message, "Dismiss");
+            }
+
+        }
+
+        public FreshAwaitCommand OnCreateButtonTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand(async (tcs) =>
+                {
+                    await CoreMethods.PushPageModel<CreateBookingPageModel>();
+                    tcs?.SetResult(true);
+                });
+            }
         }
 
         public FreshAwaitCommand OnViewCalendarTapped

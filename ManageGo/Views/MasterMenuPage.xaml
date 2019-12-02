@@ -51,12 +51,12 @@
                     <Button Text="Maintenance" Command="{Binding OnMaintenanceTapped}" FontSize="Small" BackgroundColor="Transparent" TextColor="Transparent" HorizontalOptions="Fill"/>
                 </Grid>
                 <BoxView IsVisible="true" BackgroundColor="{StaticResource Grey-Light-2}"/>
-                <!--
+
                 <Grid Margin="0,0,4,0">
                     <Label Text="Amenities" TextColor="{StaticResource Grey-Dark-1}" FontSize="Medium"  VerticalOptions="CenterAndExpand" />
                     <Button Text="Amenities" Command="{Binding OnAmenitiesTapped}" FontSize="Small" BackgroundColor="Transparent" TextColor="Transparent" HorizontalOptions="Fill"/>
                 </Grid>
-                -->
+
 
                 <BoxView BackgroundColor="{StaticResource Grey-Light-2}"/>
                 <Grid Margin="0,0,4,0" IsVisible="{Binding MaintenanceIsVisible}">

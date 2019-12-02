@@ -405,7 +405,7 @@
                             Margin="6,-15,0,0"
                             Scrolled="Handle_Scrolled">
 
-                 
+
                     <StackLayout Spacing="0">
                         <Label Text="Event summary:"
                                Margin="0,0,0,4"
@@ -613,7 +613,7 @@
                             Padding="28,0,28,0"
                             Margin="6,-15,0,0"
                             Scrolled="Handle_Scrolled">
-                
+
                     <StackLayout Spacing="0">
                         <Label Text="Work order summary:"
                                Margin="0,0,0,4"
@@ -647,6 +647,7 @@
                                VerticalOptions="Start"
                                VerticalTextAlignment="Start" />
                         <controls:NestedListView SeparatorVisibility="None"
+                                                 BackgroundColor="White"
                                                  SelectionMode="None"
                                                  ItemsSource="{Binding Users}"
                                                  HeightRequest="75"
@@ -681,8 +682,9 @@
                                TextColor="#5d5e60"
                                VerticalOptions="Start"
                                VerticalTextAlignment="Start" />
-                        <ListView SeparatorVisibility="None"
+                        <controls:NestedListView SeparatorVisibility="None"
                                   SelectionMode="None"
+                                  BackgroundColor="White"
                                   ItemsSource="{Binding ExternalContacts}"
                                   HeightRequest="75"
                                   VerticalOptions="Start">
@@ -706,7 +708,7 @@
                                     </ViewCell>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
-                        </ListView>
+                        </controls:NestedListView>
                         <Button Grid.Row="3"
                                 Command="{Binding OnSendWorkOrderButtonTapped}"
                                 BorderRadius="8"

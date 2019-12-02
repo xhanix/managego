@@ -111,7 +111,7 @@
                                  BackgroundColor="{StaticResource Grey-Light-2}" />
 
                         <Grid Padding="21,17,21,17"
-                              RowSpacing="12">
+                              RowSpacing="0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="auto" />
                                 <ColumnDefinition Width="*" />
@@ -139,6 +139,7 @@
                             <Label Text="Address  "
                                    FontSize="Small"
                                    Grid.Column="0"
+                                    Padding="0,6,0,6"
                                    Grid.Row="0"
                                    TextColor="{StaticResource Key=Grey-Mid-1}" />
                             <BoxView Grid.Row="1"
@@ -148,6 +149,7 @@
                                      Grid.ColumnSpan="2" />
                             <Label Text="Unit"
                                    FontSize="Small"
+                                    Padding="0,6,0,6"
                                    Grid.Column="0"
                                    Grid.Row="2"
                                    TextColor="{StaticResource Key=Grey-Mid-1}" />
@@ -158,6 +160,7 @@
                                      Grid.ColumnSpan="2" />
                             <Label Text="Tenant"
                                    FontSize="Small"
+                                    Padding="0,6,0,6"
                                    Grid.Column="0"
                                    Grid.Row="4"
                                    TextColor="{StaticResource Key=Grey-Mid-1}" />
@@ -170,6 +173,7 @@
                             <Label Text="Category"
                                    FontSize="Small"
                                    Grid.Column="0"
+                                    Padding="0,6,0,6"
                                    Grid.Row="6"
                                    TextColor="{StaticResource Key=Grey-Mid-1}" />
                             <Frame HasShadow="false"
@@ -201,6 +205,7 @@
                                    FontSize="Small"
                                    Grid.Column="0"
                                    Grid.Row="8"
+                                    Padding="0,6,0,6"
                                    TextColor="{StaticResource Key=Grey-Mid-1}" />
 
 
@@ -214,6 +219,7 @@
                                    IsVisible="{Binding ExtraDetailRowsAreVisible}"
                                    FontSize="Small"
                                    Grid.Column="0"
+                                    Padding="0,6,0,6"
                                    Grid.Row="11"
                                    TextColor="{StaticResource Key=Grey-Mid-1}" />
                             <BoxView Grid.Row="12"
@@ -225,6 +231,7 @@
                             <Label Text="Assigned"
                                    IsVisible="{Binding ExtraDetailRowsAreVisible}"
                                    FontSize="Small"
+                                    Padding="0,6,0,6"
                                    Grid.Column="0"
                                    Grid.Row="13"
                                    TextColor="{StaticResource Key=Grey-Mid-1}" />
@@ -235,6 +242,7 @@
                                      BackgroundColor="{StaticResource Grey-Light-2}"
                                      Grid.ColumnSpan="2" />
                             <Label Text="Due date"
+                                    Padding="0,6,0,6"
                                    IsVisible="{Binding ExtraDetailRowsAreVisible}"
                                    FontSize="Small"
                                    Grid.Column="0"
@@ -245,9 +253,11 @@
                             <StackLayout  Grid.Column="1"
                                           Grid.Row="0">
                                 <StackLayout Orientation="Horizontal"
+                                             Padding="0,6,0,6"
                                              VerticalOptions="CenterAndExpand">
                                     <Label Text="{Binding AddressLabelText}"
                                            LineBreakMode="TailTruncation"
+                                           InputTransparent="True"
                                            FontSize="Small"
                                            TextColor="{StaticResource Key=Grey-Mid-1}" />
                                     <Image Source="{Binding AddressOptionsRowIcon}"
@@ -296,10 +306,12 @@
                             <StackLayout  Grid.Column="1"
                                           Grid.Row="2">
                                 <StackLayout Orientation="Horizontal"
+                                              Padding="0,6,0,6"
                                              VerticalOptions="CenterAndExpand">
                                     <Label Text="{Binding UnitLabelText}"
                                            LineBreakMode="TailTruncation"
                                            FontSize="Small"
+                                           InputTransparent="True"
                                            TextColor="{StaticResource Key=Grey-Mid-1}" />
                                     <Image Source="{Binding UnitOptionsRowIcon}"
                                            HorizontalOptions="EndAndExpand" />
@@ -347,9 +359,11 @@
                             <StackLayout  Grid.Column="1"
                                           Grid.Row="4">
                                 <StackLayout Orientation="Horizontal"
+                                              Padding="0,6,0,6"
                                              VerticalOptions="CenterAndExpand">
                                     <Label Text="{Binding TenantLabelText}"
                                            LineBreakMode="TailTruncation"
+                                           InputTransparent="True"
                                            FontSize="Small"
                                            TextColor="{StaticResource Key=Grey-Mid-1}" />
                                     <Image Source="{Binding TenantOptionsRowIcon}"
@@ -401,6 +415,7 @@
                                          Grid.ColumnSpan="2"
                                          Grid.Row="15">
                                 <StackLayout Orientation="Horizontal"
+                                              Padding="0,6,0,6"
                                              VerticalOptions="CenterAndExpand">
                                     <Label Text="DueDate  "
                                            FontSize="Small"
@@ -423,10 +438,12 @@
                                          Grid.Column="1"
                                          Grid.Row="8">
                                 <StackLayout Orientation="Horizontal"
+                                              Padding="0,6,0,6"
                                              VerticalOptions="CenterAndExpand">
                                     <Label Text="{Binding PriorityLabelText}"
                                            LineBreakMode="TailTruncation"
                                            FontSize="Small"
+                                           InputTransparent="True"
                                            TextColor="{Binding PriorityLabelTextColor}" />
                                     <Image Source="{Binding PriorityOptionsRowIcon}"
                                            HorizontalOptions="EndAndExpand" />
@@ -475,12 +492,13 @@
                             </StackLayout>
 
                             <!-- Categories -->
-                            <StackLayout 
-                                         Grid.Column="1"
-                                         Grid.Row="6">
+                            <StackLayout Grid.Column="1"
+                                         Grid.Row="6" >
                                 <StackLayout Orientation="Horizontal"
+                                              Padding="0,6,0,6"
                                              VerticalOptions="CenterAndExpand">
                                     <Label Text="{Binding CategoryLabelText}"
+                                           InputTransparent="True"
                                            LineBreakMode="TailTruncation"
                                            FontSize="Small"
                                            TextColor="{Binding CategoryLabelColor}" />
@@ -534,8 +552,10 @@
                                 <StackLayout Orientation="Horizontal"
                                              VerticalOptions="CenterAndExpand">
                                     <Label Text="{Binding TagLabelText}"
+                                            Padding="0,6,0,6"
                                            LineBreakMode="TailTruncation"
                                            FontSize="Small"
+                                           InputTransparent="True"
                                            TextColor="{Binding TagLabelColor}" />
                                     <Image Source="{Binding TagOptionsRowIcon}"
                                            HorizontalOptions="EndAndExpand" />
@@ -585,10 +605,13 @@
                                          Grid.Column="1"
                                          Grid.Row="13">
                                 <StackLayout Orientation="Horizontal"
+                                              Padding="0,6,0,6"
                                              VerticalOptions="CenterAndExpand">
                                     <Label Text="{Binding AssignedLabelText}"
                                            LineBreakMode="TailTruncation"
                                            FontSize="Small"
+
+                                           InputTransparent="True"
                                            TextColor="{StaticResource Key=Grey-Mid-1}" />
                                     <Image Source="{Binding AssignedOptionsRowIcon}"
                                            HorizontalOptions="EndAndExpand" />
@@ -616,7 +639,7 @@
                                                                  Padding="0,12,0,0">
                                                         <Image Source="{Binding CheckBoxImage}" />
                                                         <Label Text="{Binding UserFullName}"
-                                                               TextColor="{Binding IsEnabled,Converter={StaticResource EnabledStateToTextColorConverter}}"
+                                                               TextColor="{StaticResource Grey-Mid-1}"
                                                                VerticalOptions="CenterAndExpand"
                                                                LineBreakMode="TailTruncation"
                                                                FontSize="Small" />

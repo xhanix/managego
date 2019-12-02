@@ -16,6 +16,7 @@ namespace ManageGo.Views
         {
             if (bindingContext != null)
                 this.BindingContext = bindingContext;
+            App.MasterDetailNav.IsGestureEnabled = false;
         }
     }
 }

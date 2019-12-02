@@ -14,10 +14,10 @@ namespace MGDataAccessLibrary.DataAccess
 #endif
 
 
-        public static async Task<T> GetItems<T>(string pathWithParameted)
+        public static async Task<T> GetItems<T>(string pathWithParameters)
         {
 
-            using var response = await WebAPI.WebClient.GetAsync("https://ploop.dynamo-ny.com/apiCore/api/pmc/v3/bookings?pageSize=25&page=1");
+            using var response = await WebAPI.WebClient.GetAsync(BaseUrl + pathWithParameters);
             if (!response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadAsStringAsync();
@@ -25,7 +25,7 @@ namespace MGDataAccessLibrary.DataAccess
             }
             else
             {
-                var result = await response.Content.ReadAsApiV3ResponseForType<T>(requestBody: pathWithParameted);
+                var result = await response.Content.ReadAsApiV3ResponseForType<T>(requestBody: pathWithParameters);
                 return result;
             }
         }

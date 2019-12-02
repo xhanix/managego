@@ -325,7 +325,7 @@ namespace ManageGo
                     //show tenant details as popup
                     if (!CanSelectTenants)
                         return;
-                    if (Comments?.FirstOrDefault() == (Comments)par)
+                    if (par is Comments tappedComment && tappedComment.CommentType == CommentTypes.Resident)
                     {
                         CurrentTicket.Tenant.TenantDetails = CurrentTicket.TenantDetails;
                         await CoreMethods.PushPageModel<TenantDetailPageModel>(CurrentTicket.Tenant, modal: true);
@@ -363,6 +363,7 @@ namespace ManageGo
                     }
                     ReplyButtonIsVisible = !ReplyButtonIsVisible;
                     ShowingTicketDetails = !ShowingTicketDetails;
+                    // App.MasterDetailNav.IsGestureEnabled = false;
                     tcs?.SetResult(true);
                 }, () => CanEditTicketDetails);
             }
@@ -681,6 +682,10 @@ namespace ManageGo
                 {
                     if (ShouldShowClock)
                         return;
+                    if (PopContentView != null)
+                    {
+                        return;
+                    }
                     foreach (var user in App.Users)
                     {
                         user.IsSelected = false;
@@ -702,10 +707,7 @@ namespace ManageGo
                     {
                         OnCloseReplyBubbleTapped.Execute(null);
                     }
-                    else if (PopContentView != null)
-                    {
-                        OnHideDetailsTapped.Execute(null);
-                    }
+
                     else
                         await CoreMethods.PopPageModel(modal: false);
                     tcs?.SetResult(true);
@@ -785,6 +787,11 @@ namespace ManageGo
                         return;
                     }
                     IsCreatingEvent = true;
+                    var tenants = new List<int>();
+                    if (TicketTenant != default)
+                    {
+                        tenants.Add(TicketTenant);
+                    }
                     var newEvent = new MGDataAccessLibrary.Models.EventCreateItem
                     {
                         TicketID = TicketId,
@@ -796,7 +803,7 @@ namespace ManageGo
                         SendToUsers = Users.Where(t => t.IsSelected).Select(t => t.UserID),
                         SendToExternalContacts = ExternalContacts.Where(t => t.IsSelected).Select(t => t.ExternalID),
                         SendToEmail = WorkOrderSendEmail,
-                        SendToTenant = new List<int> { TicketTenant },
+                        SendToTenant = tenants,
                     };
 
                     RaisePropertyChanged("Comments");
@@ -1602,12 +1609,6 @@ namespace ManageGo
             {
                 async void execute(TaskCompletionSource<bool> tcs)
                 {
-                    if (CurrentTicket.Unit is null)
-                    {
-                        await CoreMethods.DisplayAlert("ManageGo", "This ticket is not assigned to a tenant", "OK");
-                        tcs?.SetResult(true);
-                        return;
-                    }
                     ReplyButtonIsVisible = false;
                     WorkOrderActionSheetIsVisible = true;
                     tcs?.SetResult(true);

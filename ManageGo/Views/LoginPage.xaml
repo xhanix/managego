@@ -35,7 +35,7 @@
                     <local:CustomEntry Placeholder="Enter your email"
                                        AutomationId="email_entry"
                                        TextColor="Black"
-                                      
+                                       BackgroundColor="Transparent"
                                        Text="{Binding UserEmail}" />
                     <BoxView HeightRequest="1"
                              Margin="0,-4,0,0"
@@ -47,7 +47,7 @@
                            HorizontalOptions="CenterAndExpand" />
                     <local:CustomEntry Placeholder="Password"
                                        TextColor="Black"
-                                     
+                                     BackgroundColor="Transparent"
                                        AutomationId="password_entry"
                                        Text="{Binding UserPassword}"
                                        IsPassword="true" />

@@ -10,7 +10,7 @@
         <local:FilterFieldStringToColor x:Key="FilterFieldStringToColor" />
     </ContentView.Resources>
     <ScrollView>
-      
+
         <StackLayout Spacing="0">
             <StackLayout Padding="21,17,21,17"
                          Spacing="0">
@@ -20,6 +20,8 @@
                     <local:CustomEntry Placeholder="Search..."
                                        Text="{Binding FilterKeywords}"
                                        FontSize="Small"
+                                       TextColor="Black"
+                                       BackgroundColor="White"
                                        HorizontalOptions="FillAndExpand" />
                 </StackLayout>
                 <BoxView HeightRequest="1"
