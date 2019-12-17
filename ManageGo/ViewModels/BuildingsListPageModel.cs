@@ -25,6 +25,7 @@ namespace ManageGo
         {
             base.Init(initData);
             App.OnLoggedOut += App_OnLoggedOut;
+
         }
 
         protected override void ViewIsAppearing(object sender, EventArgs e)

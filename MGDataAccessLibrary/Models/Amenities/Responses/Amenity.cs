@@ -12,7 +12,5 @@ namespace MGDataAccessLibrary.Models.Amenities.Responses
         //API switched to placing amenities in buildings. No need to get buildings from amenities.
         // public IEnumerable<Building> Buildings { get; set; }
         public AmenityRules Rules { get; set; }
-        [JsonIgnore]
-        public bool IsSelected { get; set; }
     }
 }

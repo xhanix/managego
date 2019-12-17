@@ -14,8 +14,34 @@ namespace ManageGo.Controls
 
         public Action<DateRange> UpdateSelectedDates { get; set; }
         public Action<List<DateTime>> UpdateHighlightedDates { get; set; }
+        public Action<IEnumerable<DateTime>> UpdateEnabledDates { get; set; }
 
         public bool AllowMultipleSelection { get; set; }
+
+
+        public static readonly BindableProperty AvailableDaysProperty
+            = BindableProperty.Create(nameof(AvailableDays),
+                                      typeof(List<DateTime>),
+                                      typeof(Calendar),
+                                      new List<DateTime>(),
+                                      BindingMode.TwoWay,
+                                      propertyChanged: HandleAvailableDaysPropertyChanged);
+
+        public List<DateTime> AvailableDays
+        {
+            get => (List<DateTime>)GetValue(AvailableDaysProperty);
+            set
+            {
+                SetValue(AvailableDaysProperty, value);
+                UpdateEnabledDates?.Invoke(value);
+            }
+        }
+
+        static void HandleAvailableDaysPropertyChanged(BindableObject bindable, object oldValue, object newValue)
+        {
+            var calendar = bindable as Calendar;
+            calendar?.UpdateEnabledDates?.Invoke(newValue as IEnumerable<DateTime>);
+        }
 
         public static readonly BindableProperty SelectedDatesProperty
             = BindableProperty.Create(nameof(SelectedDates),
@@ -71,10 +97,39 @@ namespace ManageGo.Controls
         public DateTime CurrentMonthYear
         {
             get => (DateTime)GetValue(CurrentMonthYearProperty);
-            set => SetValue(CurrentMonthYearProperty, value);
+            set
+            {
+                SetValue(CurrentMonthYearProperty, value);
+            }
         }
 
-        public void OnCurrentMonthYearChanged(DateTime date) => OnMonthYearChanged?.Invoke(date);
+        public static readonly BindableProperty ShowDisabledDatesProperty = BindableProperty.Create(nameof(ShowDisabledDates),
+                                                                                    typeof(bool),
+                                                                                    typeof(CalendarView),
+                                                                                                     false,
+                                                                                                     propertyChanged: HandleShowDisabledDatesPropertyChanged);
+
+
+        public bool ShowDisabledDates
+        {
+            get { return (bool)GetValue(ShowDisabledDatesProperty); }
+            set { SetValue(ShowDisabledDatesProperty, value); }
+        }
+
+        static void HandleShowDisabledDatesPropertyChanged(BindableObject bindable, object oldValue, object newValue)
+        {
+            if (bindable is Calendar calendar)
+                calendar.ShowDisabledDates = (bool)newValue;
+        }
+
+        public void OnCurrentMonthYearChanged(DateTime date)
+        {
+            if (CurrentMonthYear.Month != date.Month || CurrentMonthYear.Year != date.Year)
+            {
+                CurrentMonthYear = date;
+                OnMonthYearChanged?.Invoke(date);
+            }
+        }
         public void GotoNextMonth() => OnNextMonthRequested?.Invoke(this, EventArgs.Empty);
         public void GotoPreviousMonth() => OnPreviousMonthRequested?.Invoke(this, EventArgs.Empty);
 

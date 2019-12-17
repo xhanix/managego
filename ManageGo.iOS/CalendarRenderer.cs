@@ -18,8 +18,8 @@ namespace ManageGo.iOS
 
         double elementWidth;
         double elementHeight;
-
         bool disposed;
+        bool showDisabledDates;
 
         protected override void OnElementChanged(ElementChangedEventArgs<Calendar> e)
         {
@@ -42,9 +42,16 @@ namespace ManageGo.iOS
                 Element.SizeChanged += ElementSizeChanged;
                 Element.UpdateSelectedDates = UpdateSelectedDates;
                 Element.UpdateHighlightedDates = UpdateHighlightedDates;
+                Element.UpdateEnabledDates = UpdateEnabledDates;
+                showDisabledDates = Element.ShowDisabledDates;
             }
 
             InitializeNativeView();
+        }
+
+        private void UpdateEnabledDates(IEnumerable<DateTime> days)
+        {
+            _calendarView?.UpdateEnabledDates(days);
         }
 
         void UpdateSelectedDates(DateRange dates)
@@ -69,8 +76,9 @@ namespace ManageGo.iOS
             //Element.HighlightedDates = new List<DateTime> { new DateTime(2018, 10, 10), new DateTime(2018, 10, 21), new DateTime(2018, 10, 27) };
 
             _calendarView = new CustomCalendar.iOS.CalendarView(new CGRect(0, 0, elementWidth, elementHeight),
-                                                                Element.AllowMultipleSelection, Element.SelectedDates, Element.HighlightedDates);
+                                                                Element.AllowMultipleSelection, Element.AvailableDays, Element.SelectedDates, Element.HighlightedDates);
 
+            _calendarView.showDisabledDays = showDisabledDates;
             _calendarView.OnCurrentMonthYearChange += Element.OnCurrentMonthYearChanged;
             _calendarView.OnSelectedDatesChange += Element.OnDatesChanged;
             Element.OnNextMonthRequested += _calendarView.GoToNextMonth;

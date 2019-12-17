@@ -13,6 +13,7 @@ namespace CustomCalendar
 
         public DateRange SelectedDates { get; set; }
         public List<DateTime> HighlightedDates { get; set; }
+        public IEnumerable<DateTime> AvailableDays { get; set; }
 
         DateTime _date;
         public DateTime Date
@@ -20,6 +21,7 @@ namespace CustomCalendar
             get => _date;
             set => _date = value.Date;
         }
+        public bool ShowDisabledDays { get; set; }
 
         public CalendarMonthControl()
         {
@@ -78,7 +80,7 @@ namespace CustomCalendar
 
             Model = CalendarMonthModel.Create(Date.Year, Date.Month, calendarDates, info.Width, info.Height);
 
-            CalendarMonthRenderer.Draw(surface, info, Model);
+            CalendarMonthRenderer.Draw(surface, info, Model, AvailableDays, ShowDisabledDays);
         }
 
         public void EndInteractions(IEnumerable<SKPoint> points)

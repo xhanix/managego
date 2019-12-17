@@ -1,15 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MGDataAccessLibrary.Models.Amenities.Requests;
+using MGDataAccessLibrary.Models.Amenities.Responses;
 
 namespace MGDataAccessLibrary.BussinessLogic
 {
     public static class AmenitiesProcessor
     {
-        public static async Task<Models.Amenities.Responses.BookingList> GetBookingList(Models.Amenities.Requests.BookingsList parameters)
+        public static async Task<Models.Amenities.Responses.BookingList> GetBookingList(BookingsList parameters)
         {
             var stringPars = parameters.GetQueryString();
             return await DataAccess.AmenitiesAPI.GetItems<Models.Amenities.Responses.BookingList>("bookings?" + stringPars);
+        }
+
+        public static async Task<Models.Amenities.Responses.Booking> GetBooking(int id)
+        {
+            return await DataAccess.AmenitiesAPI.GetItems<Models.Amenities.Responses.Booking>($"bookings/{id}");
         }
 
         public static async Task<Models.Amenities.Responses.AvailableDays> GetAvailableDays(Models.Amenities.Requests.AvailableDays parameters, int amenityId)
@@ -23,10 +30,11 @@ namespace MGDataAccessLibrary.BussinessLogic
             return await DataAccess.AmenitiesAPI.GetItems<IEnumerable<Models.Amenities.Responses.Amenity>>("amenities");
         }
 
-        public static async Task<IEnumerable<Models.Amenities.Responses.PMCBuilding>> GetPMCBuildings()
+        public static async Task<(Models.Amenities.Responses.PMCUserInfo, Models.Amenities.Responses.PMCInfo)> GetPMCInfo()
         {
-            var pmcInfo = await DataAccess.AmenitiesAPI.GetItems<Models.Amenities.Responses.PMCInfo>("/pmc-user-info");
-            return pmcInfo.BuildingsAccess;
+            var item1 = await DataAccess.AmenitiesAPI.GetItems<Models.Amenities.Responses.PMCUserInfo>("/pmc-user-info");
+            var item2 = await DataAccess.AmenitiesAPI.GetItems<Models.Amenities.Responses.PMCInfo>("/pmc-info");
+            return (item1, item2);
         }
 
         public static async Task<IEnumerable<Models.Amenities.Responses.BuildingUnit>> GetBuildingUnits(int buildingId)
@@ -46,5 +54,15 @@ namespace MGDataAccessLibrary.BussinessLogic
             return await DataAccess.AmenitiesAPI.GetItems<Models.Amenities.Responses.Amenity>($"amenities/{id}?buildingId={buildingId}");
         }
 
+        public static async Task CreateBooking(CreateBooking request)
+        {
+            await DataAccess.AmenitiesAPI.PostItem<CreateBooking>($"bookings", request);
+        }
+
+        public static async Task SetBookingStatus(int id, string notes, BookingStatus status)
+        {
+            var path = $"bookings/status?ids={id}&status={(int)status}&note={notes}";
+            await DataAccess.AmenitiesAPI.PatchItem(path);
+        }
     }
 }

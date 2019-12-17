@@ -80,10 +80,15 @@ namespace CustomCalendar
                         paint.Color = SKColor.Parse("#55C433");
                         textPaint.Color = SKColors.White;
                     }
-                    else
+                    else if (calendarDay.Type == HighlightType.Light)
                     {
                         paint.Color = SKColor.Parse("#E5F6DB");
                         textPaint.Color = SKColor.Parse("#737387");
+                    }
+                    else if (calendarDay.Type == HighlightType.Disabled)
+                    {
+                        paint.Color = SKColor.Parse("#dbdbdb");
+                        textPaint.Color = SKColor.Parse("#c4c4c4");
                     }
 
                     DrawRectangle(canvas, paint, adjusted_x, adjusted_y, adjusted_width, adjusted_height);
@@ -104,7 +109,7 @@ namespace CustomCalendar
                      fontSize: (int)(width / 3));
         }
 
-        public static void Draw(SKSurface surface, SKImageInfo info, CalendarMonthModel calendarMonth)
+        public static void Draw(SKSurface surface, SKImageInfo info, CalendarMonthModel calendarMonth, IEnumerable<DateTime> availableDays, bool showDisabledDays)
         {
             var canvas = surface.Canvas;
             canvas.Clear(SKColors.White);
@@ -115,25 +120,27 @@ namespace CustomCalendar
 
             using (var textPaint = new SKPaint())
             {
-                using (var paint = new SKPaint())
+                using var paint = new SKPaint();
+                using var path = new SKPath();
+                foreach (var calendarDay in calendarMonth.Days)
                 {
-                    using (var path = new SKPath())
+                    if (calendarMonth.HighlightedDays?.Count() > 0)
                     {
-                        foreach (var calendarDay in calendarMonth.Days)
+                        foreach (var highlightDay in calendarMonth.HighlightedDays)
                         {
-                            if (calendarMonth.HighlightedDays?.Count() > 0)
+                            if (highlightDay.Day == calendarDay.DateTime.Day && calendarDay.DateTime.Month == calendarMonth.Month)
                             {
-                                foreach (var highlightDay in calendarMonth.HighlightedDays)
-                                {
-                                    if (highlightDay.Day == calendarDay.DateTime.Day && calendarDay.DateTime.Month == calendarMonth.Month)
-                                    {
-                                        calendarDay.Type = highlightDay.Type;
-                                    }
-                                }
+                                calendarDay.Type = highlightDay.Type;
                             }
-                            DrawCalendarDay(canvas, textPaint, paint, path, calendarDay, calendarMonth.Month == calendarDay.DateTime.Month);
                         }
                     }
+                    if (availableDays != null && showDisabledDays && !availableDays.Any(t => t.Date == calendarDay.DateTime.Date))
+                    {
+
+                        calendarDay.Type = HighlightType.Disabled;
+
+                    }
+                    DrawCalendarDay(canvas, textPaint, paint, path, calendarDay, calendarMonth.Month == calendarDay.DateTime.Month);
                 }
             }
             canvas.Flush();

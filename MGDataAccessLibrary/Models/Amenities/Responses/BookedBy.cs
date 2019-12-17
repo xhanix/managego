@@ -8,6 +8,8 @@ namespace MGDataAccessLibrary.Models.Amenities.Responses
         public string ProvidedTenantName { get; set; }
         public int TenantId { get; set; }
         public int BookingId { get; set; }
-        public int Status { get; set; }
+        public BookingStatus Status { get; set; }
     }
+
+
 }

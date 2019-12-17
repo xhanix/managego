@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Windows.Input;
 using CustomCalendar;
+using System.Linq;
 using Xamarin.Forms;
 
 namespace ManageGo.Controls
@@ -24,6 +26,79 @@ namespace ManageGo.Controls
             get { return (bool)GetValue(AllowMultipleSelectionProperty); }
             set { SetValue(AllowMultipleSelectionProperty, value); }
         }
+
+        public static readonly BindableProperty AllowPastSelectionProperty = BindableProperty.Create(nameof(AllowPastSelection),
+                                                                                       typeof(bool),
+                                                                                       typeof(CalendarView),
+                                                                                                        true,
+                                                                                                        propertyChanged: null);
+
+
+        public bool AllowPastSelection
+        {
+            get { return (bool)GetValue(AllowPastSelectionProperty); }
+            set { SetValue(AllowPastSelectionProperty, value); }
+        }
+
+
+        public static readonly BindableProperty ShowDisabledDatesProperty = BindableProperty.Create(nameof(ShowDisabledDates),
+                                                                                     typeof(bool),
+                                                                                     typeof(CalendarView),
+                                                                                                      false,
+                                                                                                      propertyChanged: HandleShowDisabledDatesPropertyChanged);
+
+
+        public bool ShowDisabledDates
+        {
+            get { return (bool)GetValue(ShowDisabledDatesProperty); }
+            set
+            {
+                SetValue(ShowDisabledDatesProperty, value);
+            }
+        }
+
+
+        static void HandleShowDisabledDatesPropertyChanged(BindableObject bindable, object oldValue, object newValue)
+        {
+            var calendarView = bindable as CalendarView;
+
+            if (newValue != null)
+            {
+                var d = (bool)newValue;
+                calendarView.calendar.ShowDisabledDates = d;
+            }
+        }
+
+        public static readonly BindableProperty AvailableDaysProperty = BindableProperty.Create(nameof(AvailableDaysProperty),
+                                                                                      typeof(IEnumerable<DateTime>),
+                                                                                      typeof(CalendarView),
+                                                                                                       new List<DateTime>(),
+                                                                                                       propertyChanged: HandleAvailableDatesPropertyChanged);
+
+
+        public IEnumerable<DateTime> AvailableDays
+        {
+            get { return (IEnumerable<DateTime>)GetValue(AvailableDaysProperty); }
+            set
+            {
+                SetValue(AvailableDaysProperty, value);
+            }
+        }
+
+
+        static void HandleAvailableDatesPropertyChanged(BindableObject bindable, object oldValue, object newValue)
+        {
+            var calendarView = bindable as CalendarView;
+
+            if (newValue != null)
+            {
+                var d = (newValue as IEnumerable<DateTime>)?.ToList();
+                calendarView.calendar.AvailableDays = d;
+            }
+        }
+
+
+
 
         static void AllowMultipleSelectionPropertyChanged(BindableObject bindable, object oldValue, object newValue)
         {
@@ -146,9 +221,22 @@ namespace ManageGo.Controls
             OnSelectedDatesUpdate?.Invoke(this, EventArgs.Empty);
         }
 
+        public static readonly BindableProperty CurrentMonthYearChangedCommandProperty = BindableProperty.Create(
+          "CurrentMonthYearChangedCommand",
+          typeof(ICommand),
+          typeof(CalendarView));
+
+        public ICommand CurrentMonthYearChangedCommand
+        {
+            get => (ICommand)GetValue(CurrentMonthYearChangedCommandProperty);
+            set => SetValue(CurrentMonthYearChangedCommandProperty, value);
+        }
+
         void Handle_OnMonthYearChanged(DateTime date)
         {
             titleLabel.Text = $"{CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(date.Month)}, {date.Year}";
+            CurrentMonthYearChangedCommand?.Execute(date);
+
         }
     }
 }

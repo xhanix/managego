@@ -1,62 +1,140 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using FreshMvvm;
+using MGDataAccessLibrary.Models.Amenities.Responses;
 using PropertyChanged;
 
 namespace ManageGo
 {
     internal class BookingCalendarPageModel : BaseDetailPage
     {
+        private Models.PMCBuilding selectedBuilding;
+
         [AlsoNotifyFor("SelectedDateText")]
         public DateTime SelectedDate { get; set; } = DateTime.Now;
-        public ObservableCollection<MGDataAccessLibrary.Models.Amenities.Responses.Amenity> Amenities { get; set; } = new ObservableCollection<MGDataAccessLibrary.Models.Amenities.Responses.Amenity>();
-        public ObservableCollection<MGDataAccessLibrary.Models.Amenities.Responses.Building> Buildings { get; set; } = new ObservableCollection<MGDataAccessLibrary.Models.Amenities.Responses.Building>();
-        [AlsoNotifyFor("SelectedAmenityName")]
-        public MGDataAccessLibrary.Models.Amenities.Responses.Amenity SelectedAmenity { get; set; }
+        public ObservableCollection<Models.BuildingAmenity> Amenities { get; set; } = new ObservableCollection<Models.BuildingAmenity>();
+        public List<Models.PMCBuilding> Buildings { get; set; } = new List<Models.PMCBuilding>();
+        public string CompanyUrl { get; private set; }
+        [AlsoNotifyFor("SelectedAmenityName", "SelectPromptIsVisible")]
+        public Models.BuildingAmenity SelectedAmenity { get; set; }
+        public bool SelectPromptIsVisible => SelectedAmenity is null;
+        public List<TimeRanges> TimeRanges { get; private set; }
         [AlsoNotifyFor("SelectedBuildingName")]
-        public MGDataAccessLibrary.Models.Amenities.Responses.Building SelectedBuilding { get; set; }
+        public Models.PMCBuilding SelectedBuilding
+        {
+            get => selectedBuilding;
+            set
+            {
+                if (value != null && value.BuildingId == selectedBuilding?.BuildingId)
+                    return;
+                selectedBuilding = value;
+                if (value != null)
+                    OnBuildingSelected.Execute(value);
+
+            }
+        }
         public bool AmenityPickerIsVisible { get; set; }
         public bool BuildingPickerIsVisible { get; set; }
         public string SelectedDateText => SelectedDate.ToString("ddd, MMM dd, yyyy");
-        public string SelectedAmenityName => SelectedAmenity?.Name;
+        public string SelectedAmenityName => SelectedAmenity?.Name ?? "Select amenity";
         public string SelectedBuildingName => SelectedBuilding?.BuildingDescription;
+
+
+        protected override async void ViewIsAppearing(object sender, EventArgs e)
+        {
+            /// 1- get all buildings and select first building
+            /// 2- populate amenities but don't select any -> prompt user to select an amenity
+            /// 3- amenity selected -> show calendar
+            /// 4- building selected -> repopulate amenity** list and deselect amenity -> prompt user to select amenity
+            ///
+
+            base.ViewIsAppearing(sender, e);
+            HamburgerIsVisible = true;
+            try
+            {
+                var pmcInfo = await MGDataAccessLibrary.BussinessLogic.AmenitiesProcessor.GetPMCInfo();
+                CompanyUrl = pmcInfo.Item2?.CompanyUrl;
+                var pmcBuildings = pmcInfo.Item1.BuildingsAccess;
+                Xamarin.Essentials.Preferences.Set("time_offset", pmcInfo.Item2.TimeZoneOffset);
+                if (pmcBuildings != null && pmcBuildings.Any(b => b.Amenities != null && b.Amenities.Any()))
+                    Buildings = pmcBuildings.Where(t => t.Amenities != null && t.Amenities.Any()).Select(t => new Models.PMCBuilding
+                    {
+                        Amenities = t.Amenities,
+                        BuildingDescription = t.BuildingDescription,
+                        BuildingId = t.BuildingId,
+                        IsSelected = false
+
+                    }).ToList();
+                if (SelectedBuilding is null)
+                {
+                    SelectedBuilding = Buildings?.FirstOrDefault(t => t.Amenities != null && t.Amenities.Any());
+                    SelectedBuilding.IsSelected = true;
+                }
+
+                if (SelectedAmenity is null)
+                    SelectedAmenity = null;
+            }
+            catch (Exception ex)
+            {
+                await CoreMethods.DisplayAlert("Something went wrong", ex.Message, "Dismiss");
+            }
+
+        }
 
         internal override async Task LoadData(bool refreshData = false, bool FetchNextPage = false)
         {
-            //get all ameneties
-
-            var amenities = await MGDataAccessLibrary.BussinessLogic.AmenitiesProcessor.GetAmenities();
-            if (amenities != null && amenities.Any())
-            {
-                Amenities = new ObservableCollection<MGDataAccessLibrary.Models.Amenities.Responses.Amenity>(amenities);
-
-            }
-
-            if (SelectedAmenity is null)
-                SelectedAmenity = Amenities.FirstOrDefault();
-
-
-            var selectedAmenityId = SelectedAmenity?.Id;
-            //get available days for first amenity
-            var parameters = new MGDataAccessLibrary.Models.Amenities.Requests.AvailableDays
-            {
-                BuildingId = SelectedBuilding?.BuildingId ?? default,
-                From = SelectedDate.ToString("yyyy-MM-dd"),
-                To = SelectedDate.ToString("yyyy-MM-dd")
-            };
-
+            if (SelectedBuilding is null || SelectedAmenity is null)
+                return;
             try
             {
-                var availableDate = await MGDataAccessLibrary.BussinessLogic.AmenitiesProcessor.GetAvailableDays(parameters, selectedAmenityId ?? default);
-                ((BookingCalendarPage)CurrentPage).SetTimeDetails(availableDate?.AvailableDaysAndTimes?.FirstOrDefault().TimeRanges);
+                var availableTimes = await MGDataAccessLibrary.BussinessLogic.AmenitiesProcessor.GetAvailableDays(new MGDataAccessLibrary.Models.Amenities.Requests.AvailableDays
+                {
+                    BuildingId = SelectedBuilding.BuildingId,
+                    //  UnitId = selectedUnit.Id,
+                    From = SelectedDate.ToString("dd-MMM-yyyy"),
+                    To = SelectedDate.ToString("dd-MMM-yyyy"),
+                }, SelectedAmenity.Id);
+                if (availableTimes.AvailableDaysAndTimes.Any())
+                {
+                    TimeRanges = availableTimes.AvailableDaysAndTimes?.FirstOrDefault()?.TimeRanges?.ToList();
+                    if (CurrentPage != null)
+                    {
+                        ((BookingCalendarPage)CurrentPage).SetTimeDetails(TimeRanges);
+                    }
+
+                }
             }
             catch (Exception ex)
             {
                 await CoreMethods.DisplayAlert("ManageGo", ex.Message, "Dismiss");
             }
 
+        }
+
+        internal async Task GetBookingForStartTime(int startMinutes)
+        {
+            var tappedTimeRange = TimeRanges.FirstOrDefault(t => t.From == startMinutes);
+
+            if (tappedTimeRange.BookedBy is null)
+                return;
+
+            try
+            {
+                var booking = await MGDataAccessLibrary.BussinessLogic.AmenitiesProcessor.GetBooking(tappedTimeRange.BookedBy.BookingId);
+                if (booking != null)
+                {
+                    booking.Icon = CompanyUrl + booking.Icon;
+                    await CoreMethods.PushPageModel<BookingDetailPageModel>(data: booking);
+                }
+            }
+            catch (Exception ex)
+            {
+                await CoreMethods.DisplayAlert("ManageGo", ex.Message, "Dismiss");
+            }
 
         }
 
@@ -73,10 +151,16 @@ namespace ManageGo
             }
         }
 
-        public FreshAwaitCommand OnAmenityButtonTapped => new FreshAwaitCommand((tcs) =>
+        public FreshAwaitCommand OnAmenityButtonTapped => new FreshAwaitCommand(async (tcs) =>
                {
+                   if (SelectedBuilding is null)
+                   {
+                       await CoreMethods.DisplayAlert("ManageGo", "Select a building first", "OK");
+                       tcs?.SetResult(true);
+                       return;
+                   }
                    BuildingPickerIsVisible = false;
-                   AmenityPickerIsVisible = true;
+                   AmenityPickerIsVisible = !AmenityPickerIsVisible;
                    tcs?.SetResult(true);
                });
 
@@ -84,7 +168,7 @@ namespace ManageGo
         public FreshAwaitCommand OnBuildingButtonTapped => new FreshAwaitCommand((tcs) =>
         {
             AmenityPickerIsVisible = false;
-            BuildingPickerIsVisible = true;
+            BuildingPickerIsVisible = !BuildingPickerIsVisible;
 
             tcs?.SetResult(true);
         });
@@ -96,7 +180,7 @@ namespace ManageGo
             {
                 return new FreshAwaitCommand(async (par, tcs) =>
                 {
-                    var amenity = (MGDataAccessLibrary.Models.Amenities.Responses.Amenity)par;
+                    var amenity = (Models.BuildingAmenity)par;
                     foreach (var a in Amenities)
                     {
                         a.IsSelected = false;
@@ -110,50 +194,57 @@ namespace ManageGo
             }
         }
 
-        public FreshAwaitCommand OnBuildingSelected
-        {
-            get
-            {
-                return new FreshAwaitCommand(async (par, tcs) =>
+        public FreshAwaitCommand OnBuildingSelected => new FreshAwaitCommand(async (par, tcs) =>
                 {
-                    var building = (MGDataAccessLibrary.Models.Amenities.Responses.Building)par;
+                    var building = par as Models.PMCBuilding;
+                    if (building is null)
+                        return;
+                    int selectedAmenityId = default;
+                    if (SelectedAmenity != null && SelectedBuilding.Amenities.Select(t => t.Id).Contains(SelectedAmenity.Id))
+                        selectedAmenityId = SelectedBuilding.Amenities.First(t => t.Id == SelectedAmenity.Id).Id;
+                    else
+                        SelectedAmenity = null;
+                    if (building.Amenities != null && building.Amenities.Any())
+                        Amenities = new ObservableCollection<Models.BuildingAmenity>(building.Amenities.Select(t => new Models.BuildingAmenity
+                        {
+                            Id = t.Id,
+                            Name = t.Name,
+                            Rules = t.Rules,
+                            Status = t.Status,
+                            IsSelected = false
+                        }));
+
+                    SelectedAmenity = Amenities?.FirstOrDefault(t => t.Id == selectedAmenityId);
+                    if (SelectedAmenity != null)
+                        SelectedAmenity.IsSelected = true;
                     foreach (var a in Buildings)
                     {
                         a.IsSelected = false;
                     }
-                    building.IsSelected = !building.IsSelected;
+                    building.IsSelected = true;
                     SelectedBuilding = building;
                     BuildingPickerIsVisible = false;
-                    await LoadData();
                     tcs?.SetResult(true);
                 });
-            }
-        }
 
-        public FreshAwaitCommand OnGoPreviousDayTapped
-        {
-            get
-            {
-                return new FreshAwaitCommand(async (tcs) =>
+
+
+        public FreshAwaitCommand OnGoPreviousDayTapped => new FreshAwaitCommand(async (tcs) =>
                 {
                     SelectedDate = SelectedDate.AddDays(-1);
                     await LoadData();
                     tcs?.SetResult(true);
                 });
-            }
-        }
 
-        public FreshAwaitCommand OnViewListTapped
-        {
-            get
-            {
-                return new FreshAwaitCommand(async (tcs) =>
+        public FreshAwaitCommand OnViewListTapped => new FreshAwaitCommand(async (tcs) =>
                 {
+                    SelectedBuilding = null;
+                    SelectedAmenity = null;
                     await CoreMethods.PopPageModel();
                     tcs?.SetResult(true);
                 });
-            }
-        }
+
+
     }
 }
 

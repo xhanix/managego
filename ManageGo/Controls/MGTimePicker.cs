@@ -50,6 +50,16 @@ namespace ManageGo
             typeof(ICommand),
             typeof(SKCanvasView));
 
+        public bool SnapToHalfHour
+        {
+            get { return (bool)GetValue(SnapToHalfHourProperty); }
+            set
+            {
+                SetValue(SnapToHalfHourProperty, value);
+            }
+        }
+
+
         public DateTime Time
         {
             get { return (DateTime)GetValue(TimeProperty); }
@@ -58,6 +68,9 @@ namespace ManageGo
                 SetValue(TimeProperty, value);
             }
         }
+
+        public static readonly BindableProperty SnapToHalfHourProperty =
+              BindableProperty.Create("SnapToHalfHour", typeof(bool), typeof(MGTimePicker), false, BindingMode.TwoWay, propertyChanged: null);
 
         public static readonly BindableProperty TimeProperty =
               BindableProperty.Create("Time", typeof(DateTime), typeof(MGTimePicker), null, BindingMode.TwoWay, propertyChanged: (BindableObject bindable, object oldValue, object newValue) =>
@@ -278,9 +291,29 @@ namespace ManageGo
                 var time = TimeSpan.FromTicks(DateTime.Today.Ticks).Add(new TimeSpan(0, (int)(hr * 60), 0));
 
                 didSetupValues = true;
-                if (time.Minutes % 15 < 15)
-                {
 
+                if (SnapToHalfHour && time.Minutes % 30 < 30)
+                {
+                    var timeSpan = new TimeSpan(time.Hours, time.Minutes / 30 * 30, 0);
+                    DateTime _time = new DateTime(timeSpan.Ticks);
+                    SetHandHour = _time.Hour;
+                    SetHandMinute = _time.Minute;
+                    Time = _time;
+                    var angle_deg = Math.Round(_time.Minute / 30d) * 15;
+                    var hrs = _time.Hour;//> 12 ? time.Hours - 12 : time.Hours;
+                    angle_deg = angle_deg + Math.Round((hrs * hour_degrees_per_iter) - 90);
+
+                    var _x = (info.Width / 2.8) * Math.Cos(angle_deg * divFactor);
+                    var _y = (info.Height / 2.8) * Math.Sin(angle_deg * divFactor);
+                    current_aX = _x + halfWidth;
+                    current_aY = _y + halfHeight;
+                    current_aaX = Math.Round(halfWidth + (info.Width / 3.50) * Math.Cos(angle_deg * divFactor));
+                    cuurent_aaY = Math.Round(halfHeight + (info.Height / 3.50) * Math.Sin(angle_deg * divFactor));
+                    current_dX = 0;
+                    current_dY = 0;
+                }
+                else if (time.Minutes % 15 < 15)
+                {
                     var timeSpan = new TimeSpan(time.Hours, time.Minutes / 15 * 15, 0);
                     DateTime _time = new DateTime(timeSpan.Ticks);
                     SetHandHour = _time.Hour;

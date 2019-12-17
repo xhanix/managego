@@ -12,6 +12,8 @@
         <local:StringToBoolConverter x:Key="StringToBoolConverter" />
         <local:BoolToCheckBoxIconSource x:Key="BoolToCheckBoxIconSource" />
         <local:DoubleToCurrencyString x:Key="DoubleToCurrencyString" />
+        <local:EnabledStateToTextColorConverter x:Key="EnabledStateToTextColorConverter" />
+        <local:TimeSpanToTimeConverter x:Key="TimeSpanToTimeConverter" />
     </ContentPage.Resources>
 
     <Grid RowSpacing="0">
@@ -34,7 +36,7 @@
                         VerticalOptions="CenterAndExpand"
                         Image="nav_menu_icon.png" />
             <Image Source="logo.png"
-                       Margin="-50,0,0,0"
+                       Margin="0,0,0,0"
                        VerticalOptions="CenterAndExpand"
                        HorizontalOptions="CenterAndExpand" />
         </StackLayout>
@@ -124,19 +126,19 @@
                 <StackLayout Spacing="0">
                     <Label Text="Building:" FontSize="Small" TextColor="{StaticResource Grey-Light-1}"/>
                     <Frame HasShadow="False" Padding="0" BorderColor="{StaticResource Grey-Light-2}">
-                        <Picker FontSize="Small" ItemsSource="{Binding Buildings}" SelectedItem="{Binding SelectedBuilding,Mode=TwoWay}" Title="Tap to select building" ItemDisplayBinding="{Binding BuildingDescription}" BackgroundColor="{StaticResource Off-White}" TextColor="{StaticResource Grey-Mid-1}"/>
+                        <controls:CustomPicker FontSize="Small" ItemsSource="{Binding Buildings}" SelectedItem="{Binding SelectedBuilding,Mode=TwoWay}" Title="Tap to select building" ItemDisplayBinding="{Binding BuildingDescription}" BackgroundColor="White" TextColor="{StaticResource Grey-Mid-1}"/>
                     </Frame>
                 </StackLayout>
                 <StackLayout Spacing="0">
                     <Label Text="Unit:" FontSize="Small" TextColor="{StaticResource Grey-Light-1}"/>
                     <Frame HasShadow="False" Padding="0" BorderColor="{StaticResource Grey-Light-2}">
-                        <Picker FontSize="Small" ItemsSource="{Binding Units}" SelectedItem="{Binding SelectedUnit,Mode=TwoWay}" Title="Tap to select unit" ItemDisplayBinding="{Binding Unit}" BackgroundColor="{StaticResource Off-White}" TextColor="{StaticResource Grey-Mid-1}"/>
+                        <controls:CustomPicker FontSize="Small" ItemsSource="{Binding Units}" SelectedItem="{Binding SelectedUnit,Mode=TwoWay}" Title="Tap to select unit" ItemDisplayBinding="{Binding Unit}" BackgroundColor="White" TextColor="{StaticResource Grey-Mid-1}"/>
                     </Frame>
                 </StackLayout>
 
                 <StackLayout Spacing="0">
 
-                    <controls:CustomListView ItemsSource="{Binding Tenants}" VerticalOptions="Start" HeightRequest="120" SeparatorVisibility="None" SelectionMode="None" BackgroundColor="{StaticResource Off-White}">
+                    <controls:CustomListView ItemsSource="{Binding Tenants}" VerticalOptions="Start" HeightRequest="{Binding TenantListHeight}" SeparatorVisibility="None" SelectionMode="None" BackgroundColor="{StaticResource Off-White}">
                         <x:Arguments>
                             <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
                         </x:Arguments>
@@ -165,15 +167,14 @@
                 </StackLayout>
                 <StackLayout Spacing="0" IsVisible="{Binding OtherTextFieldIsVisible}">
                     <Label Text="Tenant name:" FontSize="Small" TextColor="{StaticResource Grey-Light-1}"/>
-                    <Frame HasShadow="False"  Padding="4,8,4,8" BackgroundColor="{StaticResource Off-White}"  BorderColor="{StaticResource Grey-Light-2}">
-                        <local:CustomEntry Text="{Binding OtherNameText}" BackgroundColor="{StaticResource Off-White}" TextColor="{StaticResource Grey-Mid-1}" FontSize="Small"/>
-                    </Frame>
+                    <local:CustomEntry Text="{Binding OtherNameText}" HasBorder="True"  BackgroundColor="White" TextColor="{StaticResource Grey-Mid-1}" FontSize="Small"/>
+
                 </StackLayout>
 
                 <StackLayout Spacing="0">
                     <Label Text="Amenity:" FontSize="Small" TextColor="{StaticResource Grey-Light-1}"/>
                     <Frame HasShadow="False" Padding="0" BorderColor="{StaticResource Grey-Light-2}">
-                        <Picker FontSize="Small" ItemsSource="{Binding Amenities}" SelectedItem="{Binding SelectedAmenity,Mode=TwoWay}" Title="Tap to select amenity" ItemDisplayBinding="{Binding Name}" BackgroundColor="{StaticResource Off-White}" TextColor="{StaticResource Grey-Mid-1}"/>
+                        <controls:CustomPicker FontSize="Small" ItemsSource="{Binding Amenities}" SelectedItem="{Binding SelectedAmenity,Mode=TwoWay}" Title="Select amenity" ItemDisplayBinding="{Binding Name}" BackgroundColor="White" TextColor="{StaticResource Grey-Mid-1}"/>
                     </Frame>
                 </StackLayout>
 
@@ -187,72 +188,151 @@
                     </Frame>
                     <controls:CalendarView SelectedDate="{Binding SelectedDate}"
                                                IsVisible="{Binding DatePickerIsVisible}"
+                                               AvailableDays="{Binding ListOfAvailableDays}"
+                                               ShowDisabledDates="True"
+                                               CurrentMonthYearChangedCommand="{Binding HandleCalendarNavigation}"
                                                HeightRequest="250"
                                                AllowMultipleSelection="false" />
                 </StackLayout>
 
                 <Grid ColumnSpacing="100" RowSpacing="20">
-                    <StackLayout Grid.Row="0" Grid.Column="0">
+                    <StackLayout Grid.Row="0" Grid.Column="0" Spacing="0">
                         <Label Text="From:" FontSize="Small" TextColor="{StaticResource Grey-Light-1}"/>
                         <Frame HasShadow="False" Padding="4,8,4,8" HeightRequest="20" BackgroundColor="White"  BorderColor="{StaticResource Grey-Light-2}">
-                            <Label Text="{Binding FromTimeString}"  MaxLines="1" LineBreakMode="TailTruncation" InputTransparent="True" BackgroundColor="White" TextColor="{StaticResource Grey-Mid-1}" FontSize="Small"/>
+                            <Label Text="{Binding FromTime}"  MaxLines="1" LineBreakMode="TailTruncation" InputTransparent="True" BackgroundColor="White" TextColor="{StaticResource Grey-Mid-1}" FontSize="Small"/>
                             <Frame.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding OnSelectDateTapped}" />
+                                <TapGestureRecognizer Command="{Binding OnFromTimeLabelTapped}" />
                             </Frame.GestureRecognizers>
                         </Frame>
+                        <controls:CustomListView HeightRequest="170" SelectionMode="None"
+                                         ItemsSource="{Binding FromTimes}"
+                                         HasUnevenRows="False"
+                                         BackgroundColor="{StaticResource Off-White}"
+                                                 IsVisible="{Binding FromTimeListIsVisible}"
+                                         SeparatorVisibility="None"
+                                         >
+                            <x:Arguments>
+                                <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
+                            </x:Arguments>
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <ViewCell>
+                                        <Frame Padding="4,6,0,6" CornerRadius="0" BorderColor="{StaticResource Grey-Light-2}"  BackgroundColor="{StaticResource Off-White}">
+                                            <StackLayout>
+                                                <Label Text="{Binding Time, Converter={StaticResource TimeSpanToTimeConverter}}"
+                                                   VerticalOptions="CenterAndExpand"
+                                                   LineBreakMode="TailTruncation"
+                                                   TextColor="{Binding IsAvailable, Converter={StaticResource EnabledStateToTextColorConverter}}"
+                                                   FontSize="Small" />
+                                            </StackLayout>
+                                            <Frame.GestureRecognizers>
+                                                <TapGestureRecognizer NumberOfTapsRequired="1"
+                                                                      Command="{Binding BindingContext.OnFromTimeSelected, Source={x:Reference ThisPage}}"
+                                                                      CommandParameter="{Binding .}" />
+                                            </Frame.GestureRecognizers>
+                                        </Frame>
+                                    </ViewCell>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </controls:CustomListView>
                     </StackLayout>
                     <StackLayout Grid.Row="0" Grid.Column="1">
-                        <Label Text="To:" FontSize="Small" TextColor="{StaticResource Grey-Light-1}"/>
-                        <Frame HasShadow="False" Padding="4,8,4,8" HeightRequest="20" BackgroundColor="White"  BorderColor="{StaticResource Grey-Light-2}">
-                            <Label Text="{Binding ToTimeString}"  MaxLines="1" LineBreakMode="TailTruncation" InputTransparent="True" BackgroundColor="White" TextColor="{StaticResource Grey-Mid-1}" FontSize="Small"/>
-                            <Frame.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding OnSelectDateTapped}" />
-                            </Frame.GestureRecognizers>
-                        </Frame>
+                        <StackLayout Grid.Row="0" Grid.Column="0" Spacing="0">
+                            <Label Text="To:" FontSize="Small" TextColor="{StaticResource Grey-Light-1}"/>
+                            <Frame HasShadow="False" Padding="4,8,4,8" HeightRequest="20" BackgroundColor="White"  BorderColor="{StaticResource Grey-Light-2}">
+                                <Label Text="{Binding ToTime}"  MaxLines="1" LineBreakMode="TailTruncation" InputTransparent="True" BackgroundColor="White" TextColor="{Binding EndTimeTextColor}" FontSize="Small"/>
+                                <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding OnToTimeLabelTapped}" />
+                                </Frame.GestureRecognizers>
+                            </Frame>
+                            <controls:CustomListView HeightRequest="170" SelectionMode="None"
+                                         ItemsSource="{Binding ToTimes}"
+                                         HasUnevenRows="False"
+                                         BackgroundColor="{StaticResource Off-White}"
+                                                      IsVisible="{Binding ToTimeListIsVisible}"
+                                         SeparatorVisibility="None"
+                                         >
+                                <x:Arguments>
+                                    <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
+                                </x:Arguments>
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <ViewCell>
+                                            <Frame Padding="4,6,0,6" CornerRadius="0" BorderColor="{StaticResource Grey-Light-2}" BackgroundColor="{StaticResource Off-White}">
+                                                <StackLayout>
+                                                    <Label Text="{Binding Time, Converter={StaticResource TimeSpanToTimeConverter}}"
+                                                   VerticalOptions="CenterAndExpand"
+                                                   LineBreakMode="TailTruncation"
+                                                   TextColor="{Binding IsAvailable, Converter={StaticResource EnabledStateToTextColorConverter}}"
+                                                   FontSize="Small" />
+                                                </StackLayout>
+                                                <Frame.GestureRecognizers>
+                                                    <TapGestureRecognizer NumberOfTapsRequired="1"
+                                                                      Command="{Binding BindingContext.OnToTimeSelected, Source={x:Reference ThisPage}}"
+                                                                      CommandParameter="{Binding .}" />
+                                                </Frame.GestureRecognizers>
+                                            </Frame>
+                                        </ViewCell>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </controls:CustomListView>
+                        </StackLayout>
                     </StackLayout>
                     <StackLayout Grid.Row="1" Grid.Column="0">
                         <Label Text="Total amount:" FontSize="Small" TextColor="{StaticResource Grey-Light-1}"/>
-                        <Frame HasShadow="False" Padding="4,8,4,8" HeightRequest="20" BackgroundColor="White"  BorderColor="{StaticResource Grey-Light-2}">
-                            <Entry Text="{Binding TotalAmount}" Keyboard="Numeric" BackgroundColor="White" TextColor="{StaticResource Grey-Mid-1}" FontSize="Small"/>
-                        </Frame>
+
+                        <local:CustomEntry Text="{Binding TotalAmount}" HasBorder="True" Keyboard="Numeric" BackgroundColor="White" TextColor="{StaticResource Grey-Mid-1}" FontSize="Small"/>
+
                     </StackLayout>
                     <StackLayout Grid.Row="1" Grid.Column="1">
                         <Label Text="Security deposit:" FontSize="Small" TextColor="{StaticResource Grey-Light-1}"/>
-                        <Frame HasShadow="False" Padding="4,8,4,8" HeightRequest="20" BackgroundColor="White"  BorderColor="{StaticResource Grey-Light-2}">
-                            <Label Text="{Binding SecurityDeposit, Converter={StaticResource DoubleToCurrencyString}}"  MaxLines="1" LineBreakMode="TailTruncation" InputTransparent="True" BackgroundColor="White" TextColor="{StaticResource Grey-Mid-1}" FontSize="Small"/>
-                        </Frame>
+
+                        <local:CustomEntry Text="{Binding SecurityDeposit}" IsEnabled="False" HasBorder="True" Keyboard="Numeric" BackgroundColor="White" TextColor="{StaticResource Grey-Mid-1}" FontSize="Small"/>
+
                     </StackLayout>
                 </Grid>
                 <StackLayout Spacing="0">
-                    <StackLayout Orientation="Horizontal" Spacing="0">
-                        <CheckBox Color="{StaticResource Primary}" VerticalOptions="CenterAndExpand"/>
-                        <Label Text="Request payment" Margin="-12,0,0,0" VerticalOptions="CenterAndExpand" FontSize="Small" TextColor="{StaticResource Primary}"/>
+                    <StackLayout Orientation="Horizontal" Spacing="4" Padding="0,6,0,6">
+                        <Image Source="{Binding RequestPayment,Converter={StaticResource BoolToCheckBoxIconSource}}" VerticalOptions="CenterAndExpand"/>
+                        <Label Text="Request payment" VerticalOptions="CenterAndExpand" FontSize="Small" TextColor="{StaticResource Primary}" />
+                        <StackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding OnRequestPaymentTapped}" />
+                        </StackLayout.GestureRecognizers>
                     </StackLayout>
-                    <StackLayout Orientation="Horizontal" Spacing="0">
-                        <CheckBox Color="{StaticResource Primary}" VerticalOptions="CenterAndExpand"/>
-                        <Label Text="Mark as paid" Margin="-12,0,0,0" VerticalOptions="CenterAndExpand" FontSize="Small" TextColor="{StaticResource Primary}"/>
+                    <StackLayout Orientation="Horizontal" Spacing="4" Padding="0,6,0,6">
+                        <Image Source="{Binding MarkAsPaid,Converter={StaticResource BoolToCheckBoxIconSource}}" VerticalOptions="CenterAndExpand"/>
+                        <Label Text="Mark as paid" VerticalOptions="CenterAndExpand" FontSize="Small" TextColor="{StaticResource Primary}" />
+                        <StackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding OnMarkAsPaidTapped}" />
+                        </StackLayout.GestureRecognizers>
                     </StackLayout>
-                    <StackLayout Orientation="Horizontal" Spacing="0">
-                        <CheckBox Color="{StaticResource Primary}" VerticalOptions="CenterAndExpand"/>
-                        <Label Text="Not applicable" Margin="-12,0,0,0" VerticalOptions="CenterAndExpand" FontSize="Small" TextColor="{StaticResource Primary}"/>
+                    <StackLayout Orientation="Horizontal" Spacing="4" Padding="0,6,0,6">
+                        <Image Source="{Binding NotApplicable,Converter={StaticResource BoolToCheckBoxIconSource}}" VerticalOptions="CenterAndExpand"/>
+                        <Label Text="Not applicable" VerticalOptions="CenterAndExpand" FontSize="Small" TextColor="{StaticResource Primary}" />
+                        <StackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding OnNotApplicableTapped}" />
+                        </StackLayout.GestureRecognizers>
                     </StackLayout>
                 </StackLayout>
                 <StackLayout Spacing="0">
                     <Label Text="Note to tenant:" FontSize="Small" TextColor="{StaticResource Grey-Light-1}"/>
-                    <Frame HasShadow="False" Padding="0" HeightRequest="80" BackgroundColor="White"  BorderColor="{StaticResource Grey-Light-2}">
-                        <Editor BackgroundColor="White" Text="{Binding NoteToTenant}" HeightRequest="80" MinimumHeightRequest="50" TextColor="{StaticResource Grey-Mid-1}"/>
-                    </Frame>
+
+                    <controls:BorderlessEditor BackgroundColor="{StaticResource Off-White}" FontSize="Small" Text="{Binding NoteToTenant}" HeightRequest="80" MinimumHeightRequest="50" TextColor="{StaticResource Grey-Mid-1}"/>
+
                     <StackLayout Orientation="Horizontal" Spacing="0">
-                        <CheckBox Color="{StaticResource Primary}" VerticalOptions="CenterAndExpand"/>
-                        <Label Text="Approve booking" Margin="-12,0,0,0" VerticalOptions="CenterAndExpand" FontSize="Small" TextColor="{StaticResource Primary}"/>
+                        <CheckBox Color="{StaticResource Primary}" IsChecked="{Binding ApproveBooking}" VerticalOptions="CenterAndExpand"/>
+                        <Label Text="Approve booking" Margin="8,0,0,0" VerticalOptions="CenterAndExpand" FontSize="Small" TextColor="{StaticResource Primary}">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding OnApproveBookingTapped}" />
+                            </Label.GestureRecognizers>
+                        </Label>
                     </StackLayout>
                 </StackLayout>
                 <Grid>
-                    <Button BackgroundColor="{StaticResource Green}" FontAttributes="Bold" FontSize="Medium" TextColor="White" Text="Save" Grid.Column="0" />
-                    <Button BackgroundColor="Transparent" TextColor="{StaticResource Grey-Mid-1}" Text="Cancel" Grid.Column="1" />
+                    <Button BackgroundColor="{StaticResource Green}" Command="{Binding OnSaveBookingTapped}" FontAttributes="Bold" FontSize="Medium" TextColor="White" Text="Save" Grid.Column="0" />
+                    <Button BackgroundColor="Transparent" Command="{Binding OnBackButtonTapped}" TextColor="{StaticResource Grey-Mid-1}" Text="Cancel" Grid.Column="1" />
                 </Grid>
             </StackLayout>
         </ScrollView>
     </Grid>
-
 </ContentPage>

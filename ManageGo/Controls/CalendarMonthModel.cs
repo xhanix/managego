@@ -8,7 +8,9 @@ namespace CustomCalendar
     public enum HighlightType
     {
         Dark,
-        Light
+        Light,
+        Enabled,
+        Disabled
     }
 
     public class HighlightedDay

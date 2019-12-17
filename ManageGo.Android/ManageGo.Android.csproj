@@ -116,6 +116,7 @@
         <Compile Include="AppStoreOpenerImplementation.cs" />
         <Compile Include="ImageHandler.cs" />
         <Compile Include="CustomListview.cs" />
+        <Compile Include="CustomPicker.cs" />
     </ItemGroup>
     <ItemGroup>
         <None Include="Resources\AboutResources.txt" />

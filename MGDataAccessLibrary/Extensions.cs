@@ -26,13 +26,13 @@ namespace MGDataAccessLibrary
             return j.Result;
         }
 
-        public static async Task<T> ReadAsApiV3ResponseForType<T>(this HttpContent content, string requestBody, string nodeName = null)
+        public static async Task<(T, string)> ReadAsApiV3ResponseForType<T>(this HttpContent content, string requestBody, string nodeName = null)
         {
             var responseString = await content.ReadAsStringAsync();
             if (string.IsNullOrWhiteSpace(responseString))
                 return default;
             var j = JsonConvert.DeserializeObject<Models.BaseApiV3Response<T>>(responseString);
-            return j.Data;
+            return (j.Data, j.AccessToken);
         }
 
         public static async Task<T> ReadAsObjectAsync<T>(this HttpContent content, string nodeName = null)

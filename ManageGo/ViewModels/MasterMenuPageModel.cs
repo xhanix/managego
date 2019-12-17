@@ -13,6 +13,7 @@ namespace ManageGo
         public bool MaintenanceIsVisible { get; private set; }
         public bool NotificationsIsVisible { get; private set; }
         public bool TenantIsVisible { get; private set; }
+        public bool AmenityMenuIsVisible { get; private set; }
 
         internal event EventHandler<bool> OnLogout;
         public MasterMenuPageModel()
@@ -27,6 +28,7 @@ namespace ManageGo
             MaintenanceIsVisible = App.UserPermissions.HasFlag(UserPermissions.CanAccessTickets);
             NotificationsIsVisible = App.UserPermissions.HasFlag(UserPermissions.CanApproveNewTenantsUnits);
             TenantIsVisible = App.UserPermissions.HasFlag(UserPermissions.CanAccessTenants);
+            AmenityMenuIsVisible = App.UserPermissions.HasFlag(UserPermissions.CanAccessAmenities);
         }
 
         public FreshAwaitCommand OnSupportEmailTapped

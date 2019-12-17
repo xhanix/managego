@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using MGDataAccessLibrary.Models.Amenities.Requests;
+using Xamarin;
+
 namespace MGDataAccessLibrary.Models.Amenities.Responses
 {
     public class Booking
@@ -14,15 +18,19 @@ namespace MGDataAccessLibrary.Models.Amenities.Responses
         public string DisplayAddress => BuildingName + ", " + UnitName;
         public AuditLog AuditLog { get; set; }
         public string Icon { get; set; }
-        public string LinkUrl => "https://ploop.dynamo-ny.com" + Icon.Replace(".svg", ".png");
+        public string LinkUrl => Icon?.Replace(".svg", ".png");
         public double BookingFee { get; set; }
+        public bool CanBeApproved { get; set; }
+        public bool CanBeDeclined { get; set; }
         public double SecurityDepositFee { get; set; }
         public string ProvidedTenantName { get; set; }
-        public int PaymentStatus { get; set; }
+        public PaymentStatus PaymentStatus { get; set; }
         public int? PaymentAccountId { get; set; }
         public bool IsSecurityDepositEnabled { get; set; }
         public bool IsBookingFeeEnabled { get; set; }
+        public string GuestList { get; set; }
         public BookingStatus Status { get; set; }
+        public IEnumerable<BookingNote> Notes { get; set; }
         public string StatusTextColor
         {
             get
@@ -40,13 +48,5 @@ namespace MGDataAccessLibrary.Models.Amenities.Responses
             }
         }
 
-    }
-
-    public enum BookingStatus
-    {
-        Pending = 0,
-        Approved = 1,
-        Declined = 2,
-        Canceled = 3
     }
 }

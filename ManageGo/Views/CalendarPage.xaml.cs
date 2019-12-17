@@ -18,7 +18,6 @@ namespace ManageGo
         {
             base.OnAppearing();
             var cal = new Controls.CalendarView();
-
             cal.SetBinding(Controls.CalendarView.SelectedDateProperty, "SelectedDate");
             cal.SetBinding(Controls.CalendarView.HighlightedDatesProperty, "HighlightedDates");
             cal.VerticalOptions = LayoutOptions.Start;
@@ -29,9 +28,7 @@ namespace ManageGo
 
         protected override bool OnBackButtonPressed()
         {
-            
-            App.MasterDetailNav.SwitchSelectedRootPageModel<WelcomePageModel>();
-            return true;
+            return false;
         }
 
         public void DataLoaded()

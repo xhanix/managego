@@ -4,24 +4,22 @@ using Xamarin.Forms;
 
 namespace ManageGo
 {
-    public class EnabledStateToTextColorConverter : IValueConverter
+    public class TimeSpanToTimeConverter : IValueConverter
     {
-
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is bool v && v)
+            if (value is TimeSpan _val)
             {
-                // is enabled
-                return "#4f4f4f";
+                var dateTime = new DateTime(_val.Ticks);
+                return dateTime.ToString("h:mm tt", CultureInfo.InvariantCulture);
             }
-            else
-                return "#d1d1d1";
-        }
 
+            return "unchecked.png";
+        }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return !(bool)value;
+            return false;
         }
     }
 }

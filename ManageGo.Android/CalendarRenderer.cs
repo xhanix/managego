@@ -11,6 +11,7 @@ using ManageGo.Controls;
 using CustomCalendar.Droid;
 using CustomCalendar;
 using System.Collections.Generic;
+using System.Linq;
 
 [assembly: ExportRenderer(typeof(Calendar), typeof(CalendarRenderer))]
 namespace ManageGo.UI.Droid.Renderers
@@ -24,6 +25,8 @@ namespace ManageGo.UI.Droid.Renderers
         int elementHeight;
 
         bool disposed;
+
+        public bool ShowDisabledDays { get; private set; }
 
         public CalendarRenderer(Context context) : base(context)
         { }
@@ -41,6 +44,7 @@ namespace ManageGo.UI.Droid.Renderers
 
                 Element.SizeChanged -= ElementSizeChanged;
                 Element.UpdateSelectedDates = null;
+                Element.UpdateEnabledDates = null;
                 Element.UpdateHighlightedDates = null;
                 Element.OnNextMonthRequested -= _calendarView.GoToNextMonth;
                 Element.OnPreviousMonthRequested -= _calendarView.GoToPreviousMonth;
@@ -51,8 +55,10 @@ namespace ManageGo.UI.Droid.Renderers
                 Element.SizeChanged += ElementSizeChanged;
                 Element.UpdateSelectedDates = UpdateSelectedDates;
                 Element.UpdateHighlightedDates = UpdateHighlightedDates;
+                Element.UpdateEnabledDates = UpdateAvailableDays;
                 Element.OnNextMonthRequested += (_sender, _e) => _calendarView?.GoToNextMonth((object)_sender, _e);
                 Element.OnPreviousMonthRequested += (_sender, _e) => _calendarView?.GoToPreviousMonth((object)_sender, _e);
+                ShowDisabledDays = Element.ShowDisabledDates;
             }
 
             InitializeNativeView();
@@ -92,6 +98,12 @@ namespace ManageGo.UI.Droid.Renderers
             _calendarView?.UpdateHighlightedDates(dates);
         }
 
+        void UpdateAvailableDays(IEnumerable<DateTime> days)
+        {
+            if (days != null)
+                _calendarView?.UpdateAvailableDays(days.ToList());
+        }
+
         void InitializeNativeView()
         {
             if (elementWidth <= 0 || elementHeight <= 0)
@@ -101,7 +113,7 @@ namespace ManageGo.UI.Droid.Renderers
 
             ResetNativeView();
 
-            _calendarView = new CalendarViewPage(Context, Element.AllowMultipleSelection, Element.SelectedDates, Element.HighlightedDates);
+            _calendarView = new CalendarViewPage(Context, Element.AllowMultipleSelection, Element.SelectedDates, Element.HighlightedDates, Element.AvailableDays?.ToList(), ShowDisabledDays);
 
             _calendarView.OnCurrentMonthYearChange += Element.OnCurrentMonthYearChanged;
             _calendarView.OnSelectedDatesChange += Element.OnDatesChanged;
@@ -109,7 +121,7 @@ namespace ManageGo.UI.Droid.Renderers
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LayoutParams.MatchParent, LayoutParams.MatchParent);
 
             _calendarView.LayoutParameters = layoutParams;
-
+            _calendarView.ShowDisabledDays = ShowDisabledDays;
             SetNativeControl(_calendarView);
         }
 

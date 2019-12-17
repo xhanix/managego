@@ -4,24 +4,18 @@ using Xamarin.Forms;
 
 namespace ManageGo
 {
-    public class EnabledStateToTextColorConverter : IValueConverter
+    public class BoolToOpacityConverter : IValueConverter
     {
-
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is bool v && v)
-            {
-                // is enabled
-                return "#4f4f4f";
-            }
-            else
-                return "#d1d1d1";
+            if (value is bool b && b)
+                return 1d;
+            return 0.5;
         }
-
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return !(bool)value;
+            throw new NotImplementedException();
         }
     }
 }

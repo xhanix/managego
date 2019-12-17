@@ -26,6 +26,7 @@ namespace CustomCalendar.Droid
         }
 
         public List<DateTime> HighlightedDates { get; set; }
+        public List<DateTime> AvailableDays { get; set; }
 
         bool IsDragging { get; set; }
 
@@ -36,8 +37,9 @@ namespace CustomCalendar.Droid
         public DrawableControlView<CalendarMonthControl> Item0 { get; set; }
         public DrawableControlView<CalendarMonthControl> Item1 { get; set; }
         public DrawableControlView<CalendarMonthControl> Item2 { get; set; }
+        public bool ShowDisabledDays { get; internal set; }
 
-        public CalendarViewPage(Android.Content.Context context, bool allowMultipleSelection, DateRange selectedDates, List<DateTime> highlightedDates) : base(context)
+        public CalendarViewPage(Android.Content.Context context, bool allowMultipleSelection, DateRange selectedDates, List<DateTime> highlightedDates, List<DateTime> availableDays, bool showDisabledDays) : base(context)
         {
             AllowMultipleSelection = allowMultipleSelection;
 
@@ -59,10 +61,10 @@ namespace CustomCalendar.Droid
             {
                 SetMonth(SelectedDates.StartDate);
             }
-
+            ShowDisabledDays = showDisabledDays;
             SelectedDates = selectedDates;
             HighlightedDates = highlightedDates;
-
+            AvailableDays = availableDays;
             UpdateCalendars();
         }
 
@@ -71,6 +73,14 @@ namespace CustomCalendar.Droid
             Item0.ControlDelegate.HighlightedDates = HighlightedDates;
             Item1.ControlDelegate.HighlightedDates = HighlightedDates;
             Item2.ControlDelegate.HighlightedDates = HighlightedDates;
+
+            Item0.ControlDelegate.AvailableDays = AvailableDays;
+            Item1.ControlDelegate.AvailableDays = AvailableDays;
+            Item2.ControlDelegate.AvailableDays = AvailableDays;
+
+            Item0.ControlDelegate.ShowDisabledDays = ShowDisabledDays;
+            Item1.ControlDelegate.ShowDisabledDays = ShowDisabledDays;
+            Item2.ControlDelegate.ShowDisabledDays = ShowDisabledDays;
 
             Item0.ControlDelegate.SelectedDates = SelectedDates;
             Item1.ControlDelegate.SelectedDates = SelectedDates;
@@ -87,11 +97,18 @@ namespace CustomCalendar.Droid
             Invalidate();
         }
 
+
         public void UpdateHighlightedDates(List<DateTime> dates)
         {
             HighlightedDates = dates;
             UpdateHighlightedDates();
             //Invalidate();
+        }
+
+        public void UpdateAvailableDays(List<DateTime> dates)
+        {
+            AvailableDays = dates;
+            UpdateAvailableDays();
         }
 
         public override bool DispatchTouchEvent(MotionEvent e)
@@ -154,6 +171,11 @@ namespace CustomCalendar.Droid
         }
 
         void UpdateHighlightedDates()
+        {
+            UpdateCalendars();
+        }
+
+        void UpdateAvailableDays()
         {
             UpdateCalendars();
         }

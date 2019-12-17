@@ -48,6 +48,8 @@ namespace ManageGo.Services
                 App.UserPermissions |= UserPermissions.CanApproveNewTenantsUnits;
             if (perm.CanEditTicket)
                 App.UserPermissions |= UserPermissions.CanEditTicketDetails;
+            if (perm.CanAccessAmenities)
+                App.UserPermissions |= UserPermissions.CanAccessAmenities;
 
 
             if (App.Buildings is null)
@@ -100,6 +102,8 @@ namespace ManageGo.Services
                 App.UserPermissions |= UserPermissions.CanApproveNewTenantsUnits;
             if (perm.CanEditTicket)
                 App.UserPermissions |= UserPermissions.CanEditTicketDetails;
+            if (perm.CanAccessAmenities)
+                App.UserPermissions |= UserPermissions.CanAccessAmenities;
         }
 
 

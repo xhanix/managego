@@ -15,6 +15,8 @@ namespace CustomCalendar.iOS
         internal DateTime Month { get; set; }
 
         DateRange _selectedDates;
+        internal bool showDisabledDays;
+
         public DateRange SelectedDates
         {
             get
@@ -27,10 +29,12 @@ namespace CustomCalendar.iOS
         }
 
         public List<DateTime> HighlightedDates { get; set; }
+        public IEnumerable<DateTime> AvailableDays { get; private set; }
 
         InfiniteScrollView<CalendarViewCell> infiniteScrollView;
 
         public CalendarView(CGRect frame, bool allowMultipleSelection,
+             IEnumerable<DateTime> availableDays,
                             DateRange selectedDates = null,
                             List<DateTime> highlightedDates = null) : base(frame)
         {
@@ -40,6 +44,7 @@ namespace CustomCalendar.iOS
             SelectedDates = selectedDates ?? new DateRange(DateTime.Now);
 
             HighlightedDates = highlightedDates;
+            AvailableDays = availableDays;
 
             SetCurrentlyTargetedMonth();
         }
@@ -52,6 +57,7 @@ namespace CustomCalendar.iOS
 
             AddSubview(infiniteScrollView);
         }
+
 
         void SetCurrentlyTargetedMonth()
         {
@@ -89,6 +95,13 @@ namespace CustomCalendar.iOS
             infiniteScrollView.ReloadData();
         }
 
+        internal void UpdateEnabledDates(IEnumerable<DateTime> days)
+        {
+            AvailableDays = days;
+            infiniteScrollView.ReloadData();
+        }
+
+
         class CalendarViewDelegate : IInfiniteScrollViewDelegate<CalendarViewCell>
         {
             WeakReference<CalendarView> _weakView;
@@ -112,7 +125,8 @@ namespace CustomCalendar.iOS
                         cell.ControlDelegate.AllowMultipleSelection = v.AllowMultipleSelection;
                         cell.ControlDelegate.SelectedDates = v.SelectedDates;
                         cell.ControlDelegate.HighlightedDates = v.HighlightedDates;
-
+                        cell.ControlDelegate.AvailableDays = v.AvailableDays;
+                        cell.ControlDelegate.ShowDisabledDays = v.showDisabledDays;
                         v.OnSelectedDatesChange?.Invoke(v.SelectedDates);
 
                         cell.SetNeedsDisplay();
@@ -141,7 +155,8 @@ namespace CustomCalendar.iOS
                     cell.ControlDelegate.AllowMultipleSelection = view.AllowMultipleSelection;
                     cell.ControlDelegate.SelectedDates = view.SelectedDates;
                     cell.ControlDelegate.HighlightedDates = view.HighlightedDates;
-
+                    cell.ControlDelegate.AvailableDays = view.AvailableDays;
+                    cell.ControlDelegate.ShowDisabledDays = view.showDisabledDays;
                     cell.SetNeedsDisplay();
                 }
             }

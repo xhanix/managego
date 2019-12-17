@@ -7,6 +7,9 @@ namespace ManageGo
 {
     public partial class BuildingsListPage : ContentPage
     {
+
+
+
         public BuildingsListPage()
         {
             InitializeComponent();
@@ -32,6 +35,7 @@ namespace ManageGo
             }
             return true;
         }
+
 
 
         public void DataLoaded()

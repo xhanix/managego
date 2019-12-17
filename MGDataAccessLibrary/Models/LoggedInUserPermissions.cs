@@ -37,5 +37,8 @@ namespace MGDataAccessLibrary.Models
         [Obsolete("This may be removed in future versions of the backend service")]
         [JsonProperty("LimitToAssignedTicketsOnly")]
         public bool IsLimitedToAssignedTickets { get; set; }
+
+        [JsonProperty("AccessToAmenity")]
+        public bool CanAccessAmenities { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Android.Content;
+using Android.Graphics;
 using Android.Graphics.Drawables;
 using ManageGo;
 using Xamarin.Forms;
@@ -24,6 +25,13 @@ namespace ManageGo
                 bgColor = new ColorDrawable(Android.Graphics.Color.Transparent);
                 Control?.SetBackground(bgColor);
                 Control?.SetBackgroundColor(Android.Graphics.Color.Transparent);
+                if (e.NewElement is CustomEntry ent && ent.HasBorder)
+                {
+                    var shape = new ShapeDrawable(new Android.Graphics.Drawables.Shapes.RectShape());
+                    shape.Paint.Color = Xamarin.Forms.Color.LightGray.ToAndroid();
+                    shape.Paint.SetStyle(Paint.Style.Stroke);
+                    Control.Background = shape;
+                }
                 if (!Control.Enabled)
                     Control?.SetTextColor(Android.Graphics.Color.Gray);
             }
