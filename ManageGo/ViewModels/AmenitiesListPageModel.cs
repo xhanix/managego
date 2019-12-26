@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -51,10 +52,15 @@ namespace ManageGo
         {
             try
             {
+
                 var pmcInfo = await MGDataAccessLibrary.BussinessLogic.AmenitiesProcessor.GetPMCInfo();
                 var url = pmcInfo.Item2?.CompanyUrl;
                 if (FetchNextPage)
                     filter.Page++;
+                else if (refreshData)
+                {
+                    filter.Page = 1;
+                }
                 var list = await MGDataAccessLibrary.BussinessLogic.AmenitiesProcessor.GetBookingList(filter);
                 CanGetMorePages = list.List != null && list.List.Any();
                 if (list.List is null && !list.List.Any() && !FetchNextPage)
@@ -66,8 +72,11 @@ namespace ManageGo
                     var updatedIconList = list.List.Select(t => { t.Icon = url + t.Icon; return t; });
                     Bookings = new ObservableCollection<MGDataAccessLibrary.Models.Amenities.Responses.Booking>(updatedIconList);
                 }
-            ((AmenitiesListPage)CurrentPage).DataLoaded();
-                PendingString = list.TotalPending > 0 ? $"({list.TotalPending} pending)" : string.Empty;
+                ((AmenitiesListPage)CurrentPage).DataLoaded();
+                if (filter.RawStatuses.Count == 1 && filter.RawStatuses.Contains(0))
+                    PendingString = "(View all)";
+                else
+                    PendingString = list.TotalPending > 0 ? $"({list.TotalPending} pending)" : string.Empty;
             }
             catch (Exception ex)
             {
@@ -75,6 +84,46 @@ namespace ManageGo
                     await CoreMethods.DisplayAlert("Something went wrong", ex.Message, "Dismiss");
             }
 
+        }
+
+        public override void ReverseInit(object returnedData)
+        {
+            base.ReverseInit(returnedData);
+            RefreshList.Execute(null);
+        }
+
+        public FreshAwaitCommand RefreshList
+        {
+            get
+            {
+                return new FreshAwaitCommand(async (tcs) =>
+                {
+                    IsRefreshing = true;
+                    await LoadData(refreshData: true);
+                    IsRefreshing = false;
+                    tcs?.SetResult(true);
+                });
+            }
+        }
+
+        public FreshAwaitCommand OnFilterPendingTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand(async (tcs) =>
+                {
+                    if (PendingString == "(View all)")
+                        filter.RawStatuses.Clear();
+                    else
+                    {
+                        filter.RawStatuses.Clear();
+                        filter.RawStatuses.Add(0);
+                        PendingString = "(View all)";
+                    }
+                    RefreshList.Execute(null);
+                    tcs?.SetResult(true);
+                });
+            }
         }
 
         public FreshAwaitCommand OnCreateButtonTapped
@@ -199,8 +248,7 @@ namespace ManageGo
         public bool CanGetMorePages { get; private set; }
         public bool IsBusy { get; private set; }
         public bool ShouldClearFilter { get; private set; }
-
-
+        public bool IsRefreshing { get; private set; }
 
         protected override void ViewIsDisappearing(object sender, EventArgs e)
         {

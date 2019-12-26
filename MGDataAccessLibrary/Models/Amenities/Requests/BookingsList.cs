@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+
 namespace MGDataAccessLibrary.Models.Amenities.Requests
 {
     public class BookingsList
@@ -13,6 +15,7 @@ namespace MGDataAccessLibrary.Models.Amenities.Requests
         /// Comma-separated Amenity ids
         /// </summary>
         public string Amenities { get; set; }
+        public List<int> RawStatuses { get; set; } = new List<int>();
         /// <summary>
         /// Comma-separated Status codes.
         /// Status IDs: Pending = 0, Approved = 1, Declined = 2, Canceled = 3

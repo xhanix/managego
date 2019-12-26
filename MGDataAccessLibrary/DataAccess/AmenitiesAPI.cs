@@ -9,7 +9,7 @@ namespace MGDataAccessLibrary.DataAccess
     public static class AmenitiesAPI
     {
 
-#if !DEBUG
+#if DEBUG
         private const string BaseUrl = "https://ploop.dynamo-ny.com/apiCore/api/pmc/v3/";
 #else
         private const string BaseUrl = "https://portal.managego.com/apiCore/api/pmc/v3/";
@@ -64,5 +64,7 @@ namespace MGDataAccessLibrary.DataAccess
                 throw new Exception(result);
             }
         }
+
+
     }
 }

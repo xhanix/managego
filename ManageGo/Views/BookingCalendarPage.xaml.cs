@@ -113,6 +113,7 @@ namespace ManageGo
                     }
                 }
             }
+            CalScrollView.ScrollToAsync(StartingScrollPosition, ScrollToPosition.Start, false);
         }
 
 

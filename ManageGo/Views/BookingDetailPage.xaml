@@ -63,55 +63,37 @@
                         <StackLayout>
                             <Image HeightRequest="32" WidthRequest="32" Source="{Binding Booking.LinkUrl, Converter={StaticResource UrlToImageSource}}"/>
                             <Label Text="{Binding Booking.AmenityName}" Margin="0,8,0,0" FontSize="Medium" HorizontalOptions="CenterAndExpand" TextColor="{StaticResource Grey-Mid-1}"/>
-                            <Grid RowSpacing="30" Margin="0,22,0,22">
+                            <Grid RowSpacing="15" Margin="0,22,0,22">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
                                 <StackLayout Grid.Row="0" Grid.Column="0">
-                                    <Label Text="{Binding Booking.TenantName}" FontAttributes="Bold" FontSize="Medium" TextColor="{StaticResource Grey-Dark-1}"/>
+                                    <Label Text="{Binding Booking.TenantName}" FontAttributes="Bold" FontSize="Body" TextColor="{StaticResource Grey-Dark-1}"/>
                                     <Label Text="{Binding Address}" FontSize="Small" TextColor="{StaticResource Grey-Mid-1}" />
                                 </StackLayout>
-                                <StackLayout Grid.Row="1" Grid.Column="0" IsVisible="{Binding FeeVisible}">
+                                <StackLayout Grid.Row="1" Grid.ColumnSpan="2" Spacing="0" IsVisible="{Binding FeeVisible}">
                                     <StackLayout Orientation="Horizontal" Spacing="0">
                                         <Label Text="Booking fee: " FontSize="Caption" TextColor="{StaticResource Grey-Mid-1}" />
                                         <Label Text="{Binding PayStatus}" HorizontalOptions="StartAndExpand" FontSize="Caption" TextColor="{StaticResource Grey-Mid-1}" />
+
                                     </StackLayout>
 
                                     <Label Text="{Binding Booking.BookingFee, Converter={StaticResource DoubleToCurrencyString}}" FontAttributes="Bold"  FontSize="Medium" TextColor="{StaticResource Green}" />
+                                    <Label Text="Security deposit:" Margin="0,15,0,0" HorizontalTextAlignment="Start" HorizontalOptions="Start" FontSize="Caption" TextColor="{StaticResource Grey-Mid-1}" />
+                                    <Label Text="{Binding Booking.SecurityDepositFee, Converter={StaticResource DoubleToCurrencyString}}" HorizontalTextAlignment="Start" FontAttributes="Bold"  FontSize="Medium" TextColor="{StaticResource Green}" />
                                 </StackLayout>
                                 <StackLayout Grid.Row="0" Grid.Column="1">
-                                    <Label Text="{Binding BookingDate}" HorizontalTextAlignment="End" FontAttributes="Bold" FontSize="Medium" TextColor="{StaticResource Grey-Dark-1}"/>
+                                    <Label Text="{Binding BookingDate}" HorizontalTextAlignment="End" FontAttributes="Bold" FontSize="Body" TextColor="{StaticResource Grey-Dark-1}"/>
                                     <Label Text="{Binding BookingTimeWindiw}" HorizontalTextAlignment="End" FontSize="Small" TextColor="{StaticResource Grey-Mid-1}" />
                                 </StackLayout>
                                 <StackLayout Grid.Row="1" Grid.Column="1" IsVisible="{Binding DepositVisible}">
-                                    <Label Text="Security deposit:" HorizontalTextAlignment="End" HorizontalOptions="EndAndExpand" FontSize="Caption" TextColor="{StaticResource Grey-Mid-1}" />
-                                    <Label Text="{Binding Booking.SecurityDepositFee, Converter={StaticResource DoubleToCurrencyString}}" HorizontalTextAlignment="End" FontAttributes="Bold"  FontSize="Medium" TextColor="{StaticResource Green}" />
+
                                 </StackLayout>
                             </Grid>
                             <Label Text="Comments:" TextColor="{StaticResource Grey-Light-1}" FontSize="Caption" />
-                            <controls:CustomListView ItemsSource="{Binding Booking.Notes}" SeparatorVisibility="None" HeightRequest="90" HasUnevenRows="False">
-                                <x:Arguments>
-                                    <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
-                                </x:Arguments>
-                                <ListView.ItemTemplate>
-                                    <DataTemplate>
-                                        <ViewCell>
-                                            <StackLayout>
-                                                <StackLayout Orientation="Horizontal">
-                                                    <Label Text="{Binding DisplayName}" FontSize="Small" TextColor="{StaticResource Grey-Mid-1}" />
-                                                    <Label Text="•" FontSize="Small" TextColor="{StaticResource Grey-Light-1}" />
-                                                    <Label Text="{Binding DisplayDate}" FontSize="Small" TextColor="{StaticResource Grey-Light-1}" />
-                                                </StackLayout>
-                                                <Label Text="{Binding Note}" FontSize="Small" TextColor="{StaticResource Grey-Mid-1}" />
-                                                <BoxView HeightRequest="1" VerticalOptions="Start" BackgroundColor="{StaticResource Grey-Light-2}" />
-                                            </StackLayout>
+                            <ContentView x:Name="NotesContainer" Content="{Binding Notescontent}" />
 
-
-                                        </ViewCell>
-                                    </DataTemplate>
-                                </ListView.ItemTemplate>
-                            </controls:CustomListView>
                             <Label Text="Notes to tenant:" TextColor="{StaticResource Grey-Light-1}" FontSize="Caption" />
                             <Frame Padding="0" HasShadow="False" BorderColor="{StaticResource Grey-Light-2}">
                                 <controls:BorderlessEditor FontSize="Small" Text="{Binding Note}" TextColor="{StaticResource Grey-Mid-1}" BackgroundColor="{StaticResource Grey-Light-2}" HeightRequest="100" />
@@ -144,5 +126,6 @@
                 <TapGestureRecognizer Command="{Binding OnClosePopupTapped}" />
             </Frame.GestureRecognizers>
         </Frame>
+        <ActivityIndicator VerticalOptions="CenterAndExpand" Color="{StaticResource Primary}" HorizontalOptions="CenterAndExpand" IsRunning="{Binding IsApprovingOrDeclining}" IsVisible="{Binding IsApprovingOrDeclining}"/>
     </Grid>
 </ContentPage>

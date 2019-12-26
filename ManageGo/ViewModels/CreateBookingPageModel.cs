@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FreshMvvm;
 using MGDataAccessLibrary.Models.Amenities.Responses;
+using Microsoft.AppCenter.Crashes;
 using PropertyChanged;
 using Xamarin.Forms;
 
@@ -18,7 +19,6 @@ namespace ManageGo
         private Models.BuildingAmenity selectedAmenity { get; set; }
         private DateTime? selectedDate;
         private string totalAmount;
-
         public double TenantListHeight { get; set; }
         public bool SetFromTime { get; private set; }
         public bool SetToTime { get; private set; }
@@ -32,6 +32,7 @@ namespace ManageGo
         public bool OtherTextFieldIsVisible { get; set; }
         public string OtherNameText { get; set; }
         public string NoteToTenant { get; set; }
+
         public bool ListViewIsVisible { get; set; }
         public ObservableCollection<AvailableDaysAndTimes> ListOfAvailableTimes { get; private set; }
         public ObservableCollection<DateTime> ListOfAvailableDays { get; private set; }
@@ -51,10 +52,21 @@ namespace ManageGo
             {
                 if (string.IsNullOrWhiteSpace(value))
                     totalAmount = "$0.00";
-                else if (!value.StartsWith("$", StringComparison.InvariantCulture))
-                    totalAmount = "$" + value;
                 else
+                {
                     totalAmount = value;
+                    if (value.Split('.').Count() > 1 && value.Split('.')[1].Length > 2)
+                    {
+                        var secondPart = string.Join("", value.Split('.')[1].ToCharArray().Take(2));
+                        totalAmount = value.Split('.').First() + "." + secondPart;
+                    }
+
+
+                    if (!value.StartsWith("$", StringComparison.InvariantCulture))
+                        totalAmount = "$" + totalAmount;
+                }
+
+
                 if (double.TryParse(value?.Replace("$", ""), out double d))
                 {
                     TotalAmountNum = d;
@@ -86,12 +98,24 @@ namespace ManageGo
             get => selectedDate;
             set
             {
-
+                if (value is null)
+                {
+                    selectedDate = value;
+                    FromTime = "Select";
+                    FromTimes = new ObservableCollection<Models.AvailableTimes>();
+                    ToTime = "Select";
+                    ToTimes = new ObservableCollection<Models.AvailableTimes>();
+                }
                 //close the date picker after selection is made
-                if (ListOfAvailableDays.Any(t => t.Date == value))
+                else if (ListOfAvailableDays.Any(t => t.Date == value))
                 {
                     selectedDate = value;
                     DatePickerIsVisible = false;
+
+                    FromTime = "Select";
+                    FromTimes = new ObservableCollection<Models.AvailableTimes>();
+                    ToTime = "Select";
+                    ToTimes = new ObservableCollection<Models.AvailableTimes>();
                     PopulateFromTimes();
                 }
 
@@ -108,7 +132,7 @@ namespace ManageGo
                 var now = DateTime.Now.Date;
                 if (SelectedDate.Value.Date == now.Date)
                 {
-
+                    //if today is selected then booking can be made after now
                     startTime.Add(TimeSpan.FromHours(now.Hour));
                     if (DateTime.Now.Minute / 30d > 1)
                         startTime.Add(TimeSpan.FromHours(1));
@@ -145,7 +169,9 @@ namespace ManageGo
                 var times = ListOfAvailableTimes?.FirstOrDefault(t => t.Date == SelectedDate)?.TimeRanges?.Where(t => t.BookedBy is null);
                 //to time will be at least 30 minutes after from time
                 TimeSpan startTime = new TimeSpan(0, FromTimeTotalMinutes.Value + 30, 0);
-                int maxTime = 48;
+                var minutesTillMidnight = (48 * 30) - startTime.TotalMinutes;
+                //goes up to 12AM
+                int maxTime = ((int)minutesTillMidnight + 30) / 30;
                 if (times != null)
                 {
                     for (int i = 0; i < maxTime; i++)
@@ -241,6 +267,7 @@ namespace ManageGo
             if (SelectedBuilding != null)
                 SelectedBuilding.IsSelected = true;
         }
+
         internal override async Task LoadData(bool refreshData = false, bool FetchNextPage = false)
         {
             return;
@@ -254,25 +281,41 @@ namespace ManageGo
 
         public FreshAwaitCommand OnAmenitySelected => new FreshAwaitCommand(async (par, tcs) =>
         {
-            var amenity = (Amenity)par;
-            var amenityWithDetails = await MGDataAccessLibrary.BussinessLogic.AmenitiesProcessor.GetAmenity(amenity.Id, SelectedBuilding.BuildingId);
-            amenity.Rules = amenityWithDetails.Rules;
-            SecurityDeposit = amenity.Rules.SecurityDepositAmount;
-            var from = new DateTime(CurrentCalendarMonthYear.Year, CurrentCalendarMonthYear.Month, 1);
-            var availableTimes = await MGDataAccessLibrary.BussinessLogic.AmenitiesProcessor.GetAvailableDays(new MGDataAccessLibrary.Models.Amenities.Requests.AvailableDays
+            try
             {
-                BuildingId = SelectedBuilding.BuildingId,
-                //  UnitId = selectedUnit.Id,
-                From = from.ToString(),
-                To = from.AddDays(31).ToString(),
-            }, SelectedAmenity.Id);
-            if (availableTimes.AvailableDaysAndTimes.Any())
+                var amenity = (Amenity)par;
+                var amenityWithDetails = await MGDataAccessLibrary.BussinessLogic.AmenitiesProcessor.GetAmenity(amenity.Id, SelectedBuilding.BuildingId);
+                amenity.Rules = amenityWithDetails.Rules;
+                SecurityDeposit = amenity.Rules.SecurityDepositAmount;
+                var from = new DateTime(CurrentCalendarMonthYear.Year, CurrentCalendarMonthYear.Month, 1);
+                var availableTimes = await MGDataAccessLibrary.BussinessLogic.AmenitiesProcessor.GetAvailableDays(new MGDataAccessLibrary.Models.Amenities.Requests.AvailableDays
+                {
+                    BuildingId = SelectedBuilding.BuildingId,
+                    //  UnitId = selectedUnit.Id,
+                    From = from.ToString(),
+                    To = from.AddDays(31).ToString(),
+                }, SelectedAmenity.Id);
+                FromTime = "Select";
+                ToTime = "Select";
+                FromTimes = new ObservableCollection<Models.AvailableTimes>();
+                ToTimes = new ObservableCollection<Models.AvailableTimes>();
+                SelectedDate = null;
+
+                if (availableTimes.AvailableDaysAndTimes.Any())
+                {
+                    ListOfAvailableTimes = new ObservableCollection<AvailableDaysAndTimes>(availableTimes.AvailableDaysAndTimes);
+                    ListOfAvailableDays = new ObservableCollection<DateTime>(availableTimes.AvailableDaysAndTimes.Where(t => t.TimeRanges.Any(t => t.BookedBy is null)).Select(t => t.Date));
+                    PopulateFromTimes();
+                    tcs?.SetResult(true);
+                }
+                await CalculateBookingFee();
+            }
+            catch (Exception ex)
             {
-                ListOfAvailableTimes = new ObservableCollection<AvailableDaysAndTimes>(availableTimes.AvailableDaysAndTimes);
-                ListOfAvailableDays = new ObservableCollection<DateTime>(availableTimes.AvailableDaysAndTimes.Where(t => t.TimeRanges.Any(t => t.BookedBy is null)).Select(t => t.Date));
-                PopulateFromTimes();
+                await CoreMethods.DisplayAlert("Something went wrong", ex.Message, "Dismiss");
                 tcs?.SetResult(true);
             }
+
 
         });
 
@@ -338,14 +381,15 @@ namespace ManageGo
                         }));
                     if (SelectedBuilding is null)
                         return;
-                    if (SelectedBuilding != null)
-                    {
-                        var units = await MGDataAccessLibrary.BussinessLogic.AmenitiesProcessor.GetBuildingUnits(SelectedBuilding.BuildingId);
-                        if (units != null && units.Any())
-                            Units = new ObservableCollection<BuildingUnit>(units);
-                    }
+
+                    var units = await MGDataAccessLibrary.BussinessLogic.AmenitiesProcessor.GetBuildingUnits(SelectedBuilding.BuildingId);
+                    if (units != null && units.Any())
+                        Units = new ObservableCollection<BuildingUnit>(units);
+
                     Tenants.Clear();
                     SelectedAmenity = Amenities?.FirstOrDefault(t => t.Id == selectedAmenityId);
+                    if (SelectedAmenity is null)
+                        SecurityDeposit = 0;
                     foreach (var a in Buildings)
                     {
                         a.IsSelected = false;
@@ -372,6 +416,13 @@ namespace ManageGo
                         }
 
                     }
+                    SelectedUnit = null;
+                    SelectedDate = null;
+                    FromTimes = new ObservableCollection<Models.AvailableTimes>();
+                    ToTimes = new ObservableCollection<Models.AvailableTimes>();
+                    FromTime = "Select";
+                    ToTime = "Select";
+                    TotalAmount = "$0.00";
                     tcs?.SetResult(true);
                 });
             }
@@ -395,6 +446,7 @@ namespace ManageGo
                             Tenants.Add(tenant);
 
                         ListViewIsVisible = true;
+                        await CalculateBookingFee();
                         tcs?.SetResult(true);
                     }
                     catch (Exception ex)
@@ -414,8 +466,25 @@ namespace ManageGo
                     }
 
                     var fontSize = Device.GetNamedSize(NamedSize.Small, typeof(Label));
-                    TenantListHeight = Tenants.Count * (12 + Math.Max(fontSize, 25));
+                    TenantListHeight = Tenants.Count * (20 + Math.Max(fontSize, 25));
                 });
+            }
+        }
+
+
+        private async Task CalculateBookingFee()
+        {
+            if (SelectedUnit is null || SelectedAmenity is null || !FromTimeTotalMinutes.HasValue || !ToTimeTotalMinutes.HasValue)
+                return;
+            try
+            {
+                var calculatedFee = await MGDataAccessLibrary.BussinessLogic.AmenitiesProcessor.CalculateBookingFee(SelectedAmenity.Id, SelectedUnit.Id, Math.Abs(ToTimeTotalMinutes.Value - FromTimeTotalMinutes.Value));
+                TotalAmountNum = calculatedFee.TotalAmount;
+                TotalAmount = TotalAmountNum.ToString("C2");
+            }
+            catch (Exception ex)
+            {
+                Crashes.TrackError(ex);
             }
         }
 
@@ -543,14 +612,22 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand((par, tcs) =>
+                return new FreshAwaitCommand(async (par, tcs) =>
                 {
-                    FromTimeListIsVisible = false;
+
                     var time = (Models.AvailableTimes)par;
-                    var dateTime = new DateTime(time.Time.Ticks);
-                    FromTime = dateTime.ToString("h:mm tt", CultureInfo.InvariantCulture);
-                    FromTimeTotalMinutes = (int)time.Time.TotalMinutes;
-                    PopulateToTimes();
+                    if (time.IsAvailable)
+                    {
+                        FromTimeListIsVisible = false;
+                        var dateTime = new DateTime(time.Time.Ticks);
+                        FromTime = dateTime.ToString("h:mm tt", CultureInfo.InvariantCulture);
+                        FromTimeTotalMinutes = (int)time.Time.TotalMinutes;
+                        ToTime = "Select";
+                        ToTimeTotalMinutes = null;
+                        ToTimes = new ObservableCollection<Models.AvailableTimes>();
+                        PopulateToTimes();
+                        await CalculateBookingFee();
+                    }
                     tcs?.SetResult(true);
                 });
             }
@@ -560,13 +637,18 @@ namespace ManageGo
         {
             get
             {
-                return new FreshAwaitCommand((par, tcs) =>
+                return new FreshAwaitCommand(async (par, tcs) =>
                 {
-                    ToTimeListIsVisible = false;
                     var time = (Models.AvailableTimes)par;
-                    var dateTime = new DateTime(time.Time.Ticks);
-                    ToTime = dateTime.ToString("h:mm tt", CultureInfo.InvariantCulture);
-                    ToTimeTotalMinutes = (int)time.Time.TotalMinutes;
+                    if (time.IsAvailable)
+                    {
+                        ToTimeListIsVisible = false;
+                        var dateTime = new DateTime(time.Time.Ticks);
+                        ToTime = dateTime.ToString("h:mm tt", CultureInfo.InvariantCulture);
+                        ToTimeTotalMinutes = (int)time.Time.TotalMinutes;
+                        await CalculateBookingFee();
+                    }
+
                     tcs?.SetResult(true);
                 });
             }

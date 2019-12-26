@@ -119,7 +119,7 @@ namespace ManageGo
         {
             var tappedTimeRange = TimeRanges.FirstOrDefault(t => t.From == startMinutes);
 
-            if (tappedTimeRange.BookedBy is null)
+            if (tappedTimeRange is null || tappedTimeRange.BookedBy is null)
                 return;
 
             try
@@ -224,6 +224,10 @@ namespace ManageGo
                     building.IsSelected = true;
                     SelectedBuilding = building;
                     BuildingPickerIsVisible = false;
+                    if (SelectedAmenity != null)
+                    {
+                        await LoadData();
+                    }
                     tcs?.SetResult(true);
                 });
 

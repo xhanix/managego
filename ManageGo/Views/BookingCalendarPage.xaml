@@ -72,16 +72,17 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <StackLayout Orientation="Horizontal" Grid.Column="0" HorizontalOptions="FillAndExpand">
-                    <Label Text="{Binding SelectedBuildingName}" MaxLines="1" LineBreakMode="TailTruncation" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" FontSize="Medium" TextColor="{StaticResource Grey-Mid-1}"/>
-                    <Label Text="⌄" VerticalOptions="Center" HorizontalOptions="Center" FontAttributes="Bold"/>
+                    <Label Text="{Binding SelectedBuildingName}" MaxLines="1" LineBreakMode="TailTruncation" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" FontSize="Small" TextColor="{StaticResource Grey-Mid-1}"/>
+                    <Image Source="chevron_down.png"  VerticalOptions="Center" HorizontalOptions="Center" Margin="0,0,2,0"/>
                     <StackLayout.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding OnBuildingButtonTapped}" />
                     </StackLayout.GestureRecognizers>
                 </StackLayout>
                 <BoxView HorizontalOptions="Center" Grid.Column="1" VerticalOptions="Fill"  BackgroundColor="{StaticResource Grey-Light-1}" Opacity=".5"/>
                 <StackLayout Orientation="Horizontal" Grid.Column="2" HorizontalOptions="FillAndExpand">
-                    <Label Text="{Binding SelectedAmenityName}"  MaxLines="1" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" FontSize="Medium" TextColor="{StaticResource Grey-Mid-1}"/>
-                    <Label Text="⌄" VerticalOptions="Center" HorizontalOptions="Center" FontAttributes="Bold"/>
+                    <Label Text="{Binding SelectedAmenityName}"  MaxLines="1" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" FontSize="Small" TextColor="{StaticResource Grey-Mid-1}"/>
+
+                    <Image Source="chevron_down.png"  VerticalOptions="Center" HorizontalOptions="Center" Margin="0,0,2,0"/>
                     <StackLayout.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding OnAmenityButtonTapped}" />
                     </StackLayout.GestureRecognizers>
@@ -108,7 +109,6 @@
                                     <Image Source="{Binding IsSelected, Converter={StaticResource BoolToCheckBoxIconSource}}" />
                                     <Label Text="{Binding Name}"
                                                    VerticalOptions="CenterAndExpand"
-                                                   LineBreakMode="TailTruncation"
                                                    FontSize="Small" />
                                     <StackLayout.GestureRecognizers>
                                         <TapGestureRecognizer NumberOfTapsRequired="1"
@@ -138,12 +138,13 @@
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
+
                                 <StackLayout Orientation="Horizontal"
+                                             HorizontalOptions="FillAndExpand"
                                                      Padding="0,6,0,6">
                                     <Image Source="{Binding IsSelected, Converter={StaticResource BoolToCheckBoxIconSource}}" />
                                     <Label Text="{Binding BuildingDescription}"
                                                    VerticalOptions="CenterAndExpand"
-                                                   LineBreakMode="TailTruncation"
                                                    FontSize="Small" />
                                     <StackLayout.GestureRecognizers>
                                         <TapGestureRecognizer NumberOfTapsRequired="1"
@@ -151,6 +152,7 @@
                                                                       CommandParameter="{Binding .}" />
                                     </StackLayout.GestureRecognizers>
                                 </StackLayout>
+
                             </ViewCell>
                         </DataTemplate>
                     </ListView.ItemTemplate>
@@ -177,7 +179,7 @@
             </Frame>
         </StackLayout>
         <Label Grid.Row="4" Text="Select amenity to view bookings" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" IsVisible="{Binding SelectPromptIsVisible}"/>
-        <ScrollView Grid.Row="4" Padding="12,0,12,0">
+        <ScrollView Grid.Row="4" Padding="12,0,12,0" x:Name="CalScrollView">
             <Grid RowSpacing="0" BackgroundColor="White" Padding="12,0,12,0" IsVisible="{Binding SelectPromptIsVisible, Converter={StaticResource InverseBoolConverter}}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -315,7 +317,7 @@
                     <BoxView HeightRequest=".5"  VerticalOptions="Start" BackgroundColor="{StaticResource Grey-Light-1}" Opacity=".5" />
                 </StackLayout>
 
-                <Label Text="8:00am"  Grid.Row="8" Grid.Column="1" Margin="0,-8,0,0" FontSize="Small"  TextColor="{StaticResource Grey-Mid-1}" />
+                <Label Text="8:00am" x:Name="StartingScrollPosition"  Grid.Row="8" Grid.Column="1" Margin="0,-8,0,0" FontSize="Small"  TextColor="{StaticResource Grey-Mid-1}" />
                 <StackLayout Grid.Row="8" Grid.Column="2" Spacing="0" Margin="0,0,0,0">
                     <BoxView  HeightRequest=".5" VerticalOptions="Start" BackgroundColor="{StaticResource Grey-Light-1}" Opacity=".5" />
                     <StackLayout x:Name="A490" Orientation="Horizontal" Margin="0,0,0,1" HeightRequest="25" BackgroundColor="#f8f9fa">
@@ -400,7 +402,7 @@
                     <BoxView HeightRequest=".5"  VerticalOptions="Start" BackgroundColor="{StaticResource Grey-Light-1}" Opacity=".5" />
                 </StackLayout>
 
-                <Label Text="3:00pm"  Grid.Row="15" Grid.Column="1" Margin="0,-8,0,0" FontSize="Small"  TextColor="{StaticResource Grey-Mid-1}" />
+                <Label Text="3:00pm"   Grid.Row="15" Grid.Column="1" Margin="0,-8,0,0" FontSize="Small"  TextColor="{StaticResource Grey-Mid-1}" />
                 <StackLayout Grid.Row="15" Grid.Column="2" Spacing="0" Margin="0,0,0,0">
                     <BoxView  HeightRequest=".5" VerticalOptions="Start" BackgroundColor="{StaticResource Grey-Light-1}" Opacity=".5" />
                     <StackLayout x:Name="A900" Orientation="Horizontal" Margin="0,0,0,1" HeightRequest="25" BackgroundColor="#f8f9fa">

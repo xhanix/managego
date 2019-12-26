@@ -55,39 +55,244 @@
                        Margin="0,8,0,7"
                        FontSize="Medium"
                        HorizontalTextAlignment="Center" />
+                    <StackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding OnFilterPendingTapped}" />
+                    </StackLayout.GestureRecognizers>
                 </StackLayout>
                 <BoxView HeightRequest="1"
                          BackgroundColor="{StaticResource Primary}" />
             </StackLayout>
             <Grid Grid.Row="2" RowSpacing="0" BackgroundColor="White" Padding="8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="1" />
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="38" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <StackLayout Orientation="Horizontal" Grid.Row="0"  HorizontalOptions="CenterAndExpand">
+                <StackLayout Orientation="Horizontal" Grid.Row="0" Grid.Column="0"  HorizontalOptions="CenterAndExpand">
                     <Image Source="calendar_blue.png" VerticalOptions="CenterAndExpand"/>
                     <Label Text="{Binding SelectedDateRangeString}" TextColor="{StaticResource Primary}" VerticalOptions="CenterAndExpand" FontSize="Small" />
                     <StackLayout.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding OnCalFilterButtonTapped}" />
                     </StackLayout.GestureRecognizers>
                 </StackLayout>
-                <ContentView IsVisible="{Binding CalFilterIsvisible}" x:Name="CalContainer" Grid.Row="1" WidthRequest="490" HeightRequest="245"/>
+                <BoxView WidthRequest="1" HorizontalOptions="Start" BackgroundColor="{StaticResource Grey-Light-2}" Grid.Column="1"/>
+                <StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand"  Grid.Row="0" Grid.Column="2">
+                    <Image Source="filter_blue.png" VerticalOptions="CenterAndExpand"/>
+                    <Label Text="Filter" VerticalOptions="CenterAndExpand" FontSize="Small" TextColor="{StaticResource Primary}"/>
+                </StackLayout>
+                <ContentView IsVisible="{Binding CalFilterIsvisible}" Grid.ColumnSpan="3" x:Name="CalContainer" Grid.Row="1" WidthRequest="490" HeightRequest="245"/>
 
-                <StackLayout Grid.Row="2" Orientation="Horizontal"  IsVisible="{Binding CalFilterIsvisible}">
+                <StackLayout Grid.Row="2" Orientation="Horizontal" Grid.ColumnSpan="3" IsVisible="{Binding CalFilterIsvisible}">
                     <Button BackgroundColor="Transparent" Text="Cancel" Command="{Binding OnHideCalFilterTapped}" TextColor="{StaticResource Grey-Mid-1}" HorizontalOptions="StartAndExpand"/>
                     <Button BackgroundColor="Transparent" Text="Reset" Command="{Binding OnResetCalFilterTapped}" TextColor="{StaticResource Grey-Mid-1}" HorizontalOptions="CenterAndExpand"/>
 
                     <Button BackgroundColor="Transparent" Text="Done" Command="{Binding OnDoneCalFilterTapped}" HorizontalOptions="EndAndExpand" TextColor="{StaticResource Primary}"  />
+                </StackLayout>
+
+
+                <StackLayout Grid.Row="2" Grid.ColumnSpan="3">
+                    <BoxView HeightRequest="1"
+                             VerticalOptions="Center"
+                             BackgroundColor="{StaticResource Grey-Light-2}"
+                            />
+                    <Grid Padding="14,12,18,8"
+                          ColumnSpacing="15">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="0.6*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="0.6*" />
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0"
+                                FontSize="Small"
+                                TextColor="{StaticResource Grey-Mid-1}"
+                                Text="Reset"
+                                Command="{Binding OnResetFiltersButtonTapped}"
+                                BackgroundColor="Transparent"
+                                HorizontalOptions="CenterAndExpand" />
+                        <Button Grid.Column="1"
+                                FontSize="Small"
+                                TextColor="White"
+                                Text="Apply filters"
+                                CornerRadius="21"
+                                Command="{Binding OnApplyFiltersTapped}"
+                                BackgroundColor="{StaticResource Primary}"
+                                HorizontalOptions="FillAndExpand"
+                                Padding="18,0,18,0" />
+                        <Button Grid.Column="2"
+                                FontSize="Small"
+                                TextColor="{StaticResource Grey-Mid-1}"
+                                Text="Cancel"
+                                Command="{Binding OnCloseFliterViewTapped}"
+                                BackgroundColor="Transparent"
+                                HorizontalOptions="CenterAndExpand" />
+                    </Grid>
+                    <BoxView HeightRequest="1"
+                             VerticalOptions="Center"
+                             BackgroundColor="{StaticResource Grey-Light-2}"
+                             Grid.ColumnSpan="2" />
+
+                    <StackLayout Orientation="Horizontal"
+                             Padding="12,0,12,0">
+                        <Image Source="search_grey" />
+                        <local:CustomEntry 
+                                       Text="{Binding FilterKeywords}"
+                                       FontSize="Small"
+                                       TextColor="Black"
+                                       BackgroundColor="White"
+                                       HorizontalOptions="FillAndExpand" />
+                    </StackLayout>
+
+                    <BoxView HeightRequest="1"
+                             VerticalOptions="Center"
+                             BackgroundColor="{StaticResource Grey-Light-2}"
+                             Grid.ColumnSpan="2" />
+                    <StackLayout Padding="12,0,12,0">
+                        <!-- Date -->
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="3*" />
+                                <ColumnDefinition Width=".5*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <StackLayout Padding="0,17"
+                                 Grid.Column="0"
+                                 Grid.Row="0">
+                                <Label
+                            Text="Date"
+                            TextColor="{Binding CalendarButtonText,Converter={StaticResource FilterFieldStringToColor}}"
+                            FontSize="Small" />
+                                <StackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer NumberOfTapsRequired="1"
+                                                  Command="{Binding OnExpandFilterTapped}"
+                                                  CommandParameter="Date" />
+                                </StackLayout.GestureRecognizers>
+                            </StackLayout>
+                            <Grid IsVisible="{Binding FilterDateExpanded}"
+                          Grid.Column="0"
+                          Grid.Row="1"
+                          Grid.ColumnSpan="3">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+
+                                <ContentView Grid.ColumnSpan="3" x:Name="FilterCalContainer" Grid.Row="1"  WidthRequest="310"
+                                               HeightRequest="245"/>
+                            </Grid>
+                            <StackLayout Padding="0,17"
+                                 Grid.Row="0"
+                                 Grid.Column="1">
+                                <Label
+                            Text="{Binding CalendarButtonText}"
+                            LineBreakMode="TailTruncation"
+                            TextColor="Gray"
+                            FontSize="Small">
+
+                                </Label>
+                                <StackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer NumberOfTapsRequired="1"
+                                                  Command="{Binding OnExpandFilterTapped}"
+                                                  CommandParameter="Date" />
+                                </StackLayout.GestureRecognizers>
+                            </StackLayout>
+                            <StackLayout Padding="0,17"
+                                 Grid.Column="2"
+                                 Grid.Row="0">
+                                <Image
+                            VerticalOptions="StartAndExpand"
+                            HorizontalOptions="EndAndExpand"
+                            Source="chevron_right.png" />
+                                <StackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer NumberOfTapsRequired="1"
+                                                  Command="{Binding OnExpandFilterTapped}"
+                                                  CommandParameter="Date" />
+                                </StackLayout.GestureRecognizers>
+                            </StackLayout>
+
+                        </Grid>
+
+                        <!-- Building Filter Row -->
+                        <Grid Padding="0,17">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="3*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0"
+                           Text="Building"
+                           TextColor="{Binding SelectedBuildingsString,Converter={StaticResource FilterFieldStringToColor}}"
+                           FontSize="Small" />
+                            <StackLayout Grid.Column="1">
+                                <Label Text="{Binding SelectedBuildingsString}"
+                               LineBreakMode="TailTruncation"
+                               TextColor="Gray"
+                               FontSize="Small" />
+                                <controls:NestedListView IsVisible="{Binding FilterBuildingsExpanded}"
+                                                 ItemsSource="{Binding Buildings}"
+                                                 Margin="0,8,0,0"
+                                                 HasUnevenRows="true"
+                                                 SeparatorVisibility="None"
+                                                 HeightRequest="150"
+                                                 SelectionMode="None">
+                                    <x:Arguments>
+                                        <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
+                                    </x:Arguments>
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <ViewCell>
+                                                <StackLayout Orientation="Horizontal"
+                                                     Margin="0,12,0,0">
+                                                    <Image Source="{Binding CheckBoxImage}" />
+                                                    <Label Text="{Binding BuildingShortAddress}"
+                                                   VerticalOptions="CenterAndExpand"
+                                                   LineBreakMode="TailTruncation"
+                                                   FontSize="Small" />
+                                                    <StackLayout.GestureRecognizers>
+                                                        <TapGestureRecognizer NumberOfTapsRequired="1"
+                                                                      Command="{Binding BindingContext.OnBuildingTapped, Source={x:Reference ThisPage}}"
+                                                                      CommandParameter="{Binding .}" />
+                                                    </StackLayout.GestureRecognizers>
+                                                </StackLayout>
+                                            </ViewCell>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </controls:NestedListView>
+                            </StackLayout>
+                            <Image VerticalOptions="StartAndExpand"
+                           Grid.Column="2"
+                           HorizontalOptions="EndAndExpand"
+                           Source="chevron_right.png" />
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer NumberOfTapsRequired="1"
+                                              Command="{Binding OnExpandFilterTapped}"
+                                              CommandParameter="Buildings" />
+                            </Grid.GestureRecognizers>
+                        </Grid>
+                        <BoxView HeightRequest="1"
+                         BackgroundColor="Silver"
+                         HorizontalOptions="FillAndExpand" />
+                    </StackLayout>
                 </StackLayout>
             </Grid>
             <Button Grid.Row="3" Text="View calendar" Command="{Binding OnViewCalendarTapped}" TextColor="{StaticResource Primary}" VerticalOptions="CenterAndExpand" Padding="0,10,0,0" BackgroundColor="{StaticResource Grey-Light-2}"/>
             <StackLayout BackgroundColor="{StaticResource Grey-Light-2}"
                          Grid.Row="4">
                 <controls:CustomListView ItemsSource="{Binding Bookings}"
+                                         IsPullToRefreshEnabled="True"
+                                         RefreshCommand="{Binding RefreshList}"
+                                         IsRefreshing="{Binding IsRefreshing, Mode=OneWay}"
                                          SelectionMode="None"
                                          HasUnevenRows="true"
-                                          ItemAppearing="Handle_ItemAppearing"
+                                         ItemAppearing="Handle_ItemAppearing"
                                          ItemTapped="HandleItemTapped"
                                          BackgroundColor="Transparent"
                                          SeparatorVisibility="None"
@@ -117,13 +322,18 @@
                                             </Grid.RowDefinitions>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="0.34*" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="0.4" />
                                             </Grid.ColumnDefinitions>
                                             <Label Grid.Row="0" Grid.Column="0" Text="{Binding TenantName}" FontSize="Default" TextColor="{StaticResource Grey-Dark-1}" FontAttributes="Bold"/>
-                                            <StackLayout Orientation="Horizontal" Grid.RowSpan="2" Grid.Column="1">
-                                                <Label Text="{Binding AmenityName}" MaxLines="3" LineBreakMode="TailTruncation" Margin="0,2,0,-5" HorizontalOptions="EndAndExpand" VerticalOptions="StartAndExpand" FontSize="Caption" TextColor="{StaticResource Grey-Mid-1}"/>
-                                                <Image  WidthRequest="25" HeightRequest="25" VerticalOptions="StartAndExpand" HorizontalOptions="End" Source="{Binding LinkUrl, Converter={StaticResource UrlToImageSource}}" />
-                                            </StackLayout>
+                                            <Grid ColumnSpacing="4" Grid.RowSpan="2" HorizontalOptions="EndAndExpand" Grid.Column="1">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="25" />
+                                                </Grid.ColumnDefinitions>
+                                                <Label Grid.Column="0" Text="{Binding AmenityName}" HorizontalTextAlignment="End" MaxLines="3" LineBreakMode="TailTruncation" Margin="0,2,0,-5" HorizontalOptions="EndAndExpand" VerticalOptions="StartAndExpand" FontSize="Caption" TextColor="{StaticResource Grey-Mid-1}"/>
+                                                <Image Grid.Column="1"  WidthRequest="25" HeightRequest="25" VerticalOptions="StartAndExpand" HorizontalOptions="Start" Source="{Binding LinkUrl, Converter={StaticResource UrlToImageSource}}" />
+                                            </Grid>
 
                                             <Label Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding DisplayDateTime}" FontSize="Caption" TextColor="{StaticResource Grey-Mid-1}"/>
                                             <BoxView Grid.Row="2" Grid.ColumnSpan="2" HeightRequest="1" HorizontalOptions="Fill" BackgroundColor="{StaticResource Grey-Light-2}" />
@@ -131,7 +341,7 @@
                                                 <Image Source="building_grey.png" VerticalOptions="StartAndExpand"/>
                                                 <Label VerticalOptions="CenterAndExpand" VerticalTextAlignment="End" Text="{Binding DisplayAddress}" FontSize="Caption" TextColor="{StaticResource Grey-Light-1}"/>
                                             </StackLayout>
-                                            <Label Grid.Row="3" Grid.Column="1" HorizontalOptions="End" FontSize="Caption" Text="{Binding Status}" TextColor="{Binding StatusTextColor}"/>
+                                            <Label Grid.Row="3" Grid.ColumnSpan="2" HorizontalOptions="End" FontSize="Caption" Text="{Binding Status}" TextColor="{Binding StatusTextColor}"/>
                                         </Grid>
                                     </Grid>
 
@@ -144,8 +354,9 @@
         </Grid>
         <Image Source="plus_1_1.png"
                x:Name="CreateBookingButton"
+               WidthRequest="90"
                RelativeLayout.XConstraint="{ConstraintExpression Type=RelativeToParent,Property=Width, Factor=1, Constant=-90}"
-               RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height, Factor=1, Constant=-90}">
+               RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToParent,Property=Height, Factor=1, Constant=-111}">
             <Image.GestureRecognizers>
                 <TapGestureRecognizer NumberOfTapsRequired="1"
                                       Command="{Binding OnCreateButtonTapped}" />

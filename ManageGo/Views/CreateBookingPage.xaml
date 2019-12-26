@@ -14,6 +14,7 @@
         <local:DoubleToCurrencyString x:Key="DoubleToCurrencyString" />
         <local:EnabledStateToTextColorConverter x:Key="EnabledStateToTextColorConverter" />
         <local:TimeSpanToTimeConverter x:Key="TimeSpanToTimeConverter" />
+        <local:DoubleToCurrencyStringConverter x:Key="DoubleToCurrencyStringConverter" />
     </ContentPage.Resources>
 
     <Grid RowSpacing="0">
@@ -61,26 +62,7 @@
                          BackgroundColor="{StaticResource Primary}" />
         </StackLayout>
         <StackLayout Grid.Row="2" Spacing="0">
-            <Grid BackgroundColor="White" HeightRequest="45" Padding="4,0,4,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="1" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <StackLayout Orientation="Horizontal" Grid.Column="0" HorizontalOptions="CenterAndExpand">
-                    <Image Source="building_blue.png" />
-                    <Label Text="{Binding SelectedBuildingName}" LineBreakMode="TailTruncation"  MaxLines="1" HorizontalOptions="CenterAndExpand" Margin="0,2,0,0" VerticalTextAlignment="End" VerticalOptions="CenterAndExpand" FontSize="Small" TextColor="{StaticResource Grey-Mid-1}"/>
 
-                    <StackLayout.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding OnBuildingButtonTapped}" />
-                    </StackLayout.GestureRecognizers>
-                </StackLayout>
-                <BoxView HorizontalOptions="Center" Grid.Column="1" VerticalOptions="Fill"  BackgroundColor="{StaticResource Grey-Light-1}" Opacity=".5"/>
-                <StackLayout Orientation="Horizontal" Grid.Column="2" HorizontalOptions="CenterAndExpand">
-                    <Image Source="star_blue.png" VerticalOptions="CenterAndExpand" />
-                    <Label Text="Edit booking"  MaxLines="1" HorizontalOptions="CenterAndExpand" Margin="0,2,0,0" VerticalTextAlignment="End" VerticalOptions="CenterAndExpand" FontSize="Small" TextColor="{StaticResource Grey-Mid-1}"/>
-                </StackLayout>
-            </Grid>
             <BoxView HorizontalOptions="FillAndExpand"  VerticalOptions="Start" HeightRequest="1" BackgroundColor="{StaticResource Grey-Light-1}" Opacity=".5"/>
             <!-- Building Picker Filter View -->
             <StackLayout HeightRequest="150" IsVisible="{Binding BuildingPickerIsVisible}" BackgroundColor="White" Spacing="0" Padding="22,18,22,0">
@@ -138,7 +120,7 @@
 
                 <StackLayout Spacing="0">
 
-                    <controls:CustomListView ItemsSource="{Binding Tenants}" VerticalOptions="Start" HeightRequest="{Binding TenantListHeight}" SeparatorVisibility="None" SelectionMode="None" BackgroundColor="{StaticResource Off-White}">
+                    <controls:CustomListView ItemsSource="{Binding Tenants}" VerticalOptions="Start" HeightRequest="{Binding TenantListHeight}" SeparatorVisibility="None" SelectionMode="None" BackgroundColor="White">
                         <x:Arguments>
                             <ListViewCachingStrategy>RecycleElement</ListViewCachingStrategy>
                         </x:Arguments>
@@ -180,8 +162,8 @@
 
                 <StackLayout Spacing="0">
                     <Label Text="Date:" FontSize="Small" TextColor="{StaticResource Grey-Light-1}"/>
-                    <Frame HasShadow="False" Padding="4,8,4,8" BackgroundColor="{StaticResource Off-White}"  BorderColor="{StaticResource Grey-Light-2}">
-                        <Label Text="{Binding SelectedDateString}"  MaxLines="1" LineBreakMode="TailTruncation" InputTransparent="True" BackgroundColor="{StaticResource Off-White}" TextColor="{StaticResource Grey-Mid-1}" FontSize="Small"/>
+                    <Frame HasShadow="False" Padding="4,8,4,8" BackgroundColor="White"  BorderColor="{StaticResource Grey-Light-2}">
+                        <Label Text="{Binding SelectedDateString}"  MaxLines="1" LineBreakMode="TailTruncation" InputTransparent="True" BackgroundColor="White" TextColor="{StaticResource Grey-Mid-1}" FontSize="Small"/>
                         <Frame.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding OnSelectDateTapped}" />
                         </Frame.GestureRecognizers>
@@ -280,14 +262,12 @@
                     </StackLayout>
                     <StackLayout Grid.Row="1" Grid.Column="0">
                         <Label Text="Total amount:" FontSize="Small" TextColor="{StaticResource Grey-Light-1}"/>
-
-                        <local:CustomEntry Text="{Binding TotalAmount}" HasBorder="True" Keyboard="Numeric" BackgroundColor="White" TextColor="{StaticResource Grey-Mid-1}" FontSize="Small"/>
-
+                        <local:CustomEntry Text="{Binding TotalAmount, StringFormat={StaticResource FormatDecimalToCurrency}}" HasBorder="True" Keyboard="Numeric" BackgroundColor="White" TextColor="{StaticResource Grey-Mid-1}" FontSize="Small"/>
                     </StackLayout>
                     <StackLayout Grid.Row="1" Grid.Column="1">
                         <Label Text="Security deposit:" FontSize="Small" TextColor="{StaticResource Grey-Light-1}"/>
 
-                        <local:CustomEntry Text="{Binding SecurityDeposit}" IsEnabled="False" HasBorder="True" Keyboard="Numeric" BackgroundColor="White" TextColor="{StaticResource Grey-Mid-1}" FontSize="Small"/>
+                        <local:CustomEntry Text="{Binding SecurityDeposit,StringFormat={StaticResource FormatDecimalToCurrency}}" IsEnabled="False" HasBorder="True" Keyboard="Numeric" BackgroundColor="White" TextColor="{StaticResource Grey-Mid-1}" FontSize="Small"/>
 
                     </StackLayout>
                 </Grid>
