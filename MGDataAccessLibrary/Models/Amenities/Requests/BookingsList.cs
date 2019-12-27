@@ -16,6 +16,8 @@ namespace MGDataAccessLibrary.Models.Amenities.Requests
         /// </summary>
         public string Amenities { get; set; }
         public List<int> RawStatuses { get; set; } = new List<int>();
+        public List<int> RawBuildings { get; set; } = new List<int>();
+        public List<int> RawAmenities { get; set; } = new List<int>();
         /// <summary>
         /// Comma-separated Status codes.
         /// Status IDs: Pending = 0, Approved = 1, Declined = 2, Canceled = 3

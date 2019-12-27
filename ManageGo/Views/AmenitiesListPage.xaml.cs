@@ -31,6 +31,15 @@ namespace ManageGo
             CalContainer.Content = cal;
         }
 
+        public void setFilterCalContent()
+        {
+            var cal = new Controls.CalendarView();
+            cal.SetBinding(Controls.CalendarView.SelectedDatesProperty, new Binding("SelectedDateRange"));
+
+            cal.AllowMultipleSelection = true;
+            FilterCalContainer.Content = cal;
+        }
+
         protected override bool OnBackButtonPressed()
         {
 

@@ -196,8 +196,7 @@ namespace ManageGo
 
         public FreshAwaitCommand OnBuildingSelected => new FreshAwaitCommand(async (par, tcs) =>
                 {
-                    var building = par as Models.PMCBuilding;
-                    if (building is null)
+                    if (!(par is Models.PMCBuilding building))
                         return;
                     int selectedAmenityId = default;
                     if (SelectedAmenity != null && SelectedBuilding.Amenities.Select(t => t.Id).Contains(SelectedAmenity.Id))

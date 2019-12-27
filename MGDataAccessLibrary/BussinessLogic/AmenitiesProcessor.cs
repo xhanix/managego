@@ -25,6 +25,19 @@ namespace MGDataAccessLibrary.BussinessLogic
             {
                 parameters.Statuses = null;
             }
+            if (parameters.RawBuildings.Any())
+            {
+                parameters.Buildings = hashids.Encode(parameters.RawBuildings);
+            }
+            else
+                parameters.Buildings = null;
+            if (parameters.RawAmenities.Any())
+            {
+                parameters.Amenities = hashids.Encode(parameters.RawAmenities);
+            }
+            else
+                parameters.Amenities = null;
+
             var stringPars = parameters.GetQueryString();
             return await DataAccess.AmenitiesAPI.GetItems<Models.Amenities.Responses.BookingList>("bookings?" + stringPars);
         }

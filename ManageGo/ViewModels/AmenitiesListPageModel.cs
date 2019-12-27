@@ -15,8 +15,17 @@ namespace ManageGo
         private DateRange selectedDateRange;
         public string CompanyUrl { get; private set; }
         public bool CalFilterIsvisible { get; set; }
+        public bool FilterDateExpanded { get; set; }
+        public bool FilterBuildingsExpanded { get; private set; }
+        public bool FilterAmenitiesExpanded { get; private set; }
+        public List<Models.PMCBuilding> Buildings { get; set; } = new List<Models.PMCBuilding>();
+        public List<Models.BuildingAmenity> Amenities { get; set; } = new List<Models.BuildingAmenity>();
         public string SelectedDateRangeString => !filter.From.HasValue || !filter.To.HasValue ? "Select Dates" : filter.From?.ToString("MMM dd") + " - " + filter.To?.ToString("MMM dd");
         public DateRange SelectedDateRange { get; set; } = new DateRange(DateTime.Now);
+        public bool CanGetMorePages { get; private set; }
+        public bool IsBusy { get; private set; }
+        public bool ShouldClearFilter { get; private set; }
+        public bool IsRefreshing { get; private set; }
 
 
         private MGDataAccessLibrary.Models.Amenities.Requests.BookingsList filter = new MGDataAccessLibrary.Models.Amenities.Requests.BookingsList
@@ -24,6 +33,12 @@ namespace ManageGo
             PageSize = pageSize,
             Page = 1
         };
+
+        public string FilterString
+        {
+            get => filter.Search;
+            set => filter.Search = value;
+        }
 
         public ObservableCollection<MGDataAccessLibrary.Models.Amenities.Responses.Booking> Bookings { get; private set; } = new ObservableCollection<MGDataAccessLibrary.Models.Amenities.Responses.Booking>();
         public string PendingString { get; set; }
@@ -46,6 +61,28 @@ namespace ManageGo
             base.ViewIsAppearing(sender, e);
             var pmcInfo = await MGDataAccessLibrary.BussinessLogic.AmenitiesProcessor.GetPMCInfo();
             CompanyUrl = pmcInfo.Item2?.CompanyUrl;
+            var pmcBuildings = pmcInfo.Item1.BuildingsAccess;
+            if (pmcBuildings != null && pmcBuildings.Any(b => b.Amenities != null && b.Amenities.Any()))
+            {
+                Buildings = pmcBuildings.Where(t => t.Amenities != null && t.Amenities.Any()).Select(t => new Models.PMCBuilding
+                {
+                    Amenities = t.Amenities,
+                    BuildingDescription = t.BuildingDescription,
+                    BuildingId = t.BuildingId,
+                    IsSelected = false
+
+                }).ToList();
+                var a = await MGDataAccessLibrary.BussinessLogic.AmenitiesProcessor.GetAmenities();
+                Amenities = a.Select(t => new Models.BuildingAmenity
+                {
+                    Id = t.Id,
+                    Name = t.Name,
+                    Rules = t.Rules,
+                    Status = t.Status
+                }).ToList();
+            }
+
+
             ShouldClearFilter = true;
         }
         internal override async Task LoadData(bool refreshData = false, bool FetchNextPage = false)
@@ -201,6 +238,20 @@ namespace ManageGo
             }
         }
 
+        public FreshAwaitCommand OnBuildingSelected => new FreshAwaitCommand(async (par, tcs) =>
+        {
+            var building = par as Models.PMCBuilding;
+            if (building is null)
+                return;
+            building.IsSelected = !building.IsSelected;
+            if (Buildings.Any(t => t.IsSelected))
+            {
+                filter.RawBuildings = Buildings.Where(t => t.IsSelected).Select(t => t.BuildingId).ToList();
+            }
+
+            tcs?.SetResult(true);
+        });
+
         public FreshAwaitCommand OnCalFilterButtonTapped => new FreshAwaitCommand((tcs) =>
         {
             CalFilterIsvisible = !CalFilterIsvisible;
@@ -245,10 +296,39 @@ namespace ManageGo
             }
         }
 
-        public bool CanGetMorePages { get; private set; }
-        public bool IsBusy { get; private set; }
-        public bool ShouldClearFilter { get; private set; }
-        public bool IsRefreshing { get; private set; }
+
+        public FreshAwaitCommand OnExpandFilterTapped
+        {
+            get
+            {
+                return new FreshAwaitCommand((parameter, tcs) =>
+                {
+                    var par = (string)parameter;
+                    switch (par)
+                    {
+                        case "Date":
+                            FilterDateExpanded = !FilterDateExpanded;
+                            ((AmenitiesListPage)CurrentPage).setFilterCalContent();
+                            FilterBuildingsExpanded = false;
+                            FilterAmenitiesExpanded = false;
+                            break;
+                        case "Buildings":
+                            FilterBuildingsExpanded = !FilterBuildingsExpanded;
+                            FilterDateExpanded = false;
+                            FilterAmenitiesExpanded = false;
+                            break;
+                        case "Amenities":
+                            FilterAmenitiesExpanded = !FilterAmenitiesExpanded;
+                            FilterDateExpanded = false;
+                            FilterBuildingsExpanded = false;
+                            break;
+                        default:
+                            break;
+                    }
+                });
+            }
+        }
+
 
         protected override void ViewIsDisappearing(object sender, EventArgs e)
         {
