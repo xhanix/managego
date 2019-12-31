@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using FreshMvvm;
+﻿using FreshMvvm;
 using Xamarin.Forms;
 
 namespace ManageGo.Views

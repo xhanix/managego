@@ -12,6 +12,7 @@ using CustomCalendar.Droid;
 using CustomCalendar;
 using System.Collections.Generic;
 using System.Linq;
+using System.ComponentModel;
 
 [assembly: ExportRenderer(typeof(Calendar), typeof(CalendarRenderer))]
 namespace ManageGo.UI.Droid.Renderers
@@ -21,15 +22,15 @@ namespace ManageGo.UI.Droid.Renderers
     {
         CalendarViewPage _calendarView;
 
-        int elementWidth;
-        int elementHeight;
-
-        bool disposed;
-
         public bool ShowDisabledDays { get; private set; }
 
         public CalendarRenderer(Context context) : base(context)
         { }
+
+        protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            base.OnElementPropertyChanged(sender, e);
+        }
 
         protected override void OnElementChanged(ElementChangedEventArgs<Calendar> e)
         {
@@ -37,51 +38,41 @@ namespace ManageGo.UI.Droid.Renderers
 
             if (e.OldElement != null)
             {
-                if (Element == null)
+                //  e.OldElement.SizeChanged -= ElementSizeChanged;
+                e.OldElement.UpdateSelectedDates = null;
+                e.OldElement.UpdateEnabledDates = null;
+                e.OldElement.UpdateHighlightedDates = null;
+                e.OldElement.OnNextMonthRequested -= _calendarView.GoToNextMonth;
+                e.OldElement.OnPreviousMonthRequested -= _calendarView.GoToPreviousMonth;
+                if (_calendarView != null)
                 {
-                    return;
+                    _calendarView.OnCurrentMonthYearChange -= e.OldElement.OnCurrentMonthYearChanged;
+                    _calendarView.OnSelectedDatesChange -= e.OldElement.OnDatesChanged;
                 }
-
-                Element.SizeChanged -= ElementSizeChanged;
-                Element.UpdateSelectedDates = null;
-                Element.UpdateEnabledDates = null;
-                Element.UpdateHighlightedDates = null;
-                Element.OnNextMonthRequested -= _calendarView.GoToNextMonth;
-                Element.OnPreviousMonthRequested -= _calendarView.GoToPreviousMonth;
             }
 
             if (e.NewElement != null)
             {
-                Element.SizeChanged += ElementSizeChanged;
-                Element.UpdateSelectedDates = UpdateSelectedDates;
-                Element.UpdateHighlightedDates = UpdateHighlightedDates;
-                Element.UpdateEnabledDates = UpdateAvailableDays;
-                Element.OnNextMonthRequested += (_sender, _e) => _calendarView?.GoToNextMonth((object)_sender, _e);
-                Element.OnPreviousMonthRequested += (_sender, _e) => _calendarView?.GoToPreviousMonth((object)_sender, _e);
-                ShowDisabledDays = Element.ShowDisabledDates;
+                //  e.NewElement.SizeChanged += ElementSizeChanged;
+                e.NewElement.UpdateSelectedDates = UpdateSelectedDates;
+                e.NewElement.UpdateHighlightedDates = UpdateHighlightedDates;
+                e.NewElement.UpdateEnabledDates = UpdateAvailableDays;
+                e.NewElement.OnNextMonthRequested += (_sender, _e) => _calendarView?.GoToNextMonth((object)_sender, _e);
+                e.NewElement.OnPreviousMonthRequested += (_sender, _e) => _calendarView?.GoToPreviousMonth((object)_sender, _e);
+                ShowDisabledDays = e.NewElement.ShowDisabledDates;
+                _calendarView = new CalendarViewPage(Context, e.NewElement.AllowMultipleSelection, e.NewElement.SelectedDates, e.NewElement.HighlightedDates, e.NewElement.AvailableDays?.ToList(), ShowDisabledDays);
+                _calendarView.OnCurrentMonthYearChange += e.NewElement.OnCurrentMonthYearChanged;
+                _calendarView.OnSelectedDatesChange += e.NewElement.OnDatesChanged;
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LayoutParams.MatchParent, LayoutParams.MatchParent);
+                _calendarView.LayoutParameters = layoutParams;
+                _calendarView.ShowDisabledDays = ShowDisabledDays;
+                SetNativeControl(_calendarView);
             }
 
-            InitializeNativeView();
+
         }
 
-        void ElementSizeChanged(object sender, EventArgs e)
-        {
-            if (Element == null)
-            {
-                return;
-            }
 
-            //Resize RecyclerView to match size of container
-            var rect = this.Element.Bounds;
-
-            if (rect.Height > 0)
-            {
-                elementWidth = ConvertToDensityIndependentPixels(rect.Width);
-                elementHeight = ConvertToDensityIndependentPixels(rect.Height);
-
-                InitializeNativeView();
-            }
-        }
 
         int ConvertToDensityIndependentPixels(double pixelValue)
         {
@@ -104,65 +95,7 @@ namespace ManageGo.UI.Droid.Renderers
                 _calendarView?.UpdateAvailableDays(days.ToList());
         }
 
-        void InitializeNativeView()
-        {
-            if (elementWidth <= 0 || elementHeight <= 0)
-            {
-                return;
-            }
 
-            ResetNativeView();
 
-            _calendarView = new CalendarViewPage(Context, Element.AllowMultipleSelection, Element.SelectedDates, Element.HighlightedDates, Element.AvailableDays?.ToList(), ShowDisabledDays);
-
-            _calendarView.OnCurrentMonthYearChange += Element.OnCurrentMonthYearChanged;
-            _calendarView.OnSelectedDatesChange += Element.OnDatesChanged;
-
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LayoutParams.MatchParent, LayoutParams.MatchParent);
-
-            _calendarView.LayoutParameters = layoutParams;
-            _calendarView.ShowDisabledDays = ShowDisabledDays;
-            SetNativeControl(_calendarView);
-        }
-
-        void ResetNativeView()
-        {
-            if (_calendarView == null)
-            {
-                return;
-            }
-
-            if (_calendarView != null)
-            {
-                _calendarView.RemoveFromParent();
-                _calendarView.OnCurrentMonthYearChange -= Element.OnCurrentMonthYearChanged;
-                _calendarView.OnSelectedDatesChange -= Element.OnDatesChanged;
-                _calendarView.Adapter = null;
-                _calendarView = null;
-            }
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && !disposed)
-            {
-                disposed = true;
-
-                if (Element != null)
-                {
-                    ResetNativeView();
-
-                    Element.SizeChanged -= ElementSizeChanged;
-                }
-
-                if (_calendarView != null)
-                {
-                    _calendarView.OnCurrentMonthYearChange -= Element.OnCurrentMonthYearChanged;
-                    _calendarView.OnSelectedDatesChange -= Element.OnDatesChanged;
-                }
-            }
-
-            base.Dispose(disposing);
-        }
     }
 }

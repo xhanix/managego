@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using PropertyChanged;
 using System.Linq;
 using Xamarin.Forms;
+using System.Collections.Generic;
 
 namespace ManageGo
 {
@@ -50,12 +51,12 @@ namespace ManageGo
             TimeSpan timeSpan = new TimeSpan(offsetHours, 0, 0);
 
             var fontSize = Device.GetNamedSize(NamedSize.Small, typeof(Label));
-
             if (Booking.Notes != null && Booking.Notes.Any())
             {
+                var parentStack = new StackLayout();
                 foreach (var note in Booking.Notes)
                 {
-                    var parentStack = new StackLayout();
+
                     var innerStack = new StackLayout { Orientation = StackOrientation.Horizontal, Spacing = 0 };
                     var nameLabel = new Label { Text = note.DisplayName, FontSize = fontSize, TextColor = (Color)Application.Current.Resources["Grey-Mid-1"] };
                     var dateLabel = new Label { Text = " • " + note.DisplayDate, FontSize = fontSize, TextColor = (Color)Application.Current.Resources["Grey-Light-1"] };
@@ -66,12 +67,13 @@ namespace ManageGo
                     var box = new BoxView { HeightRequest = 1, VerticalOptions = LayoutOptions.Start, BackgroundColor = (Color)Application.Current.Resources["Grey-Light-2"] };
                     parentStack.Children.Add(noteLabel);
                     parentStack.Children.Add(box);
-                    var contentView = new ContentView
-                    {
-                        Content = parentStack
-                    };
-                    Notescontent = contentView.Content;
+
                 }
+                var contentView = new ContentView
+                {
+                    Content = parentStack
+                };
+                Notescontent = contentView.Content;
             }
             else
             {

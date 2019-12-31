@@ -47,6 +47,7 @@ namespace CustomCalendar.iOS
             AvailableDays = availableDays;
 
             SetCurrentlyTargetedMonth();
+
         }
 
         void InitViews(CGRect frame)
@@ -100,6 +101,8 @@ namespace CustomCalendar.iOS
             AvailableDays = days;
             infiniteScrollView.ReloadData();
         }
+
+
 
 
         class CalendarViewDelegate : IInfiniteScrollViewDelegate<CalendarViewCell>
@@ -176,6 +179,8 @@ namespace CustomCalendar.iOS
                     view.CurrentIndex = infiniteScrollView.CurrentIndex;
                 }
             }
+
+
         }
     }
 }

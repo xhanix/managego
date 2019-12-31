@@ -139,18 +139,19 @@ namespace ManageGo.Controls
 
         public DateRange SelectedDates
         {
-            get => (DateRange)GetValue(SelectedDatesProperty);
+            get
+            {
+                var v = GetValue(SelectedDatesProperty) as DateRange;
+                return v;
+            }
             set => SetValue(SelectedDatesProperty, value);
         }
 
         static void HandleSelectedDatesPropertyChanged(BindableObject bindable, object oldValue, object newValue)
         {
             var calendarView = bindable as CalendarView;
+            calendarView.calendar.SelectedDates = newValue as DateRange;
 
-            if (newValue != null)
-            {
-                calendarView.calendar.SelectedDates = newValue as DateRange;
-            }
         }
 
         public static readonly BindableProperty HighlightedDatesProperty

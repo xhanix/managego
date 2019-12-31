@@ -104,18 +104,21 @@
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <ViewCell>
-                                <StackLayout Orientation="Horizontal"
-                                                     Padding="0,6,0,6">
-                                    <Image Source="{Binding IsSelected, Converter={StaticResource BoolToCheckBoxIconSource}}" />
-                                    <Label Text="{Binding Name}"
+                                <Grid Padding="0,6,0,6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Image Grid.Column="0" Source="{Binding IsSelected, Converter={StaticResource BoolToCheckBoxIconSource}}" />
+                                    <Label  Grid.Column="1"  Text="{Binding Name}"
                                                    VerticalOptions="CenterAndExpand"
                                                    FontSize="Small" />
-                                    <StackLayout.GestureRecognizers>
+                                    <Grid.GestureRecognizers>
                                         <TapGestureRecognizer NumberOfTapsRequired="1"
                                                                       Command="{Binding BindingContext.OnAmenitySelected, Source={x:Reference ThisPage}}"
                                                                       CommandParameter="{Binding .}" />
-                                    </StackLayout.GestureRecognizers>
-                                </StackLayout>
+                                    </Grid.GestureRecognizers>
+                                </Grid>
                             </ViewCell>
                         </DataTemplate>
                     </ListView.ItemTemplate>

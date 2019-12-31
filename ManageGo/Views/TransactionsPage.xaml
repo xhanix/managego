@@ -114,9 +114,9 @@
                              MinimumHeightRequest="75">
                     <Grid Padding="14,8,18,8">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="0.6*" />
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="0.6*" />
                         </Grid.ColumnDefinitions>
                         <Button Grid.Column="0"
                                 FontSize="Small"
@@ -124,7 +124,7 @@
                                 Text="Reset"
                                 Command="{Binding OnResetFiltersButtonTapped}"
                                 BackgroundColor="Transparent"
-                                HorizontalOptions="EndAndExpand" />
+                                HorizontalOptions="CenterAndExpand" />
                         <Button Grid.Column="1"
                                 FontSize="Medium"
                                 TextColor="White"
@@ -133,14 +133,14 @@
                                 Command="{Binding OnApplyFiltersTapped}"
                                 BackgroundColor="{StaticResource Primary}"
                                 HorizontalOptions="FillAndExpand"
-                                Padding="18,0,18,0" />
+                                 />
                         <Button Grid.Column="2"
                                 FontSize="Small"
                                 TextColor="{StaticResource Grey-Mid-1}"
                                 Text="Cancel"
                                 Command="{Binding OnCloseFliterViewTapped}"
                                 BackgroundColor="Transparent"
-                                HorizontalOptions="EndAndExpand" />
+                                HorizontalOptions="CenterAndExpand" />
                     </Grid>
                     <BoxView HeightRequest="1"
                              VerticalOptions="Center"

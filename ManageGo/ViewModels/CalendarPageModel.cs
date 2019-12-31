@@ -70,6 +70,12 @@ namespace ManageGo
 
         }
 
+        protected override void ViewIsDisappearing(object sender, EventArgs e)
+        {
+            base.ViewIsDisappearing(sender, e);
+            SelectedDate = default;
+        }
+
         public FreshAwaitCommand OnViewTicketTapped
         {
             get
@@ -131,6 +137,7 @@ namespace ManageGo
                 DateFrom = FetchEventsFromDate,
                 DateTo = FetchEventsToDate
             };
+
             try
             {
                 HighlightedDates = (await Services.DataAccess.GetEventsList(dic)).Dates.ToList();

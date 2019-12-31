@@ -53,7 +53,11 @@ namespace ManageGo.Controls
 
         public DateRange SelectedDates
         {
-            get => (DateRange)GetValue(SelectedDatesProperty);
+            get
+            {
+                var v = GetValue(SelectedDatesProperty) as DateRange;
+                return v;
+            }
             set
             {
                 SetValue(SelectedDatesProperty, value);

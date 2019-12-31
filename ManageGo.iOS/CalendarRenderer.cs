@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using CoreGraphics;
 using CustomCalendar;
 using Foundation;
@@ -20,6 +21,8 @@ namespace ManageGo.iOS
         double elementHeight;
         bool disposed;
         bool showDisabledDates;
+
+
 
         protected override void OnElementChanged(ElementChangedEventArgs<Calendar> e)
         {
@@ -44,9 +47,11 @@ namespace ManageGo.iOS
                 Element.UpdateHighlightedDates = UpdateHighlightedDates;
                 Element.UpdateEnabledDates = UpdateEnabledDates;
                 showDisabledDates = Element.ShowDisabledDates;
+
             }
 
             InitializeNativeView();
+
         }
 
         private void UpdateEnabledDates(IEnumerable<DateTime> days)

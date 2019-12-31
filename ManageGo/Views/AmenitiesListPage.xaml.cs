@@ -21,7 +21,7 @@ namespace ManageGo
             base.OnAppearing();
 
         }
-
+        /*
         public void SetCalContent()
         {
             var cal = new Controls.CalendarView();
@@ -30,7 +30,7 @@ namespace ManageGo
             cal.AllowMultipleSelection = true;
             CalContainer.Content = cal;
         }
-
+        
         public void setFilterCalContent()
         {
             var cal = new Controls.CalendarView();
@@ -39,7 +39,7 @@ namespace ManageGo
             cal.AllowMultipleSelection = true;
             FilterCalContainer.Content = cal;
         }
-
+        */
         protected override bool OnBackButtonPressed()
         {
 

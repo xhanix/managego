@@ -42,8 +42,8 @@
         <MtouchLink>None</MtouchLink>
         <MtouchArch>x86_64</MtouchArch>
         <ConsolePause>false</ConsolePause>
-        <CodesignProvision>mgdist001</CodesignProvision>
-        <CodesignKey>iPhone Distribution: MANAGEGO LLC (4GH47MZ6ZW)</CodesignKey>
+        <CodesignProvision>VS: WildCard Development</CodesignProvision>
+        <CodesignKey>iPhone Developer: Hani Ebrahimi (RC3GWVX7G2)</CodesignKey>
 <RunCodeAnalysis>true</RunCodeAnalysis>    <MtouchEnableSGenConc>true</MtouchEnableSGenConc>
 </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
@@ -75,9 +75,9 @@
         <WarningLevel>4</WarningLevel>
         <MtouchArch>ARM64</MtouchArch>
         <ConsolePause>false</ConsolePause>
-        <CodesignKey>iPhone Distribution: MANAGEGO LLC (4GH47MZ6ZW)</CodesignKey>
+        <CodesignKey>iPhone Developer: Hani Ebrahimi (RC3GWVX7G2)</CodesignKey>
         <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
-        <CodesignProvision>mgdist001</CodesignProvision>
+        <CodesignProvision>VS: WildCard Development</CodesignProvision>
         <MtouchFloat32>true</MtouchFloat32>
         <MtouchEnableSGenConc>true</MtouchEnableSGenConc>
     </PropertyGroup>
@@ -178,13 +178,13 @@
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="SkiaSharp.Views">
-            <Version>1.68.0</Version>
+            <Version>1.68.1.1</Version>
         </PackageReference>
         <PackageReference Include="Xamarin.Essentials">
             <Version>1.3.1</Version>
         </PackageReference>
         <PackageReference Include="Xamarin.Forms">
-            <Version>4.3.0.947036</Version>
+            <Version>4.4.0.991265</Version>
         </PackageReference>
         <PackageReference Include="FreshMvvm">
             <Version>3.0.0</Version>

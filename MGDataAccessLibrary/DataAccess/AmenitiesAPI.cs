@@ -19,7 +19,6 @@ namespace MGDataAccessLibrary.DataAccess
 
         public static async Task<T> GetItems<T>(string pathWithParameters)
         {
-
             using var response = await WebAPI.WebClient.GetAsync(BaseUrl + pathWithParameters);
             if (!response.IsSuccessStatusCode)
             {

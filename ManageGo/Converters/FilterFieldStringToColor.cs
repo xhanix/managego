@@ -9,7 +9,7 @@ namespace ManageGo
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is null || value is string s && (s.ToLower() == "all" || s.ToLower() == "select" ||
+            if (value is null || value is string s && (s.ToLower().Contains("all") || s.ToLower().Contains("select") ||
                 string.IsNullOrWhiteSpace(s) || (s.Contains("$") && s.Split('-').FirstOrDefault() == "$0 "
                 && s.Split('-').LastOrDefault() == " $5,000+")))
                 return "#58595B";

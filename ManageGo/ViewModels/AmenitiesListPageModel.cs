@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CustomCalendar;
 using FreshMvvm;
+using PropertyChanged;
 
 namespace ManageGo
 {
@@ -12,20 +13,27 @@ namespace ManageGo
     {
         private const int pageSize = 50;
         private int currentPage = 1;
-        private DateRange selectedDateRange;
         public string CompanyUrl { get; private set; }
         public bool CalFilterIsvisible { get; set; }
         public bool FilterDateExpanded { get; set; }
+        public string url { get; private set; }
         public bool FilterBuildingsExpanded { get; private set; }
         public bool FilterAmenitiesExpanded { get; private set; }
+        public bool FilterStatusesExpanded { get; private set; }
         public List<Models.PMCBuilding> Buildings { get; set; } = new List<Models.PMCBuilding>();
         public List<Models.BuildingAmenity> Amenities { get; set; } = new List<Models.BuildingAmenity>();
-        public string SelectedDateRangeString => !filter.From.HasValue || !filter.To.HasValue ? "Select Dates" : filter.From?.ToString("MMM dd") + " - " + filter.To?.ToString("MMM dd");
-        public DateRange SelectedDateRange { get; set; } = new DateRange(DateTime.Now);
+        public List<Models.AmenityStatus> Statuses { get; set; }
+        public string SelectedStatusesString => Statuses is null || !Statuses.Any(t => t.IsSelected) ? "All" : (Statuses.Count(t => t.IsSelected) == 1 ? Statuses.First(t => t.IsSelected).Name : $"{Statuses.First(t => t.IsSelected).Name}, +{Statuses.Count(t => t.IsSelected) - 1} more");
+        public string SelectedDateRangeString => SelectedDateRange is null || !SelectedDateRange.EndDate.HasValue ? "All dates" : SelectedDateRange.StartDate.ToString("MMM dd") + " - " + SelectedDateRange.EndDate?.ToString("MMM dd");
+        [AlsoNotifyFor("SelectedDateRangeString")]
+        public DateRange SelectedDateRange { get; set; }
         public bool CanGetMorePages { get; private set; }
         public bool IsBusy { get; private set; }
         public bool ShouldClearFilter { get; private set; }
+        public bool NothingFound { get; private set; }
         public bool IsRefreshing { get; private set; }
+        public string SelectedAmenitiesString => Amenities is null || !Amenities.Any(t => t.IsSelected) ? "All amenities" : (Amenities.Count(t => t.IsSelected) == 1 ? Amenities.First(t => t.IsSelected).Name : $"{Amenities.First(t => t.IsSelected).Name}, +{Amenities.Count(t => t.IsSelected) - 1} more");
+        public string SelectedBuildingsString => Buildings is null || !Buildings.Any(t => t.IsSelected) ? "All buildings" : (Buildings.Count(t => t.IsSelected) == 1 ? Buildings.First(t => t.IsSelected).BuildingDescription : $"{Buildings.First(t => t.IsSelected).BuildingDescription }, +{Buildings.Count(t => t.IsSelected) - 1} more");
 
 
         private MGDataAccessLibrary.Models.Amenities.Requests.BookingsList filter = new MGDataAccessLibrary.Models.Amenities.Requests.BookingsList
@@ -34,11 +42,7 @@ namespace ManageGo
             Page = 1
         };
 
-        public string FilterString
-        {
-            get => filter.Search;
-            set => filter.Search = value;
-        }
+        public string FilterString { get; set; }
 
         public ObservableCollection<MGDataAccessLibrary.Models.Amenities.Responses.Booking> Bookings { get; private set; } = new ObservableCollection<MGDataAccessLibrary.Models.Amenities.Responses.Booking>();
         public string PendingString { get; set; }
@@ -47,6 +51,14 @@ namespace ManageGo
         public override void Init(object initData)
         {
             base.Init(initData);
+            //Pending = 0, Approved = 1, Declined = 2, Canceled = 3
+            Statuses = new List<Models.AmenityStatus>
+            {
+                new Models.AmenityStatus { Id = 0, Name = "Pending"},
+                new Models.AmenityStatus { Id = 1, Name = "Approved"},
+                new Models.AmenityStatus { Id = 2, Name = "Declined"},
+                new Models.AmenityStatus { Id = 3, Name = "Canceled"}
+            };
             async void p(object sender, MGDataAccessLibrary.Models.Amenities.Responses.Booking e)
             {
                 if (Bookings != null && Bookings.LastOrDefault() == e && CanGetMorePages)
@@ -59,6 +71,10 @@ namespace ManageGo
         protected override async void ViewIsAppearing(object sender, EventArgs e)
         {
             base.ViewIsAppearing(sender, e);
+            FilterAmenitiesExpanded = false;
+            FilterBuildingsExpanded = false;
+            FilterDateExpanded = false;
+            FilterStatusesExpanded = false;
             var pmcInfo = await MGDataAccessLibrary.BussinessLogic.AmenitiesProcessor.GetPMCInfo();
             CompanyUrl = pmcInfo.Item2?.CompanyUrl;
             var pmcBuildings = pmcInfo.Item1.BuildingsAccess;
@@ -89,9 +105,13 @@ namespace ManageGo
         {
             try
             {
-
-                var pmcInfo = await MGDataAccessLibrary.BussinessLogic.AmenitiesProcessor.GetPMCInfo();
-                var url = pmcInfo.Item2?.CompanyUrl;
+                NothingFound = false;
+                IsRefreshing = true;
+                if (url is null)
+                {
+                    var pmcInfo = await MGDataAccessLibrary.BussinessLogic.AmenitiesProcessor.GetPMCInfo();
+                    url = pmcInfo.Item2?.CompanyUrl;
+                }
                 if (FetchNextPage)
                     filter.Page++;
                 else if (refreshData)
@@ -114,13 +134,31 @@ namespace ManageGo
                     PendingString = "(View all)";
                 else
                     PendingString = list.TotalPending > 0 ? $"({list.TotalPending} pending)" : string.Empty;
+
             }
             catch (Exception ex)
             {
-                if (ex.InnerException is null || ex.InnerException.Message != "404")
-                    await CoreMethods.DisplayAlert("Something went wrong", ex.Message, "Dismiss");
-            }
+                if (ex.InnerException.Message == "404")
+                {
+                    if (filter.Page == 1)
+                    {
+                        CanGetMorePages = false;
+                        Bookings = new ObservableCollection<MGDataAccessLibrary.Models.Amenities.Responses.Booking>();
+                        NothingFound = true;
+                    }
+                    else
+                    {
+                        CanGetMorePages = false;
+                        //go back 1 page if this page did not return any results
+                        filter.Page--;
+                    }
 
+                }
+                else
+                    await CoreMethods.DisplayAlert("Something went wrong", ex.Message, "Dismiss");
+
+            }
+            IsRefreshing = false;
         }
 
         public override void ReverseInit(object returnedData)
@@ -199,32 +237,15 @@ namespace ManageGo
                     filter.From = SelectedDateRange.StartDate;
                     filter.To = SelectedDateRange.EndDate;
                     filter.Page = 1;
+                    CanGetMorePages = true;
                     CalFilterIsvisible = false;
-                    RaisePropertyChanged("SelectedDateRangeString");
                     await LoadData();
                     tcs?.SetResult(true);
                 }, () => SelectedDateRange != null && SelectedDateRange.EndDate.HasValue);
             }
         }
 
-        public FreshAwaitCommand OnResetCalFilterTapped
-        {
-            get
-            {
-                return new FreshAwaitCommand(async (tcs) =>
-                {
-                    currentPage = 1;
-                    filter.From = null;
-                    filter.To = null;
-                    filter.Page = 1;
-                    CalFilterIsvisible = false;
-                    SelectedDateRange = new DateRange(startDate: DateTime.Now);
-                    RaisePropertyChanged("SelectedDateRangeString");
-                    await LoadData();
-                    tcs?.SetResult(true);
-                }, () => SelectedDateRange != null && SelectedDateRange.EndDate.HasValue);
-            }
-        }
+
 
         public FreshAwaitCommand OnHideCalFilterTapped
         {
@@ -240,14 +261,54 @@ namespace ManageGo
 
         public FreshAwaitCommand OnBuildingSelected => new FreshAwaitCommand(async (par, tcs) =>
         {
-            var building = par as Models.PMCBuilding;
-            if (building is null)
+            if (!(par is Models.PMCBuilding building))
                 return;
             building.IsSelected = !building.IsSelected;
             if (Buildings.Any(t => t.IsSelected))
             {
                 filter.RawBuildings = Buildings.Where(t => t.IsSelected).Select(t => t.BuildingId).ToList();
             }
+            else
+            {
+                filter.RawBuildings = new List<int>();
+            }
+            RaisePropertyChanged("SelectedBuildingsString");
+            tcs?.SetResult(true);
+        });
+
+        public FreshAwaitCommand OnAmenitySelected => new FreshAwaitCommand(async (par, tcs) =>
+        {
+            if (!(par is Models.BuildingAmenity amenity))
+                return;
+            amenity.IsSelected = !amenity.IsSelected;
+            if (Amenities.Any(t => t.IsSelected))
+            {
+                filter.RawAmenities = Amenities.Where(t => t.IsSelected).Select(t => t.Id).ToList();
+            }
+            else
+            {
+                filter.RawAmenities = new List<int>();
+            }
+            RaisePropertyChanged("SelectedAmenitiesString");
+
+            tcs?.SetResult(true);
+        });
+
+
+        public FreshAwaitCommand OnStatusSelected => new FreshAwaitCommand(async (par, tcs) =>
+        {
+            if (!(par is Models.AmenityStatus status))
+                return;
+            status.IsSelected = !status.IsSelected;
+            if (Statuses.Any(t => t.IsSelected))
+            {
+                filter.RawStatuses = Statuses.Where(t => t.IsSelected).Select(t => t.Id).ToList();
+            }
+            else
+            {
+                filter.RawStatuses = new List<int>();
+            }
+            RaisePropertyChanged("SelectedStatusesString");
 
             tcs?.SetResult(true);
         });
@@ -255,10 +316,33 @@ namespace ManageGo
         public FreshAwaitCommand OnCalFilterButtonTapped => new FreshAwaitCommand((tcs) =>
         {
             CalFilterIsvisible = !CalFilterIsvisible;
+            /*
             if (CalFilterIsvisible)
             {
                 ((AmenitiesListPage)CurrentPage).SetCalContent();
-            }
+            }*/
+            tcs?.SetResult(true);
+        });
+
+        public FreshAwaitCommand OnApplyFiltersTapped => new FreshAwaitCommand(async (tcs) =>
+        {
+            filter.RawAmenities = Amenities.Where(t => t.IsSelected).Select(t => t.Id).ToList();
+            filter.RawBuildings = Buildings.Where(t => t.IsSelected).Select(t => t.BuildingId).ToList();
+            filter.RawStatuses = Statuses.Where(t => t.IsSelected).Select(t => t.Id).ToList();
+            filter.From = SelectedDateRange?.StartDate;
+            filter.To = SelectedDateRange?.EndDate;
+            filter.Search = FilterString;
+            filter.Page = 1;
+            currentPage = 1;
+            CanGetMorePages = true;
+            CalFilterIsvisible = false;
+            await LoadData();
+            tcs?.SetResult(true);
+        });
+
+        public FreshAwaitCommand OnCloseFilterViewTapped => new FreshAwaitCommand((tcs) =>
+        {
+            CalFilterIsvisible = false;
             tcs?.SetResult(true);
         });
 
@@ -296,6 +380,15 @@ namespace ManageGo
             }
         }
 
+        public FreshAwaitCommand OnResetFiltersTapped => new FreshAwaitCommand(async (tcs) =>
+        {
+            ResetFilter();
+            CalFilterIsvisible = false;
+
+            await LoadData();
+            tcs?.SetResult(true);
+        });
+
 
         public FreshAwaitCommand OnExpandFilterTapped
         {
@@ -308,17 +401,26 @@ namespace ManageGo
                     {
                         case "Date":
                             FilterDateExpanded = !FilterDateExpanded;
-                            ((AmenitiesListPage)CurrentPage).setFilterCalContent();
+                            //  ((AmenitiesListPage)CurrentPage).setFilterCalContent();
                             FilterBuildingsExpanded = false;
                             FilterAmenitiesExpanded = false;
+                            FilterStatusesExpanded = false;
                             break;
                         case "Buildings":
                             FilterBuildingsExpanded = !FilterBuildingsExpanded;
                             FilterDateExpanded = false;
                             FilterAmenitiesExpanded = false;
+                            FilterStatusesExpanded = false;
                             break;
                         case "Amenities":
                             FilterAmenitiesExpanded = !FilterAmenitiesExpanded;
+                            FilterDateExpanded = false;
+                            FilterBuildingsExpanded = false;
+                            FilterStatusesExpanded = false;
+                            break;
+                        case "Statuses":
+                            FilterStatusesExpanded = !FilterStatusesExpanded;
+                            FilterAmenitiesExpanded = false;
                             FilterDateExpanded = false;
                             FilterBuildingsExpanded = false;
                             break;
@@ -330,18 +432,38 @@ namespace ManageGo
         }
 
 
+
+        private void ResetFilter()
+        {
+            filter = new MGDataAccessLibrary.Models.Amenities.Requests.BookingsList
+            {
+                Page = 1,
+                PageSize = pageSize
+            };
+            SelectedDateRange = new DateRange(DateTime.Today, null);
+            CanGetMorePages = true;
+            if (Buildings != null)
+                Buildings = Buildings.Select(b => { b.IsSelected = false; return b; }).ToList();
+            if (Amenities != null)
+                Amenities = Amenities.Select(a => { a.IsSelected = false; return a; }).ToList();
+            if (Statuses != null)
+                Statuses = Statuses.Select(a => { a.IsSelected = false; return a; }).ToList();
+            FilterString = null;
+            FilterAmenitiesExpanded = false;
+            FilterBuildingsExpanded = false;
+            FilterDateExpanded = false;
+            FilterStatusesExpanded = false;
+            RaisePropertyChanged("SelectedAmenitiesString");
+            RaisePropertyChanged("SelectedBuildingsString");
+            RaisePropertyChanged("SelectedStatusesString");
+        }
+
         protected override void ViewIsDisappearing(object sender, EventArgs e)
         {
             base.ViewIsDisappearing(sender, e);
             if (ShouldClearFilter)
             {
-                filter = new MGDataAccessLibrary.Models.Amenities.Requests.BookingsList
-                {
-                    Page = 1,
-                    PageSize = pageSize
-                };
-                SelectedDateRange = new DateRange(DateTime.Now);
-                RaisePropertyChanged("SelectedDateRangeString");
+                ResetFilter();
             }
             CalFilterIsvisible = false;
         }

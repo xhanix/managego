@@ -401,16 +401,21 @@ namespace ManageGo
                         DueDateCalendarView = null;
                     else
                     {
-
-                        var cal = new Controls.CalendarView();
-                        cal.HeightRequest = 240;
+                        var cal = new Controls.CalendarView
+                        {
+                            HeightRequest = 240
+                        };
                         DueDateCalendarView = cal;
                         cal.AllowMultipleSelection = false;
+                        //if a due date was already set restore it
+                        if (DateTime.TryParse(DueDate, out DateTime result))
+                            cal.SelectedDate = result;
                         cal.OnSelectedDatesUpdate += (object sender, EventArgs e) =>
                         {
                             DueDate = cal.SelectedDate.ToString("MM/dd/yy");
                         };
                     }
+
                     tcs?.SetResult(true);
                 });
             }
@@ -680,12 +685,22 @@ namespace ManageGo
 
                 async void execute(TaskCompletionSource<bool> tcs)
                 {
-                    if (ShouldShowClock)
-                        return;
-                    if (PopContentView != null)
+                    if (ShouldShowClock || DueDateCalendarView != null)
                     {
+                        tcs?.SetResult(true);
                         return;
                     }
+
+
+                    if (PopContentView != null)
+                    {
+                        tcs?.SetResult(true);
+                        PopContentView = null;
+                        ShowingTicketDetails = false;
+                        ReplyButtonIsVisible = true;
+                        return;
+                    }
+
                     foreach (var user in App.Users)
                     {
                         user.IsSelected = false;
@@ -707,7 +722,6 @@ namespace ManageGo
                     {
                         OnCloseReplyBubbleTapped.Execute(null);
                     }
-
                     else
                         await CoreMethods.PopPageModel(modal: false);
                     tcs?.SetResult(true);
@@ -1151,6 +1165,7 @@ namespace ManageGo
                         Comments[i].TopSideLineColor = Comments[i - 1].SideLineColor;
                     }
                 }
+                  ((TicketDetailsPage)CurrentPage).RedrawTable();
             }
 
             PriorityLabelText = TicketDetails.Priority;
@@ -1375,9 +1390,11 @@ namespace ManageGo
                     if (TicketId > 0)
                     {
                         TicketDetails = await Services.DataAccess.GetTicketDetails(TicketId);
+
                         IsBusy = false;
                         ((TicketDetailsPage)CurrentPage).StopRefresh();
                         SetupView(TicketDetails, CurrentTicket);
+                        ((TicketDetailsPage)CurrentPage).RedrawTable();
                     }
 
                     tcs?.SetResult(true);

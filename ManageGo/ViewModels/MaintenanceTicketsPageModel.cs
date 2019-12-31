@@ -16,12 +16,12 @@ namespace ManageGo
 
     internal class MaintenanceTicketsPageModel : BaseDetailPage
     {
-        DateRange dateRange;
+
         private bool filterSelectViewIsShown;
 
         public TicketRequestItem CurrentFilter { get; private set; }
         public TicketRequestItem ParameterItem { get; set; }
-       
+
         public ObservableCollection<MaintenanceTicket> FetchedTickets { get; set; }
         public bool NothingFetched { get; set; }
 
@@ -144,9 +144,11 @@ namespace ManageGo
         [AlsoNotifyFor("AddNewButtonIsVisisble")]
         internal bool CalendarIsShown { get; set; }
         [AlsoNotifyFor("AddNewButtonIsVisisble")]
-        public bool FilterSelectViewIsShown {
+        public bool FilterSelectViewIsShown
+        {
             get => filterSelectViewIsShown;
-            set {
+            set
+            {
                 filterSelectViewIsShown = value;
                 FilterBuildingsExpanded = false;
                 FilterCategoriesExpanded = false;
@@ -264,8 +266,8 @@ namespace ManageGo
                         FetchedTickets = new ObservableCollection<MaintenanceTicket>();
                         NothingFetched = true;
                     }
-                      
-                    
+
+
                     CanGetMorePages = FetchedTickets != null && FetchedTickets.Count == ParameterItem?.PageSize;
 
                     ListIsEnabled = true;
@@ -500,7 +502,9 @@ namespace ManageGo
                     FilterSelectViewIsShown = false;
                     ParameterItem = null;
                     CurrentFilter = null;
-                    DateRange = null;
+
+                    DateRange = default;
+                    FilterDueDate = default;
                     NumberOfAppliedFilters = string.Empty;
                     FetchedTickets = null;
                     await LoadData(true, false);
@@ -831,7 +835,7 @@ namespace ManageGo
             Users?.ForEach((b) => b.IsSelected = CurrentFilter != null && CurrentFilter.Assigned != null && CurrentFilter.Assigned.Contains(b.UserID));
             Tags?.ForEach((b) => b.IsSelected = CurrentFilter != null && CurrentFilter.Tags != null && CurrentFilter.Tags.Contains(b.TagID));
             Categories?.ForEach((b) => b.IsSelected = CurrentFilter != null && CurrentFilter.Categories != null && CurrentFilter.Categories.Contains(b.CategoryID));
-            FilterDueDate = CurrentFilter !=  null && CurrentFilter.DueDateFrom.HasValue && CurrentFilter.DueDateTo.HasValue ?
+            FilterDueDate = CurrentFilter != null && CurrentFilter.DueDateFrom.HasValue && CurrentFilter.DueDateTo.HasValue ?
                 new DateRange(CurrentFilter.DueDateFrom.Value, CurrentFilter.DueDateTo.Value) : null;
             DateRange = CurrentFilter != null && CurrentFilter.DateFrom.HasValue && CurrentFilter.DateTo.HasValue ?
                 new DateRange(CurrentFilter.DateFrom.Value, CurrentFilter.DateTo.Value) : null;
@@ -879,7 +883,7 @@ namespace ManageGo
         public override void Init(object initData)
         {
             base.Init(initData);
-            
+
             ParentIsBuildingPage = false;
             if (initData is int buildingId)
             {
@@ -914,7 +918,7 @@ namespace ManageGo
             ((MaintenanceTicketsPage)this.CurrentPage).OnTicketAppeared += p;
         }
 
-        
+
 
         public override void ReverseInit(object returnedData)
         {
@@ -930,6 +934,6 @@ namespace ManageGo
 
             }
         }
-       
+
     }
 }

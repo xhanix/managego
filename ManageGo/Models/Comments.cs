@@ -67,7 +67,7 @@ namespace ManageGo
         }
 
         [JsonIgnore]
-        public string SecondLineText => Text ?? string.Empty;
+        public string SecondLineText => Text != null ? Environment.NewLine + Text : string.Empty;
 
         [JsonIgnore]
         public bool BottomSeparatorIsVisible

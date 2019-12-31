@@ -15,7 +15,7 @@ namespace MGDataAccessLibrary.BussinessLogic
         static Hashids hashids = new Hashids("", 0, alphabet, seps);
 
 
-        public static async Task<Models.Amenities.Responses.BookingList> GetBookingList(BookingsList parameters)
+        public static async Task<BookingList> GetBookingList(BookingsList parameters)
         {
             if (parameters.RawStatuses.Any())
             {
@@ -37,9 +37,8 @@ namespace MGDataAccessLibrary.BussinessLogic
             }
             else
                 parameters.Amenities = null;
-
             var stringPars = parameters.GetQueryString();
-            return await DataAccess.AmenitiesAPI.GetItems<Models.Amenities.Responses.BookingList>("bookings?" + stringPars);
+            return await DataAccess.AmenitiesAPI.GetItems<BookingList>("bookings?" + stringPars);
         }
 
         public static async Task<Models.Amenities.Responses.Booking> GetBooking(int id)
