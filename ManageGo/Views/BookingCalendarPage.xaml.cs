@@ -20,6 +20,8 @@ namespace ManageGo
         {
             //on time slot tapped
             var container = (StackLayout)sender;
+            if (container.ClassId is null)
+                return;
             var name = container.ClassId.Replace("#", "");
             if (int.TryParse(name, out int timeFrom))
             {
@@ -48,9 +50,8 @@ namespace ManageGo
             return true;
         }
 
-        private void resetCellColors()
+        private void ResetCellColors()
         {
-
             for (int i = 30; i <= 1410; i += 30)
             {
                 var calSlot = this.FindByName<StackLayout>($"A{i}");
@@ -58,13 +59,17 @@ namespace ManageGo
                 if (calSlot != null)
                 {
                     calSlot.BackgroundColor = defaultColor;
+                    calSlot.ClassId = null;
+                    if (calSlot.Children.Any(t => t is Label))
+                        calSlot.Children.Remove(calSlot.Children.First(t => t is Label));
                 }
             }
         }
 
+
         public void SetTimeDetails(IEnumerable<MGDataAccessLibrary.Models.Amenities.Responses.TimeRanges> timeRanges)
         {
-            resetCellColors();
+            ResetCellColors();
             var fontSize = Device.GetNamedSize(NamedSize.Small, typeof(Label));
             if (timeRanges is null)
                 return;
@@ -72,6 +77,8 @@ namespace ManageGo
             {
                 var minTime = range.From;
                 var maxTime = range.To;
+                Console.WriteLine($"range min: {minTime} - range max: {maxTime}");
+
                 string prevString = string.Empty;
                 for (int i = minTime; i <= maxTime; i += 30)
                 {
@@ -80,6 +87,7 @@ namespace ManageGo
                     if (calSlot != null)
                     {
                         calSlot.ClassId = $"#{range.From}";
+                        Console.WriteLine($"setting calSlot A{i} classId {calSlot.ClassId}");
                         if (calSlot.GestureRecognizers is null || !calSlot.GestureRecognizers.Any())
                         {
                             calSlot.GestureRecognizers.Add(recognizer);

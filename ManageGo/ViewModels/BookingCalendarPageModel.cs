@@ -101,6 +101,9 @@ namespace ManageGo
                 if (availableTimes.AvailableDaysAndTimes.Any())
                 {
                     TimeRanges = availableTimes.AvailableDaysAndTimes?.FirstOrDefault()?.TimeRanges?.ToList();
+
+                    Console.WriteLine(TimeRanges);
+
                     if (CurrentPage != null)
                     {
                         ((BookingCalendarPage)CurrentPage).SetTimeDetails(TimeRanges);

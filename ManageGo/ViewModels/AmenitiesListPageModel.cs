@@ -187,6 +187,7 @@ namespace ManageGo
             {
                 return new FreshAwaitCommand(async (tcs) =>
                 {
+                    ResetFilter();
                     if (PendingString == "(View all)")
                         filter.RawStatuses.Clear();
                     else

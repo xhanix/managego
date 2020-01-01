@@ -11,7 +11,7 @@ namespace MGDataAccessLibrary.DataAccess
     public static class WebAPI
     {
         internal static HttpClient WebClient { get; set; }
-#if DEBUG
+#if !DEBUG
         private const string BaseUrl = "https://ploop.dynamo-ny.com/api/pmc_v2/";
 #else
         private const string BaseUrl = "https://portal.managego.com/api/pmc_v2/";
@@ -26,6 +26,7 @@ namespace MGDataAccessLibrary.DataAccess
         static WebAPI()
         {
             WebClient = new HttpClient { BaseAddress = new Uri(BaseUrl) };
+            WebClient.Timeout = TimeSpan.FromSeconds(5);
             OnAppResumed += WebAPI_OnAppResumed;
         }
 
@@ -106,6 +107,7 @@ namespace MGDataAccessLibrary.DataAccess
 
         public static void SetAuthToken(string accessToken)
         {
+
             WebClient.DefaultRequestHeaders.Remove("AccessToken");
             WebClient.DefaultRequestHeaders.Add("AccessToken", accessToken);
             WebClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(accessToken);
