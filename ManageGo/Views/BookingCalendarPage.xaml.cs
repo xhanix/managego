@@ -77,7 +77,7 @@ namespace ManageGo
             {
                 var minTime = range.From;
                 var maxTime = range.To;
-                Console.WriteLine($"range min: {minTime} - range max: {maxTime}");
+                Console.WriteLine($"range min: {minTime} - range max: {maxTime} - Booked by: {range.BookedBy?.BookingId}.");
 
                 string prevString = string.Empty;
                 for (int i = minTime; i <= maxTime; i += 30)

@@ -223,10 +223,10 @@
 
                 <StackLayout Grid.Row="0" Grid.Column="2" Spacing="0" Margin="0,8,0,0">
                     <BoxView  HeightRequest=".5" VerticalOptions="Start" BackgroundColor="{StaticResource Grey-Light-1}" Opacity=".5" />
-                    <StackLayout x:Name="A30" Orientation="Horizontal" Margin="0,0,0,1" HeightRequest="25" BackgroundColor="#f8f9fa">
+                    <StackLayout x:Name="A0" Orientation="Horizontal" Margin="0,0,0,1" HeightRequest="25" BackgroundColor="#f8f9fa">
                         <BoxView WidthRequest="3" HorizontalOptions="Start" />
                     </StackLayout>
-                    <StackLayout x:Name="A60" Orientation="Horizontal"  HeightRequest="25" BackgroundColor="#f8f9fa">
+                    <StackLayout x:Name="A30" Orientation="Horizontal"  HeightRequest="25" BackgroundColor="#f8f9fa">
                         <BoxView WidthRequest="3" HorizontalOptions="Start" />
                     </StackLayout>
                     <BoxView HeightRequest=".5"  VerticalOptions="Start" BackgroundColor="{StaticResource Grey-Light-1}" Opacity=".5" />
@@ -238,10 +238,10 @@
                 <Label Grid.Row="1" Grid.Column="1" Margin="0,-8,0,0" FontSize="Small"  Text="1:00am" TextColor="{StaticResource Grey-Mid-1}" />
                 <StackLayout Grid.Row="1" Grid.Column="2" Spacing="0" Margin="0,0,0,0">
                     <BoxView  HeightRequest=".5" VerticalOptions="Start" BackgroundColor="{StaticResource Grey-Light-1}" Opacity=".5" />
-                    <StackLayout x:Name="A90" Orientation="Horizontal" Margin="0,0,0,1" HeightRequest="25" BackgroundColor="#f8f9fa">
+                    <StackLayout x:Name="A60" Orientation="Horizontal" Margin="0,0,0,1" HeightRequest="25" BackgroundColor="#f8f9fa">
                         <BoxView WidthRequest="3" HorizontalOptions="Start" />
                     </StackLayout>
-                    <StackLayout x:Name="A120" Orientation="Horizontal"  HeightRequest="25" BackgroundColor="#f8f9fa">
+                    <StackLayout x:Name="A90" Orientation="Horizontal"  HeightRequest="25" BackgroundColor="#f8f9fa">
                         <BoxView WidthRequest="3" HorizontalOptions="Start" />
                     </StackLayout>
                     <BoxView HeightRequest=".5"  VerticalOptions="Start" BackgroundColor="{StaticResource Grey-Light-1}" Opacity=".5" />
@@ -250,10 +250,10 @@
                 <Label Text="2:00am"  Grid.Row="2" Grid.Column="1" Margin="0,-8,0,0" FontSize="Small"  TextColor="{StaticResource Grey-Mid-1}" />
                 <StackLayout Grid.Row="2" Grid.Column="2" Spacing="0" Margin="0,0,0,0">
                     <BoxView  HeightRequest=".5" VerticalOptions="Start" BackgroundColor="{StaticResource Grey-Light-1}" Opacity=".5" />
-                    <StackLayout x:Name="A150" Orientation="Horizontal" Margin="0,0,0,1" HeightRequest="25" BackgroundColor="#f8f9fa">
+                    <StackLayout x:Name="A120" Orientation="Horizontal" Margin="0,0,0,1" HeightRequest="25" BackgroundColor="#f8f9fa">
                         <BoxView WidthRequest="3" HorizontalOptions="Start" />
                     </StackLayout>
-                    <StackLayout x:Name="A180" Orientation="Horizontal"  HeightRequest="25" BackgroundColor="#f8f9fa">
+                    <StackLayout x:Name="A150" Orientation="Horizontal"  HeightRequest="25" BackgroundColor="#f8f9fa">
                         <BoxView WidthRequest="3" HorizontalOptions="Start" />
                     </StackLayout>
                     <BoxView HeightRequest=".5"  VerticalOptions="Start" BackgroundColor="{StaticResource Grey-Light-1}" Opacity=".5" />
@@ -262,34 +262,34 @@
                 <Label Text="3:00am"  Grid.Row="3" Grid.Column="1" Margin="0,-8,0,0" FontSize="Small"  TextColor="{StaticResource Grey-Mid-1}" />
                 <StackLayout Grid.Row="3" Grid.Column="2" Spacing="0" Margin="0,0,0,0">
                     <BoxView  HeightRequest=".5" VerticalOptions="Start" BackgroundColor="{StaticResource Grey-Light-1}" Opacity=".5" />
-                    <StackLayout x:Name="A210" Orientation="Horizontal" Margin="0,0,0,1" HeightRequest="25" BackgroundColor="#f8f9fa">
+                    <StackLayout x:Name="A180" Orientation="Horizontal" Margin="0,0,0,1" HeightRequest="25" BackgroundColor="#f8f9fa">
                         <BoxView WidthRequest="3" HorizontalOptions="Start" />
                     </StackLayout>
-                    <StackLayout x:Name="A240" Orientation="Horizontal"  HeightRequest="25" BackgroundColor="#f8f9fa">
+                    <StackLayout x:Name="A210" Orientation="Horizontal"  HeightRequest="25" BackgroundColor="#f8f9fa">
                         <BoxView WidthRequest="3" HorizontalOptions="Start" />
                     </StackLayout>
                     <BoxView HeightRequest=".5"  VerticalOptions="Start" BackgroundColor="{StaticResource Grey-Light-1}" Opacity=".5" />
                 </StackLayout>
 
                 <Label Text="4:00am" Grid.Row="4" Grid.Column="1" Margin="0,-8,0,0" FontSize="Small"  TextColor="{StaticResource Grey-Mid-1}" />
-                <StackLayout x:Name="A270" Grid.Row="4" Grid.Column="2" Spacing="0" Margin="0,0,0,0">
+                <StackLayout x:Name="A240" Grid.Row="4" Grid.Column="2" Spacing="0" Margin="0,0,0,0">
                     <BoxView  HeightRequest=".5" VerticalOptions="Start" BackgroundColor="{StaticResource Grey-Light-1}" Opacity=".5" />
                     <StackLayout Orientation="Horizontal" Margin="0,0,0,1" HeightRequest="25" BackgroundColor="#f8f9fa">
                         <BoxView WidthRequest="3" HorizontalOptions="Start" />
                     </StackLayout>
-                    <StackLayout x:Name="A290" Orientation="Horizontal"  HeightRequest="25" BackgroundColor="#f8f9fa">
+                    <StackLayout x:Name="A270" Orientation="Horizontal"  HeightRequest="25" BackgroundColor="#f8f9fa">
                         <BoxView WidthRequest="3" HorizontalOptions="Start" />
                     </StackLayout>
                     <BoxView HeightRequest=".5"  VerticalOptions="Start" BackgroundColor="{StaticResource Grey-Light-1}" Opacity=".5" />
                 </StackLayout>
 
                 <Label Text="5:00am"  Grid.Row="5" Grid.Column="1" Margin="0,-8,0,0" FontSize="Small"  TextColor="{StaticResource Grey-Mid-1}" />
-                <StackLayout x:Name="A320" Grid.Row="5" Grid.Column="2" Spacing="0" Margin="0,0,0,0">
+                <StackLayout x:Name="A300" Grid.Row="5" Grid.Column="2" Spacing="0" Margin="0,0,0,0">
                     <BoxView  HeightRequest=".5" VerticalOptions="Start" BackgroundColor="{StaticResource Grey-Light-1}" Opacity=".5" />
                     <StackLayout Orientation="Horizontal" Margin="0,0,0,1" HeightRequest="25" BackgroundColor="#f8f9fa">
                         <BoxView WidthRequest="3" HorizontalOptions="Start" />
                     </StackLayout>
-                    <StackLayout x:Name="A350" Orientation="Horizontal"  HeightRequest="25" BackgroundColor="#f8f9fa">
+                    <StackLayout x:Name="A330" Orientation="Horizontal"  HeightRequest="25" BackgroundColor="#f8f9fa">
                         <BoxView WidthRequest="3" HorizontalOptions="Start" />
                     </StackLayout>
                     <BoxView HeightRequest=".5"  VerticalOptions="Start" BackgroundColor="{StaticResource Grey-Light-1}" Opacity=".5" />
@@ -299,10 +299,10 @@
                 <Label Text="6:00am"  Grid.Row="6" Grid.Column="1" Margin="0,-8,0,0" FontSize="Small"  TextColor="{StaticResource Grey-Mid-1}" />
                 <StackLayout Grid.Row="6" Grid.Column="2" Spacing="0" Margin="0,0,0,0">
                     <BoxView  HeightRequest=".5" VerticalOptions="Start" BackgroundColor="{StaticResource Grey-Light-1}" Opacity=".5" />
-                    <StackLayout x:Name="A380" Orientation="Horizontal" Margin="0,0,0,1" HeightRequest="25" BackgroundColor="#f8f9fa">
+                    <StackLayout x:Name="A360" Orientation="Horizontal" Margin="0,0,0,1" HeightRequest="25" BackgroundColor="#f8f9fa">
                         <BoxView WidthRequest="3" HorizontalOptions="Start" />
                     </StackLayout>
-                    <StackLayout x:Name="A410" Orientation="Horizontal"  HeightRequest="25" BackgroundColor="#f8f9fa">
+                    <StackLayout x:Name="A390" Orientation="Horizontal"  HeightRequest="25" BackgroundColor="#f8f9fa">
                         <BoxView WidthRequest="3" HorizontalOptions="Start" />
                     </StackLayout>
                     <BoxView HeightRequest=".5"  VerticalOptions="Start" BackgroundColor="{StaticResource Grey-Light-1}" Opacity=".5" />
@@ -311,10 +311,10 @@
                 <Label Text="7:00am"  Grid.Row="7" Grid.Column="1" Margin="0,-8,0,0" FontSize="Small"  TextColor="{StaticResource Grey-Mid-1}" />
                 <StackLayout Grid.Row="7" Grid.Column="2" Spacing="0" Margin="0,0,0,0">
                     <BoxView  HeightRequest=".5" VerticalOptions="Start" BackgroundColor="{StaticResource Grey-Light-1}" Opacity=".5" />
-                    <StackLayout x:Name="A440" Orientation="Horizontal" Margin="0,0,0,1" HeightRequest="25" BackgroundColor="#f8f9fa">
+                    <StackLayout x:Name="A420" Orientation="Horizontal" Margin="0,0,0,1" HeightRequest="25" BackgroundColor="#f8f9fa">
                         <BoxView WidthRequest="3" HorizontalOptions="Start" />
                     </StackLayout>
-                    <StackLayout x:Name="A470" Orientation="Horizontal"  HeightRequest="25" BackgroundColor="#f8f9fa">
+                    <StackLayout x:Name="A450" Orientation="Horizontal"  HeightRequest="25" BackgroundColor="#f8f9fa">
                         <BoxView WidthRequest="3" HorizontalOptions="Start" />
                     </StackLayout>
                     <BoxView HeightRequest=".5"  VerticalOptions="Start" BackgroundColor="{StaticResource Grey-Light-1}" Opacity=".5" />
@@ -323,10 +323,10 @@
                 <Label Text="8:00am" x:Name="StartingScrollPosition"  Grid.Row="8" Grid.Column="1" Margin="0,-8,0,0" FontSize="Small"  TextColor="{StaticResource Grey-Mid-1}" />
                 <StackLayout Grid.Row="8" Grid.Column="2" Spacing="0" Margin="0,0,0,0">
                     <BoxView  HeightRequest=".5" VerticalOptions="Start" BackgroundColor="{StaticResource Grey-Light-1}" Opacity=".5" />
-                    <StackLayout x:Name="A490" Orientation="Horizontal" Margin="0,0,0,1" HeightRequest="25" BackgroundColor="#f8f9fa">
+                    <StackLayout x:Name="A480" Orientation="Horizontal" Margin="0,0,0,1" HeightRequest="25" BackgroundColor="#f8f9fa">
                         <BoxView WidthRequest="3" HorizontalOptions="Start" />
                     </StackLayout>
-                    <StackLayout x:Name="A520" Orientation="Horizontal"  HeightRequest="25" BackgroundColor="#f8f9fa">
+                    <StackLayout x:Name="A510" Orientation="Horizontal"  HeightRequest="25" BackgroundColor="#f8f9fa">
                         <BoxView WidthRequest="3" HorizontalOptions="Start" />
                     </StackLayout>
                     <BoxView HeightRequest=".5"  VerticalOptions="Start" BackgroundColor="{StaticResource Grey-Light-1}" Opacity=".5" />
@@ -336,10 +336,10 @@
                 <Label Text="9:00am"  Grid.Row="9" Grid.Column="1" Margin="0,-8,0,0" FontSize="Small"  TextColor="{StaticResource Grey-Mid-1}" />
                 <StackLayout Grid.Row="9" Grid.Column="2" Spacing="0" Margin="0,0,0,0">
                     <BoxView  HeightRequest=".5" VerticalOptions="Start" BackgroundColor="{StaticResource Grey-Light-1}" Opacity=".5" />
-                    <StackLayout x:Name="A550" Orientation="Horizontal" Margin="0,0,0,1" HeightRequest="25" BackgroundColor="#f8f9fa">
+                    <StackLayout x:Name="A540" Orientation="Horizontal" Margin="0,0,0,1" HeightRequest="25" BackgroundColor="#f8f9fa">
                         <BoxView WidthRequest="3" HorizontalOptions="Start" />
                     </StackLayout>
-                    <StackLayout x:Name="A580" Orientation="Horizontal"  HeightRequest="25" BackgroundColor="#f8f9fa">
+                    <StackLayout x:Name="A570" Orientation="Horizontal"  HeightRequest="25" BackgroundColor="#f8f9fa">
                         <BoxView WidthRequest="3" HorizontalOptions="Start" />
                     </StackLayout>
                     <BoxView HeightRequest=".5"  VerticalOptions="Start" BackgroundColor="{StaticResource Grey-Light-1}" Opacity=".5" />
@@ -348,10 +348,10 @@
                 <Label Text="10:00am"  Grid.Row="10" Grid.Column="1" Margin="0,-8,0,0" FontSize="Small"  TextColor="{StaticResource Grey-Mid-1}" />
                 <StackLayout Grid.Row="10" Grid.Column="2" Spacing="0" Margin="0,0,0,0">
                     <BoxView  HeightRequest=".5" VerticalOptions="Start" BackgroundColor="{StaticResource Grey-Light-1}" Opacity=".5" />
-                    <StackLayout x:Name="A610" Orientation="Horizontal" Margin="0,0,0,1" HeightRequest="25" BackgroundColor="#f8f9fa">
+                    <StackLayout x:Name="A600" Orientation="Horizontal" Margin="0,0,0,1" HeightRequest="25" BackgroundColor="#f8f9fa">
                         <BoxView WidthRequest="3" HorizontalOptions="Start" />
                     </StackLayout>
-                    <StackLayout x:Name="A640" Orientation="Horizontal"  HeightRequest="25" BackgroundColor="#f8f9fa">
+                    <StackLayout x:Name="A630" Orientation="Horizontal"  HeightRequest="25" BackgroundColor="#f8f9fa">
                         <BoxView WidthRequest="3" HorizontalOptions="Start" />
                     </StackLayout>
                     <BoxView HeightRequest=".5"  VerticalOptions="Start" BackgroundColor="{StaticResource Grey-Light-1}" Opacity=".5" />
@@ -360,7 +360,7 @@
                 <Label Text="11:00am"  Grid.Row="11" Grid.Column="1" Margin="0,-8,0,0" FontSize="Small"  TextColor="{StaticResource Grey-Mid-1}" />
                 <StackLayout Grid.Row="11" Grid.Column="2" Spacing="0" Margin="0,0,0,0">
                     <BoxView  HeightRequest=".5" VerticalOptions="Start" BackgroundColor="{StaticResource Grey-Light-1}" Opacity=".5" />
-                    <StackLayout x:Name="A670" Orientation="Horizontal" Margin="0,0,0,1" HeightRequest="25" BackgroundColor="#f8f9fa">
+                    <StackLayout x:Name="A660" Orientation="Horizontal" Margin="0,0,0,1" HeightRequest="25" BackgroundColor="#f8f9fa">
                         <BoxView WidthRequest="3" HorizontalOptions="Start" />
                     </StackLayout>
                     <StackLayout x:Name="A690" Orientation="Horizontal"  HeightRequest="25" BackgroundColor="#f8f9fa">
