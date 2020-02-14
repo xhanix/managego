@@ -1,4 +1,4 @@
-This is a Xamarin Forms Cross-Platform mobile app for property management.
+This is a Xamarin Forms Cross-Platform mobile app for property management. This repo contains real-life production level code and the builds are distributed to Apple App Store and Google Play store.
 
 **Purpose**
 The purpose of this app is to make it easier for property managers to view maintenance tickers, rent payments, tenant applications and more.
